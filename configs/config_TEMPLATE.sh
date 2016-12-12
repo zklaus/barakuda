@@ -1,1 +1,0 @@
-config_ORCA1_L75_ece32_marenostrum.sh
