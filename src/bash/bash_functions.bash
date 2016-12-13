@@ -35,7 +35,7 @@ function barakuda_usage()
 function barakuda_init()
 {
     # Supported ORCA grids:
-    export ORCA_LIST="ORCA1.L75 ORCA1.L46 ORCA1.L42 ORCA2 ORCA2_L46"
+    export ORCA_LIST="ORCA025.L75 ORCA1.L75 ORCA1.L46 ORCA1.L42 ORCA2.L31"
 
     # Some defaults:
     export LFORCE_YINI=false
@@ -60,8 +60,10 @@ function barakuda_check()
     fi
 
     for og in ${ORCA_LIST}; do
-        echo " ${og} / ${CONFIG}"
-        ca=""; ca=`echo ${CONFIG} | grep ${og}` ; if [ "${ca}" != "" ]; then ORCA=${og}; fi
+        ORCA_CONF="`echo ${CONFIG} | cut -d '_' -f1`.`echo ${CONFIG} | cut -d '_' -f2`"
+        #echo " ${og} / ${ORCA_CONF}"
+        ca=""; ca=`echo ${ORCA_CONF} | grep ${og}`
+        if [ "${ca}" != "" ]; then export ORCA=${og}; fi
     done
 
     if [ -z ${ORCA} ]; then echo "ORCA grid of config ${CONFIG} not supported yet"; exit; fi
