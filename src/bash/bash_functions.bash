@@ -365,13 +365,13 @@ function barakuda_import_files()
                     rsync -L ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
                     if [ "${sgz}" = ".gz" ]; then gunzip -f ./${f2i}.gz ; fi
                     if [ "${sgz}" = "4"   ]; then
-                        if ${L_CONV2NC3}; then
-                            echo "Need to convert back to netcdf3!"; echo "nccopy -k classic ${f2i}4 ${f2i}"
-                            ${NCDF_DIR}/bin/nccopy -k classic ${f2i}4 ${f2i} ;  rm ${f2i}4
-                        else
-                            echo "mv ./${f2i}4 ./${f2i}"
-                            mv ./${f2i}4 ./${f2i}
-                        fi
+                        #if ${L_CONV2NC3}; then
+                        #    echo "Need to convert back to netcdf3!"; echo "nccopy -k classic ${f2i}4 ${f2i}"
+                        #    ${NCDF_DIR}/bin/nccopy -k classic ${f2i}4 ${f2i} ;  rm ${f2i}4
+                        #else
+                        echo "mv -f ./${f2i}4 ./${f2i}"
+                        mv -f ./${f2i}4 ./${f2i}
+                        #fi
                     fi
                     check_if_file ${f2i}
                     echo " ... done!"; echo

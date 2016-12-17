@@ -151,7 +151,7 @@ export i_do_movi=1
 # Basic 3D and surface averages:
 export i_do_mean=1
 
-# IFS freshWater fluxes at the surface spatially averaged over the ocean, E-P-R, E-P, R, P, ...
+# IFS surfacce fluxes of heat and freshwater
 export i_do_ifs_flx=1 ; # only relevant when ece_run=2...
 
 # AMOC:
