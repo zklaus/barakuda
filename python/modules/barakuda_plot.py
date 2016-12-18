@@ -1231,7 +1231,7 @@ class plot :
 
         if plt_m03 or plt_m09: plt.legend(loc='lower center', shadow=True, fancybox=True)
 
-
+        # Time bounds for t-axis:
         y1 = int(min(VTy)-0.5)
         y2 = int(max(VTy)+0.5)
 
@@ -1855,32 +1855,34 @@ def __subsample_axis__(plt_hndl, cax, i_sbsmp, icpt=1):
     del ax_lab
 
 
+def __force_lowest_bound_axis__(plt_hndl, cax, imult=5):
+    # Corrects x or y ticks, ex: if 2009,2014,2019 => 2010,2015,2020
+    ax_lab = []
+    if   cax == 'x': locs, labels = plt_hndl.xticks()
+    elif cax == 'y': locs, labels = plt_hndl.yticks()
+    loc0 = int(imult * round(float(locs[0])/imult)) ;     # We want a multilple of imult
+    locs = locs + (loc0 - locs[0])    ; # new locs (adding the correct increment)
+    for rr in locs:
+        if rr%1.0 == 0.:
+            cr = str(int(rr))  # it's something like 22.0, we want 22 !!!
+        else:
+            cr = str(rr)
+        ax_lab.append(cr)
+    if cax == 'x': plt_hndl.xticks(locs,ax_lab)
+    if cax == 'y': plt_hndl.yticks(locs,ax_lab)
+    del ax_lab
 
 def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_L, dx, i_sbsmp=1, cunit=None, cfont=None):
     plt_hndl.xticks( nmp.arange(x_0, x_L+dx, dx) )
     locs, labels = plt_hndl.xticks()
-    #jl=0
-    #xlabs = []
-    #for ll in locs:
-    #    xlabs.append(str(int(locs[jl])))
-    #    jl=jl+1
-    #plt_hndl.xticks(locs,xlabs)
-
     if i_sbsmp > 1: __subsample_axis__( plt, 'x', i_sbsmp)
-
+    if x_0%5 != 0: __force_lowest_bound_axis__( plt, 'x') ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
     ax_hndl.set_xlim(x_0,x_L)
-
     if not cunit is None:
         if cfont is None:
             plt_hndl.xlabel(cunit)
         else:
             plt_hndl.xlabel(cunit, **cfont)
-
-    # Prevents from using scientific notations in axess ticks numbering:
-    #ax_hndl.get_xaxis().get_major_formatter().set_useOffset(False)
-
-    #del xlabs
-
 
 def __nice_z_axis__(ax_hndl, plt_hndl, z0, zK, dz, i_sbsmp=1, cunit=None, cfont=None):
     iia = 1
@@ -1896,31 +1898,18 @@ def __nice_z_axis__(ax_hndl, plt_hndl, z0, zK, dz, i_sbsmp=1, cunit=None, cfont=
         else:
             plt_hndl.ylabel(cunit, **cfont)
 
-
-
-
-
-
-
-
 def __prepare_z_log_axis__(l_log, vz):
-
     import math
-
     nk  = len(vz)
     zvz = nmp.zeros(nk)
-
     if l_log:
         for jk in range(nk):
             zvz[jk] = math.log10(vz[jk])
     else:
         zvz= vz
-
     return zvz
 
-
 def __fix_z_axis__(ax_hndl, plt_hndl, z0, zK, l_log=False, l_z_inc=True):
-
     if l_log:
         y_log_ofs = 10.
         vyview_list = [ 3. , 10. , 25., 50. , 100. , 250. , 500. , 1000. , 2500.,  5000. ]
@@ -1935,14 +1924,11 @@ def __fix_z_axis__(ax_hndl, plt_hndl, z0, zK, l_log=False, l_z_inc=True):
         ax_hndl.set_yticks(vyview_log)
         ax_hndl.get_yaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
         ax_hndl.set_yticklabels(ylab)
-
     if l_z_inc:
         ax_hndl.set_ylim(z0,zK)
     else:
         ax_hndl.set_ylim(zK+(zK-z0)/50. , z0)
-
     ax_hndl.grid(color='k', linestyle='-', linewidth=0.5)
-
 
 def __nb_col_row_legend__(nn):
     if nn <= 3:
