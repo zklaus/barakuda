@@ -51,8 +51,10 @@ def get_sections_from_file(cfile):
     f = open(cfile, 'r') ; cread_lines = f.readlines() ; f.close()
     jl=0
     for ll in cread_lines:
+        print ll
         # lolo: ignore '#'
         ls = ll.split() ; cc = ls[0]
+        print ls
         if jl%2 == 0 and cc != 'EOF' and cc != 'ref_temp': list_sections.append(cc)
         jl=jl+1
     return list_sections
@@ -555,14 +557,18 @@ def mk_zonal(XF, XMSK):
 
 
 
-def read_box_coordinates_in_ascii(cf):
+def read_box_coordinates_in_ascii(cf, ctype='int'):
+
+    # cf : file containing sections
+    # ctype: 'int' or 'float'
+    
     chck4f(cf)
 
     f = open(cf, 'r')
     cread_lines = f.readlines()
     f.close()
 
-    vboxes = [] ; vi1    = [] ; vj1    = [] ; vi2    = [] ; vj2    = []
+    vboxes = [] ; vi1 = [] ; vj1 = [] ; vi2 = [] ; vj2 = []
     leof = False
     jl   = -1
 
@@ -570,16 +576,26 @@ def read_box_coordinates_in_ascii(cf):
         jl = jl + 1
         ll = cread_lines[jl]
         ls = ll.split()
-
+        #
         c1 = ls[0] ; c1 = c1[0]
-
+        #
         if c1 != '#' and ls[0] != 'EOF':
             vboxes.append(ls[0])
-            vi1.append(int(ls[1]))
-            vj1.append(int(ls[2]))
-            vi2.append(int(ls[3]))
-            vj2.append(int(ls[4]))
+            if ctype == 'int':
+                vi1.append(int(ls[1]))
+                vj1.append(int(ls[2]))
+                vi2.append(int(ls[3]))
+                vj2.append(int(ls[4]))
+            elif ctype == 'float':
+                vi1.append(float(ls[1]))
+                vj1.append(float(ls[2]))
+                vi2.append(float(ls[3]))
+                vj2.append(float(ls[4]))
+            else:
+                print 'ERROR: read_box_coordinates_in_ascii => ctype must be "int" or "float"'
+                sys.exit(0)
 
+        #
         if ls[0] == 'EOF': leof = True
 
 

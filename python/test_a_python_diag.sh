@@ -4,10 +4,11 @@
 
 # Diag to test:
 isflx=0
+itempsal=1
 imean=0
 imov=0
 issh=0
-its=1
+its=0
 imld=0
 irnf=0
 iice=0
@@ -15,18 +16,18 @@ iemp=0
 icmip5=0
 ihov=0
 
-CONFIG="ORCA1_L75"
-ARCH="ece32_marenostrum"
+#CONFIG="ORCA1_L75"
+#ARCH="ece32_marenostrum"
+#export RUN="LBO0" ; NC=nc ; jyear=1990
 
-export RUN="LBO0" ; NC=nc
+CONFIG="ORCA1_L42"
+ARCH="ece22_triolith"
+export RUN="SPIN" ; NC=nc4 ; jyear=2009
 
-jyear=1990 ; # year to test on (if relevant)
+
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
-
-
-
 
 . ${BARAKUDA_ROOT}/src/bash/bash_functions.bash
 . ${BARAKUDA_ROOT}/configs/config_${CONFIG}_${ARCH}.sh
@@ -76,13 +77,18 @@ rm -f *.png *.nc
 
 # Time for diags:
 
+if [ ${itempsal} -eq 1 ]; then
+    CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
+    iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
+    CMD="python exec/temp_sal.py ${iclyear}"; echo "${CMD}"
+fi
+
 if [ ${its} -eq 1 ]; then
     #diag=3d_thetao
     diag=mean_fwf
     #diag=mean_htf
     ln -sf ${DIAG_D}/${diag}*.nc .
     CMD="python exec/plot_time_series.py ${diag}"
-
 fi
 
 

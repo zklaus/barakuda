@@ -33,7 +33,7 @@ CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
 
 CC = vdic['COMP2D']
 
-i_do_sect = vdic['i_do_sect']
+i_do_sect = int(vdic['i_do_sect'])
 
 
 # Bounds and increment for comparison maps:
@@ -202,27 +202,10 @@ tdd      = [ '100m', '1000m', '3000m' ]
 
 print '\n', tdd_true[:], '\n'
 
-
-
-
-if 'ORCA2' in vdic['ORCA']:
-    ji_lat0 = 132
-elif 'ORCA1' in vdic['ORCA']:
-    ji_lat0 = 265
-else:
-    print 'FIX ME!!! temp_sal.py => dont know ji_lat0 for conf '+vdic['ORCA']+' !!!'; sys.exit(0)
-
-
 # Creating 1D long. and lat.:
 vlon = nmp.zeros(ni) ; vlon[:] = xlon[0,:]
+ji_lat0 = nmp.argmax(xlat[nj-1])
 vlat = nmp.zeros(nj) ; vlat[:] = xlat[:,ji_lat0]
-
-
-
-
-
-
-
 
 
 # Time for figures:
@@ -378,60 +361,80 @@ if lfig1:
                       lforce_lim=True)
 
 
-        
+
 if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections defined in 'barakuda_orca.py'
 
     #lolo: ?
-    # better to read the secions from the config file ????
 
-    #vdico = bt.check_env_var(sys.argv[0], {'VSECT_NM','VSECT_JI','VSECT_JJ'})
+    vdico = bt.check_env_var(sys.argv[0], {'TS_SECTION_FILE'})
 
-    #CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
-    #lolo.
+    vboxes, vlon1, vlat1, vlon2, vlat2 = bt.read_box_coordinates_in_ascii(vdico['TS_SECTION_FILE'], ctype='float')
     
-    dic_all_sections = bo.load_dic_sections()
-
-    for csname in dic_all_sections.keys():
-
-        [ lon1 , lon2 , lat1 , lat2 ] = dic_all_sections[csname]
+    js = 0
+    for csname in vboxes:
         
-        [ i1, i2, j1, j2 ] = bo.coor2ind(lon1, lon2, lat1, lat2, xlon, xlat)
+        [ i1, i2, j1, j2 ] = bo.coor2ind(vlon1[js], vlon2[js], vlat1[js], vlat2[js], xlon, xlat)
+
+        print csname, ' i1, i2, j1, j2 =', i1, i2, j1, j2
+        print   '(lon1, lon2, lat1, lat2) =', vlon1[js], vlon2[js], vlat1[js], vlat2[js]
+        print ''
 
         if i1 > i2: print 'ERROR: temp_sal.py => i1 > i2 !'; sys.exit(0)
         if j1 > j2: print 'ERROR: temp_sal.py => j1 > j2 !'; sys.exit(0)
 
         #  N E M O
         #  ~~~~~~~
-        bp.plot("vert_section")(xlat[:,jic], vdepth, Tnemo_annual[:,j1:j2,i1:i2],
-                                imask[:,j1:j2,i1:i2], -1., 25., 1., cpal='mld', xmin=-75., xmax=65., dx=15.,
-                                cfignm=path_fig+'section_temp_'+CONFRUN, cbunit=r'$^{\circ}$C', cxunit=r'Latitude ($^{\circ}$N)',
-                                czunit='Depth (m)', ctitle='Temperature, ('+cy1+'-'+cy2+'), '+CONFRUN+', lon = 30W',
+        #lolo
+        if i1 == i2:
+            print 'Meridional section!'
+            vaxis = xlat[j1:j2,i1]
+            ZT    = Tnemo_annual[:,j1:j2,i1] ; ZS = Snemo_annual[:,j1:j2,i1]
+            OT    = Tclim_annual[:,j1:j2,i1] ; OS = Sclim_annual[:,j1:j2,i1]
+            imsk  = imask[:,j1:j2,i1]
+            cinfo = ', lon='+str(vlon1[js])
+            xmn=vlat1[js]; xmx=vlat2[js]
+        if j1 == j2:
+            print 'Zonal section!'
+            vx = xlon[j1,i1:i2] ; vaxis = nmp.zeros(len(vx)) ; vaxis[:] = vx[:]
+            ivf = nmp.where(vx>180); vaxis[ivf] = vx[ivf] - 360.
+            ZT    = Tnemo_annual[:,j1,i1:i2] ; ZS = Snemo_annual[:,j1,i1:i2]
+            OT    = Tclim_annual[:,j1,i1:i2] ; OS = Sclim_annual[:,j1,i1:i2]
+            imsk  = imask[:,j1,i1:i2]
+            cinfo = ', lat='+str(vlat1[js])
+            xmn=vlon1[js]; xmx=vlon2[js]
+
+            print 'vaxis', vaxis[:]
+            
+        
+        bp.plot("vert_section")(vaxis, vdepth, ZT, imsk, 0., 30., 2.,
+                                cpal='mld', xmin=xmn, xmax=xmx, dx=5.,
+                                cfignm=path_fig+'section_temp_'+csname+'_'+CONFRUN, cbunit=r'$^{\circ}$C', cxunit=r'Latitude ($^{\circ}$N)',
+                                czunit='Depth (m)', ctitle='Temperature, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
+                                cfig_type=fig_type, lforce_lim=True)
+        
+        bp.plot("vert_section")(vaxis, vdepth, ZS, imsk, 33.9, 35.9, 0.1,
+                                cpal='mld', xmin=xmn, xmax=xmx, dx=5.,
+                                cfignm=path_fig+'section_sali_'+csname+'_'+CONFRUN, cbunit='PSU', cxunit=r'Latitude ($^{\circ}$N)',
+                                czunit='Depth (m)', ctitle='Salinity, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
                                 cfig_type=fig_type, lforce_lim=True)
 
-        bp.plot("vert_section")(xlat[:,jic], vdepth, Snemo_annual[:,j1:j2,i1:i2],
-                                imask[:,j1:j2,i1:i2], 33.9, 35.9, 0.1, cpal='mld', xmin=-75., xmax=65., dx=15.,
-                                cfignm=path_fig+'section_sali_'+CONFRUN, cbunit='PSU', cxunit=r'Latitude ($^{\circ}$N)',
-                                czunit='Depth (m)', ctitle='Salinity, ('+cy1+'-'+cy2+'), '+CONFRUN+', lon = 30W',
-                                cfig_type=fig_type, lforce_lim=True)
-
-
-        #  L E V I T U S
-        #  ~~~~~~~~~~~~~
-        bp.plot("vert_section")(xlat[:,jic], vdepth, Tclim_annual[:,j1:j2,i1:i2],
-                                imask[:,j1:j2,i1:i2], -1., 25., 1., cpal='mld', xmin=-75., xmax=65., dx=15.,
-                                cfignm=path_fig+'section_temp_'+CC, cbunit=r'$^{\circ}$C',
+        #  OBS:
+        #  ~~~~
+        bp.plot("vert_section")(vaxis, vdepth, OT, imsk, 0., 30., 2.,
+                                cpal='mld', xmin=xmn, xmax=xmx, dx=5.,
+                                cfignm=path_fig+'section_temp_'+csname+'_'+CC, cbunit=r'$^{\circ}$C',
                                 cxunit=r'Latitude ($^{\circ}$N)',
-                                czunit='Depth (m)', ctitle='Temperature, '+CC+', lon = 30W',
+                                czunit='Depth (m)', ctitle='Temperature, '+csname+', '+CC+cinfo,
                                 cfig_type=fig_type, lforce_lim=True)
         #
-        bp.plot("vert_section")(xlat[:,jic], vdepth, Sclim_annual[:,j1:j2,i1:i2],
-                                imask[:,j1:j2,i1:i2], 33.9, 35.9, 0.1, cpal='mld', xmin=-75., xmax=65., dx=15.,
-                                cfignm=path_fig+'section_sali_'+CC, cbunit='PSU',
+        bp.plot("vert_section")(vaxis, vdepth, OS, imsk, 33.9, 35.9, 0.1,
+                                cpal='mld', xmin=xmn, xmax=xmx, dx=5.,
+                                cfignm=path_fig+'section_sali_'+csname+'_'+CC, cbunit='PSU',
                                 cxunit=r'Latitude ($^{\circ}$N)',
-                                czunit='Depth (m)', ctitle='Salinity, '+CC+', lon = 30W',
+                                czunit='Depth (m)', ctitle='Salinity, '+csname+', '+CC+cinfo,
                                 cfig_type=fig_type, lforce_lim=True)
 
-
+        js=js+1
 
 
 

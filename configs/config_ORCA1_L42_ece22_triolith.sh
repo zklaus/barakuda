@@ -147,7 +147,7 @@ export RWWWD=/data/www/barakuda/CMIP5 ; # directory of the local or remote host 
 #########################
 
 # Movies of SST and SSS compared to OBS:
-export i_do_movi=0
+export i_do_movi=1
 
 # Basic 3D and surface averages:
 export i_do_mean=1
@@ -205,10 +205,8 @@ export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1_ARCTI
 
 export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
 
-export i_do_sect=0 ; # do sigma vert. profiles on given boxes...
-VSECT_NM=( "Indian_77p5_E" "Atlantic_21p5_W" )
-VSECT_JI=(      "5,5"          "266,266"     ) ; # X range in C convention
-VSECT_JJ=(    "25,170"          "7,291"      ) ; # Y range in C convention
+export i_do_sect=1 ; # do sigma vert. profiles on given boxes...
+export TS_SECTION_FILE="${BARAKUDA_ROOT}/data/TS_sections.dat"
 
 
 
@@ -224,7 +222,3 @@ VSECT_JJ=(    "25,170"          "7,291"      ) ; # Y range in C convention
 i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
 
 
-i_do_sect=0 ; # do sigma vert. profiles on given boxes...
-VSECT_NM=( "Indian_77p5_E" "Atlantic_21p5_W" )
-VSECT_JI=(      "5,5"          "266,266"     ) ; # X range in C convention
-VSECT_JJ=(    "25,170"          "7,291"      ) ; # Y range in C convention

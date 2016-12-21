@@ -560,7 +560,7 @@ def coor2ind(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
     if x1 == x2: lvert = True
     #
     if not (lhori or lvert) : print 'coor2ind only supports horizontal or vertical sections so far...'; sys.exit(0)
-    if lhori: print 'coor2ind horizontal mode not done yet'; sys.exit(0)
+    #if lhori: print 'coor2ind horizontal mode not done yet'; sys.exit(0)
     #
     [nj , ni] = xlon.shape
     iwa = nmp.where(xlon < 0.) ; xlon[iwa] = xlon[iwa] + 360. # Want only positive values in longitude:
@@ -589,7 +589,7 @@ def coor2ind(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
         # Neet to find jj2 !
         dist = 1000.
         for jj in range(nj):
-            dd = abs(y1 - xlat[jj,ji2])
+            dd = abs(y2 - xlat[jj,ji2])
             if dd < dist: dist = dd ; jj2 = jj
     if y2 ==  90.: jj2 = nj-1
     #
@@ -598,7 +598,7 @@ def coor2ind(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
         # Neet to find ji2 !
         dist = 1000.
         for ji in range(ni):
-            dd = abs(x1 - xlon[jj2,ji])
+            dd = abs(x2 - xlon[jj2,ji])
             if dd > 360.: dd = dd - 360.
             if dd < dist: dist = dd ; ji2 = ji
     #

@@ -6,26 +6,19 @@
 #            are allowed
 #
 # Ex:
-# Name_Section1
-# lon1 lon2 lat0 lat0
-# Name_Section2
-# lon0 lon0 lat1 lat2
+# Name_Section1  lon1 lat0 lon2 lat0
+# Name_Section2  lon0 lat1 lon0 lat2
+Eq_Atl            -45.       0.     10.    0.
 #
-Indian_77E
-77. 77. -90. 10.
-#
-Atlantic_22W
--22. -22. -90. 90.
-#
-Wedell_67S
--30. 11. -67. -67.
-#
-MedSea_7W
--7. -7. 34. 37.
-#
-Ovide_40N
--12.65 -8.7 40.33 40.33
-#
-Gibraltar_35p9N
--8. -5. 35.88 35.88
+Wedell_67S        -30.     -67.     11.  -67.
+#                               
+Indian_77E         77.     -75.     77.   10.
+#                               
+Atlantic_22W      -22.     -90.    -22.   90.
+#                               
+MedSea_7W          -7.      34.     -7.   37.
+#                               
+Ovide_40N        -12.65   40.33    -8.7  40.33
+#                               
+Gibraltar          -8.    35.46     -5.  35.46
 EOF
