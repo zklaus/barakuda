@@ -277,7 +277,7 @@ if iice == 1:
 if itrsp == 1:
 
     print '\nUsing TRANSPORT_SECTION_FILE = '+vdic['TRANSPORT_SECTION_FILE']
-    list_sections = bo.get_sections_names_from_file(vdic['TRANSPORT_SECTION_FILE'])
+    list_sections = bt.get_sections_from_file(vdic['TRANSPORT_SECTION_FILE'])
     print 'List of sections to treat: ', list_sections
     nbsect = len(list_sections)
 

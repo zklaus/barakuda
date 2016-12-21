@@ -139,7 +139,7 @@ elif cdiag == 'mean_mldr10_1':
 elif cdiag == 'transport_sections':
     idfig = 'transport'
     print '  Using TRANSPORT_SECTION_FILE = '+vdic['TRANSPORT_SECTION_FILE']
-    list_sections = bo.get_sections_names_from_file(vdic['TRANSPORT_SECTION_FILE'])
+    list_sections = bt.get_sections_from_file(vdic['TRANSPORT_SECTION_FILE'])
     print 'List of sections to treat: ', list_sections
 
 

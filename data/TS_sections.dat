@@ -1,0 +1,31 @@
+# These section are config-independant and are
+# defined with 2 points for which coordinates
+# are given in degrees of longitude and latitude
+#
+# Important: only zonal or meridional sections
+#            are allowed
+#
+# Ex:
+# Name_Section1
+# lon1 lon2 lat0 lat0
+# Name_Section2
+# lon0 lon0 lat1 lat2
+#
+Indian_77E
+77. 77. -90. 10.
+#
+Atlantic_22W
+-22. -22. -90. 90.
+#
+Wedell_67S
+-30. 11. -67. -67.
+#
+MedSea_7W
+-7. -7. 34. 37.
+#
+Ovide_40N
+-12.65 -8.7 40.33 40.33
+#
+Gibraltar_35p9N
+-8. -5. 35.88 35.88
+EOF

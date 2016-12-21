@@ -371,10 +371,11 @@ while ${lcontinue}; do
         fi
 
 
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        #  Vertical profiles of T,S and density on a given box
-        #     => it provides time-series depending on time and depth
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        #  Vertical profiles of T,S and density horizontally averaged
+        #  on rectangular boxes defined into FILE_DEF_BOXES
+        #   => creates time-series function of time and depth
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_box_TS_z} -gt 0 ]; then
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
@@ -383,11 +384,30 @@ while ${lcontinue}; do
             ${PYTH} ${PYBRKD_EXEC_PATH}/prof_TS_z_box.py ${cyear} &
             echo;echo
         fi
-
         
         # --- end of stuffs that can be launched in bg ---
 
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Temperature and Salinity on cross meridional/zonal sections
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if [ ${i_do_sect} -eq 1 ]; then
+            check_if_file ${TS_SECTION_FILE}
+            #diro=${DIAG_D}/sections ; mkdir -p ${diro}
+            #js=0
+            #for cs in ${VSECT_NM[*]}; do
+            #    fo="${diro}/section_`echo ${ft} | sed -e s/".nc"/"_${cs}.nc"/g`"
+            #    ncks -h -A -v ${NN_T},${NN_S} \
+            #         -d x,${VSECT_JI[${js}]}  \
+            #         -d y,${VSECT_JJ[${js}]}   ${ft} -o ${fo}
+            #    ((js++))
+            #done
+            echo
+        fi
 
+
+        #==============================
+        # BETA STUFF !!
+        #==============================
 
         #~~~~~~~~~~~~~~~~~~~~~~~
         #  AMO SST time series
@@ -402,34 +422,9 @@ while ${lcontinue}; do
             mv -f  AMO_SST_Atl_${CONFRUN}_${cyear}.nc ${diro}/
             echo
         fi
-        # End SST time series
+        # End AMO SST time series
 
-        # Vertical meridional or zonal sections:
-        if [ ${i_do_sect} -eq 1 ]; then
-            diro=${DIAG_D}/sections ; mkdir -p ${diro}
-            if [ -z ${VSECT_NM} ] || [ -z ${VSECT_JI} ] || [ -z ${VSECT_JJ} ]; then
-                echo "VSECT_NM, VSECT_JI and VSECT_JJ must be defined in:"
-                echo "${fconfig}" ; exit
-            fi
-            js=0
-            for cs in ${VSECT_NM[*]}; do
-                cc=`echo ${ft} | sed -e s/".nc"/"_${cs}.nc"/g`
-                fo="section_${cc}"
-                ncks -h -O -v nav_lat,nav_lon,thetao,so \
-                    -d x,${VSECT_JI[${js}]} \
-                    -d y,${VSECT_JJ[${js}]} \
-                    ${ft} -o ${fo}
-                mv -f ${fo} ${diro}/
-                ((js++))
-            done
-            echo
-        fi
-
-
-        #==============================
-        # BETA STUFF !!
-        #==============================
-
+        
         if [ ${i_do_zcrit} -gt 0 ]; then
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
@@ -688,23 +683,18 @@ if [ ${ISTAGE} -eq 2 ]; then
                 echo
             fi
 
-
             echo; echo
-            check_if_file ${F_T_CLIM_3D_12} "name:F_T_CLIM_3D_12"
-            check_if_file ${F_S_CLIM_3D_12} "name:F_S_CLIM_3D_12"
-            check_if_file ${SST_CLIM_12}    "name:SST_CLIM_12"
-            if [ ${i_do_ice}  -gt 0 ]; then check_if_file ${ICE_CLIM_12}    "name:ICE_CLIM_12" ; fi
+            for ff in ${F_T_CLIM_3D_12} ${F_S_CLIM_3D_12} ${SST_CLIM_12}; do check_if_file ${ff} "name:${ff}"; done
+            if [ ${i_do_ice} -gt 0 ]; then check_if_file ${ICE_CLIM_12}    "name:${ICE_CLIM_12}" ; fi
             echo; echo
 
 
-        #######################################
-        # Diags that don't imply a comparison #
-        #######################################
+            #######################################
+            # Diags that don't imply a comparison #
+            #######################################
 
             export COMP2D="CLIM"
-
-
-
+            
             # Lat-Depth AMOC
             # ~~~~~~~~~~~~~~
             if [ -f ${fcmoc} ]; then
@@ -718,7 +708,6 @@ if [ ${ISTAGE} -eq 2 ]; then
                 cd ../
                 echo
             fi
-
 
             # March Mixed layer depth in Nordic Seas
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -748,30 +737,24 @@ if [ ${ISTAGE} -eq 2 ]; then
                 echo
             fi
 
-
-
-        # Sea-surface height
-        # ~~~~~~~~~~~~~~~~~~
+            # Sea-surface height
+            # ~~~~~~~~~~~~~~~~~~
             if [ `ipresent_var_in_ncf ${ftcli} ${NN_SSH}` -eq 1 ]; then
-                echo; echo
-                echo " SSH map"
+                echo; echo; echo " SSH map"
                 export DIRS_2_EXP="${DIRS_2_EXP} ssh"
                 cd ${DIAG_D}/
                 rm -rf ssh; mkdir ssh; cd ssh/
-                echo; echo; echo "CALLING: ssh.py ${iclyear}"; echo
+                echo "CALLING: ssh.py ${iclyear}"; echo
                 ${PYTH} ${PYBRKD_EXEC_PATH}/ssh.py ${iclyear}
-                cd ../
-                echo
+                cd ../ ;  echo
             else
                 echo; echo "WARNING: did not find ${NN_SSH} into ${ftcli} !!!!"; echo
             fi
+            
 
-
-
-
-        ##################################################
-        # Diags that imply a comparison against "COMP2D" #
-        ##################################################
+            ##################################################
+            # Diags that imply a comparison against "COMP2D" #
+            ##################################################
 
             cd ${DIAG_D}/
             rm -rf temp_sal surf_fluxes
@@ -779,21 +762,19 @@ if [ ${ISTAGE} -eq 2 ]; then
             for COMP2D in ${list_comp_2d}; do
 
                 export COMP2D=${COMP2D}
-
                 echo; echo; echo "Clim. comparisons against ${COMP2D}"
-
+               
                 if [ "${COMP2D}" = "${RUNREF}" ]; then
                     export F_T_CLIM_3D_12=${fclim_ref}; check_if_file ${F_T_CLIM_3D_12} "name:F_T_CLIM_3D_12"
                     export F_S_CLIM_3D_12=${fclim_ref}; check_if_file ${F_S_CLIM_3D_12} "name:F_S_CLIM_3D_12"
                     export SST_CLIM_12=${fclim_ref}   ; check_if_file ${SST_CLIM_12}    "name:SST_CLIM_12"
                     if [ ${i_do_ice}  -gt 0 ]; then export ICE_CLIM_12=${fclim_ref}   ; check_if_file ${ICE_CLIM_12}    "name:ICE_CLIM_12"; fi
                 fi
-
-
-            # Temperature and Salinity
-            # ~~~~~~~~~~~~~~~~~~~~~~~~
+                
+                # Temperature and Salinity
+                # ~~~~~~~~~~~~~~~~~~~~~~~~
                 echo; echo
-                echo " Performing 2D Temperature and Salinity maps and sections"
+                echo " Creating maps and cross-sections (i_do_sect) of Temperature and Salinity"
                 cd ${DIAG_D}/
                 export DIRS_2_EXP="${DIRS_2_EXP} temp_sal"
                 DIRS_2_EXP_RREF="${DIRS_2_EXP_RREF} temp_sal"
@@ -802,8 +783,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 ${PYTH} ${PYBRKD_EXEC_PATH}/temp_sal.py ${iclyear}
                 cd ../
                 echo
-
-
+                
             done ; # for COMP2D in ${list_comp_2d}; do
 
         else

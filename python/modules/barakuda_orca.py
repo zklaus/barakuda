@@ -85,21 +85,30 @@ r_lat_p2_mld    = [   -999. ,      -40.                ,        -999.           
 boxes = [ [ 'nseas',  -60. , -40. , 40. , 70. ],
           [ 'med',  -17. , 0. , 30. , 42.     ],
           [ 'prout', -40. , -30. , 20. , 50.  ],
-          [ 'prooo', -40. , -30. , 20. , 50.  ] ]               
-
- 
-# Coupes :
-# ========        name      lon1  lon2  lat1  lat2  sal_min sal_max
-coupes = [ [ 'med_vert',  -7.,      -7. ,  34., 37.         ],        
-           [ 'ovide_60',  -43.,    -31.3,  60.6, 58.9       ],
-           [ 'ovide_40',  -12.65, -8.7, 40.33, 40.33        ],            
-           [ 'crap',      -12.,   -12., -20.,   80.         ],
-           [ 'gibraltar', -8., -5.,  35.88, 35.88           ],     
-           [ 'faroe-scot', -7.02869, -4.2513,  62.1826, 58.4656 ],
-           [ 'atl_vert'  , -30., -30., -90., 90.          ]]
+          [ 'prooo', -40. , -30. , 20. , 50.  ] ]
 
 
+# Sectoions:
+# =========     name        lon1         lon2          lat1       lat2         sal_min sal_max
+vsections = [ [ 'med_vert',     -7.   ,      -7.     ,     34.    ,    37.         ],
+              [ 'ovide_60',    -43.   ,    -31.3     ,     60.6   ,   58.9         ],
+              [ 'ovide_40',    -12.65 ,     -8.7     ,    40.33   ,   40.33        ],
+              [ 'gibraltar',    -8.   ,      -5.     ,    35.88   ,   35.88        ],
+              [ 'faroe-scot',  -7.029 ,  -4.2513     ,  62.1826   , 58.4656        ],
+              [ 'atl_vert'  ,   -30.  ,     -30.     ,     -90.   ,   90.          ] ]
+# lolo: RM!
 
+
+def load_dic_sections():
+    #                    name      [  lon1   ,     lon2     ,    lat1    ,   lat2  ]
+    dic_sections = { 'med_vert':   [   -7.   ,      -7.     ,     34.    ,    37.  ],
+                     'ovide_60':   [  -43.   ,    -31.3     ,     60.6   ,   58.9  ],
+                     'ovide_40':   [  -12.65 ,     -8.7     ,    40.33   ,   40.33 ],
+                     'gibraltar':  [   -8.   ,      -5.     ,    35.88   ,   35.88 ],
+                     'faroe-scot': [  -7.029 ,  -4.2513     ,  62.1826   , 58.4656 ],
+                     'atl_vert':   [   -30.  ,     -30.     ,     -90.   ,   90.   ],
+                     'wedell':     [   -30.  ,     +11.     ,   -67.3    , -67.3   ] }    
+    return dic_sections
 
 
 
@@ -202,7 +211,7 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
         #print 'nx, ny = ', nx, ny
         #
         ZZx  = nmp.zeros(nx0*ny) ;  ZZx.shape = [ny, nx0]
-        ZZx_ext  = nmp.zeros((nx0+ilon_ext)*ny) ;  ZZx_ext.shape = [ny, (nx0+ilon_ext)]        
+        ZZx_ext  = nmp.zeros((nx0+ilon_ext)*ny) ;  ZZx_ext.shape = [ny, (nx0+ilon_ext)]
         #
         for jx in range(jx_junc,nx):
             ZZx[:,jx-jx_junc] = ZZ[:,jx]
@@ -226,7 +235,7 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
             #
         #print ''
         for jx in range(jx_oo,jx_junc):
-            ZZx[jx+(nx-jx_junc)-jx_oo] = ZZ[jx] 
+            ZZx[jx+(nx-jx_junc)-jx_oo] = ZZ[jx]
             #print jx+(nx-jx_junc)-jx_oo, 'prend', jx, '    ', vlon[jx]
         #
         if ilon_ext == 0: ZZx_ext[:] = ZZx[:]
@@ -237,7 +246,7 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
         # Now longitude extenstion:
     if ilon_ext > 0: ZZx_ext = brkdt.extend_domain(ZZx, ilon_ext)
     del ZZx
-    
+
     return ZZx_ext
 
 
@@ -302,10 +311,10 @@ def find_ij(lon, lat, XX, XY, char):
     found = False
 
     lxfound = False
-    lyfound = False    
-    
+    lyfound = False
+
     while not (lxfound and lyfound) :
-      
+
         E[:,:] = 1.
         if not lxfound:
             E[nmp.where(Xt >= lon + tolx)] = 0.
@@ -313,9 +322,9 @@ def find_ij(lon, lat, XX, XY, char):
         if not lyfound:
             E[nmp.where(XY >= lat + toly)] = 0.
             E[nmp.where(XY <= lat - toly)] = 0.
-      
+
         V = nmp.where(E == 1.) ; Vj = V[0] ; Vi = V[1]
-      
+
         if len(Vi) == 1 or len(Vi) == 2:
             ji = Vi[0]
             if len(Vi) == 2 and abs(Vi[1]-lon) < abs(Vi[0]-lon): ji = Vi[1]
@@ -327,13 +336,13 @@ def find_ij(lon, lat, XX, XY, char):
         if len(Vj) == 1 or len(Vj) == 2:
             jj = Vj[0]
             if len(Vj) == 2 and abs(Vj[1]-lat) < abs(Vj[0]-lat): jj = Vj[1]
-            lyfound = True            
+            lyfound = True
         else:
             toly = toly/1.2
 
-    
+
     ji0 = ji ; jj0 = jj
-    
+
     if char == 'u':
         # We want the point such as the value is just under :
         if Xt[jj,ji] > lon : ji0 = ji - 1
@@ -433,7 +442,7 @@ def int_trs(X, Y, Z, x0, y0):
     #print 'w1 =', w1
     #print 'w2 =', w2
     #print 'w3 =', w3
-    #print 'w4 =', w4    
+    #print 'w4 =', w4
     #
     #print 'shape(Z) = ', shape(Z)
     #
@@ -457,7 +466,7 @@ def mean_3d(XD, LSM, E1T, E2T, E3T):
     # E1T, E2T, E3T  : 3D mesh sizes
     #
     # RETURN vmean: vector containing mean values for each time
-    
+
     [ lt, lz, ly, lx ] = nmp.shape(XD)
 
 
@@ -494,7 +503,7 @@ def mean_2d(XD, LSM, E1T, E2T):
     # E1T, E2T  : 2D mesh sizes
     #
     # RETURN vmean: the mean value at each record
-    
+
     [ lt, ly, lx ] = nmp.shape(XD)
 
     [ l2, l1 ] = nmp.shape(LSM)
@@ -529,95 +538,77 @@ def mean_2d(XD, LSM, E1T, E2T):
 
 
 
-def coor2ind(cn_coupe, xlon, xlat): #, rmin, rmax, dc):
-    #*******************************************
+def coor2ind(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
     #
-    ji1=0 ; ji2=0; jj1=0; jj2=0
+    #=============================================================
+    # Input:
+    #       x1, x2: longitudes of points 1 and 2 (float)
+    #       y1, y2: latitudes  of points 1 and 2 (float)
+    #       xlon  : 2D array of longitudes of the ORCA grid
+    #       xlat  : 2D array of latitudes  of the ORCA grid
+    # Output:
+    #       [ ji1, ji2, jj1, jj2 ] i and j indices corresponding
+    #=============================================================    
+    #
+    ji1=0 ; ji2=0 ; jj1=0 ; jj2=0
     lhori = False ; lvert = False
-    dist = 10000.
     #
-    vcoup = __give_coupe__(cn_coupe)
-    if vcoup[0] < 0.: vcoup[0] = vcoup[0] + 360.
-    if vcoup[1] < 0.: vcoup[1] = vcoup[1] + 360.
+    if x1 < 0.: x1 = x1 + 360.
+    if x2 < 0.: x2 = x2 + 360.
     #
-    if vcoup[2] == vcoup[3]: lhori = True
-    if vcoup[0] == vcoup[1]: lvert = True
+    if y1 == y2: lhori = True
+    if x1 == x2: lvert = True
     #
-    if not (lhori or lvert) :
-        print 'coor2ind only supports horizontal or vertical coupes so far...'
-        sys.exit(0)
-    #
-    if lhori:
-        print 'coor2ind horizontal mode not done yet'; sys.exit(0)
+    if not (lhori or lvert) : print 'coor2ind only supports horizontal or vertical sections so far...'; sys.exit(0)
+    if lhori: print 'coor2ind horizontal mode not done yet'; sys.exit(0)
     #
     [nj , ni] = xlon.shape
-    #
     iwa = nmp.where(xlon < 0.) ; xlon[iwa] = xlon[iwa] + 360. # Want only positive values in longitude:
     #
+    jj1 = 0
+    # Loop along updated jj1
+    for jc in range(5):
+        #
+        # 1/ Finding ji1 from longitude position
+        #    Lookin in regular region of the grid (jj1 pas trop grand, ici = 0):
+        dist = 1000.
+        for ji in range(ni):
+            dd = abs(x1 - xlon[jj1,ji])
+            if dd > 360.: dd = dd - 360.
+            if dd < dist: dist = dd ; ji1 = ji
+        #
+        # 2/ Finding jj1 from latitude position and updated ji1
+        dist = 1000.
+        for jj in range(nj):
+            dd = abs(y1 - xlat[jj,ji1])
+            if dd < dist: dist = dd ; jj1 = jj
+        if y1 == -90.: jj1 = 0
     #
-    # Searching vor longitude position
-    # ################################
-    # Lookin in regular region of the grid (jj1 pas trop grand, ici = 0):
-    for ji in range(ni):
-        dd1 = abs(vcoup[0] - xlon[jj1,ji])
-        if dd1 > 360.: dd1 = dd1 - 360.
-        if dd1 < dist:
-            dist = dd1 ; ji1 = ji
-    ji2 = ji1
-    if vcoup[2] == -90.: jj1 = 0
-    if vcoup[3] ==  90.: jj2 = nj-1
+    if lvert:
+        ji2 = ji1
+        # Neet to find jj2 !
+        dist = 1000.
+        for jj in range(nj):
+            dd = abs(y1 - xlat[jj,ji2])
+            if dd < dist: dist = dd ; jj2 = jj
+    if y2 ==  90.: jj2 = nj-1
+    #
+    if lhori:
+        jj2 = jj1
+        # Neet to find ji2 !
+        dist = 1000.
+        for ji in range(ni):
+            dd = abs(x1 - xlon[jj2,ji])
+            if dd > 360.: dd = dd - 360.
+            if dd < dist: dist = dd ; ji2 = ji
     #
     return [ ji1, ji2, jj1, jj2 ]
-    
-    
-
-
-
-def get_sections_names_from_file(cfile):
-    list_sections = []
-    f = open(cfile, 'r')
-    cread_lines = f.readlines()
-    f.close()
-    jl=0
-    for ll in cread_lines:
-        ls = ll.split() ; cc = ls[0]
-        if jl%2 == 0 and cc != 'EOF' and cc != 'ref_temp': list_sections.append(cc)
-        jl=jl+1
-    return list_sections
-
-
 
 
 
 
 
 # Local functions:
-
-def __give_coupe__(cname):
-    #
-    #
-    nb = nmp.shape(coupes)[0] ; # print 'nb =', nb
-    #
-    jb = 0
-    while jb < nb :
-        if coupes[jb][0] == cname:
-            break
-        else :
-            jb = jb + 1
-    #
-    if jb == nb :
-        print 'COUPE "'+cname+'" does not exist!\n'
-        print 'so far choice is :'
-        for jb in range(nb): print coupes[jb][0]
-        sys.exit(0)
-        #
-    #
-    vcoupe = coupes[jb][1:]
-    #
-    print 'For ', coupes[jb][0], ' we have vcoupe =', vcoupe, '\n'
-    #
-    return vcoupe
-
 
 def __give_box__(conf, cname):
     #
@@ -644,5 +635,3 @@ def __give_box__(conf, cname):
         print 'For ', boxes[jb][0], ' we have vbox =', vbox, '\n'
         #
     return vbox
-
-

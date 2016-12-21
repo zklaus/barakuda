@@ -46,6 +46,18 @@ def check_env_var(cnm, list):
     return env_var_dic
 
 
+def get_sections_from_file(cfile):
+    list_sections = []
+    f = open(cfile, 'r') ; cread_lines = f.readlines() ; f.close()
+    jl=0
+    for ll in cread_lines:
+        # lolo: ignore '#'
+        ls = ll.split() ; cc = ls[0]
+        if jl%2 == 0 and cc != 'EOF' and cc != 'ref_temp': list_sections.append(cc)
+        jl=jl+1
+    return list_sections
+
+
 def iaxe_tick(ny):
     # I want 20 ticks on the absciss axe and multiple of 5
     itick = int( max( 1 , min(ny/20 , max(ny/20,5)/5*5) ) )

@@ -13,7 +13,6 @@ import numpy as nmp
 from netCDF4 import Dataset
 
 import barakuda_tool as bt
-import barakuda_orca as bo
 import barakuda_plot as bp
 import barakuda_physics as bphy
 
@@ -34,7 +33,7 @@ path_fig =  vdic['DIAG_D']+'/'
 
 cf_dens_sect =  vdic['DENSITY_SECTION_FILE']
 print '  Using cf_dens_sect = '+cf_dens_sect
-list_sections = bo.get_sections_names_from_file(cf_dens_sect)
+list_sections = bt.get_sections_from_file(cf_dens_sect)
 print 'List of sections to treat: ', list_sections
 nbsec = len(list_sections)
 

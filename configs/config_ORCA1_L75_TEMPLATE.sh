@@ -120,7 +120,7 @@ export ICE_CLIM_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1
 export NN_ICEF_CLIM="ice_cover"
 
 
-# A text file where the vertical hydraugraphical sections of interest are defined :
+# A text file where the cross sections (to compute transports) are defined :
 export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1.dat"
 
 # For transport by sigma-class:
@@ -130,7 +130,7 @@ export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA1.dat"
 export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 
-# In what format should figures be produced ('png' recommanded, but 'svg' supported!):
+# In what format should figures be produced ('png' recommanded, 'svg' works):
 export FIG_FORM="png"
 
 # About remote HOST to send/install HTML pages to:
@@ -187,6 +187,14 @@ export i_do_box_TS_z=1 ; # do sigma vert. profiles on given boxes... # 1 => no f
 export i_do_dmv=0
 export MLD_CRIT="1000,725,500"
 
+# User-defined meridional or zonal cross sections (for temperature and salinity)
+# => TS_SECTION_FILE must be defined!
+export i_do_sect=1
+export TS_SECTION_FILE="${BARAKUDA_ROOT}/data/TS_sections.dat"
+#export VSECT_NM=( "Indian_77p5_E" "Atlantic_21p5_W" "Wedell_67p3_S" ) ; # Informative name for the section
+#export VSECT_JI=(      "5,5"          "266,266"       "255,294"     ) ; # X range in C convention
+#export VSECT_JJ=(    "25,170"          "7,291"         "39,39"      ) ; # Y range in C convention
+
 
 
 # BETA / TESTING / NERDY (at your own risks...):
@@ -204,10 +212,7 @@ export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1_ARCTI
 
 export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
 
-export i_do_sect=0 ; # do sigma vert. profiles on given boxes...
-VSECT_NM=( "Indian_77p5_E" "Atlantic_21p5_W" )
-VSECT_JI=(      "5,5"          "266,266"     ) ; # X range in C convention
-VSECT_JJ=(    "25,170"          "7,291"      ) ; # Y range in C convention
+
 
 
 
