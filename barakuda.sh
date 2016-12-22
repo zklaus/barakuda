@@ -371,6 +371,20 @@ while ${lcontinue}; do
         fi
 
 
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Temperature and Salinity on cross meridional/zonal sections
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if [ ${i_do_sect} -eq 1 ]; then
+            check_if_file ${TS_SECTION_FILE}
+	    lst_sec=`cat ${TS_SECTION_FILE} | grep -v -E '(^#|EOF)' | awk -F ' ' '{print $1}'`
+            echo; echo; echo "Cross-sections on specified transects:"
+            echo "${lst_sec}"; echo
+            echo "CALLING: cross_sections.py ${ft} ${jyear}"
+            ${PYTH} ${PYBRKD_EXEC_PATH}/cross_sections.py ${ft} ${jyear} &
+            echo
+        fi
+        
+
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         #  Vertical profiles of T,S and density horizontally averaged
         #  on rectangular boxes defined into FILE_DEF_BOXES
@@ -384,25 +398,14 @@ while ${lcontinue}; do
             ${PYTH} ${PYBRKD_EXEC_PATH}/prof_TS_z_box.py ${cyear} &
             echo;echo
         fi
+
+
+
+
+
         
         # --- end of stuffs that can be launched in bg ---
 
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # Temperature and Salinity on cross meridional/zonal sections
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if [ ${i_do_sect} -eq 1 ]; then
-            check_if_file ${TS_SECTION_FILE}
-            #diro=${DIAG_D}/sections ; mkdir -p ${diro}
-            #js=0
-            #for cs in ${VSECT_NM[*]}; do
-            #    fo="${diro}/section_`echo ${ft} | sed -e s/".nc"/"_${cs}.nc"/g`"
-            #    ncks -h -A -v ${NN_T},${NN_S} \
-            #         -d x,${VSECT_JI[${js}]}  \
-            #         -d y,${VSECT_JJ[${js}]}   ${ft} -o ${fo}
-            #    ((js++))
-            #done
-            echo
-        fi
 
 
         #==============================

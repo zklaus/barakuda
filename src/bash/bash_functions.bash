@@ -149,7 +149,7 @@ function barakuda_setup()
             export TMP_DIR=${TMPDIR}
             #
         else
-            export TMP_DIR=/tmp/barakuda_${CONFRUN}_${script}
+            export TMP_DIR=${HOME}/tmp/barakuda_${CONFRUN}_${script}
         fi
     else
         export TMP_DIR=${DIAG_D}/tmp
@@ -176,7 +176,6 @@ function barakuda_setup()
 
         # Not fully supported yet:
         ca=" => diagnostic totally beta and not fully supported yet!"
-        if [ ${i_do_sect} -gt 0 ]; then echo " *** i_do_sect ${ca}"; exit; fi
         if [ ${i_do_amo}  -gt 0 ]; then echo " *** i_do_amo  ${ca}"; exit; fi
         if [ ${i_do_icet} -gt 0 ]; then echo " *** i_do_icet ${ca}"; exit; fi
 

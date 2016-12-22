@@ -18,7 +18,7 @@ export NBL=75         ; # number of levels
 export HOST=MARENOSTRUM ; # this has no importance at all, it will just become an "info" on the web-page!
 export JTITLE="LIM3, NEMO 3.6 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
 
-# Path to directory containing NEMO output files:
+# File system / path on which most netcdf data will be read:
 export STORE_DIR="/gpfs/scratch/bsc32/bsc32325"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
@@ -151,7 +151,7 @@ export i_do_movi=1
 # Basic 3D and surface averages:
 export i_do_mean=1
 
-# IFS surfacce fluxes of heat and freshwater
+# IFS surface fluxes of heat and freshwater
 export i_do_ifs_flx=1 ; # only relevant when ece_run=2...
 
 # AMOC:
@@ -191,9 +191,6 @@ export MLD_CRIT="1000,725,500"
 # => TS_SECTION_FILE must be defined!
 export i_do_sect=1
 export TS_SECTION_FILE="${BARAKUDA_ROOT}/data/TS_sections.dat"
-#export VSECT_NM=( "Indian_77p5_E" "Atlantic_21p5_W" "Wedell_67p3_S" ) ; # Informative name for the section
-#export VSECT_JI=(      "5,5"          "266,266"       "255,294"     ) ; # X range in C convention
-#export VSECT_JJ=(    "25,170"          "7,291"         "39,39"      ) ; # Y range in C convention
 
 
 
@@ -211,7 +208,6 @@ export i_do_icet=0 ; # treat sea-ice volume transport!
 export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1_ARCTIC.dat"
 
 export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
-
 
 
 

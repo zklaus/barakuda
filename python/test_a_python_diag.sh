@@ -3,8 +3,9 @@
 #  B E T A  ! ! !
 
 # Diag to test:
+icrosssect=1
+itempsal=0
 isflx=0
-itempsal=1
 imean=0
 imov=0
 issh=0
@@ -21,9 +22,9 @@ ihov=0
 #export RUN="LBO0" ; NC=nc ; jyear=1990
 
 CONFIG="ORCA1_L42"
-ARCH="ece22_triolith"
-export RUN="SPIN" ; NC=nc4 ; jyear=2009
-
+#ARCH="ece22_triolith"
+ARCH="lacroix"
+export RUN="SPIN" ; NC=nc4 ; jyear=2540
 
 
 
@@ -73,14 +74,24 @@ export PYTHONPATH=${PYTHON_HOME}/lib/python2.7/site-packages:${BARAKUDA_ROOT}/py
 echo ; echo " *** DIAG_D=${DIAG_D} !"; echo
 
 
-rm -f *.png *.nc
+rm -f *.png
 
 # Time for diags:
 
+
+
+
+
+if [ ${icrosssect} -eq 1 ]; then
+    CMD="python exec/cross_sections.py ${ft} ${jyear}"
+fi
+
+
 if [ ${itempsal} -eq 1 ]; then
+    if [ ! -f ${DIAG_D}/clim/last_clim ]; then echo "Boooo!"; exit; fi
     CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
     iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
-    CMD="python exec/temp_sal.py ${iclyear}"; echo "${CMD}"
+    CMD="python exec/temp_sal.py ${iclyear}"
 fi
 
 if [ ${its} -eq 1 ]; then

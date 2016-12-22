@@ -4,6 +4,7 @@ import sys
 from netCDF4 import Dataset
 
 from os import path
+from os import stat
 
 
 
@@ -262,6 +263,160 @@ def wrt_appnd_1d_series(vt, vd, cf, cvar1,  cu_t='year', cu_d='unknown', cln_d='
             if l_do_v8: v08[jrw] = vd8[jt]
             if l_do_v9: v09[jrw] = vd9[jt]
             if l_do_v10:v10[jrw] = vd10[jt]
+    f_out.close()
+
+    print '   *** '+str(Nt)+' snapshots of fields saved into '+cf+' !\n'
+
+
+
+
+# Write a Array(x,y,t) to netcdf:
+def wrt_appnd_2dt_series(vx, vy, vt, xd, cf, cvar1, missing_val=-9999.,
+                         cxdnm='x', cydnm='y', cxvnm='lon', cyvnm='lat',
+                         cu_t='year', cu_d='unknown', cln_d='unknown',
+                         xd2=[], cvar2='', cln_d2='', cun2='unknown',
+                         xd3=[], cvar3='', cln_d3='', cun3='unknown',
+                         xd4=[], cvar4='', cln_d4='', cun4='unknown',
+                         xd5=[], cvar5='', cln_d5='', cun5='unknown',
+                         xd6=[], cvar6='', cln_d6='', cun6='unknown',
+                         xd7=[], cvar7='', cln_d7='', cun7='unknown',
+                         xd8=[], cvar8='', cln_d8='', cun8='unknown',
+                         xd9=[], cvar9='', cln_d9='', cun9='unknown',
+                         xd10=[],cvar10='',cln_d10='',cun10='unknown' ):
+
+    l_nc_is_new = not path.exists(cf)
+    
+    [ Nt, ny, nx ] = nmp.shape(xd)
+
+    if Nt != len(vt):
+        print 'ERROR: wrt_appnd_2dt_series.barakuda_ncio => data & time have different lengths!'
+        sys.exit(0)
+        
+    l_do_v2=False ; l_do_v3=False ; l_do_v4=False ; l_do_v5=False
+    l_do_v6=False ; l_do_v7=False ; l_do_v8=False ; l_do_v9=False ; l_do_v10=False
+    if nmp.shape(xd2) == ( Nt, ny, nx ): l_do_v2=True
+    if nmp.shape(xd3) == ( Nt, ny, nx ): l_do_v3=True
+    if nmp.shape(xd4) == ( Nt, ny, nx ): l_do_v4=True
+    if nmp.shape(xd5) == ( Nt, ny, nx ): l_do_v5=True
+    if nmp.shape(xd6) == ( Nt, ny, nx ): l_do_v6=True
+    if nmp.shape(xd7) == ( Nt, ny, nx ): l_do_v7=True
+    if nmp.shape(xd8) == ( Nt, ny, nx ): l_do_v8=True
+    if nmp.shape(xd9) == ( Nt, ny, nx ): l_do_v9=True
+    if nmp.shape(xd10)== ( Nt, ny, nx ): l_do_v10=True
+
+
+    if l_nc_is_new:
+        f_out = Dataset(cf, 'w', format='NETCDF3_CLASSIC')
+    else:
+        f_out = Dataset(cf, 'a', format='NETCDF3_CLASSIC')
+
+    if l_nc_is_new:
+        jrec2write = 0
+
+        f_out.createDimension('time', None)
+        f_out.createDimension(cydnm , ny)
+        f_out.createDimension(cxdnm , nx)
+
+        id_t   = f_out.createVariable('time','f4',('time',)) ; id_t.units = 'year'
+        id_lat = f_out.createVariable(cyvnm ,'f4',(cydnm,))
+        id_lon = f_out.createVariable(cxvnm ,'f4',(cxdnm,))
+
+        id_lat[:] = vy[:]
+        id_lon[:] = vx[:]
+        
+        id_x01   = f_out.createVariable(cvar1 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+        id_x01.units     = cu_d
+        id_x01.long_name = cln_d
+        if l_do_v2:
+            id_x02   = f_out.createVariable(cvar2 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x02.units = cu_d
+            if not cun2=='unknown': id_x02.units = cun2
+            id_x02.long_name = cln_d2
+        if l_do_v3:
+            id_x03   = f_out.createVariable(cvar3 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x03.units     = cu_d
+            if not cun3=='unknown': id_x03.units = cun3
+            id_x03.long_name = cln_d3
+        if l_do_v4:
+            id_x04   = f_out.createVariable(cvar4 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x04.units     = cu_d
+            if not cun4=='unknown': id_x04.units = cun4
+            id_x04.long_name = cln_d4
+        if l_do_v5:
+            id_x05   = f_out.createVariable(cvar5 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x05.units = cu_d
+            if not cun5=='unknown': id_x05.units = cun5
+            id_x05.long_name = cln_d5
+        if l_do_v6:
+            id_x06   = f_out.createVariable(cvar6 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x06.units     = cu_d
+            if not cun6=='unknown': id_x06.units = cun6
+            id_x06.long_name = cln_d6
+        if l_do_v7:
+            id_x07   = f_out.createVariable(cvar7 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x07.units     = cu_d
+            if not cun7=='unknown': id_x07.units = cun7
+            id_x07.long_name = cln_d7
+        if l_do_v8:
+            id_x08   = f_out.createVariable(cvar8 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x08.units = cu_d
+            if not cun8=='unknown': id_x08.units = cun8
+            id_x08.long_name = cln_d8
+        if l_do_v9:
+            id_x09   = f_out.createVariable(cvar9 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x09.units     = cu_d
+            if not cun9=='unknown': id_x09.units = cun9
+            id_x09.long_name = cln_d9
+        if l_do_v10:
+            id_x10   = f_out.createVariable(cvar10 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x10.units     = cu_d
+            if not cun7=='unknown': id_x10.units = cun10
+            id_x10.long_name = cln_d10
+
+        jrw = 0
+        for jt in range(Nt):
+            jrw = jrec2write + jt
+            id_t[jrw]   = vt[jt]
+            id_x01[jrw,:,:] = xd[jt,:,:]
+            if l_do_v2: id_x02[jrw,:,:] = xd2[jt,:,:]
+            if l_do_v3: id_x03[jrw,:,:] = xd3[jt,:,:]
+            if l_do_v4: id_x04[jrw,:,:] = xd4[jt,:,:]
+            if l_do_v5: id_x05[jrw,:,:] = xd5[jt,:,:]
+            if l_do_v6: id_x06[jrw,:,:] = xd6[jt,:,:]
+            if l_do_v7: id_x07[jrw,:,:] = xd7[jt,:,:]
+            if l_do_v8: id_x08[jrw,:,:] = xd8[jt,:,:]
+            if l_do_v9: id_x09[jrw,:,:] = xd9[jt,:,:]
+            if l_do_v10:id_x10[jrw,:,:] = xd10[jt,:,:]
+        f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
+        #
+        #
+    else:
+        vtr = f_out.variables['time']
+        jrec2write = len(vtr)
+        x01 = f_out.variables[cvar1]
+        if l_do_v2: x02 = f_out.variables[cvar2]
+        if l_do_v3: x03 = f_out.variables[cvar3]
+        if l_do_v4: x04 = f_out.variables[cvar4]
+        if l_do_v5: x05 = f_out.variables[cvar5]
+        if l_do_v6: x06 = f_out.variables[cvar6]
+        if l_do_v7: x07 = f_out.variables[cvar7]
+        if l_do_v8: x08 = f_out.variables[cvar8]
+        if l_do_v9: x09 = f_out.variables[cvar9]
+        if l_do_v10:x10 = f_out.variables[cvar10]
+        jrw = 0
+        for jt in range(Nt):
+            jrw = jrec2write + jt
+            vtr[jrw]  = vt[jt]
+            x01[jrw,:,:] = xd[jt,:,:]
+            if l_do_v2: x02[jrw,:,:] = xd2[jt,:,:]
+            if l_do_v3: x03[jrw,:,:] = xd3[jt,:,:]
+            if l_do_v4: x04[jrw,:,:] = xd4[jt,:,:]
+            if l_do_v5: x05[jrw,:,:] = xd5[jt,:,:]
+            if l_do_v6: x06[jrw,:,:] = xd6[jt,:,:]
+            if l_do_v7: x07[jrw,:,:] = xd7[jt,:,:]
+            if l_do_v8: x08[jrw,:,:] = xd8[jt,:,:]
+            if l_do_v9: x09[jrw,:,:] = xd9[jt,:,:]
+            if l_do_v10:x10[jrw,:,:] = xd10[jt,:,:]
     f_out.close()
 
     print '   *** '+str(Nt)+' snapshots of fields saved into '+cf+' !\n'

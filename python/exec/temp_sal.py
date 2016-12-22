@@ -18,11 +18,9 @@ import barakuda_tool as bt
 import barakuda_orca as bo
 import barakuda_plot as bp
 
-
 lfig0 = True
 lfig1 = True
 lfig2 = True
-
 
 venv_needed = {'ORCA','RUN','DIAG_D','COMP2D','i_do_sect','MM_FILE','NN_SST','NN_T','NN_S',
                'F_T_CLIM_3D_12','F_S_CLIM_3D_12','SST_CLIM_12','NN_SST_CLIM','NN_T_CLIM','NN_S_CLIM'}
@@ -403,7 +401,7 @@ if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections def
             cinfo = ', lat='+str(vlat1[js])
             xmn=vlon1[js]; xmx=vlon2[js]
 
-            print 'vaxis', vaxis[:]
+        print 'vaxis', vaxis[:]
             
         
         bp.plot("vert_section")(vaxis, vdepth, ZT, imsk, 0., 30., 2.,
