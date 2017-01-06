@@ -18,7 +18,7 @@ export NBL=75         ; # number of levels
 export HOST=MARENOSTRUM ; # this has no importance at all, it will just become an "info" on the web-page!
 export JTITLE="LIM3, NEMO 3.6 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
 
-# Path to directory containing NEMO output files:
+# File system / path on which most netcdf data will be read:
 export STORE_DIR="/gpfs/scratch/bsc32/bsc32325"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
@@ -121,7 +121,7 @@ export ICE_CLIM_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1
 export NN_ICEF_CLIM="ice_cover"
 
 
-# A text file where the vertical hydraugraphical sections of interest are defined :
+# A text file where the cross sections (to compute transports) are defined :
 export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1.dat"
 
 # For transport by sigma-class:
@@ -131,7 +131,7 @@ export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA1.dat"
 export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 
-# In what format should figures be produced ('png' recommanded, but 'svg' supported!):
+# In what format should figures be produced ('png' recommanded, 'svg' works):
 export FIG_FORM="png"
 
 # About remote HOST to send/install HTML pages to:
@@ -152,7 +152,7 @@ export i_do_movi=1
 # Basic 3D and surface averages:
 export i_do_mean=1
 
-# IFS freshWater fluxes at the surface spatially averaged over the ocean, E-P-R, E-P, R, P, ...
+# IFS surface fluxes of heat and freshwater
 export i_do_ifs_flx=1 ; # only relevant when ece_run=2...
 
 # AMOC:
@@ -188,6 +188,11 @@ export i_do_box_TS_z=1 ; # do sigma vert. profiles on given boxes... # 1 => no f
 export i_do_dmv=0
 export MLD_CRIT="1000,725,500"
 
+# User-defined meridional or zonal cross sections (for temperature and salinity)
+# => TS_SECTION_FILE must be defined!
+export i_do_sect=1
+export TS_SECTION_FILE="${BARAKUDA_ROOT}/data/TS_sections.dat"
+
 
 
 # BETA / TESTING / NERDY (at your own risks...):
@@ -205,10 +210,6 @@ export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1_ARCTI
 
 export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
 
-export i_do_sect=0 ; # do sigma vert. profiles on given boxes...
-VSECT_NM=( "Indian_77p5_E" "Atlantic_21p5_W" )
-VSECT_JI=(      "5,5"          "266,266"     ) ; # X range in C convention
-VSECT_JJ=(    "25,170"          "7,291"      ) ; # Y range in C convention
 
 
 
