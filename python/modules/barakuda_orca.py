@@ -154,13 +154,13 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
     #
     #
     # jx_junc : ji when lon become positive!
-    if (corca == 'ORCA1') or (corca[:5] == 'ORCA1' and corca[5:6] == '.'):
+    if corca == 'ORCA1' or corca[:6] == 'ORCA1_' or corca[:6] == 'ORCA1.' or corca[:6] == 'ORCA1-':
         jx_junc = 288
-    elif (corca == 'eORCA1') or (corca[:6] == 'eORCA1' and corca[6:7] == '.'):
+    if corca == 'eORCA1' or corca[:7] == 'eORCA1_' or corca[:7] == 'eORCA1.' or corca[:7] == 'eORCA1-':
         jx_junc = 288
-    elif corca == 'ORCA025' or corca == 'ORCA025.L75':
+    elif corca == 'ORCA025' or corca[:8] == 'ORCA025_' or corca[:8] == 'ORCA025.' or corca[:8] == 'ORCA025-':
         jx_junc = 1150
-    elif corca == 'ORCA2' or corca == 'ORCA2_L46' or corca == 'ORCA2.L46':
+    elif corca == 'ORCA2' or corca[:6] == 'ORCA2_' or corca[:6] == 'ORCA2.' or corca[:6] == 'ORCA2-':
         jx_junc = 141
     else:
         print 'ERROR: lon_reorg_orca.barakuda_orca => '+corca+' not supported yet!'; sys.exit(0)

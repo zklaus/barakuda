@@ -6,6 +6,7 @@ function build_index_html()
     echo "Creating HTML file!"
 
     ctl='<br><br><br><big><big>' ; ctr='</big></big><br><br>'
+    csl='<br><br><big>' ; csr='</big><br>'
     spf='<br><br>'
     img_l='<img style="border: 0px solid" alt="" src="' ; img_r='"> <br><br>'
 
@@ -25,7 +26,7 @@ function build_index_html()
     sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${CONFRUN}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}:`hostname`|g" \
         ${BARAKUDA_ROOT}/src/html/conf_start.html > index.html
 
-    # Climato section
+    # Climato:
     if ${l_pclim}; then
         cat >> index.html <<EOF
     ${ctl} Diags from climatology (${CLIM_PER}) ${ctr}
@@ -35,6 +36,10 @@ function build_index_html()
     <big> <a href="./mld/index.html">  Mixed Layer depth in relevent regions </a> </big>           ${spf}
     <big> <a href="./moc/index.html">  Meridional Overturning Circulation </a> </big>              ${spf}
 EOF
+        if [ ${i_do_sect} -eq 1 ]; then
+            echo "<big> <a href='./temp_sal/index_sections.html'> Zonal/Meridional sections of T & S vs CLIM</a> </big>    ${spf}" >> index.html
+        fi
+        #
         if ${lcomp_to_run}; then
             cat >> index.html <<EOF
     ${ctl} Comparison with run ${RUNREF}, climatology (2004-2007) ${ctr}
@@ -56,14 +61,14 @@ EOF
 EOF
     fi
 
-    # AMOC section:
+    # AMOC page:
     cat >> index.html <<EOF
     ${ctl} Atlantic Meridional Overturning Circulation ${ctr}
     ${img_l} amoc_${cr}.${ff} ${img_r}
     ${img_l} amoc_${cr}_comp.${ff} ${img_r}
 EOF
 
-    # Temperature section
+    # Temperature page
     cat >> index.html <<EOF
     ${ctl} Temperature time-series ${ctr}
     ${img_l} 3d_thetao_${cr}.${ff} ${img_r}
@@ -77,7 +82,7 @@ EOF
     ${img_l} hov_temperature_${cr}_indian.${ff} ${img_r}
 EOF
 
-    # Salinity section
+    # Salinity page
     cat >> index.html <<EOF
     ${ctl} Salinity time-series ${ctr}
     ${img_l} 3d_so_${cr}.${ff} ${img_r}
@@ -95,11 +100,11 @@ EOF
     # Surface heat flux diagnostics:
     LIST_HF_FIG="htf_qnt htf_qsr \
 htf_qnt_NEMO_IFS htf_qnt_NEMO_IFS_annual \
-htf_qsr_NEMO_IFS htf_qsr_NEMO_IFS_annual"
+        htf_qsr_NEMO_IFS htf_qsr_NEMO_IFS_annual"
     #
     cat >> index.html <<EOF
     ${ctl} Surface Heat flux time-series ${ctr}
-EOF
+    EOF
     for fd in ${LIST_HF_FIG}; do
         fgn="mean_${fd}_${cr}.${ff}"; fgf="${HTML_DIR}/${fgn}"
         if [ -f ${fgf} ]; then
@@ -109,12 +114,12 @@ EOF
 
     # Freshwater flux diagnostics:
     LIST_FW_FIG="zos fwf_fwf fwf_emp fwf_prc fwf_rnf fwf_clv \
-fwf_evp_NEMO_IFS fwf_evp_NEMO_IFS_annual \
-fwf_prc_NEMO_IFS fwf_prc_NEMO_IFS_annual \
-fwf_EmP_NEMO_IFS fwf_EmP_NEMO_IFS_annual \
-fwf_rnf_NEMO_IFS fwf_rnf_NEMO_IFS_annual \
-fwf_EmPmR_NEMO_IFS fwf_EmPmR_NEMO_IFS_annual \
-fwf_prc_IFS fwf_emp_ALL_IFS"
+        fwf_evp_NEMO_IFS fwf_evp_NEMO_IFS_annual \
+        fwf_prc_NEMO_IFS fwf_prc_NEMO_IFS_annual \
+        fwf_EmP_NEMO_IFS fwf_EmP_NEMO_IFS_annual \
+        fwf_rnf_NEMO_IFS fwf_rnf_NEMO_IFS_annual \
+        fwf_EmPmR_NEMO_IFS fwf_EmPmR_NEMO_IFS_annual \
+        fwf_prc_IFS fwf_emp_ALL_IFS"
     #
     cat >> index.html <<EOF
     ${ctl} Surface Freshwater flux time-series ${ctr}
@@ -128,7 +133,7 @@ EOF
 
 
 
-    # Sea-ice section
+    # Sea-ice page
     if [ ${i_do_ice}  -gt 0 ]; then
         if [ ${i_do_movi} -eq 1 ]; then
             cat >> index.html <<EOF
@@ -148,7 +153,7 @@ EOF
 
     if [ ${i_do_trsp} -gt 0 ]; then
         # Adding transport section part:
-        echo "    ${ctl} Transport through sections${ctr}" >> index.html
+        echo "    ${ctl} Transport through sections ${ctr}" >> index.html
         list_section=`cat ${TRANSPORT_SECTION_FILE} | grep '-'`
         for cs in ${list_section}; do
             echo ${cs}
@@ -224,7 +229,7 @@ function build_sub_html()
         cd ${cdiag}/ ; ln -sf ../logo.png . ; cd ../
     done
 
-    for var in "sst" "sss" "sections_ts" "ts_100m" "ts_1000m" "ts_3000m"; do
+    for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
         cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
         cat ${BARAKUDA_ROOT}/src/html/temp_sal/${var}.html         >> index.tmp
         cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
@@ -232,6 +237,35 @@ function build_sub_html()
             -e "s|{DATE}|`date`|g" -e "s|{HOST}|`hostname`|g" -e "s|{COMP2D}|CLIM|g" \
             index.tmp > temp_sal/${var}_CLIM.html
     done
+
+    # T&S sections:
+    if [ ${i_do_sect} -eq 1 ]; then
+        cat ${BARAKUDA_ROOT}/src/html/conf_start.html > index.tmp
+        list_sec_figs=`\ls ${DIAG_D}/temp_sal/section_T_*_${cr}.${ff}`
+        if [ ! "${list_sec_figs}" = "" ]; then
+            echo "    ${ctl} Meridional and zonal cross-sections of T & S (specified in data/TS_sections.dat) ${ctr}" >> index.tmp
+            for fsct in ${list_sec_figs}; do
+                fgnt_n=`basename ${fsct}`                                      ; #figure for T NEMO
+                fgnt_c=`echo ${fgnt_n} | sed -e s/"${cr}"/"CLIM"/g`            ; #figure for T CLIM
+                fgns_n=`echo ${fgnt_n} | sed -e s/"section_T_"/"section_S_"/g` ; #figure for S NEMO
+                fgns_c=`echo ${fgnt_c} | sed -e s/"section_T_"/"section_S_"/g` ; #figure for S CLIM
+                cnames=`echo ${fgnt_n} | sed -e s/"section_T_"/""/g -e s/"_${cr}.${ff}"/""/g` ; # Name of section
+                cnames=`echo ${cnames} | sed -e s/"_"/" "/g`
+                echo "    ${csl} Cross-section '${cnames}': ${csr}"  >> index.tmp
+                echo "    ${img_l} ${fgnt_n} ${img_r}"          >> index.tmp
+                echo "    ${img_l} ${fgnt_c} ${img_r}"          >> index.tmp
+                echo "    ${img_l} ${fgns_n} ${img_r}"          >> index.tmp
+                echo "    ${img_l} ${fgns_c} ${img_r} <br><br><br>" >> index.tmp
+            done
+            cat ${BARAKUDA_ROOT}/src/html/conf_end.html          >> index.tmp
+            sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
+                -e "s|{DATE}|`date`|g" -e "s|{HOST}|`hostname`|g" -e "s|{COMP2D}|CLIM|g" \
+                index.tmp > temp_sal/index_sections.html
+            rm -f index.tmp            
+        fi
+    fi
+
+
 
     if ${lcomp_to_run}; then
         for cdiag in ${DIRS_2_EXP_RREF}; do
@@ -244,7 +278,7 @@ function build_sub_html()
             rm -f index.tmp
             cd ${cdiag}/ ; ln -sf ../logo.png . ; cd ../
         done
-        for var in "sst" "sss" "sections_ts" "ts_100m" "ts_1000m" "ts_3000m"; do
+        for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
             cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
             cat ${BARAKUDA_ROOT}/src/html/temp_sal/${var}.html         >> index.tmp
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp

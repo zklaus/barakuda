@@ -402,32 +402,30 @@ if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections def
             xmn=vlon1[js]; xmx=vlon2[js]
 
         print 'vaxis', vaxis[:]
-            
-        
+                    
         bp.plot("vert_section")(vaxis, vdepth, ZT, imsk, 0., 30., 2.,
                                 cpal='mld', xmin=xmn, xmax=xmx, dx=5.,
-                                cfignm=path_fig+'section_temp_'+csname+'_'+CONFRUN, cbunit=r'$^{\circ}$C', cxunit=r'Latitude ($^{\circ}$N)',
+                                cfignm=path_fig+'section_T_'+csname+'_'+CONFRUN, cbunit=r'$^{\circ}$C', cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Temperature, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
                                 cfig_type=fig_type, lforce_lim=True)
         
         bp.plot("vert_section")(vaxis, vdepth, ZS, imsk, 33.9, 35.9, 0.1,
                                 cpal='mld', xmin=xmn, xmax=xmx, dx=5.,
-                                cfignm=path_fig+'section_sali_'+csname+'_'+CONFRUN, cbunit='PSU', cxunit=r'Latitude ($^{\circ}$N)',
+                                cfignm=path_fig+'section_S_'+csname+'_'+CONFRUN, cbunit='PSU', cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Salinity, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
                                 cfig_type=fig_type, lforce_lim=True)
 
         #  OBS:
-        #  ~~~~
         bp.plot("vert_section")(vaxis, vdepth, OT, imsk, 0., 30., 2.,
                                 cpal='mld', xmin=xmn, xmax=xmx, dx=5.,
-                                cfignm=path_fig+'section_temp_'+csname+'_'+CC, cbunit=r'$^{\circ}$C',
+                                cfignm=path_fig+'section_T_'+csname+'_'+CC, cbunit=r'$^{\circ}$C',
                                 cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Temperature, '+csname+', '+CC+cinfo,
                                 cfig_type=fig_type, lforce_lim=True)
         #
         bp.plot("vert_section")(vaxis, vdepth, OS, imsk, 33.9, 35.9, 0.1,
                                 cpal='mld', xmin=xmn, xmax=xmx, dx=5.,
-                                cfignm=path_fig+'section_sali_'+csname+'_'+CC, cbunit='PSU',
+                                cfignm=path_fig+'section_S_'+csname+'_'+CC, cbunit='PSU',
                                 cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Salinity, '+csname+', '+CC+cinfo,
                                 cfig_type=fig_type, lforce_lim=True)

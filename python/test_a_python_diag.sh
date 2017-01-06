@@ -3,8 +3,8 @@
 #  B E T A  ! ! !
 
 # Diag to test:
-icrosssect=1
-itempsal=0
+icrosssect=0
+itempsal=1
 isflx=0
 imean=0
 imov=0
@@ -21,10 +21,14 @@ ihov=0
 #ARCH="ece32_marenostrum"
 #export RUN="LBO0" ; NC=nc ; jyear=1990
 
-CONFIG="ORCA1_L42"
-#ARCH="ece22_triolith"
-ARCH="lacroix"
-export RUN="SPIN" ; NC=nc4 ; jyear=2540
+#CONFIG="ORCA1_L42"
+##ARCH="ece22_triolith"
+#ARCH="lacroix"
+#export RUN="SPIN" ; NC=nc4 ; jyear=2540
+
+CONFIG="ORCA2_L31"
+ARCH="ece32_marenostrum"
+export RUN="LR20" ; NC=nc4 ; jyear=2540
 
 
 
@@ -33,7 +37,7 @@ export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
 . ${BARAKUDA_ROOT}/src/bash/bash_functions.bash
 . ${BARAKUDA_ROOT}/configs/config_${CONFIG}_${ARCH}.sh
 
-ORCA_LIST="ORCA1.L75 ORCA1.L46 ORCA1.L42 ORCA2 ORCA2_L46"
+ORCA_LIST="ORCA1.L75 ORCA1.L46 ORCA1.L42 ORCA2.L31 ORCA2.L46"
 
 for og in ${ORCA_LIST}; do
     ca=""; ca=`echo ${CONFIG} | grep ${og}` ; if [ "${ca}" != "" ]; then export ORCA=${og}; fi
@@ -42,6 +46,8 @@ if [ "${ORCA}" = "" ]; then echo "ORCA grid of config ${CONFIG} not supported ye
 
 export CONFRUN=${ORCA}-${RUN}
 export DIAG_D=${DIAG_DIR}/${CONFRUN}
+
+echo ; echo " *** DIAG_D = ${DIAG_D} !"; echo
 
 HERE=`pwd`
 
@@ -62,10 +68,13 @@ if [ ${ece_run} -gt 0 ]; then
     dir_ece="`printf "%03d" ${iy}`/"
 fi
 CPREF=`echo ${NEMO_FILE_PREFIX} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<RUN>|${RUN}|g" -e "s|<TSTAMP>|${TSTAMP}|g"`
-ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
-check_if_file ${ft}
-fj=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_icemod.${NC}
-check_if_file ${fj}
+
+if [ ${icrosssect} -eq 1 ] || [ ${imean} -eq 1 ] || [ ${imov} -eq 1 ]; then
+    ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
+    check_if_file ${ft}
+    fj=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_icemod.${NC}
+    check_if_file ${fj}
+fi
 
 
 
@@ -92,6 +101,7 @@ if [ ${itempsal} -eq 1 ]; then
     CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
     iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
     CMD="python exec/temp_sal.py ${iclyear}"
+    echo ; echo " CMD = ${CMD} "; echo
 fi
 
 if [ ${its} -eq 1 ]; then

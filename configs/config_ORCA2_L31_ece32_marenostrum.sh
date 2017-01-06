@@ -12,17 +12,18 @@
 #
 #===========================================================
 
-export CONF=ORCA2.L31 ; # horizontal global ORCA configuration
+export HCONF=ORCA2
+export CONF=${HCONF}.L31 ; # horizontal global ORCA configuration
 export NBL=31         ; # number of levels
 
 export HOST=MARENOSTRUM ; # this has no importance at all, it will just become an "info" on the web-page!
-export JTITLE="LIM3, NEMO 3.6 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
+export JTITLE="LIM3, IFS T159, NEMO 3.6 (EC-Earth 3.2)" ;   #  // same here ...
 
 # File system / path on which most netcdf data will be read:
 export STORE_DIR="/gpfs/scratch/bsc32/bsc32325"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/gpfs/projects/bsc32/bsc32325/ORCA2/ORCA2-I"
+export CONF_INI_DIR="/gpfs/projects/bsc32/bsc32325/${HCONF}/${HCONF}-I"
 
 # In what directory of the local machine to save the diagnostics:
 export DIAG_DIR="${STORE_DIR}/barakuda/${CONF}_ece32"
@@ -105,30 +106,30 @@ export NN_QSOL="qsr"         ; # name of net surface solar flux in "FILE_FLX_SUF
 ################################################################################################
 
 # Land-sea mask and basins files:
-export MM_FILE=/gpfs/projects/bsc32/bsc32325/ORCA2/mesh_mask.nc4
+export MM_FILE=/gpfs/projects/bsc32/bsc32325/${HCONF}/mesh_mask.nc4
 export BM_FILE=${CONF_INI_DIR}/subbasins_laurent.nc
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO run):
-export F_T_CLIM_3D_12=${CONF_INI_DIR}/data_1m_potential_temperature_nomask_${CONF}.nc
-export F_S_CLIM_3D_12=${CONF_INI_DIR}/data_1m_salinity_nomask_${CONF}.nc
-export SST_CLIM_12=${CONF_INI_DIR}/sst_data_${CONF}.nc
-export NN_T_CLIM="thetao"
-export NN_S_CLIM="so"
-export NN_SST_CLIM="tos"
+export F_T_CLIM_3D_12=${CONF_INI_DIR}/data_1m_potential_temperature_nomask_${HCONF}.nc
+export F_S_CLIM_3D_12=${CONF_INI_DIR}/data_1m_salinity_nomask_${HCONF}.nc
+export SST_CLIM_12=${CONF_INI_DIR}/sst_data_${HCONF}.nc
+export NN_T_CLIM="votemper"
+export NN_S_CLIM="vosaline"
+export NN_SST_CLIM="sst"
 
-export ICE_CLIM_12=${CONF_INI_DIR}/ice_cover_180x360-${CONF}_Hurrell_monthly_mean1980-1999.nc4
+export ICE_CLIM_12=${CONF_INI_DIR}/ice_cover_180x360-${HCONF}_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_CLIM="ice_cover"
 
 
 # A text file where the vertical hydraugraphical sections of interest are defined :
-export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_${CONF}_all.dat"
+export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_${HCONF}_all.dat"
 
 # For transport by sigma-class:
-export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_${CONF}.dat"
+export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_${HCONF}.dat"
 
 # Files with the list of rectangular domains to "analyze" more closely:
-export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_${CONF}.txt"
-export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_${CONF}.txt"
+export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_${HCONF}.txt"
+export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_${HCONF}.txt"
 
 # In what format should figures be produced ('png' recommanded, 'svg' works):
 export FIG_FORM="png"
@@ -159,7 +160,7 @@ export i_do_amoc=1
 export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to look in for max of AMOC
 
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
-export i_do_trsp=2  ; # transport of mass, heat and salt through specified sections
+export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
@@ -184,7 +185,7 @@ export i_do_box_TS_z=1 ; # do sigma vert. profiles on given boxes... # 1 => no f
 # => produces time-series f(t,z)
 
 # Deep Mixed volume in prescribed boxes:
-export i_do_dmv=0
+export i_do_dmv=1
 export MLD_CRIT="1000,725,500"
 
 # User-defined meridional or zonal cross sections (for temperature and salinity)
@@ -205,7 +206,7 @@ export i_do_zcrit=0
 # Fresh-water transport associated to sea-ice transport
 #  => must compile cdficeflux.x but depends on more recent CDFTOOLS module...
 export i_do_icet=0 ; # treat sea-ice volume transport!
-export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA2_ARCTIC.dat"
+export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_${HCONF}_ARCTIC.dat"
 
 export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
 
