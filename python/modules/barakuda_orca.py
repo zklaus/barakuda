@@ -154,17 +154,16 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
     #
     #
     # jx_junc : ji when lon become positive!
-    if corca == 'ORCA1' or corca[:6] == 'ORCA1_' or corca[:6] == 'ORCA1.' or corca[:6] == 'ORCA1-':
-        jx_junc = 288
-    if corca == 'eORCA1' or corca[:7] == 'eORCA1_' or corca[:7] == 'eORCA1.' or corca[:7] == 'eORCA1-':
-        jx_junc = 288
-    elif corca == 'ORCA025' or corca[:8] == 'ORCA025_' or corca[:8] == 'ORCA025.' or corca[:8] == 'ORCA025-':
-        jx_junc = 1150
-    elif corca == 'ORCA2' or corca[:6] == 'ORCA2_' or corca[:6] == 'ORCA2.' or corca[:6] == 'ORCA2-':
+    if   corca[:5] == 'ORCA2':
         jx_junc = 141
+    elif corca[:5] == 'ORCA1' and corca[5] != '2':
+        jx_junc = 288
+    elif corca[:6] == 'eORCA1' and corca[6] != '2':
+        jx_junc = 288
+    elif corca[:7] == 'ORCA025':
+        jx_junc = 1150
     else:
         print 'ERROR: lon_reorg_orca.barakuda_orca => '+corca+' not supported yet!'; sys.exit(0)
-
 
     jx_oo = 2  # orca longitude overlap...
 
