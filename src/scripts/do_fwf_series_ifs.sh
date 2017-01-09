@@ -25,6 +25,8 @@
 #DIAG_D=.
 #HERE=`pwd`
 
+NRES_IFS=$(((${TRES_IFS}+1)/2)) ; # ex: (T)255 => (A)128
+
 
 cmsg="ERROR: $0 => global variable"
 if [ -z ${RUN} ]; then echo "${cmsg} RUN is unknown!"; exit ; fi
@@ -70,15 +72,15 @@ cd ./IFS/
 
 # Create ifs_area_masked:
 #echo
-#echo "cdo setmisstoc,0 -ifthen -eqc,0 -selvar,A128.msk ${F_MASK} -selvar,A128.srf ${F_AREA} metrics.nc"
-#cdo setmisstoc,0 -ifthen -eqc,0 -selvar,A128.msk ${F_MASK} -selvar,A128.srf ${F_AREA} metrics.nc
+#echo "cdo setmisstoc,0 -ifthen -eqc,0 -selvar,A${NRES_IFS}.msk ${F_MASK} -selvar,A${NRES_IFS}.srf ${F_AREA} metrics.nc"
+#cdo setmisstoc,0 -ifthen -eqc,0 -selvar,A${NRES_IFS}.msk ${F_MASK} -selvar,A${NRES_IFS}.srf ${F_AREA} metrics.nc
 #echo
 
-ncks -O -h -v A128.msk ${F_MASK} -o metrics.nc
-ncrename -h -v A128.msk,mask  metrics.nc
+ncks -O -h -v A${NRES_IFS}.msk ${F_MASK} -o metrics.nc
+ncrename -h -v A${NRES_IFS}.msk,mask  metrics.nc
 
-ncks -A -h -v A128.srf ${F_AREA} -o metrics.nc
-ncrename -h -v A128.srf,ifs_area_glob metrics.nc
+ncks -A -h -v A${NRES_IFS}.srf ${F_AREA} -o metrics.nc
+ncrename -h -v A${NRES_IFS}.srf,ifs_area_glob metrics.nc
 
 ncwa -h -O -a y metrics.nc -o metrics.nc # remove y of length !
 
