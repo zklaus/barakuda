@@ -2,7 +2,6 @@
    Quick getting-started guide to BaraKuda
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 I / What do you need to be able to use BaraKuda ?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
