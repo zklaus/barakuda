@@ -8,17 +8,22 @@
 # Ex:
 # Name_Section1  lon1 lat0 lon2 lat0
 # Name_Section2  lon0 lat1 lon0 lat2
-Eq_Atl            -45.       0.     10.    0.
+Eq_Atlantic       -45.       0.     10.    0.
 #
 Wedell_67S        -30.     -67.     11.  -67.
 #                               
 Indian_77E         77.     -75.     77.   10.
 #                               
-Atlantic_22W      -22.     -90.    -22.   90.
+Atlantic_22W      -22.     -80.    -22.   90.
 #                               
 MedSea_7W          -7.      34.     -7.   37.
 #                               
 Ovide_40N        -12.65   40.33    -8.7  40.33
 #                               
-Gibraltar          -8.    35.46     -5.  35.46
+Gibraltar          -7.    35.958   -4.  35.958
+#
+Pacific_144W     -144.     -80.   -144.   90.
+#
+Eq_Pacific        115.       0.    -77.    0.
+#
 EOF
