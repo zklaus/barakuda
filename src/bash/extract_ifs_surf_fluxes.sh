@@ -89,6 +89,7 @@ cd ./IFS/
 
 
 NRES_IFS=$(((${TRES_IFS}+1)/2)) ; # ex: (T)255 => (A)128
+if [ "${NRES_IFS}" = "80" ]; then NRES_IFS="080"; fi
 
 # Create ifs_area_masked:
 #echo
