@@ -1,10 +1,12 @@
 #!/usr/bin/env python
-
+#
+##############################################################
 #       B a r a K u d a
 #
-#     Generate 
+#        Generate netcdf files of cross-sections
 #
 #       L. Brodeau, 2016
+##############################################################
 
 import sys
 import numpy as nmp
