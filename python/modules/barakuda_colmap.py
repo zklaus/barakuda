@@ -21,7 +21,7 @@ def pal_blk():
     M = nmp.array( [
         [ 0. , 0., 0. ], # black
         [ 0. , 0., 0. ]  # black
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -39,7 +39,7 @@ def pal_cb1():
         [ 65,182,196  ],
         [ 44,127,184  ],
         [ 37,52,148  ]
-        ] ) / 255.
+    ] ) / 255.
     my_cmap = __build_colormap__(M, log_ctrl=ctrl)
     return my_cmap
 
@@ -54,7 +54,7 @@ def pal_eke():
         [ 1.  , 1.0 , 0.0  ], # yellow
         [ 1.  , 0.0 , 0.0  ], # red
         [0.2  , 0.27, 0.07 ] # brown
-        ] )
+    ] )
     my_cmap = __build_colormap__(M, log_ctrl=ctrl)
     return my_cmap
 
@@ -67,7 +67,7 @@ def pal_bathy():
         [ 1.  , 1.0 , 0.0  ], # yellow
         [ 1.  , 0.0 , 0.0  ], # red
         [0.2  , 0.27, 0.07 ] # brown
-        ] )
+    ] )
     my_cmap = __build_colormap__(M, log_ctrl=ctrl)
     return my_cmap
 
@@ -82,7 +82,7 @@ def pal_mld():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ] # dark redish brown
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -96,7 +96,7 @@ def pal_mld_r():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ] # dark redish brown
-        ] )
+    ] )
     my_cmap = __build_colormap__(M[::-1,:])
     return my_cmap
 
@@ -111,7 +111,7 @@ def pal_jetblanc():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ]  # dark redish brown
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -125,7 +125,7 @@ def pal_jetblanc_r():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ] # dark redish brown
-        ] )
+    ] )
     my_cmap = __build_colormap__(M[::-1,:])
     return my_cmap
 
@@ -142,7 +142,7 @@ def pal_amoc():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ] # dark read
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -159,7 +159,7 @@ def pal_sst():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ] # dark read
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -174,9 +174,27 @@ def pal_sst_r():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ] # dark read
-        ] )
+    ] )
     my_cmap = __build_colormap__(M[::-1,:])
     return my_cmap
+
+
+def pal_sstnw():
+    M = nmp.array( [
+        [ 0.4 , 0.0 , 0.6 ], # violet
+        [ 0. , 0.2 , 0.99], # dark blue
+        [0.68 , 0.98, 0.98], # light blue
+        [ 0.13, 0.54, 0.13], # dark green
+        [ 1.0 , 1.0 , 0.0 ], # yellow
+        [ 1.0 , 0.0 , 0.0 ], # red
+        [ 0.2 , 0.3 , 0.1 ] # dark read
+    ] )
+    my_cmap = __build_colormap__(M)
+    return my_cmap
+
+
+
+
 
 
 def pal_sst0():
@@ -189,7 +207,7 @@ def pal_sst0():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ] # dark read
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -206,7 +224,7 @@ def pal_sst0_r():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ] # dark read
-        ] )
+    ] )
     my_cmap = __build_colormap__(M[::-1,:])
     return my_cmap
 
@@ -226,7 +244,7 @@ def pal_std():
         [ 1.0 , 1.0 , 0.0 ], # yellow
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ] # dark read
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -237,7 +255,7 @@ def pal_ice():
         [ 0.6 , 0.6 , 0.8 ], # light grey
         [ 0.95 , 0.95 , 0.95 ],  # white
         [ 1.0 , 1.0 , 1.0 ]  # white
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -245,7 +263,7 @@ def pal_blanc():
     M = nmp.array( [
         [ 1.0 , 1.0 , 1.0 ],  # white
         [ 1.0 , 1.0 , 1.0 ]  # white
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -260,7 +278,7 @@ def pal_rms():
         [ 1.0 , 1.0 , 0.0 ],
         [ 1.0 , 0.0 , 0.0 ],
         [ 0.2 , 0.3 , 0.1 ]
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -282,7 +300,7 @@ def pal_sigtr():
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.6 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ]  # dark red
-        ] )
+    ] )
     my_cmap = __build_colormap__(M[::-1,:])
     return my_cmap
 
@@ -303,7 +321,7 @@ def pal_sigtr_r():
         [ 1.0 , 0.0 , 0.0 ], # red
         [ 0.6 , 0.0 , 0.0 ], # red
         [ 0.2 , 0.3 , 0.1 ]  # dark red
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -316,7 +334,7 @@ def pal_bbr():
         [ 1.  , 1. , 1.  ],
         [ 1.  , 0. , 0.  ],
         [ 0.6 , 0. , 0.  ]
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -328,7 +346,7 @@ def pal_bbr_r():
         [ 1.  , 1. , 1.  ],
         [ 1.  , 0. , 0.  ],
         [ 0.6 , 0. , 0.  ]
-        ] )
+    ] )
     my_cmap = __build_colormap__(M[::-1,:])
     return my_cmap
 
@@ -343,7 +361,7 @@ def pal_bbr2():
         [ 1.  , 1. , 1.  ],
         [ 1.  , 0. , 0.  ],
         [ 1.  , 1. , 0.  ]  # jaune
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -355,7 +373,7 @@ def pal_bbr2_r():
         [ 1.  , 1. , 1.  ],
         [ 1.  , 0. , 0.  ],
         [ 1.  , 1. , 0.  ]  # jaune
-        ] )
+    ] )
     my_cmap = __build_colormap__(M[::-1,:])
     return my_cmap
 
@@ -369,7 +387,7 @@ def pal_bbr0():
         [ 1.  , 1. , 1.  ],
         [ 1.  , 0. , 0.  ],
         [ 1.  , 1. , 0.  ]  # jaune
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -383,8 +401,8 @@ def pal_bbr_cold():
         [ .1  , .1 , .9  ],
         [ 1.  , 1. , 1.  ],
         [ 1.  , 1. , 1.  ],
-        [ 0.7  , 0. , 0.  ] # Dark red        
-        ] )
+        [ 0.7  , 0. , 0.  ] # Dark red
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -402,7 +420,7 @@ def pal_bbr_warm():
         [ 0.7  , 0. , 0.  ], # Dark red
         #[ 1.  , 0.2 , 0.  ],
         [ 1.  , 1. , 0.  ],  # jaune
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -418,7 +436,7 @@ def pal_bbr0_r():
         [ 1.  , 1. , 1.  ],
         [ 1.  , 0. , 0.  ],
         [ 1.  , 1. , 0.  ]  # jaune
-        ] )
+    ] )
     my_cmap = __build_colormap__(M[::-1,:])
     return my_cmap
 
@@ -436,7 +454,7 @@ def pal_cold0():
         [ 0.  , 0. , 1.  ], # true blue
         [ 177./255.  , 189./255. , 250./255. ], # light blue
         [ 1.  , 1. , 1.  ],
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 # #        [ 177./255.  , 250./255. , 122./255. ],   # greenish
@@ -451,7 +469,7 @@ def pal_warm0():
         [ 244./255.  , 78./255. , 255./255.  ], # pink
         [ 1.  , 0. , 0.  ], # true red
         [ 139./255.  , 5./255. , 5./255.  ] # dark red
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 #        [ 247./255.  , 150./255. , 176./255.  ], # light red
@@ -465,7 +483,7 @@ def pal_graylb():
     M = nmp.array( [
         [ 1.  , 1. , 1. ],
         [ 0.1  , 0.1 , 0.1 ]
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -473,7 +491,7 @@ def pal_graylb_r():
     M = nmp.array( [
         [ 0.  , 0. , 0. ],
         [ 1.  , 1. , 1. ]
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -481,7 +499,7 @@ def pal_graylb2():
     M = nmp.array( [
         [ 0.6  , 0.6 , 0.6 ],
         [ 1.  , 1. , 1. ]
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -496,7 +514,7 @@ def pal_sigma():
         [ 0.1 , 0.5 , 1.0 ], # light blue
         [ 0.0 , 0.0 , 0.4 ], # dark blue
         [ 0.6 , 0.0 , 0.8 ]  # violet
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -510,7 +528,7 @@ def pal_sigma0():
         [ 0.0 , 0.0 , 0.4 ], # dark blue
         [ 0.6 , 0.0 , 0.8 ], # violet
         [ 1.0 , 1.0 , 1.0 ]  # white
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -518,7 +536,7 @@ def pal_mask():
     M = nmp.array( [
         [ 0.5 , 0.5 , 0.5 ], # gray
         [ 0.5 , 0.5 , 0.5 ]  # gray
-        ] )
+    ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
 
@@ -532,20 +550,25 @@ def pal_mask():
 def chose_palette(cname):
 
     if cname == 'jet'   : palette = cm.jet
+    if cname == 'hsv'   : palette = cm.hsv
+    if cname == 'hsv_r'   : palette = cm.hsv_r
+    if cname == 'spectral'   : palette = cm.spectral
+    if cname == 'spectral_r'   : palette = cm.spectral_r
     if cname == 'YlGnBu'   : palette = cm.YlGnBu
     if cname == 'YlGnBu_r'   : palette = cm.YlGnBu_r
     if cname == 'BrBG'   : palette = cm.BrBG
-    if cname == 'BrBG_r'   : palette = cm.BrBG_r    
+    if cname == 'BrBG_r'   : palette = cm.BrBG_r
     if cname == 'PiYG'   : palette = cm.PiYG
-    if cname == 'PiYG_r'   : palette = cm.PiYG_r    
+    if cname == 'PiYG_r'   : palette = cm.PiYG_r
     if cname == 'cubehelix'   : palette = cm.cubehelix
     if cname == 'cubehelix_r' : palette = cm.cubehelix_r
     if cname == 'RdBu'   : palette = cm.RdBu
-    if cname == 'RdBu_r'   : palette = cm.RdBu_r    
-    
+    if cname == 'RdBu_r'   : palette = cm.RdBu_r
 
 
-    
+
+
+    if cname == 'blk'   : palette = pal_blk()
     if cname == 'mld'   : palette = pal_mld()
     if cname == 'mld_r' : palette = pal_mld_r()
     if cname == 'rms'   : palette = pal_rms()
@@ -563,10 +586,11 @@ def chose_palette(cname):
     if cname == 'blanc'   : palette = pal_blanc()
     if cname == 'sst'   : palette = pal_sst()
     if cname == 'sst_r' : palette = pal_sst_r()
+    if cname == 'sstnw' : palette = pal_sstnw()
     if cname == 'sst0'  : palette = pal_sst0()
     if cname == 'sst0_r': palette = pal_sst0_r()
     if cname == 'eke'   : palette = pal_eke()
-    if cname == 'cb1'   : palette = pal_cb1()    
+    if cname == 'cb1'   : palette = pal_cb1()
     if cname == 'bathy' : palette = pal_bathy()
     if cname == 'jetblanc' : palette = pal_jetblanc()
     if cname == 'jetblanc_r' : palette = pal_jetblanc_r()
