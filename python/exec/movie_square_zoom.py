@@ -35,6 +35,7 @@ import barakuda_plot as bp
 
 tmin=-2. ;  tmax=12.   ;  dtemp = 1.
 imin=0.  ;  imax=0.99  ;  dice = 0.1
+cfield = 'SST'	
 
 fig_type='png'
 
@@ -96,7 +97,13 @@ id_ice.close()
 
 
 
-
+params = { 'font.family':'Ubuntu',
+           'font.size':       int(15),
+           'legend.fontsize': int(15),
+           'xtick.labelsize': int(15),
+           'ytick.labelsize': int(15),
+           'axes.labelsize':  int(15) }
+mpl.rcParams.update(params)
 
 idx_oce = nmp.where(XMSK[:,:] > 0.5)
 
@@ -112,7 +119,7 @@ for jt in range(Nt):
     cd = str(datetime.datetime.strptime('1990 '+ct, '%Y %j'))
     cdate = cd[:10] ; print ' *** cdate :', cdate
 
-    cfig = 'boo'+'_d'+ct+'.'+fig_type
+    cfig = csst+'_NEMO'+'_d'+ct+'.'+fig_type
     
     #psst = nmp.ma.masked_where(XMSK[:,:] < 0.2, XSST[jt,:,:])
     #pice = nmp.ma.masked_where(XMSK[:,:] < 0.2, XICE[jt,:,:])
@@ -124,8 +131,8 @@ for jt in range(Nt):
     
     vc_sst = nmp.arange(tmin, tmax + dtemp, dtemp)
 
-    fig = plt.figure(num = 1, figsize=(10,8), dpi=None, facecolor='w', edgecolor='k')
-    ax  = plt.axes([0.05, 0.06, 0.9, 0.86], axisbg = 'k')
+    fig = plt.figure(num = 1, figsize=(10,9), dpi=None, facecolor='w', edgecolor='k')
+    ax  = plt.axes([0.05, -0.05, 0.9, 0.999], axisbg = 'k')
 
 
     # Pal_Sst:
@@ -139,7 +146,7 @@ for jt in range(Nt):
 
     
 
-    plt.pcolor(psst, cmap = pal_sst, norm = norm_sst)
+    cf = plt.pcolor(psst, cmap = pal_sst, norm = norm_sst)
 
     #plt.pcolor(pice, cmap = pal_ice, norm = norm_ice)
     plt.contourf(pice, [0.25,0.5,0.75,1.], cmap = pal_ice, norm = norm_ice)
@@ -151,9 +158,22 @@ for jt in range(Nt):
 
 
     
-    plt.axis([ 0, ni+1, 0, nj+1])
+    plt.axis([ 0, ni, 0, nj])
 
-    plt.title('Coupled ORCA12.L75 - T255.L91, '+cdate)
+    clb = plt.colorbar(cf, ticks=vc_sst, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40)
+    #cb_labs = [] ; cpt = 0
+    #for rr in vc_sst:
+    #    if cpt % 4 == 0:
+    #        cb_labs.append(str(int(rr)))
+    #    else:
+    #        cb_labs.append(' ')
+    #    cpt = cpt + 1
+    #clb.ax.set_xticklabels(cb_labs)
+    cfont = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':16 }
+    clb.set_label(r'$^{\circ}C$', **cfont)
+
+    cfont = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':24 }
+    plt.title('NEMO: '+cfield+', coupled ORCA12-T255, '+cdate)
 
     
     plt.savefig(cfig, dpi=120, orientation='portrait', transparent=False)
@@ -163,14 +183,4 @@ for jt in range(Nt):
 
 
 
-sys.exit(0)
-
-
-#bp.plot("2d")([0], [0], XSST[2,:,:],
-#              XSST[2,:,:]*0.+1.,  tmin, tmax, dtemp,
-#              lkcont=False, cpal_sst='RdBu_r',
-#              cfignm='boo',
-#              cbunit='deg.C', fig_type=fig_type,
-#              ctitle='Ta mere',
-#              lforce_lim=False, i_cb_subsamp=2)
 

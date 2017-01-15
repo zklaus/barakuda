@@ -550,8 +550,14 @@ def pal_mask():
 def chose_palette(cname):
 
     if cname == 'jet'   : palette = cm.jet
+    if cname == 'rainbow'   : palette = cm.rainbow
+    if cname == 'rainbow_r'   : palette = cm.rainbow_r
     if cname == 'hsv'   : palette = cm.hsv
     if cname == 'hsv_r'   : palette = cm.hsv_r
+    if cname == 'gist_ncar'   : palette = cm.gist_ncar
+    if cname == 'gist_ncar_r'   : palette = cm.gist_ncar_r
+    if cname == 'nipy_spectral'   : palette = cm.nipy_spectral
+    if cname == 'nipy_spectral_r'   : palette = cm.nipy_spectral_r    
     if cname == 'spectral'   : palette = cm.spectral
     if cname == 'spectral_r'   : palette = cm.spectral_r
     if cname == 'YlGnBu'   : palette = cm.YlGnBu
