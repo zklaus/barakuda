@@ -25,7 +25,7 @@ import barakuda_colmap as bcm
 import barakuda_tool as bt
 import barakuda_plot as bp
 
-lsst=True
+lsst=False
 lshf=True
 
 
@@ -48,13 +48,13 @@ if lsst:
     cfield = 'SST'
     
 if lshf:
-    tmin=-1200. ;  tmax=200. ;  dt = 25.
+    tmin=-1200. ;  tmax=500. ;  dt = 25.
     cf_sst   = '/home/laurent/tmp/IFS/C120_1990_1d_SNHF.nc4'
     csst     = 'SNHF'
     #cpal_sst = 'spectral'
     #cpal_sst = 'rainbow'
-    cpal_sst = 'gist_ncar'
-    #cpal_sst = 'nipy_spectral'
+    #cpal_sst = 'gist_ncar'
+    cpal_sst = 'nipy_spectral'
     cfield = 'Net Heat Flux'
 
 
@@ -63,27 +63,65 @@ if lshf:
 cf_msk = '/home/laurent/tmp/LSM_ICMGG_T255.nc4'
 cmsk  = 'LSM'
 
+
+imax=512
+
 # South Greenland:
-i1 = 412; i2 =486
-j1 = 22 ; j2 = 56
+#i1 = 412; i2 =486
+#j1 = 22 ; j2 = 56
+
+# NAtl:
+i1 = 385 ; i2= 540
+j1 =   6 ; j2 = 84
+
 
 #Global T255:
-#i1 = 0 ; i2 =512
-#j1 = 0 ; j2 = 256
+#i1 = 0 ; i2 =511
+#j1 = 0 ; j2 = 255
+
+
+Ni = i2-i1
+Nj = j2-j1
+Nt = 273
+
+XMSK = nmp.zeros((Nj,Ni))
+XSST = nmp.zeros((Nt,Nj,Ni))
+
 
 
 bt.chck4f(cf_msk)
 id_msk = Dataset(cf_msk)
-XMSK  = id_msk.variables[cmsk][0,j1:j2,i1:i2] ; # t, y, x
+
+ #    i1      imax    i2
+
+if i2 >= imax:
+    print ' i2 = ', i2
+    Xall = id_msk.variables[cmsk][0,j1:j2,:]
+    XMSK[:,0:imax-i1] = Xall[:,i1:imax]
+    ii=imax-i1
+    XMSK[:,ii:Ni] = Xall[:,0:i2-imax]
+else:
+    XMSK[:,:]  = id_msk.variables[cmsk][0,j1:j2,i1:i2] ; # t, y, x
 id_msk.close()
 
 
 [ nj , ni ] = nmp.shape(XMSK)
 
 
+
+
 bt.chck4f(cf_sst)
 id_sst = Dataset(cf_sst)
-XSST   = id_sst.variables[csst][:,j1:j2,i1:i2]
+
+if i2 >= imax:
+    print ' i2 = ', i2
+    Xall = id_sst.variables[csst][:,j1:j2,:]
+    XSST[:,:,0:imax-i1] = Xall[:,:,i1:imax]
+    ii=imax-i1
+    XSST[:,:,ii:Ni] = Xall[:,:,0:i2-imax]
+else:
+    XSST   = id_sst.variables[csst][:,j1:j2,i1:i2]
+
 id_sst.close()
 [ Nt, nj0 , ni0 ] = nmp.shape(XSST)
 
@@ -120,7 +158,7 @@ for jt in range(Nt):
 
     psst[:,:] = XSST[jt,:,:]
 
-    fig = plt.figure(num = 1, figsize=(10,9), dpi=None, facecolor='w', edgecolor='k')
+    fig = plt.figure(num = 1, figsize=(10,10), dpi=None, facecolor='w', edgecolor='k')
     ax  = plt.axes([0.04, -0.06, 0.93, 1.02], axisbg = 'k')
 
 
