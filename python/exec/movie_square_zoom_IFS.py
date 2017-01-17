@@ -113,15 +113,15 @@ for jt in range(Nt):
     cd = str(datetime.datetime.strptime('1990 '+ct, '%Y %j'))
     cdate = cd[:10] ; print ' *** cdate :', cdate
 
-    cfig = csst+'_IFS'+'_d'+ct+'.'+fig_type
+    cfig = 'figs/'+csst+'_IFS'+'_d'+ct+'.'+fig_type
     
     #psst = nmp.ma.masked_where(XMSK[:,:] < 0.2, XSST[jt,:,:])
     #pice = nmp.ma.masked_where(XMSK[:,:] < 0.2, XICE[jt,:,:])
 
     psst[:,:] = XSST[jt,:,:]
 
-    fig = plt.figure(num = 1, figsize=(10,8.5), dpi=None, facecolor='w', edgecolor='k')
-    ax  = plt.axes([0.05, -0.05, 0.9, 0.999], axisbg = 'k')
+    fig = plt.figure(num = 1, figsize=(10,9), dpi=None, facecolor='w', edgecolor='k')
+    ax  = plt.axes([0.04, -0.06, 0.93, 1.02], axisbg = 'k')
 
 
     # Pal_Sst:
@@ -152,8 +152,8 @@ for jt in range(Nt):
     cfont = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':16 }
     clb.set_label(r'$W/m^2$', **cfont)
 
-    cfont = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':24 }
-    plt.title('IFS: '+cfield+', coupled ORCA12-T255, '+cdate)
+    cfont = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':22 }
+    plt.title('IFS: '+cfield+', coupled ORCA12-T255, '+cdate, **cfont)
 
     
     plt.savefig(cfig, dpi=120, orientation='portrait', transparent=False)

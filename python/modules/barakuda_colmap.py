@@ -554,6 +554,8 @@ def chose_palette(cname):
     if cname == 'rainbow_r'   : palette = cm.rainbow_r
     if cname == 'hsv'   : palette = cm.hsv
     if cname == 'hsv_r'   : palette = cm.hsv_r
+    if cname == 'viridis'   : palette = cm.viridis
+    if cname == 'viridis_r'   : palette = cm.viridis_r
     if cname == 'gist_ncar'   : palette = cm.gist_ncar
     if cname == 'gist_ncar_r'   : palette = cm.gist_ncar_r
     if cname == 'nipy_spectral'   : palette = cm.nipy_spectral
