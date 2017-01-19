@@ -26,7 +26,6 @@ import barakuda_colmap as bcm
 import barakuda_tool as bt
 import barakuda_plot as bp
 
-
 gc.collect()
 
 imin=0.  ;  imax=0.99  ;  dice = 0.1
