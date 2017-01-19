@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 import datetime
+import gc
 
 import barakuda_colmap as bcm
 
@@ -26,10 +27,12 @@ import barakuda_tool as bt
 import barakuda_plot as bp
 
 
+gc.collect()
+
 imin=0.  ;  imax=0.99  ;  dice = 0.1
 
 cfield = 'SST' ; cfld  = 'sosstsst' ; cpal_fld = 'sstnw'
-cfield = 'MLD' ; cfld  = 'somxl010' ; cpal_fld = 'viridis_r'
+#cfield = 'MLD' ; cfld  = 'somxl010' ; cpal_fld = 'viridis_r'
 
 fig_type='png'
 
@@ -51,14 +54,19 @@ fig_type='png'
 
 #cbox  = 'SGL'
 #croot = cbox+'_C120_1d_19900101_19900930'
-cbox = 'NAtl'
-croot = cbox+'_C120_1d_19901101_19901130'
 
+cbox = 'NAtl'
+#croot = cbox+'_C120_1d_19900101_19901231'
+croot = cbox+'_C120_1d_19901201_19901231'
+
+#cf_fld  = '/home/laurent/tmp/NEMO/'+cfld+'_'+croot+'_grid_T.nc'
 cf_fld  = '/home/laurent/tmp/NEMO/'+croot+'_grid_T.nc4'
 
 
-cf_ice  = '/home/laurent/tmp/NEMO/'+croot+'_icemod.nc4'
 cice  = 'siconc'
+#cf_ice  = '/home/laurent/tmp/NEMO/'+cice+'_'+croot+'_icemod.nc'
+cf_ice  = '/home/laurent/tmp/NEMO/'+croot+'_icemod.nc4'
+
 
 cf_msk = '/home/laurent/tmp/NEMO/ZOOMs/'+cbox+'_mesh_mask.nc4'
 cmsk  = 'tmask'
@@ -77,22 +85,13 @@ id_msk.close()
 
 [ nj , ni ] = nmp.shape(XMSK)
 
+Nt = 365
 
-
-bt.chck4f(cf_fld)
-id_fld = Dataset(cf_fld)
-XFLD  = id_fld.variables[cfld][:,:,:] ; # t, y, x
-id_fld.close()
-[ Nt, nj0 , ni0 ] = nmp.shape(XFLD)
-
+pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 if not cfield == 'MLD':
     cpal_ice = 'ice'
-    bt.chck4f(cf_ice)
-    id_ice = Dataset(cf_ice)
-    XICE  = id_ice.variables[cice][:,:,:] ; # t, y, x
-    id_ice.close()
-    [ Nt, nj0 , ni0 ] = nmp.shape(XICE)
+
 
 
 
@@ -106,13 +105,22 @@ mpl.rcParams.update(params)
 
 idx_oce = nmp.where(XMSK[:,:] > 0.5)
 
+bt.chck4f(cf_fld)
+bt.chck4f(cf_ice)
 
-if not cfield == 'MLD': pice = nmp.zeros((nj,ni))
+#if not cfield == 'MLD': pice = nmp.zeros((nj,ni))
 
-for jt in range(Nt):
+cfontl = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':16 }
+cfontt = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':22 }
 
 
-    ct = '%3.3i'%(jt+1)
+jt0 = 0 ; Nt = 31
+
+for jt in range(jt0,Nt):
+
+
+    #ct = '%3.3i'%(jt+1)
+    ct = '%3.3i'%(jt+335)
 
     cd = str(datetime.datetime.strptime('1990 '+ct, '%Y %j'))
     cdate = cd[:10] ; print ' *** cdate :', cdate
@@ -132,30 +140,48 @@ for jt in range(Nt):
     vc_fld = nmp.arange(tmin, tmax + dtemp, dtemp)
 
     # Pal_fld:
-    pal_fld = bcm.chose_palette(cpal_fld)
-    norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
+    if jt == jt0:
+        pal_fld = bcm.chose_palette(cpal_fld)
+        norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 
-    
-    cf = plt.pcolor(XFLD[jt,:,:], cmap = pal_fld, norm = norm_fld)
 
+
+    print "Reading "+cf_fld
+    id_fld = Dataset(cf_fld)
+    XFLD  = id_fld.variables[cfld][jt,:,:] ; # t, y, x
+    id_fld.close()
+    print "Done!"
+
+    print "Ploting"
+    cf = plt.pcolor(XFLD[:,:], cmap = pal_fld, norm = norm_fld)
+    del XFLD
+    print "Done!"
     
     # Ice
     if not cfield == 'MLD':
-        pal_ice = bcm.chose_palette(cpal_ice)
-        norm_ice = colors.Normalize(vmin = imin, vmax = imax, clip = False)
-        pice[:,:] = XICE[jt,:,:]
-        bt.drown(pice, XMSK, k_ew=2, nb_max_inc=10, nb_smooth=10)
-        plt.contourf(pice, [0.25,0.5,0.75,1.], cmap = pal_ice, norm = norm_ice) # 
+        print "Reading "+cf_ice
+        id_ice = Dataset(cf_ice)
+        XICE  = id_ice.variables[cice][jt,:,:] ; # t, y, x
+        id_ice.close()
+        print "Done!"
+
+        if jt == jt0:
+            pal_ice = bcm.chose_palette(cpal_ice)
+            norm_ice = colors.Normalize(vmin = imin, vmax = imax, clip = False)
+        #pice[:,:] = XICE[jt,:,:]
+        #bt.drown(pice, XMSK, k_ew=2, nb_max_inc=10, nb_smooth=10)
+        #plt.contourf(pice, [0.25,0.5,0.75,1.], cmap = pal_ice, norm = norm_ice) #
+        ci = plt.contourf(XICE[:,:], [0.25,0.5,0.75,1.], cmap = pal_ice, norm = norm_ice) #
+        del XICE
 
 
     # Mask
-    pal_msk = bcm.chose_palette('blk')
-    norm_msk = colors.Normalize(vmin = 0., vmax = 1., clip = False)
+    if jt == jt0:
+        pal_msk = bcm.chose_palette('blk')
+        norm_msk = colors.Normalize(vmin = 0., vmax = 1., clip = False)
     
-    pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
-    plt.pcolor(pmsk, cmap = pal_msk, norm = norm_msk)
 
-
+    cm = plt.pcolor(pmsk, cmap = pal_msk, norm = norm_msk)
     
     plt.axis([ 0, ni, 0, nj])
 
@@ -171,18 +197,16 @@ for jt in range(Nt):
             cpt = cpt + 1
         clb.ax.set_xticklabels(cb_labs)
         
-    cfont = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':16 }
-    clb.set_label(r'$^{\circ}C$', **cfont)
 
-    cfont = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':22 }
-    plt.title('NEMO: '+cfield+', coupled ORCA12-T255, '+cdate, **cfont)
+    clb.set_label(r'$^{\circ}C$', **cfontl)
+    plt.title('NEMO: '+cfield+', coupled ORCA12-T255, '+cdate, **cfontt)
 
     
     plt.savefig(cfig, dpi=120, orientation='portrait', transparent=False)
     print cfig+' created!\n'
     plt.close(1)
-                
 
 
+    del cf, ci, cm, fig, ax, clb
 
-
+    gc.collect()

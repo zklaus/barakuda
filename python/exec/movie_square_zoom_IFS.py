@@ -82,7 +82,7 @@ j1 =   6 ; j2 = 84
 
 Ni = i2-i1
 Nj = j2-j1
-Nt = 273
+Nt = 365
 
 XMSK = nmp.zeros((Nj,Ni))
 XSST = nmp.zeros((Nt,Nj,Ni))
