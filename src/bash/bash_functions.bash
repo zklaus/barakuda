@@ -126,7 +126,9 @@ function barakuda_setup()
     echo; echo "File types to import (NEMO_SAVED_FILES) : ${NEMO_SAVED_FILES}"; echo; echo
 
     # Need to be consistent with the netcdf installation upon which cdftools_light was compiled:
-    export NCDF_DIR=`cat cdftools_light/make.macro | grep ^NCDF_DIR | cut -d = -f2 | sed -e s/' '//g`
+    ff="cdftools_light/make.macro"
+    if [ ! -f ${ff} ]; then echo "PROBLEM: cannot find ${ff} (needed to get NCDF_DIR)!"; exit; fi
+    export NCDF_DIR=`cat ${ff} | grep ^NCDF_DIR | cut -d = -f2 | sed -e s/' '//g`
     echo ; echo "NCDF_DIR = ${NCDF_DIR}"; echo
     export LD_LIBRARY_PATH=${NCDF_DIR}/lib:${LD_LIBRARY_PATH}
 
