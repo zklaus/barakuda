@@ -833,7 +833,8 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     cp ${BARAKUDA_ROOT}/src/html/conf_*.html ${HTML_DIR}/
     cp ${BARAKUDA_ROOT}/src/html/logo.png    ${HTML_DIR}/
-
+    if [ ${ece_run} -gt 0 ]; then cp ${BARAKUDA_ROOT}/src/html/logo_ece.png ${HTML_DIR}/logo.png ; fi
+    
     mv -f index.html ${HTML_DIR}/
 
     cp -r ${DIRS_2_EXP} ${HTML_DIR}/ >/dev/null 2>/dev/null

@@ -44,6 +44,8 @@ export ece_run=0 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run
 #                  #   If you select '2', make sure 'cdo' is available and working!!!
 #
 export Y_INI_EC=1990 ;    # initial year if ec-earth run...
+export TRES_IFS=159  ;    # spectral resolution for IFS
+###--- end EC-Earth IFS relate section ---
 
 # List of suffixed of files that have been saved by NEMO and that are needed for the diags:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
@@ -146,40 +148,40 @@ export RWWWD=/data/www/barakuda/CMIP5 ; # directory of the local or remote host 
 #########################
 
 # Movies of SST and SSS compared to OBS:
-export i_do_movi=0
+export i_do_movi=1
 
 # Basic 3D and surface averages:
-export i_do_mean=0
+export i_do_mean=1
 
 # IFS surface fluxes of heat and freshwater
-export i_do_ifs_flx=0 ; # only relevant when ece_run=2...
+export i_do_ifs_flx=1 ; # only relevant when ece_run=2...
 
 # AMOC:
-export i_do_amoc=0
+export i_do_amoc=1
 export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to look in for max of AMOC
 
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
-export i_do_trsp=0  ; # transport of mass, heat and salt through specified sections
+export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
 
 # Meridional heat/salt transport (advective)
-export i_do_mht=0
+export i_do_mht=1
 
 # Transport by sigma class
-export i_do_sigt=0
+export i_do_sigt=1
 
 # Sea-ice diags
-export i_do_ice=0  ; # Sea-ice diags
+export i_do_ice=1  ; # Sea-ice diags
 
 # Budget on pre-defined (FILE_DEF_BOXES) rectangular domains:
-export i_do_bb=0   ; # Budget and other stuffs on a given rectangular box!
+export i_do_bb=1   ; # Budget and other stuffs on a given rectangular box!
 #             # => needs file FILE_DEF_BOXES !!!
 # => produces time-series f(t)  (mean of 2D fields)
 
 # Vertical profiles on of box-averaged as a function of time...
-export i_do_box_TS_z=0 ; # do sigma vert. profiles on given boxes... # 1 => no figures, 2 => figures
+export i_do_box_TS_z=1 ; # do sigma vert. profiles on given boxes... # 1 => no figures, 2 => figures
 #                 # => needs file FILE_DEF_BOXES !!!
 # => produces time-series f(t,z)
 
