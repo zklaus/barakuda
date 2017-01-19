@@ -182,8 +182,8 @@ ${PYTH} ${PYBRKD_EXEC_PATH}/compare_time_series.py ${YEAR_INI} ${YEAR_END}
 
 # Starting to configure HTML index file:
 sed -e "s|{CONFRUN}|Comparison ${NRUNS}|g" \
-    -e "s|{TITLE}|Ocean, ${JTITLE}: comparing ${VRUNS[*]}|g" \
-    -e "s|{NRUNS}|${NRUNS}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|`hostname`|g" \
+    -e "s|{TITLE}|Ocean, ${EXTRA_CONF}: comparing ${VRUNS[*]}|g" \
+    -e "s|{NRUNS}|${NRUNS}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" \
     ${BARAKUDA_ROOT}/src/html/conf_start.html >  index.html
 
 list_figs=`\ls *.${FIG_FORMAT}`

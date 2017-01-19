@@ -17,7 +17,7 @@ export CONF=${HCONF}.L31 ; # horizontal global ORCA configuration
 export NBL=31         ; # number of levels
 
 export HOST=MARENOSTRUM ; # this has no importance at all, it will just become an "info" on the web-page!
-export JTITLE="LIM3, IFS T159, NEMO 3.6 (EC-Earth 3.2)" ;   #  // same here ...
+export EXTRA_CONF="LIM3, IFS T159, NEMO 3.6 (EC-Earth 3.2)" ;   #  // same here ...
 
 # File system / path on which most netcdf data will be read:
 export STORE_DIR="/gpfs/scratch/bsc32/bsc32325"

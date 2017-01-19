@@ -85,7 +85,7 @@ export L_CONV2NC3=false ; # Set to true if your NEMO output is in Netcdf4 and yo
 export L_RENAME=false ; # set to true if your ORCA output has old name convention (ex: votemper instead of thetao)
 
 
-export JTITLE="NEMO v3.6 ${CONF} (L${NBL}) - LIM3 / ocean-only experiment"
+export EXTRA_CONF="NEMO v3.6 ${CONF} (L${NBL}) - LIM3 / ocean-only experiment"
 
 # Land-sea mask and basins files:
 export MM_FILE="/lustre/tmp/uotilap/ecearth3/input/nemo/ORCA1L75/mesh_mask_ORCA1L75.nc"

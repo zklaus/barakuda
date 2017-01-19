@@ -16,7 +16,7 @@ export CONF=ORCA1.L75 ; # horizontal global ORCA configuration
 export NBL=75         ; # number of levels
 
 export HOST=MARENOSTRUM ; # this has no importance at all, it will just become an "info" on the web-page!
-export JTITLE="LIM3, NEMO 3.6 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
+export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
 
 # File system / path on which most netcdf data will be read:
 export STORE_DIR="/gpfs/scratch/bsc32/bsc32325"
@@ -163,7 +163,7 @@ export i_do_amoc=1
 export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to look in for max of AMOC
 
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
-export i_do_trsp=2  ; # transport of mass, heat and salt through specified sections
+export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2

@@ -91,7 +91,7 @@ export L_CONV2NC3=false ; # Set to true if your NEMO output is in Netcdf4 and yo
 export L_RENAME=false ; # set to true if your ORCA output has old name convention (ex: votemper instead of thetao)
 
 
-export JTITLE="NEMO v3.6 ${CONF}_LIM3 / EC-Earth 3.2b"
+export EXTRA_CONF="NEMO v3.6 ${CONF}_LIM3 / EC-Earth 3.2b"
 
 # Land-sea mask and basins files:
 export MM_FILE=/proj/bolinc/users/x_laubr/klaus/mesh_mask.nc

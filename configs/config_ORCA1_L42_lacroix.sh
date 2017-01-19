@@ -15,8 +15,8 @@
 export CONF=ORCA1.L42 ; # horizontal global configuration
 export NBL=42         ; # number of levels
 
-export HOST=TRIOLITH ; # this has no importance at all, it will just become an "info" on the web-page!
-export JTITLE="LIM2, NEMO 2.X (EC-Earth 2_CMIP5)" ;   #  // same here ...
+export HOST=LACROIX ; # this has no importance at all, it will just become an "info" on the web-page!
+export EXTRA_CONF="NEMO 2.X + LIM 2 (EC-Earth 2.2)" ;   #  // same here ... extra info about config...
 
 # File system / path on which most netcdf data will be read:
 export STORE_DIR="/data1/laurent"
@@ -136,7 +136,7 @@ export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 export FIG_FORM="png"
 
 # About remote HOST to install HTML pages to:
-export ihttp=1 ; # do we export on a remote http server (1) or keep on the local machine (0)
+export ihttp=0 ; # do we export on a remote http server (1) or keep on the local machine (0)
 export RHOST=misu228.misu.su.se ; # remote host to send diagnostic page to///
 export RUSER=laurent ; # username associated to remote host (for file export)
 export RWWWD=/data/www/barakuda/CMIP5 ; # directory of the local or remote host to send the diagnostic page to

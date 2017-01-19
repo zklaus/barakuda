@@ -16,7 +16,7 @@ export CONF=ORCA1.L42 ; # horizontal global configuration
 export NBL=42         ; # number of levels
 
 export HOST=TRIOLITH ; # this has no importance at all, it will just become an "info" on the web-page!
-export JTITLE="LIM2, NEMO 2.X (EC-Earth 2_CMIP5)" ;   #  // same here ...
+export EXTRA_CONF="LIM2, NEMO 2.X (EC-Earth 2_CMIP5)" ;   #  // same here ...
 
 # Path to directory containing NEMO output files:
 export STORE_DIR="/proj/bolinc/users/x_laubr"

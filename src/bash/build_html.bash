@@ -16,14 +16,14 @@ function build_index_html()
 
     rm -f index.html
 
-    if [ "${JTITLE}" = "" ]; then
-        echo "Problem, variable JTITLE is not set!" ; exit
+    if [ "${EXTRA_CONF}" = "" ]; then
+        echo "Problem, variable EXTRA_CONF is not set!" ; exit
     else
-        TITLE="Ocean diagnostics, run ${RUN}, conf ${ORCA}_${JTITLE}"
+        TITLE="Ocean diagnostics<br>Experiment: \"${RUN}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
     fi
 
     # Starting to configure HTML index file:
-    sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${CONFRUN}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}:`hostname`|g" \
+    sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${CONFRUN}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" \
         ${BARAKUDA_ROOT}/src/html/conf_start.html > index.html
 
     # Climato:
@@ -223,7 +223,7 @@ function build_sub_html()
         cat ${BARAKUDA_ROOT}/src/html/${cdiag}/index_${cdiag}.html >> index.tmp
         cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
         sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-            -e "s|{DATE}|`date`|g" -e "s|{HOST}|`hostname`|g" -e "s|{COMP2D}|CLIM|g" \
+            -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
             index.tmp > ${cdiag}/index.html
         rm -f index.tmp
         cd ${cdiag}/ ; ln -sf ../logo.png . ; cd ../
@@ -234,7 +234,7 @@ function build_sub_html()
         cat ${BARAKUDA_ROOT}/src/html/temp_sal/${var}.html         >> index.tmp
         cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
         sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-            -e "s|{DATE}|`date`|g" -e "s|{HOST}|`hostname`|g" -e "s|{COMP2D}|CLIM|g" \
+            -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
             index.tmp > temp_sal/${var}_CLIM.html
     done
 
@@ -259,7 +259,7 @@ function build_sub_html()
             done
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html          >> index.tmp
             sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-                -e "s|{DATE}|`date`|g" -e "s|{HOST}|`hostname`|g" -e "s|{COMP2D}|CLIM|g" \
+                -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
                 index.tmp > temp_sal/index_sections.html
             rm -f index.tmp            
         fi
@@ -273,7 +273,7 @@ function build_sub_html()
             cat ${BARAKUDA_ROOT}/src/html/${cdiag}/index_${cdiag}.html >> index.tmp
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
             sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-                -e "s|{DATE}|`date`|g" -e "s|{HOST}|`hostname`|g" -e "s|{COMP2D}|${RUNREF}|g" \
+                -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|${RUNREF}|g" \
                 index.tmp > ${cdiag}/index_${RUNREF}.html
             rm -f index.tmp
             cd ${cdiag}/ ; ln -sf ../logo.png . ; cd ../
@@ -283,7 +283,7 @@ function build_sub_html()
             cat ${BARAKUDA_ROOT}/src/html/temp_sal/${var}.html         >> index.tmp
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
             sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-                -e "s|{DATE}|`date`|g" -e "s|{HOST}|`hostname`|g" -e "s|{COMP2D}|${RUNREF}|g" \
+                -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|${RUNREF}|g" \
                 index.tmp > temp_sal/${var}_${RUNREF}.html
         done
     fi

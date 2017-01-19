@@ -18,7 +18,7 @@ export CONF=ORCA025.L75 ; # horizontal global ORCA configuration
 export NBL=75         ; # number of levels
 
 export HOST=BI ; # this has no importance at all, it will just become an "info" on the web-page!
-export JTITLE="LIM3, NEMO 3.6 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
+export EXTRA_CONF="LIM3, NEMO 3.6 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
 
 # Path to directory containing NEMO output files:
 #export STORE_DIR="/gpfs/scratch/bsc32/bsc32325"
