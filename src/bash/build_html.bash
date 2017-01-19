@@ -98,19 +98,19 @@ EOF
 
     # Surface heat flux diagnostics:
     LIST_HF_FIG="htf_qnt htf_qsr \
-htf_qnt_NEMO_IFS htf_qnt_NEMO_IFS_annual \
-        htf_qsr_NEMO_IFS htf_qsr_NEMO_IFS_annual"
+                 htf_qnt_NEMO_IFS htf_qnt_NEMO_IFS_annual \
+                 htf_qsr_NEMO_IFS htf_qsr_NEMO_IFS_annual"
     #
     cat >> index.html <<EOF
     ${ctl} Surface Heat flux time-series ${ctr}
-    EOF
+EOF
     for fd in ${LIST_HF_FIG}; do
         fgn="mean_${fd}_${cr}.${ff}"; fgf="${HTML_DIR}/${fgn}"
         if [ -f ${fgf} ]; then
             echo "${img_l} ${fgn} ${img_r}" >> index.html
         fi
     done
-
+    
     # Freshwater flux diagnostics:
     LIST_FW_FIG="zos fwf_fwf fwf_emp fwf_prc fwf_rnf fwf_clv \
         fwf_evp_NEMO_IFS fwf_evp_NEMO_IFS_annual \
