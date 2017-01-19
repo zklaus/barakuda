@@ -2,17 +2,14 @@
 
 # Check http://matplotlib.org/examples/color/colormaps_reference.html !!!
 
-
 # Colors:  http://www.pitt.edu/~nisg/cis/web/cgi/rgb.html
 
 # Last Updated: L. Brodeau, January 2013
-
 
 import numpy as nmp
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib.pylab import cm
-
 
 ctrl = 0.2 ; # for logarythmic scale in 'pal_eke'
 
