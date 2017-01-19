@@ -16,11 +16,10 @@ function build_index_html()
 
     rm -f index.html
 
-    if [ "${EXTRA_CONF}" = "" ]; then
-        echo "Problem, variable EXTRA_CONF is not set!" ; exit
-    else
-        TITLE="Ocean diagnostics<br>Experiment: \"${RUN}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
-    fi
+    if [ -z ${EXTRA_CONF} ]; then echo "Problem, variable EXTRA_CONF is not set!" ; exit; fi
+    
+    TITLE="Ocean diagnostics<br>Experiment: \"${RUN}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
+    if [ ${ece_run} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
 
     # Starting to configure HTML index file:
     sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${CONFRUN}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" \
