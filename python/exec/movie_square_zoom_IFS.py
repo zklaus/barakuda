@@ -19,121 +19,95 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 import datetime
+import gc
 
 import barakuda_colmap as bcm
 
 import barakuda_tool as bt
-import barakuda_plot as bp
 
-lsst=False
-lshf=True
-
-
-#venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','NN_SST','NN_T','NN_S','NN_ICEF',
-#               'F_T_CLIM_3D_12','F_S_CLIM_3D_12','SST_CLIM_12','NN_SST_CLIM','NN_T_CLIM','NN_S_CLIM'}
-
-#vdic = bt.check_env_var(sys.argv[0], venv_needed)
-
-#CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
-
-
-fig_type='png'
-
-
-if lsst:
-    tmin=-20.  ;  tmax=12. ;  dt = 1.
-    cf_sst  = '/home/laurent/tmp/T2M_ICMGG_C120_1990.nc4'
-    csst  = 'T2M'
-    cpal_sst = 'sstnw'
-    cfield = 'SST'
-    
-if lshf:
-    tmin=-1200. ;  tmax=500. ;  dt = 25.
-    cf_sst   = '/home/laurent/tmp/IFS/C120_1990_1d_SNHF.nc4'
-    csst     = 'SNHF'
-    #cpal_sst = 'spectral'
-    #cpal_sst = 'rainbow'
-    #cpal_sst = 'gist_ncar'
-    cpal_sst = 'nipy_spectral'
-    cfield = 'Net Heat Flux'
-
-
-
-
-cf_msk = '/home/laurent/tmp/LSM_ICMGG_T255.nc4'
-cmsk  = 'LSM'
-
-
-imax=512
+gc.collect()
 
 # South Greenland:
 #i1 = 412; i2 =486
 #j1 = 22 ; j2 = 56
 
 # NAtl:
-i1 = 385 ; i2= 540
-j1 =   6 ; j2 = 84
-
+#i1 = 385 ; i2= 540
+#j1 =   6 ; j2 = 84
 
 #Global T255:
 #i1 = 0 ; i2 =511
 #j1 = 0 ; j2 = 255
 
+#Global T1279:
+i1 = 0 ; i2 = 2560
+j1 = 0 ; j2 = 1280
+
+year_ref_ini = 1990
+
+fig_type='png'
+
+narg = len(sys.argv)
+if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file>'; sys.exit(0)
+cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3]
+
+lsst = False ; lshf = False 
+if cv_in == 'SSTK': lsst = True
+if cv_in == 'SNHF': lshf = True
+
+
+if lsst:
+    tmin=-20.  ;  tmax=12. ;  dt = 1.
+    cpal = 'sstnw'
+    cfield = 'SST'
+    
+if lshf:
+    tmin=-1200. ;  tmax=500. ;  dt = 25.
+    #cpal = 'spectral'
+    #cpal = 'rainbow'
+    #cpal = 'gist_ncar'
+    cpal = 'nipy_spectral'
+    cfield = 'Net Heat Flux'
+
+
+
+
+
+cmsk  = 'LSM'
+
+
+imax=i2+1
 
 Ni = i2-i1
 Nj = j2-j1
-Nt = 365
-
-XMSK = nmp.zeros((Nj,Ni))
-XSST = nmp.zeros((Nt,Nj,Ni))
 
 
+IMSK = nmp.zeros((Nj,Ni), dtype=nmp.byte)
+XIN  = nmp.zeros((Nj,Ni))
 
-bt.chck4f(cf_msk)
-id_msk = Dataset(cf_msk)
+
+
+bt.chck4f(cf_lsm)
+id_msk = Dataset(cf_lsm)
 
  #    i1      imax    i2
 
 if i2 >= imax:
-    print ' i2 = ', i2
+    print ' i2 > imax !!! => ', i2, '>', imax
     Xall = id_msk.variables[cmsk][0,j1:j2,:]
-    XMSK[:,0:imax-i1] = Xall[:,i1:imax]
+    IMSK[:,0:imax-i1] = Xall[:,i1:imax]*100.
     ii=imax-i1
-    XMSK[:,ii:Ni] = Xall[:,0:i2-imax]
+    IMSK[:,ii:Ni] = Xall[:,0:i2-imax]*100.
+    del Xall
 else:
-    XMSK[:,:]  = id_msk.variables[cmsk][0,j1:j2,i1:i2] ; # t, y, x
+    IMSK[:,:]  = 100.*id_msk.variables[cmsk][0,j1:j2,i1:i2]
 id_msk.close()
 
 
-[ nj , ni ] = nmp.shape(XMSK)
+[ nj , ni ] = nmp.shape(IMSK)
 
-
-
-
-bt.chck4f(cf_sst)
-id_sst = Dataset(cf_sst)
-
-if i2 >= imax:
-    print ' i2 = ', i2
-    Xall = id_sst.variables[csst][:,j1:j2,:]
-    XSST[:,:,0:imax-i1] = Xall[:,:,i1:imax]
-    ii=imax-i1
-    XSST[:,:,ii:Ni] = Xall[:,:,0:i2-imax]
-else:
-    XSST   = id_sst.variables[csst][:,j1:j2,i1:i2]
-
-id_sst.close()
-[ Nt, nj0 , ni0 ] = nmp.shape(XSST)
-
-
-if lsst: XSST[:,:,:] = XSST[:,:,:] - 273.15
-
-#idx_oce = nmp.where(XMSK[:,:] > 0.01)
-
-vc_sst = nmp.arange(tmin, tmax + dt, dt)
-
-psst = nmp.zeros((nj,ni))
-
+#print IMSK[300:400,300:400]
+#sys.exit(0)
 
 params = { 'font.family':'Ubuntu',
            'font.size':       int(15),
@@ -143,39 +117,59 @@ params = { 'font.family':'Ubuntu',
            'axes.labelsize':  int(15) }
 mpl.rcParams.update(params)
 
+
+vc_sst = nmp.arange(tmin, tmax + dt, dt)
+
+pfin = nmp.zeros((nj,ni))
+    
+
+
+bt.chck4f(cf_in)
+id_in = Dataset(cf_in)
+vtime = id_in.variables['time'][:]
+id_in.close()
+del id_in
+Nt    = len(vtime)
+
+
 for jt in range(Nt):
 
+    print '\n *** Reading record # '+str(jt+1)+' of '+cv_in+' in '+cf_in
+    id_in = Dataset(cf_in)
+    if i2 >= imax:
+        print ' i2 = ', i2
+        Xall = id_in.variables[cv_in][jt,j1:j2,:]
+        XIN[:,0:imax-i1] = Xall[:,i1:imax]
+        ii=imax-i1
+        XIN[:,ii:Ni] = Xall[:,0:i2-imax]
+        del Xall
+    else:
+        XIN[:,:] = id_in.variables[cv_in][jt,j1:j2,i1:i2]
+    id_in.close()
+    del id_in
+
+    if lsst: XIN[:,:] = XIN[:,:] - 273.15
 
     ct = '%3.3i'%(jt+1)
 
-    cd = str(datetime.datetime.strptime('1990 '+ct, '%Y %j'))
+    cd = str(datetime.datetime.strptime(str(year_ref_ini)+' '+ct, '%Y %j'))
     cdate = cd[:10] ; print ' *** cdate :', cdate
 
-    cfig = 'figs/'+csst+'_IFS'+'_d'+ct+'.'+fig_type
-    
-    #psst = nmp.ma.masked_where(XMSK[:,:] < 0.2, XSST[jt,:,:])
-    #pice = nmp.ma.masked_where(XMSK[:,:] < 0.2, XICE[jt,:,:])
+    cfig = 'figs/'+cv_in+'_IFS'+'_d'+ct+'.'+fig_type
 
-    psst[:,:] = XSST[jt,:,:]
-
-    fig = plt.figure(num = 1, figsize=(10,10), dpi=None, facecolor='w', edgecolor='k')
+    fig = plt.figure(num = 1, figsize=(8.*float(Ni)/float(Nj)*0.8 , 8.), dpi=None, facecolor='w', edgecolor='k')
     ax  = plt.axes([0.04, -0.06, 0.93, 1.02], axisbg = 'k')
 
 
     # Pal_Sst:
-    pal_sst = bcm.chose_palette(cpal_sst)
+    pal_sst = bcm.chose_palette(cpal)
     norm_sst = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 
     pal_msk = bcm.chose_palette('blk')
     norm_msk = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
-    cf = plt.pcolor(nmp.flipud(psst), cmap = pal_sst, norm = norm_sst)
+    cf = plt.pcolor(nmp.flipud(XIN), cmap = pal_sst, norm = norm_sst)
 
-
-    # Mask
-    pmsk = nmp.ma.masked_where(XMSK[:,:] < 0.5, XMSK[:,:]*0.+40.)
-    plt.pcolor(nmp.flipud(pmsk), cmap = pal_msk, norm = norm_msk)
-    
     plt.axis([ 0, ni, 0, nj])
 
     clb = plt.colorbar(cf, ticks=vc_sst, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40)
@@ -190,6 +184,18 @@ for jt in range(Nt):
     cfont = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':16 }
     clb.set_label(r'$W/m^2$', **cfont)
 
+    del cf
+
+    # Mask
+    print ' LSM stuff...'
+    ILSM = nmp.zeros((Nj,Ni), dtype=nmp.byte)
+    ILSM[:,:] = nmp.ma.masked_where(IMSK[:,:] < 50, IMSK[:,:]*0.+40.)
+    IMSK[:,:] = nmp.flipud(ILSM[:,:])
+    del ILSM
+    #cm = plt.pcolor(IMSK, cmap = pal_msk, norm = norm_msk)
+    print ' ... done!\n'
+
+
     cfont = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':22 }
     plt.title('IFS: '+cfield+', coupled ORCA12-T255, '+cdate, **cfont)
 
@@ -198,7 +204,9 @@ for jt in range(Nt):
     print cfig+' created!\n'
     plt.close(1)
                 
+    del fig, ax, clb  ;#, cm
 
-
+    gc.collect()
+    
 
 
