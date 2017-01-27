@@ -73,7 +73,7 @@ if lshf:
 
 
 
-cmsk  = 'LSM'
+clsm  = 'LSM'
 
 
 imax=i2+1
@@ -82,32 +82,34 @@ Ni = i2-i1
 Nj = j2-j1
 
 
-IMSK = nmp.zeros((Nj,Ni), dtype=nmp.byte)
+LSM = nmp.zeros((Nj,Ni), dtype=nmp.float)
 XIN  = nmp.zeros((Nj,Ni))
 
 
 
 bt.chck4f(cf_lsm)
-id_msk = Dataset(cf_lsm)
+id_lsm = Dataset(cf_lsm)
 
  #    i1      imax    i2
 
 if i2 >= imax:
     print ' i2 > imax !!! => ', i2, '>', imax
-    Xall = id_msk.variables[cmsk][0,j1:j2,:]
-    IMSK[:,0:imax-i1] = Xall[:,i1:imax]*100.
+    Xall = id_lsm.variables[clsm][0,j1:j2,:]
+    LSM[:,0:imax-i1] = Xall[:,i1:imax]
     ii=imax-i1
-    IMSK[:,ii:Ni] = Xall[:,0:i2-imax]*100.
+    LSM[:,ii:Ni] = Xall[:,0:i2-imax]
     del Xall
 else:
-    IMSK[:,:]  = 100.*id_msk.variables[cmsk][0,j1:j2,i1:i2]
-id_msk.close()
+    LSM[:,:]  = id_lsm.variables[clsm][0,j1:j2,i1:i2]
+id_lsm.close()
 
 
-[ nj , ni ] = nmp.shape(IMSK)
+[ nj , ni ] = nmp.shape(LSM)
 
-#print IMSK[300:400,300:400]
-#sys.exit(0)
+idx_ocean = nmp.where(LSM[:,:] < 0.5)
+LSM[idx_ocean] = nmp.nan
+LSM = nmp.flipud(LSM)
+
 
 params = { 'font.family':'Ubuntu',
            'font.size':       int(15),
@@ -116,6 +118,13 @@ params = { 'font.family':'Ubuntu',
            'ytick.labelsize': int(15),
            'axes.labelsize':  int(15) }
 mpl.rcParams.update(params)
+
+# Pal_Sst:
+pal_sst = bcm.chose_palette(cpal)
+norm_sst = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
+
+pal_lsm  = bcm.chose_palette('blk')
+norm_lsm = colors.Normalize(vmin = 0, vmax = 1, clip = False)
 
 
 vc_sst = nmp.arange(tmin, tmax + dt, dt)
@@ -160,15 +169,7 @@ for jt in range(Nt):
     fig = plt.figure(num = 1, figsize=(8.*float(Ni)/float(Nj)*0.8 , 8.), dpi=None, facecolor='w', edgecolor='k')
     ax  = plt.axes([0.04, -0.06, 0.93, 1.02], axisbg = 'k')
 
-
-    # Pal_Sst:
-    pal_sst = bcm.chose_palette(cpal)
-    norm_sst = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
-
-    pal_msk = bcm.chose_palette('blk')
-    norm_msk = colors.Normalize(vmin = 0., vmax = 1., clip = False)
-
-    cf = plt.pcolor(nmp.flipud(XIN), cmap = pal_sst, norm = norm_sst)
+    cf = plt.imshow(nmp.flipud(XIN), cmap = pal_sst, norm = norm_sst)
 
     plt.axis([ 0, ni, 0, nj])
 
@@ -187,14 +188,9 @@ for jt in range(Nt):
     del cf
 
     # Mask
-    print ' LSM stuff...'
-    ILSM = nmp.zeros((Nj,Ni), dtype=nmp.byte)
-    ILSM[:,:] = nmp.ma.masked_where(IMSK[:,:] < 50, IMSK[:,:]*0.+40.)
-    IMSK[:,:] = nmp.flipud(ILSM[:,:])
-    del ILSM
-    #cm = plt.pcolor(IMSK, cmap = pal_msk, norm = norm_msk)
+    print ' LSM stuff...'    
+    cm = plt.imshow(LSM, cmap = pal_lsm, norm = norm_lsm)
     print ' ... done!\n'
-
 
     cfont = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':22 }
     plt.title('IFS: '+cfield+', coupled ORCA12-T255, '+cdate, **cfont)
@@ -204,7 +200,7 @@ for jt in range(Nt):
     print cfig+' created!\n'
     plt.close(1)
                 
-    del fig, ax, clb  ;#, cm
+    del fig, ax, clb, cm
 
     gc.collect()
     
