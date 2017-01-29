@@ -14,6 +14,84 @@ from matplotlib.pylab import cm
 ctrl = 0.2 ; # for logarythmic scale in 'pal_eke'
 
 
+def ncview_cmap_to_array( cname, cpath ):
+    #
+    #########################################################################################
+    #
+    # Get the NCVIEW colormap in the C header file and return an array ready for a colormap
+    #         Author: L. Brodeau, 2017
+    #
+    # cname: name of the NCVIEW colormap as in the NCVIEW header colormap files  [string]
+    #
+    # cpath: path to directory containing the NCVIEW header colormap files       [string]
+    #
+    #          => ex: colormap 'rainbow' is defined in header file 'colormaps_rainbow.h''
+    ##########################################################################################
+    
+    import os
+    import re
+    
+    cf_ncview_cmap = cpath+'/colormaps_'+cname+'.h'
+
+    if not os.path.exists(cf_ncview_cmap):
+        'ERROR: NCVIEW colormap '+cf_ncview_cmap+' not found!' ; sys.exit(0)
+    else:
+        print '\n *** Getting NCVIEW colormap "'+cname+'" from file "'+cf_ncview_cmap+'"\n'
+
+    f = open(cf_ncview_cmap, 'r')
+    cread_lines = f.readlines()
+    f.close()
+
+    lstarted = False
+    vec = []
+    for ll in cread_lines:
+
+        ll = re.sub(r'\s', '', ll)
+        ll = re.sub(r'{', ',', ll)
+        ll = re.sub(r'}', ',', ll)
+        ls = re.split(',',ll)
+    
+        if lstarted:
+            for ve in ls[:-1]: vec.append(float(ve)) ; # [:-1] is to ommit the ',' at the end
+    
+        if ls[0] == 'staticintcmap_'+cname+'[]=':
+            lstarted = True        
+            for ve in ls[1:-1]: vec.append(float(ve)) ; # [:-1] is to ommit the ',' at the end
+
+    ctmp = []
+    ii = 0
+    while ii < len(vec):
+        ctmp.append([vec[ii], vec[ii+1], vec[ii+2]])
+        ii += 3
+
+    MM = nmp.array(ctmp)/255.
+
+    return MM
+
+
+def ncview_colmap( cname, cpath ):
+    #
+    #########################################################################################
+    #
+    # Get the NCVIEW colormap in the C header file and return an array ready for a colormap
+    #         Author: L. Brodeau, 2017
+    #
+    # cname: name of the NCVIEW colormap as in the NCVIEW header colormap files  [string]
+    #
+    # cpath: path to directory containing the NCVIEW header colormap files       [string]
+    #
+    #          => ex: colormap 'rainbow' is defined in header file 'colormaps_rainbow.h''
+    ##########################################################################################
+    #
+    M = ncview_cmap_to_array( cname, cpath )
+    my_cmap = __build_colormap__(M)
+    return my_cmap
+
+
+
+
+
+
 def pal_blk():
     M = nmp.array( [
         [ 0. , 0., 0. ], # black
@@ -21,6 +99,21 @@ def pal_blk():
     ] )
     my_cmap = __build_colormap__(M)
     return my_cmap
+
+
+
+def pal_ncview():
+    M = nmp.array( [
+        [ 255,255,204  ],
+        [ 161,218,180  ],
+        [ 65,182,196  ],
+        [ 44,127,184  ],
+        [ 37,52,148  ]
+    ] ) / 255.
+    my_cmap = __build_colormap__(M, log_ctrl=ctrl)
+    return my_cmap
+
+
 
 
 
@@ -609,6 +702,7 @@ def chose_palette(cname):
     if cname == 'graylb_r': palette = pal_graylb_r()
     if cname == 'graylb2': palette = pal_graylb2()
     if cname == 'mask': palette = pal_mask()
+
     return palette
 
 
@@ -636,14 +730,15 @@ def __build_colormap__(MC, log_ctrl=0):
 
     x = 1 - y ; rr = x[nc-1] ; x  = x/rr
 
-    red  = [] ; blue = [] ; green = []
+    vred  = [] ; vblue = [] ; vgreen = []
 
     for i in range(nc):
-        red.append  ([x[i],MC[i,0],MC[i,0]])
-        green.append([x[i],MC[i,1],MC[i,1]])
-        blue.append ([x[i],MC[i,2],MC[i,2]])
+        vred.append  ([x[i],MC[i,0],MC[i,0]])
+        vgreen.append([x[i],MC[i,1],MC[i,1]])
+        vblue.append ([x[i],MC[i,2],MC[i,2]])
 
-    cdict = {'red':red, 'green':green, 'blue':blue}
+    cdict = {'red':vred, 'green':vgreen, 'blue':vblue}
+
     my_cm = matplotlib.colors.LinearSegmentedColormap('my_colormap',cdict,256)
 
     return my_cm
