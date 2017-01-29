@@ -130,10 +130,6 @@ class plot :
         plt.hold(True)
         if lkcont: plt.contour(VX, zVZ, XF, vc, colors='k', linewidths=0.2)
 
-        # Prevents from using scientific notations in axess ticks numbering:
-        ax.get_xaxis().get_major_formatter().set_useOffset(False)
-        ax.get_yaxis().get_major_formatter().set_useOffset(False)
-
         # Colorbar:
         __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
 
@@ -401,9 +397,6 @@ class plot :
 
         if ctitle != ' ': plt.title(ctitle, **font_ttl)
 
-        # Prevents from using scientific notations in axess ticks numbering:
-        #ax.get_xaxis().get_major_formatter().set_useOffset(False)
-
         plt.savefig(cfignm+'.'+cfig_type, dpi=110, orientation='portrait', transparent=False)
 
         print cfignm+'.'+cfig_type+' created!\n'
@@ -539,9 +532,6 @@ class plot :
 
         ax.grid(color='k', linestyle='-', linewidth=0.1)
         plt.title(ctitle, **font_ttl)
-
-        # Prevents from using scientific notations in axess ticks numbering:
-        #lolo: ax.get_xaxis().get_major_formatter().set_useOffset(False)
 
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False)  ; #zonal
 
@@ -1221,10 +1211,8 @@ class plot :
 
         plt.plot(VTm, VDm, mnth_col, label=r'monthly', linewidth=1)
         plt.plot(VTy, VDy, b_red, label=r'annual', linewidth=2)
-
-        # Prevents from using scientific notations in axess ticks numbering:
-        ax.get_xaxis().get_major_formatter().set_useOffset(False)
-        ax.get_yaxis().get_major_formatter().set_useOffset(False)
+        
+        ax.get_yaxis().get_major_formatter().set_useOffset(False); # Prevents from using scientific notations in axess ticks numbering
 
         if plt_m03: plt.plot(VTm[2:Nt1:12], VDm[2:Nt1:12], 'orange', label=r'March',     linewidth=2)
         if plt_m09: plt.plot(VTm[8:Nt1:12], VDm[8:Nt1:12], 'orange', label=r'September', linewidth=2)
@@ -1317,10 +1305,8 @@ class plot :
                 plt.plot(vt[:], XD[jp,:], line_styles[jp],   label=vlabels[jp], linewidth=2)
             else:
                 plt.plot(vt[:], XD[jp,:], v_dflt_colors[jp], label=vlabels[jp], linewidth=2)
-            
-        # Prevents from using scientific notations in axess ticks numbering:
-        ax.get_xaxis().get_major_formatter().set_useOffset(False)
-        ax.get_yaxis().get_major_formatter().set_useOffset(False)
+                    
+        ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
 
         if lzonal:
             dt_year = 15. ; # x-axis increment (latitude!)
@@ -1401,11 +1387,8 @@ class plot :
         ax = plt.axes(AXES_DEF) ; #1d
 
         plt.plot(vt[:], VF[:], line_styles, linewidth=2)
-
-
-        # Prevents from using scientific notations in axess ticks numbering:
-        ax.get_xaxis().get_major_formatter().set_useOffset(False)
-        ax.get_yaxis().get_major_formatter().set_useOffset(False)
+        
+        ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
 
         if xmin == 0 and xmax == 0:
             y1 = int(vt[0])
@@ -1875,6 +1858,7 @@ def __force_lowest_bound_axis__(plt_hndl, cax, imult=5):
 def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_L, dx, i_sbsmp=1, cunit=None, cfont=None, dx_minor=5):
     plt_hndl.xticks( nmp.arange(x_0, x_L+dx, dx) )
     locs, labels = plt_hndl.xticks()
+    ax_hndl.get_xaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering...
     if i_sbsmp > 1: __subsample_axis__( plt, 'x', i_sbsmp)
     if x_0%5 != 0: __force_lowest_bound_axis__( plt, 'x') ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
     ax_hndl.set_xlim(x_0,x_L)
@@ -1917,6 +1901,7 @@ def __prepare_z_log_axis__(l_log, vz):
     return zvz
 
 def __fix_z_axis__(ax_hndl, plt_hndl, z0, zK, l_log=False, l_z_inc=True):
+    ax_hndl.get_yaxis().get_major_formatter().set_useOffset(False)
     if l_log:
         y_log_ofs = 10.
         vyview_list = [ 3. , 10. , 25., 50. , 100. , 250. , 500. , 1000. , 2500.,  5000. ]
