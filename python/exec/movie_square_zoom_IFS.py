@@ -62,15 +62,10 @@ if lsst:
     cfield = 'SST'
     
 if lshf:
-    tmin=-1200. ;  tmax=500. ;  dt = 25.
-    #cpal = 'spectral'
+    tmin=-1200. ;  tmax=400. ;  dt = 25.
     #cpal = 'rainbow'
-    #cpal = 'gist_ncar'
-    cpal = 'nipy_spectral'
+    cpal = 'nrl'
     cfield = 'Net Heat Flux'
-
-
-
 
 
 clsm  = 'LSM'
@@ -120,7 +115,8 @@ params = { 'font.family':'Ubuntu',
 mpl.rcParams.update(params)
 
 # Pal_Sst:
-pal_sst = bcm.chose_palette(cpal)
+pal_sst = bcm.ncview_colmap( cpal, '/home/Earth/lbrodeau/DEV/barakuda/src/ncview_colormaps' )
+#pal_sst = bcm.chose_palette(cpal)
 norm_sst = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 
 pal_lsm  = bcm.chose_palette('blk')
@@ -167,7 +163,8 @@ for jt in range(Nt):
     cfig = 'figs/'+cv_in+'_IFS'+'_d'+ct+'.'+fig_type
 
     fig = plt.figure(num = 1, figsize=(8.*float(Ni)/float(Nj)*0.8 , 8.), dpi=None, facecolor='w', edgecolor='k')
-    ax  = plt.axes([0.04, -0.06, 0.93, 1.02], axisbg = 'k')
+    #ax  = plt.axes([0.04, -0.06, 0.93, 1.02], axisbg = 'k')
+    ax  = plt.axes([0.04, -0.04, 0.93, 1.02], axisbg = 'k')
 
     cf = plt.imshow(nmp.flipud(XIN), cmap = pal_sst, norm = norm_sst)
 
