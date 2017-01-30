@@ -19,13 +19,12 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 import datetime
-import gc
 
 import barakuda_colmap as bcm
 
 import barakuda_tool as bt
 
-gc.collect()
+year_ref_ini = 1990
 
 # South Greenland:
 #i1 = 412; i2 =486
@@ -39,11 +38,17 @@ gc.collect()
 #i1 = 0 ; i2 =511
 #j1 = 0 ; j2 = 255
 
-#Global T1279:
-i1 = 0 ; i2 = 2560
-j1 = 0 ; j2 = 1280
+#############
+# T1279:
+#############
+#Global:
+#i1 = 0 ; i2 = 2559+1
+#j1 = 0 ; j2 = 1279+1
+# Natl:
+i1 = 1849 ; i2 = 2525
+j1 = 97   ; j2 = 508
 
-year_ref_ini = 1990
+
 
 fig_type='png'
 
@@ -60,19 +65,33 @@ if lsst:
     tmin=-20.  ;  tmax=12. ;  dt = 1.
     cpal = 'sstnw'
     cfield = 'SST'
+    cunit = r'$Boo$'
     
 if lshf:
     tmin=-1200. ;  tmax=400. ;  dt = 25.
     #cpal = 'rainbow'
     cpal = 'nrl'
     cfield = 'Net Heat Flux'
+    cunit = r'$W/m^2$'
 
 
 clsm  = 'LSM'
 
 
-imax=i2+1
+# Need to know dimension:
+bt.chck4f(cf_lsm)
+id_lsm = Dataset(cf_lsm)
+vlon = id_lsm.variables['lon'][:]
+vlat = id_lsm.variables['lat'][:]
+id_lsm.close()
 
+Ni0 = len(vlon)
+Nj0 = len(vlat)
+
+print '\n Dimension of global domain:', Ni0, Nj0
+
+
+imax=Ni0+1
 Ni = i2-i1
 Nj = j2-j1
 
@@ -81,12 +100,7 @@ LSM = nmp.zeros((Nj,Ni), dtype=nmp.float)
 XIN  = nmp.zeros((Nj,Ni))
 
 
-
-bt.chck4f(cf_lsm)
 id_lsm = Dataset(cf_lsm)
-
- #    i1      imax    i2
-
 if i2 >= imax:
     print ' i2 > imax !!! => ', i2, '>', imax
     Xall = id_lsm.variables[clsm][0,j1:j2,:]
@@ -107,12 +121,16 @@ LSM = nmp.flipud(LSM)
 
 
 params = { 'font.family':'Ubuntu',
-           'font.size':       int(15),
-           'legend.fontsize': int(15),
-           'xtick.labelsize': int(15),
-           'ytick.labelsize': int(15),
-           'axes.labelsize':  int(15) }
+           'font.size':       int(12),
+           'legend.fontsize': int(12),
+           'xtick.labelsize': int(12),
+           'ytick.labelsize': int(12),
+           'axes.labelsize':  int(12) }
 mpl.rcParams.update(params)
+cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':13 }
+cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18 }
+
+
 
 # Pal_Sst:
 pal_sst = bcm.ncview_colmap( cpal, '/home/Earth/lbrodeau/DEV/barakuda/src/ncview_colormaps' )
@@ -135,6 +153,15 @@ vtime = id_in.variables['time'][:]
 id_in.close()
 del id_in
 Nt    = len(vtime)
+
+
+# Size of the figure:
+rat_Nj_Ni = float(Nj)/float(Ni) + 0.12
+rw =  10.
+rh = rw*rat_Nj_Ni
+FSZ = ( rw  , rh )
+rcorr = rat_Nj_Ni/(float(Nj0)/float(Ni0))
+print '  rcorr => ', rcorr
 
 
 for jt in range(Nt):
@@ -162,9 +189,10 @@ for jt in range(Nt):
 
     cfig = 'figs/'+cv_in+'_IFS'+'_d'+ct+'.'+fig_type
 
-    fig = plt.figure(num = 1, figsize=(8.*float(Ni)/float(Nj)*0.8 , 8.), dpi=None, facecolor='w', edgecolor='k')
+    
+    fig = plt.figure(num = 1, figsize=FSZ, dpi=None, facecolor='w', edgecolor='k')
     #ax  = plt.axes([0.04, -0.06, 0.93, 1.02], axisbg = 'k')
-    ax  = plt.axes([0.04, -0.04, 0.93, 1.02], axisbg = 'k')
+    ax  = plt.axes([0.045, -0.025*rcorr, 0.93, 1.], axisbg = 'k')
 
     cf = plt.imshow(nmp.flipud(XIN), cmap = pal_sst, norm = norm_sst)
 
@@ -179,8 +207,7 @@ for jt in range(Nt):
             cb_labs.append(' ')
         cpt = cpt + 1
     clb.ax.set_xticklabels(cb_labs)
-    cfont = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':16 }
-    clb.set_label(r'$W/m^2$', **cfont)
+    clb.set_label(cunit, **cfont_clb)
 
     del cf
 
@@ -189,17 +216,15 @@ for jt in range(Nt):
     cm = plt.imshow(LSM, cmap = pal_lsm, norm = norm_lsm)
     print ' ... done!\n'
 
-    cfont = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':22 }
-    plt.title('IFS: '+cfield+', coupled ORCA12-T255, '+cdate, **cfont)
+    plt.title('IFS: '+cfield+', coupled ORCA12-T255, '+cdate, **cfont_title)
 
     
-    plt.savefig(cfig, dpi=120, orientation='portrait', transparent=False)
+    plt.savefig(cfig, dpi=160, orientation='portrait', transparent=False)
     print cfig+' created!\n'
     plt.close(1)
                 
     del fig, ax, clb, cm
 
-    gc.collect()
     
 
 
