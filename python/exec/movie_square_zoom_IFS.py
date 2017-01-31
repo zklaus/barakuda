@@ -29,8 +29,11 @@ year_ref_ini = 1990
 #CTATM = 'T255'
 CTATM = 'T1279'
 
-dir_ncview_cmap = '/home/laurent/DEV/barakuda/src/ncview_colormaps'
-#dir_ncview_cmap ='/home/Earth/lbrodeau/DEV/barakuda/src/ncview_colormaps'
+# NCVIEW colormaps?
+dir_ncview_cmap = os.getenv('DIR_NCVIEW_CMAP')
+if dir_ncview_cmap is None:
+    print(" ERROR => the {} environement variable is not set".format('DIR_NCVIEW_CMAP'))
+    sys.exit(0)
 
 if CTATM == 'T255':
     # South Greenland:
@@ -76,8 +79,8 @@ if lt2m:
     #cpal = 'jaisnd'
     #cpal = '3gauss'
     #cpal = 'rainbow2_cmyk'
-    #cpal = 'rainbow'
-    cpal = 'rnb2'
+    cpal = 'rainbow'
+    #cpal = 'rnb2'
     #cpal = 'jaisnc'
     #cpal = 'jaisnb'
     cfield = '2m air temperature'

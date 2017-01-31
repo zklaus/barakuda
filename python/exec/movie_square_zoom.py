@@ -30,13 +30,16 @@ year_ref_ini = 1990
 #CTATM = 'T255'
 CTATM = 'T1279'
 
-dir_ncview_cmap = '/home/laurent/DEV/barakuda/src/ncview_colormaps'
-#dir_ncview_cmap ='/home/Earth/lbrodeau/DEV/barakuda/src/ncview_colormaps'
-
-
 cbox = 'NAtl'
 
 fig_type='png'
+
+# NCVIEW colormaps?
+dir_ncview_cmap = os.getenv('DIR_NCVIEW_CMAP')
+if dir_ncview_cmap is None:
+    print(" ERROR => the {} environement variable is not set".format('DIR_NCVIEW_CMAP'))
+    sys.exit(0)
+
 
 narg = len(sys.argv)
 if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file>'; sys.exit(0)
