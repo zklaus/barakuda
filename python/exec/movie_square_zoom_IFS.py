@@ -69,16 +69,20 @@ if cv_in == 'SNHF': lshf = True
 
 
 if lt2m:
-    tmin=-24.  ;  tmax=28. ;  dt = 1.
-    cpal = 'nrl'
+    tmin=-26.  ;  tmax=26. ;  dt = 1.
+    #cpal = 'nrl'
+    #cpal = 'jaisnd'
+    cpal = 'jaisnc'
     cfield = '2m air temperature'
     cunit = r'$^{\circ}C$'
+    cb_jump = 2
     
 if lsst:
     tmin=-20.  ;  tmax=12. ;  dt = 1.
     cpal = 'sstnw'
     cfield = 'SST'
     cunit = r'$Boo$'
+    cb_jump = 2
     
 if lshf:
     tmin=-1200. ;  tmax=400. ;  dt = 25.
@@ -86,6 +90,7 @@ if lshf:
     cpal = 'nrl'
     cfield = 'Net Heat Flux'
     cunit = r'$W/m^2$'
+    cb_jump = 4
 
 
 clsm  = 'LSM'
@@ -214,7 +219,7 @@ for jt in range(Nt):
     clb = plt.colorbar(cf, ticks=vc_sst, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40)
     cb_labs = [] ; cpt = 0
     for rr in vc_sst:
-        if cpt % 4 == 0:
+        if cpt % cb_jump == 0:
             cb_labs.append(str(int(rr)))
         else:
             cb_labs.append(' ')
