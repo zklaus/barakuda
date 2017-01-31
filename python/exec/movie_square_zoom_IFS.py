@@ -26,28 +26,34 @@ import barakuda_tool as bt
 
 year_ref_ini = 1990
 
-# South Greenland:
-#i1 = 412; i2 =486
-#j1 = 22 ; j2 = 56
+#CTATM = 'T255'
+CTATM = 'T1279'
 
-# NAtl:
-#i1 = 385 ; i2= 540
-#j1 =   6 ; j2 = 84
+dir_ncview_cmap = '/home/laurent/DEV/barakuda/src/ncview_colormaps'
+#dir_ncview_cmap ='/home/Earth/lbrodeau/DEV/barakuda/src/ncview_colormaps'
 
-#Global T255:
-#i1 = 0 ; i2 =511
-#j1 = 0 ; j2 = 255
+if CTATM == 'T255':
+    # South Greenland:
+    #i1 = 412; i2 =486
+    #j1 = 22 ; j2 = 56    
+    # NAtl:
+    i1 = 385 ; i2= 540
+    j1 =   6 ; j2 = 84
+    #Global T255:
+    #i1 = 0 ; i2 =511
+    #j1 = 0 ; j2 = 255
 
-#############
-# T1279:
-#############
-#Global:
-#i1 = 0 ; i2 = 2559+1
-#j1 = 0 ; j2 = 1279+1
-# Natl:
-i1 = 1849 ; i2 = 2525
-j1 = 97   ; j2 = 508
+elif CTATM == 'T1279':
+    #
+    #Global:
+    #i1 = 0 ; i2 = 2559+1
+    #j1 = 0 ; j2 = 1279+1
+    # Natl:
+    i1 = 1849 ; i2 = 2525
+    j1 = 97   ; j2 = 508
 
+else:
+    print 'UNKNOW ATMOSPHERE RESOLUTION!'; sys.exit(0)
 
 
 fig_type='png'
@@ -56,11 +62,18 @@ narg = len(sys.argv)
 if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file>'; sys.exit(0)
 cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3]
 
-lsst = False ; lshf = False 
+lsst = False ; lshf = False
+if cv_in == 'T2M':  lt2m = True
 if cv_in == 'SSTK': lsst = True
 if cv_in == 'SNHF': lshf = True
 
 
+if lt2m:
+    tmin=-24.  ;  tmax=28. ;  dt = 1.
+    cpal = 'nrl'
+    cfield = '2m air temperature'
+    cunit = r'$^{\circ}C$'
+    
 if lsst:
     tmin=-20.  ;  tmax=12. ;  dt = 1.
     cpal = 'sstnw'
@@ -133,7 +146,7 @@ cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18 }
 
 
 # Pal_Sst:
-pal_sst = bcm.ncview_colmap( cpal, '/home/Earth/lbrodeau/DEV/barakuda/src/ncview_colormaps' )
+pal_sst = bcm.ncview_colmap( cpal, dir_ncview_cmap )
 #pal_sst = bcm.chose_palette(cpal)
 norm_sst = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 
@@ -180,7 +193,7 @@ for jt in range(Nt):
     id_in.close()
     del id_in
 
-    if lsst: XIN[:,:] = XIN[:,:] - 273.15
+    if lsst or lt2m: XIN[:,:] = XIN[:,:] - 273.15
 
     ct = '%3.3i'%(jt+1)
 
@@ -216,7 +229,7 @@ for jt in range(Nt):
     cm = plt.imshow(LSM, cmap = pal_lsm, norm = norm_lsm)
     print ' ... done!\n'
 
-    plt.title('IFS: '+cfield+', coupled ORCA12-T255, '+cdate, **cfont_title)
+    plt.title('IFS: '+cfield+', coupled ORCA12-'+CTATM+', '+cdate, **cfont_title)
 
     
     plt.savefig(cfig, dpi=160, orientation='portrait', transparent=False)
