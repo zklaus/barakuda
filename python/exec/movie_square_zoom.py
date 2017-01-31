@@ -25,7 +25,6 @@ import barakuda_colmap as bcm
 
 import barakuda_tool as bt
 
-
 year_ref_ini = 1990
 
 #CTATM = 'T255'
@@ -81,25 +80,26 @@ pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
 
-params = { 'font.family':'Ubuntu',
-           'font.size':       int(15),
-           'legend.fontsize': int(15),
-           'xtick.labelsize': int(15),
-           'ytick.labelsize': int(15), # 
-           'axes.labelsize':  int(15) }
-mpl.rcParams.update(params)
 
 idx_oce = nmp.where(XMSK[:,:] > 0.5)
 
 
-#if not cfield == 'MLD': pice = nmp.zeros((nj,ni))
-
-cfontl = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':16 }
-cfontt = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':22 }
 
 
 
-# Pal_fld:
+
+params = { 'font.family':'Ubuntu',
+           'font.size':       int(12),
+           'legend.fontsize': int(12),
+           'xtick.labelsize': int(12),
+           'ytick.labelsize': int(12),
+           'axes.labelsize':  int(12) }
+mpl.rcParams.update(params)
+cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':13 }
+cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18 }
+
+
+# Colormaps for fields:
 #pal_fld = bcm.chose_palette(cpal_fld)
 pal_fld = bcm.ncview_colmap( cpal_fld, dir_ncview_cmap )
 norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
@@ -111,7 +111,7 @@ norm_ice = colors.Normalize(vmin = rmin_ice, vmax = 1, clip = False)
 pal_lsm = bcm.chose_palette('blk')
 norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
-
+rh = 7.5
 
 jt0 = 0 ;# Nt = 31
 
@@ -127,10 +127,10 @@ for jt in range(jt0,Nt):
 
     if cbox == 'SGL':
         if cfield == 'SST': tmin=-2. ;  tmax=12.   ;  dtemp = 1.
-        fig = plt.figure(num = 1, figsize=(10,9), dpi=None, facecolor='w', edgecolor='k')
+        fig = plt.figure(num = 1, figsize=(rh,7.), dpi=None, facecolor='w', edgecolor='k')
         ax  = plt.axes([0.05, -0.06, 0.93, 1.02], axisbg = 'k')
     elif cbox == 'NAtl':
-        fig = plt.figure(num = 1, figsize=(10,10), dpi=None, facecolor='w', edgecolor='k')
+        fig = plt.figure(num = 1, figsize=(rh,rh), dpi=None, facecolor='w', edgecolor='k')
         ax  = plt.axes([0.051, -0.06, 0.92, 1.02], axisbg = 'k')
 
     vc_fld = nmp.arange(tmin, tmax + dtemp, dtemp)
@@ -181,11 +181,11 @@ for jt in range(jt0,Nt):
         clb.ax.set_xticklabels(cb_labs)
         
 
-    clb.set_label(r'$^{\circ}C$', **cfontl)
-    plt.title('NEMO: '+cfield+', coupled ORCA12-'+CTATM+', '+cdate, **cfontt)
+    clb.set_label(r'$^{\circ}C$', **cfont_clb)
+    plt.title('NEMO: '+cfield+', coupled ORCA12-'+CTATM+', '+cdate, **cfont_title)
 
     
-    plt.savefig(cfig, dpi=120, orientation='portrait', transparent=False)
+    plt.savefig(cfig, dpi=160, orientation='portrait', transparent=False)
     print cfig+' created!\n'
     plt.close(1)
 

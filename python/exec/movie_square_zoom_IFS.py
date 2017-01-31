@@ -49,8 +49,10 @@ elif CTATM == 'T1279':
     #i1 = 0 ; i2 = 2559+1
     #j1 = 0 ; j2 = 1279+1
     # Natl:
-    i1 = 1849 ; i2 = 2525
-    j1 = 97   ; j2 = 508
+    #i1 = 1849 ; i2 = 2525
+    #j1 = 97   ; j2 = 508
+    i1 = 1960 ; i2 = 2550; #2680
+    j1 = 20   ; j2 = 420
 
 else:
     print 'UNKNOW ATMOSPHERE RESOLUTION!'; sys.exit(0)
@@ -69,10 +71,15 @@ if cv_in == 'SNHF': lshf = True
 
 
 if lt2m:
-    tmin=-26.  ;  tmax=26. ;  dt = 1.
-    cpal = 'nrl'
+    tmin=-16.  ;  tmax=28. ;  dt = 1.
+    #cpal = 'nrl'
     #cpal = 'jaisnd'
+    #cpal = '3gauss'
+    #cpal = 'rainbow2_cmyk'
+    #cpal = 'rainbow'
+    cpal = 'rnb2'
     #cpal = 'jaisnc'
+    #cpal = 'jaisnb'
     cfield = '2m air temperature'
     cunit = r'$^{\circ}C$'
     cb_jump = 2
@@ -122,7 +129,7 @@ id_lsm = Dataset(cf_lsm)
 if i2 >= imax:
     print ' i2 > imax !!! => ', i2, '>', imax
     Xall = id_lsm.variables[clsm][0,j1:j2,:]
-    LSM[:,0:imax-i1] = Xall[:,i1:imax]
+    LSM[:,0:imax-i1] = Xall[:,i1-1:imax]
     ii=imax-i1
     LSM[:,ii:Ni] = Xall[:,0:i2-imax]
     del Xall
@@ -175,8 +182,8 @@ Nt    = len(vtime)
 
 # Size of the figure:
 rat_Nj_Ni = float(Nj)/float(Ni) + 0.12
-rw =  10.
-rh = rw*rat_Nj_Ni
+rh =  7.5
+rw = rh/rat_Nj_Ni
 FSZ = ( rw  , rh )
 rcorr = rat_Nj_Ni/(float(Nj0)/float(Ni0))
 print '  rcorr => ', rcorr
@@ -189,7 +196,7 @@ for jt in range(Nt):
     if i2 >= imax:
         print ' i2 = ', i2
         Xall = id_in.variables[cv_in][jt,j1:j2,:]
-        XIN[:,0:imax-i1] = Xall[:,i1:imax]
+        XIN[:,0:imax-i1] = Xall[:,i1-1:imax]
         ii=imax-i1
         XIN[:,ii:Ni] = Xall[:,0:i2-imax]
         del Xall
