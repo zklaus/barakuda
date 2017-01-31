@@ -70,9 +70,9 @@ if cv_in == 'SNHF': lshf = True
 
 if lt2m:
     tmin=-26.  ;  tmax=26. ;  dt = 1.
-    #cpal = 'nrl'
+    cpal = 'nrl'
     #cpal = 'jaisnd'
-    cpal = 'jaisnc'
+    #cpal = 'jaisnc'
     cfield = '2m air temperature'
     cunit = r'$^{\circ}C$'
     cb_jump = 2
