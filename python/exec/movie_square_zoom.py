@@ -100,6 +100,7 @@ params = { 'font.family':'Ubuntu',
 mpl.rcParams.update(params)
 cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':13 }
 cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18 }
+cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':9, 'color':'0.5' }
 
 
 # Colormaps for fields:
@@ -128,13 +129,8 @@ for jt in range(jt0,Nt):
 
     cfig = 'figs/'+cv_in+'_NEMO'+'_d'+ct+'.'+fig_type    
 
-    if cbox == 'SGL':
-        if cfield == 'SST': tmin=-2. ;  tmax=12.   ;  dtemp = 1.
-        fig = plt.figure(num = 1, figsize=(rh,7.), dpi=None, facecolor='w', edgecolor='k')
-        ax  = plt.axes([0.05, -0.06, 0.93, 1.02], axisbg = 'k')
-    elif cbox == 'NAtl':
-        fig = plt.figure(num = 1, figsize=(rh,rh), dpi=None, facecolor='w', edgecolor='k')
-        ax  = plt.axes([0.051, -0.06, 0.92, 1.02], axisbg = 'k')
+    fig = plt.figure(num = 1, figsize=(rh,rh), dpi=None, facecolor='w', edgecolor='k')
+    ax  = plt.axes([0.065, 0.05, 0.9, 1.], axisbg = 'k')
 
     vc_fld = nmp.arange(tmin, tmax + dtemp, dtemp)
 
@@ -171,7 +167,16 @@ for jt in range(jt0,Nt):
     
     plt.axis([ 0, ni, 0, nj])
 
-    clb = plt.colorbar(cf, ticks=vc_fld, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40) # 
+    plt.title('NEMO: '+cfield+', coupled ORCA12-'+CTATM+', '+cdate, **cfont_title)
+
+
+
+    ax2 = plt.axes([0.055, 0.067, 0.93, 0.025])
+    clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
+
+
+    #clb = plt.colorbar(cf, ticks=vc_fld, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40) #
+    
 
     if cfield == 'MLD':         # 
         cb_labs = [] ; cpt = 0
@@ -185,8 +190,10 @@ for jt in range(jt0,Nt):
         
 
     clb.set_label(r'$^{\circ}C$', **cfont_clb)
-    plt.title('NEMO: '+cfield+', coupled ORCA12-'+CTATM+', '+cdate, **cfont_title)
 
+
+
+    ax.annotate('laurent.brodeau@bsc.es', xy=(1, 4), xytext=(890, -150), **cfont_mail)
     
     plt.savefig(cfig, dpi=160, orientation='portrait', transparent=False)
     print cfig+' created!\n'
