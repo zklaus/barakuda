@@ -54,10 +54,11 @@ vcont_ice = nmp.arange(rmin_ice, 1.05, 0.05)
 
 if cv_in == 'sosstsst':
     cfield = 'SST'
-    tmin=-2. ;  tmax=26.   ;  dtemp = 1.
+    tmin=-2. ;  tmax=28.   ;  dtemp = 1.
     #cpal_fld = 'sstnw'
-    cpal_fld = 'nrl'
+    cpal_fld = 'nrl'    
     cunit = r'$^{\circ}C$'
+    cb_jump = 2
     
 elif cv_in == 'somxl010':
     cfield == 'MLD'
@@ -175,17 +176,14 @@ for jt in range(jt0,Nt):
     ax2 = plt.axes([0.055, 0.067, 0.93, 0.025])
     clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
     #clb = plt.colorbar(cf, ticks=vc_fld, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40) #
-    
-    if cfield == 'MLD':         # 
-        cb_labs = [] ; cpt = 0
-        for rr in vc_fld:
-            if (cpt+1) % 2 == 0:
-                cb_labs.append(str(int(rr)))
-            else:
-                cb_labs.append(' ')
-            cpt = cpt + 1
-        clb.ax.set_xticklabels(cb_labs)
-        
+    cb_labs = [] ; cpt = 0
+    for rr in vc_fld:
+        if cpt % cb_jump == 0:
+            cb_labs.append(str(int(rr)))
+        else:
+            cb_labs.append(' ')
+        cpt = cpt + 1
+    clb.ax.set_xticklabels(cb_labs)
     clb.set_label(cunit, **cfont_clb)
 
     del cf

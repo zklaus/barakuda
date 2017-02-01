@@ -74,12 +74,13 @@ if cv_in == 'SNHF': lshf = True
 
 
 if lt2m:
-    tmin=-16.  ;  tmax=28. ;  dt = 1.
-    #cpal = 'nrl'
+    #tmin=-16.  ;  tmax=28. ;  dt = 1.
+    tmin=-2.  ;  tmax=28. ;  dt = 1.
+    cpal = 'nrl'
     #cpal = 'jaisnd'
     #cpal = '3gauss'
     #cpal = 'rainbow2_cmyk'
-    cpal = 'rainbow'
+    #cpal = 'rainbow'
     #cpal = 'rnb2'
     #cpal = 'jaisnc'
     #cpal = 'jaisnb'
