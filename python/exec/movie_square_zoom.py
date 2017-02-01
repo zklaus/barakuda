@@ -27,6 +27,9 @@ import barakuda_tool as bt
 
 year_ref_ini = 1990
 
+#jt0 = 248
+jt0 = 0
+
 #CTATM = 'T255'
 CTATM = 'T1279'
 
@@ -119,12 +122,9 @@ norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 rh = 7.5
 
-jt0 = 0 ;# Nt = 31
-
 for jt in range(jt0,Nt):
 
     ct = '%3.3i'%(jt+1)
-    #ct = '%3.3i'%(jt+335)
 
     cd = str(datetime.datetime.strptime('1990 '+ct, '%Y %j'))
     cdate = cd[:10] ; print ' *** cdate :', cdate
