@@ -55,7 +55,7 @@ elif CTATM == 'T1279':
     #i1 = 1849 ; i2 = 2525
     #j1 = 97   ; j2 = 508
     i1 = 1960 ; i2 = 2550; #2680
-    j1 = 20   ; j2 = 420
+    j1 = 0   ; j2 = 519
 
 else:
     print 'UNKNOW ATMOSPHERE RESOLUTION!'; sys.exit(0)
@@ -83,7 +83,7 @@ if lt2m:
     #cpal = 'rnb2'
     #cpal = 'jaisnc'
     #cpal = 'jaisnb'
-    cfield = '2m air temperature'
+    cfield = 'T2M'
     cunit = r'$^{\circ}C$'
     cb_jump = 2
     
@@ -157,19 +157,20 @@ params = { 'font.family':'Ubuntu',
 mpl.rcParams.update(params)
 cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':13 }
 cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18 }
+cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':9, 'color':'0.5' }
 
 
 
 # Pal_Sst:
-pal_sst = bcm.ncview_colmap( cpal, dir_ncview_cmap )
-#pal_sst = bcm.chose_palette(cpal)
-norm_sst = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
+pal_fld = bcm.ncview_colmap( cpal, dir_ncview_cmap )
+#pal_fld = bcm.chose_palette(cpal)
+norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 
 pal_lsm  = bcm.chose_palette('blk')
 norm_lsm = colors.Normalize(vmin = 0, vmax = 1, clip = False)
 
 
-vc_sst = nmp.arange(tmin, tmax + dt, dt)
+vc_fld = nmp.arange(tmin, tmax + dt, dt)
 
 pfin = nmp.zeros((nj,ni))
     
@@ -219,16 +220,30 @@ for jt in range(Nt):
 
     
     fig = plt.figure(num = 1, figsize=FSZ, dpi=None, facecolor='w', edgecolor='k')
-    #ax  = plt.axes([0.04, -0.06, 0.93, 1.02], axisbg = 'k')
-    ax  = plt.axes([0.045, -0.025*rcorr, 0.93, 1.], axisbg = 'k')
 
-    cf = plt.imshow(nmp.flipud(XIN), cmap = pal_sst, norm = norm_sst)
+    ax  = plt.axes([0.055, 0.05, 0.9, 1.], axisbg = 'k')
+
+    cf = plt.imshow(nmp.flipud(XIN), cmap = pal_fld, norm = norm_fld)
 
     plt.axis([ 0, ni, 0, nj])
 
-    clb = plt.colorbar(cf, ticks=vc_sst, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40)
+    # Mask
+    print ' LSM stuff...'    
+    cm = plt.imshow(LSM, cmap = pal_lsm, norm = norm_lsm)
+
+    plt.title('IFS: '+cfield+', coupled ORCA12-'+CTATM+', '+cdate, **cfont_title)
+
+
+
+
+
+
+
+    ax2 = plt.axes([0.04, 0.08, 0.93, 0.025])
+    clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
+    #clb = plt.colorbar(cf, ticks=vc_fld, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40)
     cb_labs = [] ; cpt = 0
-    for rr in vc_sst:
+    for rr in vc_fld:
         if cpt % cb_jump == 0:
             cb_labs.append(str(int(rr)))
         else:
@@ -239,13 +254,8 @@ for jt in range(Nt):
 
     del cf
 
-    # Mask
-    print ' LSM stuff...'    
-    cm = plt.imshow(LSM, cmap = pal_lsm, norm = norm_lsm)
-    print ' ... done!\n'
 
-    plt.title('IFS: '+cfield+', coupled ORCA12-'+CTATM+', '+cdate, **cfont_title)
-
+    ax.annotate('laurent.brodeau@bsc.es', xy=(1, 4), xytext=(480, -85), **cfont_mail)
     
     plt.savefig(cfig, dpi=160, orientation='portrait', transparent=False)
     print cfig+' created!\n'
