@@ -203,8 +203,12 @@ function barakuda_first_last_years()
 {
     cd ${NEMO_OUT_D}/
     if [ ${ece_run} -gt 0 ]; then
-        if [ ! -d 001 ]; then echo "ERROR: since ece_run=${ece_run}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; exit ; fi
-        nby_ece=`ls -d */ | wc -l` ; echo " ${nby_ece} years have been completed..."
+        if [ ! -d 001 ]; then
+            echo " *** Inside: `pwd` !"; \ls -l ; echo
+            echo "ERROR: since ece_run=${ece_run}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; echo; exit
+        fi
+        nby_ece=`ls -d ???/ |  grep "[^0-9]" | wc -l`
+        echo " ${nby_ece} years have been completed..."
         cd 001/
     fi
 
