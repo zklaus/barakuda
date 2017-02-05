@@ -10,7 +10,7 @@ import sys
 import numpy as nmp
 
 # List of Barakuda home-made colormaps:
-list_cmap_barakuda = [ 'blk', 'cb1', 'eke', 'bathy', 'mld', 'jetblanc', 'amoc',
+list_barakuda = [ 'blk', 'cb1', 'eke', 'bathy', 'mld', 'jetblanc', 'amoc',
                        'sst1', 'sst2', 'sst3', 'ice', 'blanc', 'rms',
                        'sigtr', 'bbr', 'bbr2', 'bbr0', 'bbr_cold', 'bbr_warm',
                        'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask' ]
@@ -27,7 +27,7 @@ def chose_colmap( cname ):
         ColorMap = __build_colormap__(M)
         
         # Maybe a barakuda colormap ?
-    elif cname in list_cmap_barakuda:
+    elif cname in list_barakuda or ( cname[-2:] == '_r' and cname[:-2] in list_barakuda):
         print '\n *** Getting Barakuda colormap "'+cname+'" !'
         x = brkd_cmap(cname)
         ColorMap = x.clrmp()
@@ -43,7 +43,7 @@ def chose_colmap( cname ):
             fToCall = getattr(cm, cname)
             ColorMap = fToCall
         else:
-            print 'ERROR: (chose_ColorMap of barakuda_colmap.py) do not know where to get colormap "'+cname+'" !'
+            print 'ERROR: (chose_colmap of barakuda_colmap.py) do not know where to get colormap "'+cname+'" !'
             sys.exit(0)
 
     return ColorMap
