@@ -17,6 +17,8 @@ import barakuda_tool as bt
 import barakuda_orca as bo
 import barakuda_ncio as bnc
 
+
+
 # Box nino 3.4:
 lon1_nino = 360. - 170.  ; # east
 lat1_nino = -5.
@@ -77,13 +79,6 @@ id_mm.close()
 [ nk, nj, ni ] = rmask.shape
 
 
-Xarea_t = nmp.zeros((nj, ni))
-Xarea_t[:,:] = re1t[:,:]*re2t[:,:]*rmask[0,:,:]*1.E-6 ; # [10^6 m^2] !
-Socean = nmp.sum( Xarea_t[:,:] )
-print '\n  *** Surface of the ocean = ', Socean* 1.E-6, '  [10^6 km^2]\n'
-
-
-
 cfe_sflx = vdic['FILE_FLX_SUFFIX']
 l_fwf = False
 l_htf = False
@@ -92,31 +87,37 @@ if cfe_sflx in vdic['NEMO_SAVED_FILES']:
     l_htf = True
     cf_F_in = replace(cf_T_in, 'grid_T', cfe_sflx)
 
-Xe1t = nmp.zeros((nk, nj, ni))
-Xe2t = nmp.zeros((nk, nj, ni))
-for jk in range(nk):
-    Xe1t[jk,:,:] = re1t[:,:]
-    Xe2t[jk,:,:] = re2t[:,:]
-    
+Xa   = nmp.zeros((nj, ni))
+Xv   = nmp.zeros((nk, nj, ni))
+Xa[:,:] = re1t[:,:]*re2t[:,:]
 del re1t, re2t
 
+for jk in range(nk):
+    Xv[jk,:,:] = Xa[:,:]*Xe3t[jk,:,:]
+
+Xarea_t = nmp.zeros((nj, ni))
+Xarea_t[:,:] = Xa[:,:]*rmask[0,:,:]*1.E-6 ; # [10^6 m^2] !
+Socean = nmp.sum( Xarea_t[:,:] )
+print '\n  *** Surface of the ocean = ', Socean* 1.E-6, '  [10^6 km^2]\n'
+
+
+
 print 'Opening different basin masks in file '+vdic['BM_FILE']
+
+list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
+nb_basins = len(list_basin_names)
+mask = nmp.zeros((nb_basins,nk,nj,ni))
+msk_tmp = nmp.zeros((nj,ni))
+mask[0,:,:,:] = rmask[:,:,:] ; # global
+
 id_bm = Dataset(vdic['BM_FILE'])
-mask_atl = id_bm.variables['tmaskatl'][:,:]
-mask_pac = id_bm.variables['tmaskpac'][:,:]
-mask_ind = id_bm.variables['tmaskind'][:,:]
+for jb in range(1,nb_basins) :
+    msk_tmp[:,:] = id_bm.variables['tmask'+list_basin_names[jb]][:,:]
+    for jk in range(nk):
+        mask[jb,jk,:,:] = msk_tmp[:,:]*rmask[jk,:,:]
 id_bm.close()
 
-mask = nmp.zeros((4,nk,nj,ni))
-
-mask[0,:,:,:] = rmask[:,:,:] ; # global
-for jk in range(nk):
-    mask[1,jk,:,:] = mask_atl[:,:]*rmask[jk,:,:]
-    mask[2,jk,:,:] = mask_pac[:,:]*rmask[jk,:,:]
-    mask[3,jk,:,:] = mask_ind[:,:]*rmask[jk,:,:]
-del rmask, mask_atl, mask_pac, mask_ind
-
-
+del rmask, msk_tmp
 
 
 
@@ -158,7 +159,7 @@ if l_htf:
         if l_qnt: vqnt[jt] = nmp.sum( QNT_m[jt,:,:]*Xarea_t ) * 1.E-9 ;  # to PW
         if l_qsr: vqsr[jt] = nmp.sum( QSR_m[jt,:,:]*Xarea_t ) * 1.E-9 ;  # to PW
 
-    cf_out   = vdic['DIAG_D']+'/mean_htf_'+CONFRUN+'_global.nc'
+    cf_out   = vdic['DIAG_D']+'/mean_htf_'+CONFRUN+'_GLO.nc'
     bnc.wrt_appnd_1d_series(vtime, vqnt, cf_out, 'Qnet',
                             cu_t='year', cu_d='PW',  cln_d ='Globally averaged net heat flux (nemo:'+cv_qnt+')',
                             vd2=vqsr, cvar2='Qsol',  cln_d2='Globally averaged net solar heat flux (nemo:'+cv_qsr+')',
@@ -251,7 +252,7 @@ if l_fwf:
         if l_evp: vevp[jt] = nmp.sum( EVP_m[jt,:,:]*Xarea_t ) * 1.E-3 ;  # to Sv
         if l_evb: vevb[jt] = nmp.sum( EVB_m[jt,:,:]*Xarea_t ) * 1.E-3 ;  # to Sv
 
-    cf_out   = vdic['DIAG_D']+'/mean_fwf_'+CONFRUN+'_global.nc'
+    cf_out   = vdic['DIAG_D']+'/mean_fwf_'+CONFRUN+'_GLO.nc'
 
     bnc.wrt_appnd_1d_series(vtime, vfwf, cf_out, 'EmPmR',
                             cu_t='year', cu_d='Sv',  cln_d ='Globally averaged net freshwater flux (nemo:'+cv_fwf+')',
@@ -331,7 +332,7 @@ if l_mld:
         mask2d[:,:] = 0.
         mask2d[j1:j2,i1:i2] = mask[0,0,j1:j2,i1:i2]
 
-        Vts = bo.mean_2d(MLD_m, mask2d[:,:], Xe1t[0,:,:], Xe2t[0,:,:])
+        Vts = bo.mean_2d(MLD_m, mask2d[:,:], Xa[:,:])
 
         # NETCDF:
         cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFRUN+'_'+cbox+'.nc' ;  cv1 = cvar
@@ -378,29 +379,16 @@ for cvar in [ vdic['NN_SST'], vdic['NN_SSS'], vdic['NN_SSH'] ]:
 
 
     joce = 0
-
-    for cocean in bo.voce2treat[:]:
+    for cocean in list_basin_names[:]:
 
         print 'Treating '+cvar+' for '+cocean
 
-        Vts = bo.mean_2d(Xs_m, mask[joce,0,:,:], Xe1t[0,:,:], Xe2t[0,:,:])
-
-
-        #if 'cf_out' in locals() or 'cf_out' in globals():
-        #    f = open(cf_out, 'a'); # 'w' would erase...
-        #    f.write('#      Year       Mean ('+cocean+')\n')
-        #    for jt in range(nt):
-        #        f.write('%13.6f'%vtime[jt])
-        #        f.write('  '+'%13.6f'%round(Vts[jt],6))
-        #        f.write('\n')
-        #    f.close()
-        #    print cf_out+' written!'
-
+        Vts = bo.mean_2d(Xs_m, mask[joce,0,:,:], Xa[:,:])
 
         # NETCDF:
         cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFRUN+'_'+cocean+'.nc' ;  cv1 = cvar
         bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
-                                cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on ocean '+cocean)
+                                cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on region '+list_basin_lgnms[joce])
 
         joce = joce + 1
 
@@ -430,7 +418,7 @@ else:
     Xs_m = id_in.variables[vdic['NN_SST']][:,:,:]
 id_in.close()
 
-Vts = bo.mean_2d(Xs_m[:,j1:j2+1,i1:i2+1], mask[0,0,j1:j2+1,i1:i2+1], Xe1t[0,j1:j2+1,i1:i2+1], Xe2t[0,j1:j2+1,i1:i2+1])
+Vts = bo.mean_2d(Xs_m[:,j1:j2+1,i1:i2+1], mask[0,0,j1:j2+1,i1:i2+1], Xa[j1:j2+1,i1:i2+1])
 
 
 #if 'cf_out' in locals() or 'cf_out' in globals():
@@ -497,20 +485,19 @@ for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
 
     joce = 0
 
-    for cocean in bo.voce2treat[:]:
+    for cocean in list_basin_names[:]:
+        
+        colnm = list_basin_lgnms[joce]
 
-
-        print 'Treating '+cvar+' for '+cocean
-
-
+        print 'Treating '+cvar+' for '+cocean+' ('+colnm+')'
 
         # I) Montly mean for diffrent depth ranges
         # ========================================
-
-        Vts_tot   = bo.mean_3d(Xd_m, mask[joce,:,:,:], Xe1t, Xe2t, Xe3t) ; # Top to bottom
-        Vts_0_100 = bo.mean_3d(Xd_m[:,:j100m,:,:], mask[joce,:j100m,:,:], Xe1t[:j100m,:,:], Xe2t[:j100m,:,:], Xe3t[:j100m,:,:])
-        Vts_100_1000 = bo.mean_3d(Xd_m[:,j100m:j1000m,:,:], mask[joce,j100m:j1000m,:,:], Xe1t[j100m:j1000m,:,:], Xe2t[j100m:j1000m,:,:], Xe3t[j100m:j1000m,:,:])
-        Vts_1000_bot = bo.mean_3d(Xd_m[:,j1000m:,:,:], mask[joce,j1000m:,:,:], Xe1t[j1000m:,:,:], Xe2t[j1000m:,:,:], Xe3t[j1000m:,:,:])
+        
+        Vts_tot      = bo.mean_3d(Xd_m[:,:,:,:],            mask[joce,:,:,:],            Xv[:,:,:]) ; # Top to bottom
+        Vts_0_100    = bo.mean_3d(Xd_m[:,:j100m,:,:],       mask[joce,:j100m,:,:],       Xv[:j100m,:,:])
+        Vts_100_1000 = bo.mean_3d(Xd_m[:,j100m:j1000m,:,:], mask[joce,j100m:j1000m,:,:], Xv[j100m:j1000m,:,:])
+        Vts_1000_bot = bo.mean_3d(Xd_m[:,j1000m:,:,:],      mask[joce,j1000m:,:,:],      Xv[j1000m:,:,:])
 
         cf_out = vdic['DIAG_D']+'/3d_'+cvar+'_'+CONFRUN+'_'+cocean+'.nc'
         cv1 = cvar+'_0-bottom'
@@ -518,12 +505,13 @@ for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
         cv3 = cvar+'_100-1000'
         cv4 = cvar+'_1000-bottom'
 
+        # LOLO: wrt_appnd_1d_series is not the problem !
 
         bnc.wrt_appnd_1d_series(vtime, Vts_tot, cf_out, cv1,
-                                cu_t='year', cu_d='Unknown', cln_d ='3D-average of '+cvar+': surface to bottom, '+cocean,
-                                vd2=Vts_0_100,    cvar2=cv2, cln_d2='3D-average of '+cvar+': surface to 100m, '+cocean,
-                                vd3=Vts_100_1000, cvar3=cv3, cln_d3='3D-average of '+cvar+': 100m to 1000m, '+cocean,
-                                vd4=Vts_1000_bot, cvar4=cv4, cln_d4='3D-average of '+cvar+': 1000m to bottom, '+cocean)
+                                cu_t='year', cu_d='Unknown', cln_d ='3D-average of '+cvar+': surface to bottom, '+colnm,
+                                vd2=Vts_0_100,    cvar2=cv2, cln_d2='3D-average of '+cvar+': surface to 100m, '+colnm,
+                                vd3=Vts_100_1000, cvar3=cv3, cln_d3='3D-average of '+cvar+': 100m to 1000m, '+colnm,
+                                vd4=Vts_1000_bot, cvar4=cv4, cln_d4='3D-average of '+cvar+': 1000m to bottom, '+colnm)
 
 
 
@@ -534,7 +522,7 @@ for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
 
         for jk in range(nk):
 
-            [ rf ] = bo.mean_2d(Xd_y[:,jk,:,:], mask[joce,jk,:,:], Xe1t[jk,:,:], Xe2t[jk,:,:])
+            [ rf ] = bo.mean_2d(Xd_y[:,jk,:,:], mask[joce,jk,:,:], Xa[:,:])
 
             Vf[jk] = rf
 
@@ -561,7 +549,7 @@ for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
             id_t = f_out.createVariable('time','f4',('time',)) ;      id_t.units = 'year'
             id_z = f_out.createVariable('deptht','f4',('deptht',)) ;  id_z.units = 'm'
             id_v01   = f_out.createVariable(cvar ,'f4',('time','deptht',))
-            id_v01.long_name = 'Horizontally-averaged '+cvar+': '+cocean
+            id_v01.long_name = 'Horizontally-averaged '+cvar+': '+colnm
             # Writing depth vector
             id_z[:] = vdepth[:]
             id_t[jrec2write] = float(jyear)+0.5

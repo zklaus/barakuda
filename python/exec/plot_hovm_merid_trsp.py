@@ -5,7 +5,6 @@
 
 import sys
 import os
-#import math
 import numpy as nmp
 from netCDF4 import Dataset
 
@@ -14,42 +13,18 @@ import barakuda_plot as bp
 import barakuda_tool as bt
 
 
+venv_needed = {'ORCA','RUN','DIAG_D','BM_FILE'}
+
+vdic = bt.check_env_var(sys.argv[0], venv_needed)
+
+CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
 
 
-
-
-
-
-
-ORCA = os.getenv('ORCA')
-if ORCA == None: print 'The ORCA environement variable is no set'; sys.exit(0)
-
-RUN = os.getenv('RUN')
-if RUN == None: print 'The RUN environement variable is no set'; sys.exit(0)
-
-DIAG_D = os.getenv('DIAG_D')
-if DIAG_D == None: print 'The DIAG_D environement variable is no set'; sys.exit(0)
-
-
-CONFRUN = ORCA+'-'+RUN
-
-
-
-
-
-#if len(sys.argv) != 4:
-#    print 'Usage: '+sys.argv[0]+' <YYYY1> <YYYY2> <Nb. lat. points>'
-#    sys.exit(0)
-
-#cy1  = sys.argv[1] ; cy2 = sys.argv[2] ; jy1=int(cy1); jy2=int(cy2)
-#nj   = int(sys.argv[3])
-
-
-path_fig=DIAG_D+'/'
+path_fig=vdic['DIAG_D']+'/'
 
 fig_type='png'
 
-cf_in = DIAG_D+'/merid_transport_T_S_'+CONFRUN+'.nc'
+cf_in = vdic['DIAG_D']+'/merid_transport_T_S_'+CONFRUN+'.nc'
 
 
 if not os.path.exists(cf_in):
@@ -58,8 +33,12 @@ if not os.path.exists(cf_in):
 
 
 
+#list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
+# As in cdfmhst.F90:
+list_basin_names = [ 'GLO','atl','pac','ind' ]
+list_basin_lgnms = [ 'Global Ocean','Atlantic Ocean','Pacific Ocean','Indian Ocean' ]
+nbasins = len(list_basin_names)
 
-nbasins = len(bo.voce2treat)
 
 id_in = Dataset(cf_in)
 
@@ -67,17 +46,17 @@ vyear = id_in.variables['time'][:]   ; Nby = len(vyear) ; ittic = bt.iaxe_tick(N
 vyear = vyear - 0.5
 vlat  = id_in.variables['lat'][:]    ; Nlat = len(vlat)
 
-for jb in range(nbasins):
+for joce in range(nbasins):
 
-    cbasin = bo.voce2treat[jb] ; # long name of basin
-    cbas   = cbasin[:3] ;           # name as in cf_in ...
+    cbas   = list_basin_names[joce] ; # name as in cf_in ...
+    cbasin = list_basin_lgnms[joce] ; # long name of basin
     
-    if jb == 0:
+    if joce == 0:
         Xheat = nmp.zeros(nbasins*Nby*Nlat) ; Xheat.shape = [ nbasins, Nby, Nlat ]
         Xsalt = nmp.zeros(nbasins*Nby*Nlat) ; Xsalt.shape = [ nbasins, Nby, Nlat ]
 
-    Xheat[jb,:,:] = id_in.variables['zomht_'+cbas][:,:]
-    Xsalt[jb,:,:] = id_in.variables['zomst_'+cbas][:,:]
+    Xheat[joce,:,:] = id_in.variables['zomht_'+cbas][:,:]
+    Xsalt[joce,:,:] = id_in.variables['zomst_'+cbas][:,:]
     print ' *** zomht_'+cbas+' and zomst_'+cbas+' sucessfully read into '+cf_in
 
 id_in.close()
@@ -89,18 +68,18 @@ print ''
 
 imask  = nmp.zeros(Nlat*Nby); imask.shape = [ Nby, Nlat ]
 
-for jb in range(nbasins):
+for joce in range(nbasins):
 
-    if jb == 0:
+    if joce == 0:
         vyear = nmp.trunc(vyear) + 0.5 ; # in case 1990 and not 1990.5 !!!
         yr1=float(int(min(vyear)))
         yr2=float(int(max(vyear)))
 
-
-    cbasin = bo.voce2treat[jb]; print '\n *** Basin: '+cbasin
+    cbas   = list_basin_names[joce] ; # name as in cf_in ...
+    cbasin = list_basin_lgnms[joce] ; # long name of basin
 
     imask[:,:] = 0
-    Lfinite = nmp.isfinite(Xheat[jb,:,:]) ; idx_good = nmp.where(Lfinite)
+    Lfinite = nmp.isfinite(Xheat[joce,:,:]) ; idx_good = nmp.where(Lfinite)
     imask[idx_good] = 1
             
     # time record to consider to chose a min and a max for colorbar:
@@ -108,13 +87,13 @@ for jb in range(nbasins):
     if Nby <= 10: jt_ini = 1
     if Nby ==  1: jt_ini = 0
 
-    [ rmin, rmax, rdf ] = bt.get_min_max_df(Xheat[jb,jt_ini:,:],40)
+    [ rmin, rmax, rdf ] = bt.get_min_max_df(Xheat[joce,jt_ini:,:],40)
 
-    bp.plot("vert_section")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xheat[jb,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
+    bp.plot("vert_section")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xheat[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
                             rmin, rmax, rdf,
                             cpal='RdBu', xmin=yr1, xmax=yr2+1., dx=ittic, lkcont=False,
                             zmin = vlat[0], zmax = vlat[Nlat-1], l_zlog=False, 
-                            cfignm=path_fig+'MHT_'+CONFRUN+'_'+cbasin, cbunit='PW', cxunit='',
+                            cfignm=path_fig+'MHT_'+CONFRUN+'_'+cbas, cbunit='PW', cxunit='',
                             czunit=r'Latitude ($^{\circ}$N)',
                             ctitle=CONFRUN+': Northward advective meridional heat transport, '+cbasin,
                             cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2, l_z_increase=True)
@@ -123,13 +102,13 @@ for jb in range(nbasins):
 
     # Salt transport
 
-    [ rmin, rmax, rdf ] = bt.get_min_max_df(Xsalt[jb,jt_ini:,:],40)
+    [ rmin, rmax, rdf ] = bt.get_min_max_df(Xsalt[joce,jt_ini:,:],40)
 
-    bp.plot("vert_section")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xsalt[jb,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
+    bp.plot("vert_section")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xsalt[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
                             rmin, rmax, rdf,
                             cpal='RdBu', xmin=yr1, xmax=yr2+1., dx=ittic, lkcont=False,
                             zmin = vlat[0], zmax = vlat[Nlat-1], l_zlog=False, 
-                            cfignm=path_fig+'MST_'+CONFRUN+'_'+cbasin, cbunit=r'10$^3$ tons/s', cxunit='',
+                            cfignm=path_fig+'MST_'+CONFRUN+'_'+cbas, cbunit=r'10$^3$ tons/s', cxunit='',
                             czunit=r'Latitude ($^{\circ}$N)',
                             ctitle=CONFRUN+': Northward advective meridional salt transport, '+cbasin,
                             cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2, l_z_increase=True)

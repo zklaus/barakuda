@@ -28,7 +28,7 @@ itrsp  = 1
 ifwf   = 1  ; # freshwater fluxes at the surface
 
 
-venv_needed = {'LIST_RUNS','DIAG_DIR','CONF','FIG_FORMAT', \
+venv_needed = {'LIST_RUNS','DIAG_DIR','CONF','FIG_FORMAT', 'BM_FILE', \
                'NN_SST','NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD', \
                'TRANSPORT_SECTION_FILE','LMOCLAT','i_do_ifs_flx'}
 
@@ -87,6 +87,9 @@ def test_nb_mnth_rec(nbmn, nbyr, cnd):
 # Only one column to read:
 ##########################
 
+if i2dfl == 1 or i3dfl == 1 :
+    list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
+
 if i2dfl == 1:
 
     vvar  = [ vdic['NN_SSH'], vdic['NN_SSS'], vdic['NN_SST'] ]
@@ -98,8 +101,9 @@ if i2dfl == 1:
     for cvar in vvar:
         cdiag = 'mean_'+cvar
         print '\n Treating '+cdiag
-
-        for cocean in bo.voce2treat:
+        
+        joce = 0
+        for cocean in list_basin_names :
             Xf[:,:] = 0. ; jrun = 0
             for confrun in clist_confruns:
 
@@ -114,8 +118,8 @@ if i2dfl == 1:
 
             bp.plot("1d_multi")(vtime[:], Xf[:,:], clist_runs, cfig_type=cffig,
                                 cfignm=cdiag+'_comparison_'+cocean, dt_year=ittic, loc_legend=DEFAULT_LEGEND_LOC,
-                                cyunit=vunit[jvar], ctitle = vname[jvar]+', '+cocean, ymin=0, ymax=0)
-
+                                cyunit=vunit[jvar], ctitle = vname[jvar]+', '+list_basin_lgnms[joce], ymin=0, ymax=0)
+            joce = joce + 1
         jvar = jvar+1
 
 
@@ -185,7 +189,8 @@ if i3dfl == 1:
         cdiag = '3d_'+cvar
         print '\n Treating '+cdiag
 
-        for cocean in bo.voce2treat:
+        joce = 0
+        for cocean in list_basin_names :
 
             # along the 4 columns of temperature
             idepth=0
@@ -206,10 +211,11 @@ if i3dfl == 1:
 
                 bp.plot("1d_multi")(vtime[:], Xf[:,:], clist_runs, cfig_type=cffig,
                                     cfignm=cdiag+'_comparison_'+cocean+'_'+cdepth, dt_year=ittic, loc_legend=DEFAULT_LEGEND_LOC,
-                                    cyunit=vunit[jdiag], ctitle = vname[jdiag]+', '+cocean+', depth range = '+cdepth, ymin=0, ymax=0)
+                                    cyunit=vunit[jdiag], ctitle = vname[jdiag]+', '+list_basin_lgnms[joce]+', depth range = '+cdepth, ymin=0, ymax=0)
 
                 idepth = idepth + 1
-
+                
+            joce = joce + 1
 
         jdiag = jdiag+1
 
@@ -399,7 +405,7 @@ if ifwf == 1:
         jrun=0
         for confrun in clist_confruns:
 
-            cf_in = cd_diag+'/'+confrun+'/mean_fwf_'+confrun+'_global.nc'
+            cf_in = cd_diag+'/'+confrun+'/mean_fwf_'+confrun+'_GLO.nc'
 
             vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
             nbm = len(vt0)
@@ -420,7 +426,7 @@ if ifwf == 1:
         # Checking if there are filef for IFS:
         l_fwf_ifs = True  ;  jrun=0
         for confrun in clist_confruns:
-            cf_in = cd_diag+'/'+confrun+'/mean_fwf_IFS_'+clist_runs[jrun]+'_global.nc'
+            cf_in = cd_diag+'/'+confrun+'/mean_fwf_IFS_'+clist_runs[jrun]+'_GLO.nc'
             print '  *** Checking for the existence of '+cf_in
             if os.path.exists(cf_in):
                 print "  *** IFS FWF files found!"
@@ -444,7 +450,7 @@ if ifwf == 1:
     
                 jrun=0
                 for confrun in clist_confruns:
-                    cf_in = cd_diag+'/'+confrun+'/mean_fwf_IFS_'+clist_runs[jrun]+'_global.nc'
+                    cf_in = cd_diag+'/'+confrun+'/mean_fwf_IFS_'+clist_runs[jrun]+'_GLO.nc'
     
                     vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
                     nbm = len(vt0)

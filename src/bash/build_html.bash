@@ -15,9 +15,9 @@ function build_index_html()
     cd ${DIAG_D}/
 
     rm -f index.html
-
-    if [ -z ${EXTRA_CONF} ]; then echo "Problem, variable EXTRA_CONF is not set!" ; exit; fi
     
+    if [ "${EXTRA_CONF}" = "" ]; then echo "Problem, variable EXTRA_CONF is not set!" ; exit; fi
+
     TITLE="Ocean diagnostics<br>Experiment: \"${RUN}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
     if [ ${ece_run} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
 
@@ -30,10 +30,10 @@ function build_index_html()
         cat >> index.html <<EOF
     ${ctl} Diags from climatology (${CLIM_PER}) ${ctr}
     <big> <a href="./temp_sal/index.html"> Temperature and Salinity vs CLIM</a> </big>             ${spf}
-    <big> <a href="./ssh/index.html">  Sea Surface Height </a> </big>                              ${spf}
-    <big> <a href="./sea_ice/index.html">  Arctic and Antarctic sea-ice extent vs CLIM </a> </big> ${spf}
-    <big> <a href="./mld/index.html">  Mixed Layer depth in relevent regions </a> </big>           ${spf}
-    <big> <a href="./moc/index.html">  Meridional Overturning Circulation </a> </big>              ${spf}
+        <big> <a href="./ssh/index.html">  Sea Surface Height </a> </big>                              ${spf}
+        <big> <a href="./sea_ice/index.html">  Arctic and Antarctic sea-ice extent vs CLIM </a> </big> ${spf}
+        <big> <a href="./mld/index.html">  Mixed Layer depth in relevent regions </a> </big>           ${spf}
+        <big> <a href="./moc/index.html">  Meridional Overturning Circulation </a> </big>              ${spf}
 EOF
         if [ ${i_do_sect} -eq 1 ]; then
             echo "<big> <a href='./temp_sal/index_sections.html'> Zonal/Meridional sections of T & S vs CLIM</a> </big>    ${spf}" >> index.html
@@ -41,22 +41,22 @@ EOF
         #
         if ${lcomp_to_run}; then
             cat >> index.html <<EOF
-    ${ctl} Comparison with run ${RUNREF}, climatology (2004-2007) ${ctr}
-    <big> <a href="./temp_sal/index_${RUNREF}.html"> Temperature and Salinity vs ${RUNREF}</a> </big>             ${spf}
-    <!--        <big> <a href="./ssh/index_${RUNREF}.html">  Sea Surface Height </a> </big>                       ${spf}
-    <big> <a href="./sea_ice/index_${RUNREF}.html">  Arctic and Antarctic sea-ice extent vs ${RUNREF} </a> </big> ${spf}
-    <big> <a href="./mld/index_${RUNREF}.html">  Mixed Layer depth in relevent regions </a> </big>                ${spf}
-    <big> <a href="./moc/index_${RUNREF}.html">  Meridional Overturning Circulation </a> </big>                   ${spf}
-    -->
+            ${ctl} Comparison with run ${RUNREF}, climatology (2004-2007) ${ctr}
+            <big> <a href="./temp_sal/index_${RUNREF}.html"> Temperature and Salinity vs ${RUNREF}</a> </big>             ${spf}
+            <!--        <big> <a href="./ssh/index_${RUNREF}.html">  Sea Surface Height </a> </big>                       ${spf}
+            <big> <a href="./sea_ice/index_${RUNREF}.html">  Arctic and Antarctic sea-ice extent vs ${RUNREF} </a> </big> ${spf}
+            <big> <a href="./mld/index_${RUNREF}.html">  Mixed Layer depth in relevent regions </a> </big>                ${spf}
+            <big> <a href="./moc/index_${RUNREF}.html">  Meridional Overturning Circulation </a> </big>                   ${spf}
+            -->
 EOF
         fi
     fi
 
     if [ ${i_do_movi} -eq 1 ]; then
         cat >> index.html <<EOF
-    ${ctl} Evolution of SST and SSS biases (w.r.t observations) ${ctr}
-    ${img_l} dsst_${cr}.gif ${img_r}
-    ${img_l} dsss_${cr}.gif ${img_r}
+        ${ctl} Evolution of SST and SSS biases (w.r.t observations) ${ctr}
+        ${img_l} dsst_${cr}.gif ${img_r}
+        ${img_l} dsss_${cr}.gif ${img_r}
 EOF
     fi
 
@@ -75,10 +75,10 @@ EOF
     ${img_l} 3d_thetao_lev_${cr}.${ff} ${img_r}
     ${img_l} 3d_thetao_basins_${cr}.${ff} ${img_r}
     ${img_l} Nino34_${cr}.${ff} ${img_r}
-    ${img_l} hov_temperature_${cr}_global.${ff} ${img_r}
-    ${img_l} hov_temperature_${cr}_atlantic.${ff} ${img_r}
-    ${img_l} hov_temperature_${cr}_pacific.${ff} ${img_r}
-    ${img_l} hov_temperature_${cr}_indian.${ff} ${img_r}
+    ${img_l} hov_temperature_${cr}_GLO.${ff} ${img_r}
+    ${img_l} hov_temperature_${cr}_atl.${ff} ${img_r}
+    ${img_l} hov_temperature_${cr}_pac.${ff} ${img_r}
+    ${img_l} hov_temperature_${cr}_ind.${ff} ${img_r}
 EOF
 
     # Salinity page
@@ -88,18 +88,18 @@ EOF
     ${img_l} mean_sos_${cr}.${ff} ${img_r}
     ${img_l} 3d_so_lev_${cr}.${ff} ${img_r}
     ${img_l} 3d_so_basins_${cr}.${ff} ${img_r}
-    ${img_l} hov_salinity_${cr}_global.${ff} ${img_r}
-    ${img_l} hov_salinity_${cr}_atlantic.${ff} ${img_r}
-    ${img_l} hov_salinity_${cr}_pacific.${ff} ${img_r}
-    ${img_l} hov_salinity_${cr}_indian.${ff} ${img_r}
+    ${img_l} hov_salinity_${cr}_GLO.${ff} ${img_r}
+    ${img_l} hov_salinity_${cr}_atl.${ff} ${img_r}
+    ${img_l} hov_salinity_${cr}_pac.${ff} ${img_r}
+    ${img_l} hov_salinity_${cr}_ind.${ff} ${img_r}
 EOF
 
 
 
     # Surface heat flux diagnostics:
     LIST_HF_FIG="htf_qnt htf_qsr \
-                 htf_qnt_NEMO_IFS htf_qnt_NEMO_IFS_annual \
-                 htf_qsr_NEMO_IFS htf_qsr_NEMO_IFS_annual"
+        htf_qnt_NEMO_IFS htf_qnt_NEMO_IFS_annual \
+        htf_qsr_NEMO_IFS htf_qsr_NEMO_IFS_annual"
     #
     cat >> index.html <<EOF
     ${ctl} Surface Heat flux time-series ${ctr}
@@ -110,7 +110,7 @@ EOF
             echo "${img_l} ${fgn} ${img_r}" >> index.html
         fi
     done
-    
+
     # Freshwater flux diagnostics:
     LIST_FW_FIG="zos fwf_fwf fwf_emp fwf_prc fwf_rnf fwf_clv \
         fwf_evp_NEMO_IFS fwf_evp_NEMO_IFS_annual \
@@ -136,17 +136,17 @@ EOF
     if [ ${i_do_ice}  -gt 0 ]; then
         if [ ${i_do_movi} -eq 1 ]; then
             cat >> index.html <<EOF
-    ${ctl} Evolution of Arctic/Antarctic concentration ${ctr}
-    ${img_l} icen_${cr}.gif ${img_r}
-    ${img_l} ices_${cr}.gif ${img_r}
+            ${ctl} Evolution of Arctic/Antarctic concentration ${ctr}
+            ${img_l} icen_${cr}.gif ${img_r}
+            ${img_l} ices_${cr}.gif ${img_r}
 EOF
         fi
         cat >> index.html <<EOF
-    ${ctl} Arctic/Antarctic sea-ice time-series${ctr}
-    ${img_l} seaice_extent_winter_${cr}.${ff} ${img_r}
-    ${img_l} seaice_extent_summer_${cr}.${ff} ${img_r}
-    ${img_l} seaice_volume_winter_${cr}.${ff} ${img_r}
-    ${img_l} seaice_volume_summer_${cr}.${ff} ${img_r}
+        ${ctl} Arctic/Antarctic sea-ice time-series${ctr}
+        ${img_l} seaice_extent_winter_${cr}.${ff} ${img_r}
+        ${img_l} seaice_extent_summer_${cr}.${ff} ${img_r}
+        ${img_l} seaice_volume_winter_${cr}.${ff} ${img_r}
+        ${img_l} seaice_volume_summer_${cr}.${ff} ${img_r}
 EOF
     fi
 
@@ -189,7 +189,7 @@ EOF
     if [ ${i_do_mht} -eq 1 ]; then
         # Adding meridional heat transport:
         echo "${ctl} Meridional transports${ctr}"  >> index.html
-        for coce in "global" "atlantic" "pacific" "indian"; do
+        for coce in "GLO" "atl" "pac" "ind"; do
             echo "    ${img_l} MHT_${cr}_${coce}.${ff} ${img_r}"     >> index.html
             echo "    ${img_l} MST_${cr}_${coce}.${ff} ${img_r}" >> index.html
         done
@@ -198,7 +198,7 @@ EOF
 
     cat ${BARAKUDA_ROOT}/src/html/conf_end.html >> index.html
 
-}
+    }
 
 
 
@@ -207,15 +207,15 @@ function build_sub_html()
 {
     echo; echo; echo
     echo "Creating sub HTML files!"
-
+        
     ctl='<br><br><br><big><big>' ; ctr='</big></big><br><br>'
     spf='<br><br>'
     img_l='<img style="border: 0px solid" alt="" src="' ; img_r='"> <br><br>'
-
+    
     cr="${CONFRUN}" ; ff="${FIG_FORM}"
 
     cd ${DIAG_D}/
-
+    
        # T, S, SSH and ice HTML page:
     for cdiag in ${DIRS_2_EXP}; do
         cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
@@ -227,7 +227,7 @@ function build_sub_html()
         rm -f index.tmp
         cd ${cdiag}/ ; ln -sf ../logo.png . ; cd ../
     done
-
+    
     for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
         cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
         cat ${BARAKUDA_ROOT}/src/html/temp_sal/${var}.html         >> index.tmp
@@ -236,7 +236,7 @@ function build_sub_html()
             -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
             index.tmp > temp_sal/${var}_CLIM.html
     done
-
+    
     # T&S sections:
     if [ ${i_do_sect} -eq 1 ]; then
         cat ${BARAKUDA_ROOT}/src/html/conf_start.html > index.tmp
@@ -260,12 +260,10 @@ function build_sub_html()
             sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
                 -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
                 index.tmp > temp_sal/index_sections.html
-            rm -f index.tmp            
+            rm -f index.tmp
         fi
     fi
-
-
-
+    
     if ${lcomp_to_run}; then
         for cdiag in ${DIRS_2_EXP_RREF}; do
             cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
@@ -286,5 +284,7 @@ function build_sub_html()
                 index.tmp > temp_sal/${var}_${RUNREF}.html
         done
     fi
-
 }
+
+
+

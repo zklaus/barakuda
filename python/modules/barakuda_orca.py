@@ -37,10 +37,6 @@ import barakuda_tool as brkdt
 #cv_amoc = 'zomsfatl'
 
 
-voce2treat = [ 'global', 'atlantic', 'pacific', 'indian' ]
-
-
-
 # Definition of the boxes to zoom and average SSX on
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #  => used into ssx_NAtl.py
@@ -136,7 +132,18 @@ vGIN_s  = [ 272,249 , 284,260 ]
 
 
 
-
+def get_basin_info( cf_bm ):    
+    from netCDF4 import Dataset
+    l_b_names = [] ; l_b_lgnms = []
+    l_b_names.append(u'GLO') ; l_b_lgnms.append(u'Global Ocean')
+    id_bm = Dataset(cf_bm)
+    list_var = id_bm.variables.keys()
+    for cv in list_var:
+        if cv[:5] == 'tmask':
+            l_b_names.append(cv[5:])
+            l_b_lgnms.append(id_bm.variables[cv].long_name)
+    id_bm.close()
+    return l_b_names, l_b_lgnms
 
 
 def lon_reorg_orca(ZZ, corca, ilon_ext):
@@ -458,71 +465,53 @@ def int_trs(X, Y, Z, x0, y0):
 
 
 
-def mean_3d(XD, LSM, E1T, E2T, E3T):
+def mean_3d(XD, LSM, XVOL):
     #
     # XD             : 3D+T array containing data
     # LSM            : 3D land sea mask
-    # E1T, E2T, E3T  : 3D mesh sizes
+    # XVOL           : 3D E1T*E2T*E3T  : 3D mesh sizes
     #
     # RETURN vmean: vector containing mean values for each time
 
     [ lt, lz, ly, lx ] = nmp.shape(XD)
 
-
-    [ l3, l2, l1     ] = nmp.shape(LSM)
-    if [ l3, l2, l1 ] != [ lz, ly, lx ]:
+    if nmp.shape(LSM) != ( lz, ly, lx ):
         print 'ERROR: mean_3d.barakuda_orca.py => XD and LSM do not agree in shape!'
         sys.exit(0)
-    [ l3, l2, l1     ] = nmp.shape(E1T)
-    if [ l3, l2, l1 ] != [ lz, ly, lx ]:
-        print 'ERROR: mean_3d.barakuda_orca.py => XD and E1T do not agree in shape!'
-        sys.exit(0)
-    [ l3, l2, l1     ] = nmp.shape(E2T)
-    if [ l3, l2, l1 ] != [ lz, ly, lx ]:
-        print 'ERROR: mean_3d.barakuda_orca.py => XD and E2T do not agree in shape!'
-        sys.exit(0)
-    [ l3, l2, l1     ] = nmp.shape(E3T)
-    if [ l3, l2, l1 ] != [ lz, ly, lx ]:
-        print 'ERROR: mean_3d.barakuda_orca.py => XD and E3T do not agree in shape!'
+    if nmp.shape(XVOL) != ( lz, ly, lx ):
+        print 'ERROR: mean_3d.barakuda_orca.py => XD and XVOL do not agree in shape!'
         sys.exit(0)
 
-    vmean = []
+    vmean = nmp.zeros(lt)
+    XX = LSM[:,:,:]*XVOL[:,:,:]
 
     for jt in range(lt):
-        zmean = nmp.sum( XD[jt,:,:,:]*LSM[:,:,:]*E1T[:,:,:]*E2T[:,:,:]*E3T[:,:,:] ) / nmp.sum( LSM[:,:,:]*E1T[:,:,:]*E2T[:,:,:]*E3T[:,:,:] )
-        vmean.append(zmean)
+        vmean[jt] = nmp.sum( XD[jt,:,:,:]*XX ) / nmp.sum( XX )
 
     return vmean
 
 
-def mean_2d(XD, LSM, E1T, E2T):
+def mean_2d(XD, LSM, XAREA):
     #
-    # XD        : 2D+T array containing data
-    # LSM       : 2D land sea mask
-    # E1T, E2T  : 2D mesh sizes
+    # XD     : 2D+T array containing data
+    # LSM    : 2D land sea mask
+    # XAREA  : E1T*E2T, 2D mesh sizes
     #
     # RETURN vmean: the mean value at each record
 
     [ lt, ly, lx ] = nmp.shape(XD)
 
-    [ l2, l1 ] = nmp.shape(LSM)
-    if [ l2, l1 ] != [ ly, lx ]:
+    if nmp.shape(LSM) != ( ly, lx ):
         print 'ERROR: mean_3d.barakuda_orca.py => XD and LSM do not agree in shape!'
         sys.exit(0)
-    [ l2, l1 ] = nmp.shape(E1T)
-    if [ l2, l1 ] != [ ly, lx ]:
-        print 'ERROR: mean_3d.barakuda_orca.py => XD and E1T do not agree in shape!'
-        sys.exit(0)
-    [ l2, l1 ] = nmp.shape(E2T)
-    if [ l2, l1 ] != [ ly, lx ]:
-        print 'ERROR: mean_3d.barakuda_orca.py => XD and E2T do not agree in shape!'
+    if nmp.shape(XAREA) != ( ly, lx ):
+        print 'ERROR: mean_3d.barakuda_orca.py => XD and XAREA do not agree in shape!'
         sys.exit(0)
 
-    vmean = []
-
+    vmean = nmp.zeros(lt)
+    XX = LSM[:,:]*XAREA[:,:]
     for jt in range(lt):
-        zmean = nmp.sum( XD[jt,:,:]*LSM[:,:]*E1T[:,:]*E2T[:,:] ) / nmp.sum( LSM[:,:]*E1T[:,:]*E2T[:,:] )
-        vmean.append(zmean)
+        vmean[jt] = nmp.sum( XD[jt,:,:]*XX ) / nmp.sum( XX )
 
     return vmean
 

@@ -30,8 +30,6 @@ PROGRAM cdfmhst
   !! * Local variables
   IMPLICIT NONE
 
-  LOGICAL, PARAMETER :: l_indo_pac = .FALSE.
-
   INTEGER   :: jj,jk,jt                         !: dummy loop index
   INTEGER   :: narg, iargc                      !: command line
   INTEGER   :: npiglo, npjglo, npk, nt          !: size of the domain
@@ -77,7 +75,7 @@ PROGRAM cdfmhst
 
   CHARACTER(LEN=256) :: cdum, ctim
   CHARACTER(LEN=256), DIMENSION(:), ALLOCATABLE   :: vcv_name_t, vcv_name_s   !: array of var name for input
-  CHARACTER(LEN=4), DIMENSION(5) :: cbasin= (/'_glo','_atl','_pac','_ind','_inp'/)
+  CHARACTER(LEN=4), DIMENSION(4) :: cbasin= (/'_GLO','_atl','_pac','_ind'/)
 
   ! constants
   REAL(KIND=4),PARAMETER   ::  rau0=1000.,   rcp=4000.
@@ -247,34 +245,6 @@ PROGRAM cdfmhst
            merid_salt_ind(jj,jt)= SUM( ztrps(:,jj,jt)*zmask(:,jj,4) )
         END DO
 
-
-        IF ( l_indo_pac ) THEN
-           ! Indo-Pacific
-
-           IF ( jt == 1 ) THEN
-              !PRINT *, ''; PRINT *, 'cdfmhst.f90: opening "tmaskinp" into ', trim(cf_bm)
-              zmask(:,:,5) = getvar(cf_bm,'tmaskinp',1,npiglo,npjglo)
-           END IF
-
-           DO jj=1,npjglo
-              merid_heat_inp(jj,jt)= SUM( ztrpt(:,jj,jt)*zmask(:,jj,5) )
-              merid_salt_inp(jj,jt)= SUM( ztrps(:,jj,jt)*zmask(:,jj,5) )
-           END DO
-           !PRINT *, ''
-
-           !zmask_inp(:,:) = 0.
-           !zmask(:,:) = getvar(cf_bm,'tmaskind',1,npiglo,npjglo)
-           !WHERE( zmask == 1. ) zmask_inp = 1.
-           !zmask(:,:) = getvar(cf_bm,'tmaskpac',1,npiglo,npjglo)
-           !WHERE( zmask == 1. ) zmask_inp = 1.
-           !DO jj=1,npjglo
-           !   merid_heat_inp(jj,jt)= SUM( ztrpt(:,jj,jt)*zmask_inp(:,jj))
-           !   merid_salt_inp(jj,jt)= SUM( ztrps(:,jj,jt)*zmask_inp(:,jj))
-           !END DO
-
-        END IF
-
-
      END DO
 
   END IF
@@ -311,11 +281,6 @@ PROGRAM cdfmhst
 !        WHERE ( zmtrp(:,jt) == 0 ) zmtrp(:,jt)=rpspval
 !        js=js+1
 !
-!        IF ( l_indo_pac ) THEN
-!           zmtrp(:,jt)=merid_heat_inp(:,jt)/1.e15                      ! INP
-!           WHERE ( zmtrp(:,jt) == 0 ) zmtrp(:,jt)=rpspval
-!        END IF
-!        js=js+1
 !
 !     ENDIF
 !
@@ -362,13 +327,11 @@ PROGRAM cdfmhst
      vmerid_heat(jj,2) = SUM(merid_heat_atl(jj,:))/nt/1e15
      vmerid_heat(jj,3) = SUM(merid_heat_pac(jj,:))/nt/1e15
      vmerid_heat(jj,4) = SUM(merid_heat_ind(jj,:))/nt/1e15
-     IF ( l_indo_pac ) vmerid_heat(jj,5) = SUM(merid_heat_inp(jj,:))/nt/1e15
 
      vmerid_salt(jj,1) = SUM(merid_salt_glo(jj,:))/nt/1e6
      vmerid_salt(jj,2) = SUM(merid_salt_atl(jj,:))/nt/1e6
      vmerid_salt(jj,3) = SUM(merid_salt_pac(jj,:))/nt/1e6
      vmerid_salt(jj,4) = SUM(merid_salt_ind(jj,:))/nt/1e6
-     IF ( l_indo_pac ) vmerid_salt(jj,5) = SUM(merid_salt_inp(jj,:))/nt/1e6
 
      IF ( (vmerid_salt(jj,2) == 0.0).AND.(jj > 20) ) THEN
         vmerid_salt(jj,4) = 0.0

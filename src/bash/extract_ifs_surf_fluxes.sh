@@ -274,7 +274,7 @@ rm -f metrics.nc final_htf_*.nc final_fwf_*.nc
 
 for ct in "htf" "fwf"; do
 
-    fout=${DIAG_D}/mean_${ct}_IFS_${RUN}_global.nc
+    fout=${DIAG_D}/mean_${ct}_IFS_${RUN}_GLO.nc
 
     if [ ! -f ${fout} ]; then
         mv final_${ct}.nc ${fout}

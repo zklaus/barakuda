@@ -18,7 +18,7 @@ import barakuda_orca as bo
 import barakuda_plot as bp
 
 
-venv_needed = {'ORCA','RUN','DIAG_D','NN_T','NN_S'}
+venv_needed = {'ORCA','RUN','DIAG_D','NN_T','NN_S','BM_FILE'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
@@ -41,11 +41,14 @@ path_fig=vdic['DIAG_D']+'/'
 
 fig_type='png'
 
-voceans_u = [cc.upper() for cc in bo.voce2treat]  ; # same list but in uppercase
+
+list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
+
+#list_basin_names_U = [cc.upper() for cc in list_basin_names]  ; # same list but in uppercase
 
 
 jo = 0
-for coce in bo.voce2treat:
+for coce in list_basin_names:
 
     cf_temp = cname_temp+'_mean_Vprofile_'+CONFRUN+'_'+coce+'.nc' ; bt.chck4f(cf_temp)
     cf_sali = cname_sali+'_mean_Vprofile_'+CONFRUN+'_'+coce+'.nc' ; bt.chck4f(cf_sali)
@@ -100,7 +103,7 @@ for coce in bo.voce2treat:
                             zmin = z0, zmax = zK, l_zlog=True,
                             cfignm=path_fig+'hov_temperature_'+CONFRUN+'_'+coce, cbunit=r'$^{\circ}$C', cxunit='',
                             czunit='Depth (m)',
-                            ctitle=CONFRUN+': Spatially-averaged temperature evolution, '+voceans_u[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
+                            ctitle=CONFRUN+': Spatially-averaged temperature evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
                             cfig_type=fig_type, lforce_lim=True, i_cb_subsamp=2)
 
     XSe = 1000.*XSe
@@ -110,7 +113,7 @@ for coce in bo.voce2treat:
                             zmin = z0, zmax = zK, l_zlog=True,
                             cfignm=path_fig+'hov_salinity_'+CONFRUN+'_'+coce, cbunit=r'10$^{-3}$PSU', cxunit='',
                             czunit='Depth (m)',
-                            ctitle=CONFRUN+': Spatially-averaged salinity evolution, '+voceans_u[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
+                            ctitle=CONFRUN+': Spatially-averaged salinity evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
                             cfig_type=fig_type, lforce_lim=True, i_cb_subsamp=2)
 
 

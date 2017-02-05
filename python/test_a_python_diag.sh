@@ -4,9 +4,9 @@
 
 # Diag to test:
 icrosssect=0
-itempsal=1
+itempsal=0
 isflx=0
-imean=0
+imean=1
 imov=0
 issh=0
 its=0
@@ -17,18 +17,18 @@ iemp=0
 icmip5=0
 ihov=0
 
-#CONFIG="ORCA1_L75"
-#ARCH="ece32_marenostrum"
-#export RUN="LBO0" ; NC=nc ; jyear=1990
+CONFIG="ORCA1_L75"
+ARCH="T159_ece32_marenostrum"
+export RUN="LR1E" ; NC=nc ; jyear=1990
 
 #CONFIG="ORCA1_L42"
 ##ARCH="ece22_triolith"
 #ARCH="lacroix"
 #export RUN="SPIN" ; NC=nc4 ; jyear=2540
 
-CONFIG="ORCA2_L31"
-ARCH="ece32_marenostrum"
-export RUN="LR20" ; NC=nc4 ; jyear=2540
+#CONFIG="ORCA2_L31"
+#ARCH="ece32_marenostrum"
+#export RUN="LR20" ; NC=nc4 ; jyear=2540
 
 
 
@@ -45,7 +45,7 @@ done
 if [ "${ORCA}" = "" ]; then echo "ORCA grid of config ${CONFIG} not supported yet"; exit; fi
 
 export CONFRUN=${ORCA}-${RUN}
-export DIAG_D=${DIAG_DIR}/${CONFRUN}
+export DIAG_D=${DIAG_DIR}/${CONFRUN} ; mkdir -p ${DIAG_D}
 
 echo ; echo " *** DIAG_D = ${DIAG_D} !"; echo
 

@@ -43,7 +43,7 @@ mask_atl = nmp.zeros((nj,ni))
 mask_pac = nmp.zeros((nj,ni))
 mask_ind = nmp.zeros((nj,ni))
 mask_soc = nmp.zeros((nj,ni)) ; # Souther Ocean
-mask_wed = nmp.zeros((nj,ni)) ; # Wedell Sea
+mask_wed = nmp.zeros((nj,ni)) ; # Weddell Sea
 
 mask_ip1 = nmp.zeros((nj,ni))
 mask_inp = nmp.zeros((nj,ni))
@@ -165,13 +165,11 @@ idxatl = nmp.where(mask_atl+mask_pac+mask_ind > 0.5)
 mask_soc[idxatl] = 0
 mask_soc[122:,:] = 0
 
-# Wedell Sea:
+# Weddell Sea:
 mask_wed[:,:] = tmask[:,:]
 mask_wed[:,:226] = 0
 mask_wed[50:,:]  = 0
 mask_wed[:,285:] = 0
-
-
 
 
 
@@ -192,7 +190,7 @@ id_pac  = f_out.createVariable('tmaskpac' ,'f4',('y','x',)) ; id_pac.long_name =
 id_ind  = f_out.createVariable('tmaskind' ,'f4',('y','x',)) ; id_ind.long_name = 'Indian Basin'
 id_soc  = f_out.createVariable('tmasksoc' ,'f4',('y','x',)) ; id_soc.long_name = 'Southern Basin'
 id_inp  = f_out.createVariable('tmaskinp' ,'f4',('y','x',)) ;  id_inp.long_name = 'Indo-Pacific Basin'
-id_wed  = f_out.createVariable('tmaskwed' ,'f4',('y','x',)) ; id_wed.long_name = 'Wedell Sea'
+id_wed  = f_out.createVariable('tmaskwed' ,'f4',('y','x',)) ; id_wed.long_name  = 'Weddell Sea'
 
 
 # Filling variables:

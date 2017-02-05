@@ -24,7 +24,7 @@ cv_evb = 'evap_ao_cea' ; # debug evap in ec-earth...
 
 DEFAULT_LEGEND_LOC = 'lower left'
 
-venv_needed = {'ORCA','RUN','NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD','LMOCLAT','TRANSPORT_SECTION_FILE','FIG_FORM'}
+venv_needed = {'ORCA','RUN','NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD','LMOCLAT','TRANSPORT_SECTION_FILE','FIG_FORM','BM_FILE'}
 
 vdic = bt.check_env_var(csn, venv_needed)
 
@@ -167,7 +167,7 @@ else:
 
 if idfig == 'simple':
 
-    cf_in = 'mean_'+cvar+'_'+CONFRUN+'_global.nc' ;  bt.chck4f(cf_in, script_name=csn)
+    cf_in = 'mean_'+cvar+'_'+CONFRUN+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
     id_in = Dataset(cf_in)
     vtime = id_in.variables['time'][:] ; nbm = len(vtime)
     vvar  = id_in.variables[cvar][:]
@@ -188,7 +188,7 @@ if idfig == 'simple':
 if idfig == 'htf':
 
     l_qsr = False
-    cf_in = cdiag+'_'+CONFRUN+'_global.nc' ;  bt.chck4f(cf_in, script_name=csn)
+    cf_in = cdiag+'_'+CONFRUN+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
 
     id_in = Dataset(cf_in)
     list_var = id_in.variables.keys()
@@ -203,7 +203,7 @@ if idfig == 'htf':
 
     # Checking if there a potential file for IFS:
     l_htf_ifs = False
-    cf_IFS_in = cdiag+'_IFS_'+vdic['RUN']+'_global.nc'
+    cf_IFS_in = cdiag+'_IFS_'+vdic['RUN']+'_GLO.nc'
     print '  *** Checking for the existence of '+cf_IFS_in
     if os.path.exists(cf_IFS_in):
         print "  *** IFS HTF files found!"
@@ -276,7 +276,7 @@ if idfig == 'htf':
 if idfig == 'fwf':
 
     l_rnf = False ; l_emp = False ; l_prc = False ; l_clv = False ; l_evp = False ; l_evb = False
-    cf_in = cdiag+'_'+CONFRUN+'_global.nc' ;  bt.chck4f(cf_in, script_name=csn)
+    cf_in = cdiag+'_'+CONFRUN+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
 
     id_in = Dataset(cf_in)
     list_var = id_in.variables.keys()
@@ -308,7 +308,7 @@ if idfig == 'fwf':
 
     # Checking if there a potential file for IFS:
     l_fwf_ifs = False
-    cf_IFS_in = cdiag+'_IFS_'+vdic['RUN']+'_global.nc'
+    cf_IFS_in = cdiag+'_IFS_'+vdic['RUN']+'_GLO.nc'
     print '  *** Checking for the existence of '+cf_IFS_in
     if os.path.exists(cf_IFS_in):
         print "  *** IFS FWF files found!"
@@ -515,13 +515,15 @@ if idfig == 'fwf':
 
 if idfig == 'ts3d':
 
-    nb_oce = len(bo.voce2treat)
+    list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
+    
+    nb_oce = len(list_basin_names)
 
     vzrange = [ '0-bottom', '0-100'  , '100-1000',   '1000-bottom'  ] ;  nbzrange = len(vzrange)
     vlab    = [ 'AllDepth', '0m-100m', '100m-1000m', '1000m-bottom' ]
 
     joce = 0
-    for coce in bo.voce2treat[:]:
+    for coce in list_basin_names[:]:
 
         cf_in = '3d_'+cvar+'_'+CONFRUN+'_'+coce+'.nc' ;  bt.chck4f(cf_in, script_name=csn)
         id_in = Dataset(cf_in)
@@ -542,7 +544,7 @@ if idfig == 'ts3d':
             FY = nmp.zeros((nb_oce, 4, nby))
         VY, FY[joce,:,:] = bt.monthly_2_annual(vtime[:], FM[joce,:,:])
 
-        print ' *** '+coce+' done...\n'
+        print ' *** '+list_basin_lgnms[joce]+' done...\n'
         joce = joce + 1
 
     ittic = bt.iaxe_tick(nby)
@@ -558,7 +560,7 @@ if idfig == 'ts3d':
 
 
     # Show each ocean (All depth):
-    bp.plot("1d_multi")(vtime, FM[:,0,:], bo.voce2treat, cfignm=cdiag+'_basins_'+CONFRUN, dt_year=ittic,
+    bp.plot("1d_multi")(vtime, FM[:,0,:], list_basin_lgnms, cfignm=cdiag+'_basins_'+CONFRUN, dt_year=ittic,
                         loc_legend='out', cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
 
 
