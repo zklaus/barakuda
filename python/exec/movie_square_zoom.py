@@ -37,13 +37,6 @@ cbox = 'NAtl'
 
 fig_type='png'
 
-# NCVIEW colormaps?
-dir_ncview_cmap = os.getenv('DIR_NCVIEW_CMAP')
-if dir_ncview_cmap is None:
-    print(" ERROR => the {} environement variable is not set".format('DIR_NCVIEW_CMAP'))
-    sys.exit(0)
-
-
 narg = len(sys.argv)
 if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file>'; sys.exit(0)
 cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3]
@@ -52,14 +45,13 @@ cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3]
 cv_ice  = 'siconc'
 cf_ice = replace(cf_in, 'grid_T', 'icemod')
 rmin_ice = 0.5
-cpal_ice = 'bw'
+cpal_ice = 'ncview_bw'
 vcont_ice = nmp.arange(rmin_ice, 1.05, 0.05)
 
 if cv_in == 'sosstsst':
     cfield = 'SST'
     tmin=-2. ;  tmax=28.   ;  dtemp = 1.
-    #cpal_fld = 'sstnw'
-    cpal_fld = 'nrl'    
+    cpal_fld = 'ncview_nrl'    
     cunit = r'$^{\circ}C$'
     cb_jump = 2
     
@@ -109,15 +101,13 @@ cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle'
 
 
 # Colormaps for fields:
-#pal_fld = bcm.chose_palette(cpal_fld)
-pal_fld = bcm.ncview_colmap( cpal_fld, dir_ncview_cmap )
+pal_fld = bcm.chose_colmap(cpal_fld)
 norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 
-#pal_ice = bcm.chose_palette(cpal_ice)
-pal_ice = bcm.ncview_colmap( cpal_ice, dir_ncview_cmap )
+pal_ice = bcm.chose_colmap(cpal_ice)
 norm_ice = colors.Normalize(vmin = rmin_ice, vmax = 1, clip = False)
 
-pal_lsm = bcm.chose_palette('blk')
+pal_lsm = bcm.chose_colmap('blk')
 norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 rh = 7.5

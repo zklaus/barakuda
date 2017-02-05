@@ -152,12 +152,12 @@ def plot_nproj_extra(czone, rmin, rmax, dc, xlon, xlat, XF, XI,
     ax  = plt.axes(vsporg, axisbg = 'w')
 
 
-    ## Palette:
-    palette = barakuda_colmap.chose_palette(cpal)    
+    ## Colmap:
+    colmap = barakuda_colmap.chose_colmap(cpal)    
     pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
     mpl.rcParams['contour.negative_linestyle'] = 'solid'; plt.contour.negative_linestyle='solid'
 
-    palettei  = barakuda_colmap.chose_palette('blanc')
+    colmapi  = barakuda_colmap.chose_colmap('blanc')
     #pal_normi = colors.Normalize(vmin = 0., vmax = 1., clip = True)
 
 
@@ -192,7 +192,7 @@ def plot_nproj_extra(czone, rmin, rmax, dc, xlon, xlat, XF, XI,
 
     
 
-    cf = carte.contourf(x0, y0, XFtmp, vc, cmap = palette, norm = pal_norm)
+    cf = carte.contourf(x0, y0, XFtmp, vc, cmap = colmap, norm = pal_norm)
     # Black contours if needed :
     if lkcont:
         ckf = carte.contour(x0, y0, XFtmp, vc, colors='k', linewidths=0.5)
@@ -202,7 +202,7 @@ def plot_nproj_extra(czone, rmin, rmax, dc, xlon, xlat, XF, XI,
 
 
     # Adding Sea-ice:
-    cfi = carte.contourf(x0, y0, XItmp, [rice_crit, 1.], cmap = palettei)
+    cfi = carte.contourf(x0, y0, XItmp, [rice_crit, 1.], cmap = colmapi)
     cf2 = carte.contour( x0, y0, XItmp, [rice_crit], colors='k', linewidths=0.5)
     for c in cfi.collections: c.set_zorder(0.75)
     for c in cf2.collections: c.set_zorder(1)

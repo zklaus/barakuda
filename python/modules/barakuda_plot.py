@@ -123,10 +123,10 @@ class plot :
         vc  = __vcontour__(rmin, rmax, dc)
 
         # Colormap:
-        palette = bcm.chose_palette(cpal)
+        colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
-        cf = plt.contourf(VX, zVZ, XF, vc, cmap = palette, norm = pal_norm)
+        cf = plt.contourf(VX, zVZ, XF, vc, cmap = colmap, norm = pal_norm)
         plt.hold(True)
         if lkcont: plt.contour(VX, zVZ, XF, vc, colors='k', linewidths=0.2)
 
@@ -211,24 +211,24 @@ class plot :
 
         vc = __vcontour__(rmin, rmax, dc); #print vc, '\n'
 
-        # Palette:
-        palette = bcm.chose_palette(cpal)
+        # Colmap:
+        colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
 
         if lpix:
             # Pixelized plot:
             if i_lat_lon == 1:
-                cf = plt.pcolor(VX0, VY, XF0, cmap = palette, norm = pal_norm)
+                cf = plt.pcolor(VX0, VY, XF0, cmap = colmap, norm = pal_norm)
             else:
-                cf = plt.pcolor(         XF0, cmap = palette, norm = pal_norm)
+                cf = plt.pcolor(         XF0, cmap = colmap, norm = pal_norm)
 
         else:
             # Contour fill plot:
             if i_lat_lon == 1:
-                cf = plt.contourf(VX0, VY, XF0, vc, cmap = palette, norm = pal_norm)
+                cf = plt.contourf(VX0, VY, XF0, vc, cmap = colmap, norm = pal_norm)
             else:
-                cf = plt.contourf(XF0, vc, cmap = palette, norm = pal_norm)
+                cf = plt.contourf(XF0, vc, cmap = colmap, norm = pal_norm)
 
             for c in cf.collections: c.set_zorder(0.15)
 
@@ -263,9 +263,9 @@ class plot :
         XF0 = nmp.ma.masked_where(XMSK0[:,:] > 0.5, XF0)
         XF0[idx_land] = 1000.
         if i_lat_lon == 1:
-            cf0 = plt.pcolor(VX0, VY, XF0, cmap = bcm.chose_palette("mask"))
+            cf0 = plt.pcolor(VX0, VY, XF0, cmap = bcm.chose_colmap("mask"))
         else:
-            cf0 = plt.pcolor(XF0, cmap = bcm.chose_palette("mask"))
+            cf0 = plt.pcolor(XF0, cmap = bcm.chose_colmap("mask"))
 
         # Colorbar:
         ifsize = 14.*100./float(DPI_DEF)
@@ -345,7 +345,7 @@ class plot :
 
         vc = __vcontour__(rmin, rmax, dc)
 
-        # Palette:
+        # Colmap:
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
         mpl.rcParams['contour.negative_linestyle'] = 'solid'
         plt.contour.negative_linestyle='solid'
@@ -375,10 +375,10 @@ class plot :
             idx_land = nmp.where(XMSKe[:,:] < 0.5)
             XFe = nmp.ma.masked_where(XMSKe[:,:] > 0.5, XFe)
             XFe[idx_land] = 1000.
-            cf0 = plt.pcolor(VXe, VY, XFe, cmap = bcm.chose_palette("mask"))
+            cf0 = plt.pcolor(VXe, VY, XFe, cmap = bcm.chose_colmap("mask"))
         else:
             # Masking with contour rather than pixel:
-            cf0 = plt.contourf(VXe, VY, XMSKe, [ 0., 0.1 ], cmap = bcm.chose_palette("mask"))
+            cf0 = plt.contourf(VXe, VY, XMSKe, [ 0., 0.1 ], cmap = bcm.chose_colmap("mask"))
             for c in cf0.collections: c.set_zorder(5)
             plt.contour(VXe, VY, XMSKe, [ 0.25 ], colors='k', linewidths = 1.)
 
@@ -438,18 +438,18 @@ class plot :
 
         vc = __vcontour__(rmin, rmax, dc); #print vc, '\n'
 
-        # Palette:
-        palette = bcm.chose_palette(cpal)
+        # Colmap:
+        colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
         plt.hold(True)
 
 
         if lcontours:
-            cf = plt.contourf(XF, vc, cmap = palette, norm = pal_norm)
+            cf = plt.contourf(XF, vc, cmap = colmap, norm = pal_norm)
             for c in cf.collections: c.set_zorder(0.5)
         else:
-            cf = plt.pcolor(XF, cmap = palette, norm = pal_norm)
+            cf = plt.pcolor(XF, cmap = colmap, norm = pal_norm)
 
 
 
@@ -622,8 +622,8 @@ class plot :
         ax  = plt.axes(vsporg, axisbg = 'w')
 
 
-        ## Palette:
-        palette = bcm.chose_palette(cpal)
+        ## Colmap:
+        colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
         mpl.rcParams['contour.negative_linestyle'] = 'solid'; plt.contour.negative_linestyle='solid'
 
@@ -650,7 +650,7 @@ class plot :
         x0,y0 = carte(LON_2D,LAT_2D)
 
         if lpcont:
-            cf = carte.contourf(x0, y0, XFtmp, vc, cmap = palette, norm = pal_norm)
+            cf = carte.contourf(x0, y0, XFtmp, vc, cmap = colmap, norm = pal_norm)
             # Black contours if needed :
             if lkcont:
                 ckf = carte.contour(x0, y0, XFtmp, vc, colors='k', linewidths=0.5)
@@ -659,7 +659,7 @@ class plot :
                 for c in ckf.collections: c.set_zorder(1.) # of filled cont. and under continents (zorder 1)
 
         else:
-            cf = carte.pcolor(x0, y0, XFtmp, cmap = palette, norm = pal_norm)
+            cf = carte.pcolor(x0, y0, XFtmp, cmap = colmap, norm = pal_norm)
 
 
 
@@ -753,7 +753,7 @@ class plot :
                             cfignm='fig', cbunit='', cxunit=' ', zmin = 0., zmax = 5000., l_zlog=False,
                             cfig_type='pdf', czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1):
 
-        import matplotlib.colors as colors   # palette and co.
+        import matplotlib.colors as colors   # colmap and co.
         import barakuda_colmap as bcm
 
         zVZ = __prepare_z_log_axis__(l_zlog, VZ)
@@ -770,11 +770,11 @@ class plot :
         vc = __vcontour__(rmin, rmax, dc)
 
         # Colormap:
-        palette = bcm.chose_palette(cpal)
+        colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
         # Plot:
-        cf = plt.contourf(VY, zVZ, Xamoc, vc, cmap = palette, norm = pal_norm)
+        cf = plt.contourf(VY, zVZ, Xamoc, vc, cmap = colmap, norm = pal_norm)
         if lkcont: plt.contour(VY, zVZ, Xamoc, vc, colors='k', linewidths=0.2)
 
         # Colorbar:
@@ -808,7 +808,7 @@ class plot :
 
         # Take 2 fields as imput and shows contours of second field (vcont_spec2) on top of field 1
 
-        import matplotlib.colors as colors   # palette and co.
+        import matplotlib.colors as colors   # colmap and co.
         import barakuda_colmap as bcm
 
 
@@ -843,18 +843,18 @@ class plot :
 
         vc = __vcontour__(rmin, rmax, dc); #print vc, '\n'
 
-        # Palette:
-        palette = bcm.chose_palette(cpal)
+        # Colmap:
+        colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
         plt.hold(True)
 
 
         if lcontours:
-            cf = plt.contourf(XF1, vc, cmap = palette, norm = pal_norm)
+            cf = plt.contourf(XF1, vc, cmap = colmap, norm = pal_norm)
             for c in cf.collections: c.set_zorder(0.5)
         else:
-            cf = plt.pcolor(XF1, cmap = palette, norm = pal_norm)
+            cf = plt.pcolor(XF1, cmap = colmap, norm = pal_norm)
 
         # contour for specific values on the ploted field:
         if len(vcont_spec1) >= 1:
@@ -909,7 +909,7 @@ class plot :
 
         # Plot transport by sigma class...
 
-        import matplotlib.colors as colors   # palette and co.
+        import matplotlib.colors as colors   # colmap and co.
         import barakuda_colmap as bcm
 
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
@@ -923,14 +923,14 @@ class plot :
 
         nbins = len(vsigma_bounds) - 1
 
-        # Palette:
-        palette = bcm.chose_palette(cpal)
+        # Colmap:
+        colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
         mpl.rcParams['contour.negative_linestyle'] = 'solid'
         plt.contour.negative_linestyle='solid'
 
-        cf = plt.contourf(VT, vsigma_bounds[:-1], XF, vc, cmap = palette, norm = pal_norm)
-        #cf = plt.pcolor(VT, vsigma_bounds[:-1], XF, cmap = palette, norm = pal_norm)
+        cf = plt.contourf(VT, vsigma_bounds[:-1], XF, vc, cmap = colmap, norm = pal_norm)
+        #cf = plt.pcolor(VT, vsigma_bounds[:-1], XF, cmap = colmap, norm = pal_norm)
         if lkcont:
             cfc = plt.contour(VT, vsigma_bounds[:-1], XF, nmp.arange(-3.,3.,0.5), colors='k', linewidths=0.4)
 
@@ -968,7 +968,7 @@ class plot :
                              cfignm='fig', cbunit='', cxunit=' ', zmin = 0., zmax = 5000., l_zlog=False,
                              cfig_type='pdf', czunit=' ', ctitle=' ', lforce_lim=False, fig_size=(8.,8.) ):
 
-        import matplotlib.colors as colors   # palette and co.
+        import matplotlib.colors as colors   # colmap and co.
         import barakuda_colmap as bcm
 
         zVZ = __prepare_z_log_axis__(l_zlog, VZ)
@@ -984,11 +984,11 @@ class plot :
         ax = plt.axes([0.1,  0.065,   0.92,       0.89], axisbg = 'gray')
         vc = __vcontour__(rmin, rmax, dc)
 
-        # Palette:
-        palette = bcm.chose_palette(cpal)
+        # Colmap:
+        colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
-        cf = plt.contourf(VX, zVZ, XF, vc, cmap = palette, norm = pal_norm)
+        cf = plt.contourf(VX, zVZ, XF, vc, cmap = colmap, norm = pal_norm)
         plt.hold(True)
         if lkcont: plt.contour(VX, zVZ, XF, vc, colors='k', linewidths=0.2)
 
@@ -1025,7 +1025,7 @@ class plot :
                           cfig_type='pdf', czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1,
                           vcont_spec1 = [], col_cont_spec1='w'):
 
-        import matplotlib.colors as colors   # palette and co.
+        import matplotlib.colors as colors   # colmap and co.
         import barakuda_colmap as bcm
 
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
@@ -1043,11 +1043,11 @@ class plot :
 
         vc = __vcontour__(rmin, rmax, dc)
 
-        # Palette:
-        palette = bcm.chose_palette(cpal)
+        # Colmap:
+        colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
-        cf = plt.contourf(VT, zVZ, XF, vc, cmap = palette, norm = pal_norm)
+        cf = plt.contourf(VT, zVZ, XF, vc, cmap = colmap, norm = pal_norm)
         plt.hold(True)
         if lkcont: plt.contour(VT, zVZ, XF, vc, colors='k', linewidths=0.2)
 

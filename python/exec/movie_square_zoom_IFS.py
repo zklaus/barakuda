@@ -29,11 +29,6 @@ year_ref_ini = 1990
 #CTATM = 'T255'
 CTATM = 'T1279'
 
-# NCVIEW colormaps?
-dir_ncview_cmap = os.getenv('DIR_NCVIEW_CMAP')
-if dir_ncview_cmap is None:
-    print(" ERROR => the {} environement variable is not set".format('DIR_NCVIEW_CMAP'))
-    sys.exit(0)
 
 if CTATM == 'T255':
     # South Greenland:
@@ -79,7 +74,7 @@ if cv_in == 'SNHF': lshf = True
 if lt2m:
     #tmin=-16.  ;  tmax=28. ;  dt = 1.
     tmin=-2.  ;  tmax=28. ;  dt = 1.
-    cpal = 'nrl'
+    cpal = 'ncview_nrl'
     #cpal = 'jaisnd'
     #cpal = '3gauss'
     #cpal = 'rainbow2_cmyk'
@@ -101,7 +96,7 @@ if lsst:
 if lshf:
     tmin=-1200. ;  tmax=400. ;  dt = 25.
     #cpal = 'rainbow'
-    cpal = 'nrl'
+    cpal = 'ncview_nrl'
     cfield = 'Net Heat Flux'
     cunit = r'$W/m^2$'
     cb_jump = 4
@@ -166,11 +161,10 @@ cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle'
 
 
 # Pal_Sst:
-pal_fld = bcm.ncview_colmap( cpal, dir_ncview_cmap )
-#pal_fld = bcm.chose_palette(cpal)
+pal_fld = bcm.chose_colmap(cpal)
 norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 
-pal_lsm  = bcm.chose_palette('blk')
+pal_lsm  = bcm.chose_colmap('blk')
 norm_lsm = colors.Normalize(vmin = 0, vmax = 1, clip = False)
 
 

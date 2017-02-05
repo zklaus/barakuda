@@ -6,37 +6,83 @@
 
 # Last Updated: L. Brodeau, January 2013
 
+import sys
 import numpy as nmp
-import matplotlib
-matplotlib.use('Agg')
-from matplotlib.pylab import cm
 
-ctrl = 0.2 ; # for logarythmic scale in 'pal_eke'
+# List of Barakuda home-made colormaps:
+list_cmap_barakuda = [ 'blk', 'cb1', 'eke', 'bathy', 'mld', 'jetblanc', 'amoc',
+                       'sst1', 'sst2', 'sst3', 'ice', 'blanc', 'rms',
+                       'sigtr', 'bbr', 'bbr2', 'bbr0', 'bbr_cold', 'bbr_warm',
+                       'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask' ]
+
+# There is also NCVIEW colormaps, and the defauly Matplotlib colormaps...
 
 
-def ncview_cmap_to_array( cname, cpath ):
+
+def chose_colmap( cname ):
+
+    # 1st is it a ncview colormap ?
+    if cname[:7] == 'ncview_':        
+        M = ncview_cmap_to_array( cname )
+        ColorMap = __build_colormap__(M)
+        
+        # Maybe a barakuda colormap ?
+    elif cname in list_cmap_barakuda:
+        print '\n *** Getting Barakuda colormap "'+cname+'" !'
+        x = brkd_cmap(cname)
+        ColorMap = x.clrmp()
+        
+    else:
+        # Then it must be a Matplotlib colormap:
+        from matplotlib.pylab import cm
+        import matplotlib.pyplot as mp
+        list = mp.colormaps()
+        if cname in list:
+            # Yes it is!
+            print '\n *** Getting Matplotlib colormap "'+cname+'" !'
+            fToCall = getattr(cm, cname)
+            ColorMap = fToCall
+        else:
+            print 'ERROR: (chose_ColorMap of barakuda_colmap.py) do not know where to get colormap "'+cname+'" !'
+            sys.exit(0)
+
+    return ColorMap
+
+
+
+def ncview_cmap_to_array( cname ):
     #
     #########################################################################################
     #
     # Get the NCVIEW colormap in the C header file and return an array ready for a colormap
     #         Author: L. Brodeau, 2017
     #
-    # cname: name of the NCVIEW colormap as in the NCVIEW header colormap files  [string]
+    # cname: "ncview_" +  name of the NCVIEW colormap as in the NCVIEW header colormap files  [string]
+    #   example : 'ncview_rainbow'
+    #      
     #
-    # cpath: path to directory containing the NCVIEW header colormap files       [string]
+    # The environment variable 'DIR_NCVIEW_CMAP' must be set!
+    #    => path to the directory containing the NCVIEW header colormap files  
+    #    => ex: colormap 'rainbow' is defined in header file 'colormaps_rainbow.h''
     #
-    #          => ex: colormap 'rainbow' is defined in header file 'colormaps_rainbow.h''
     ##########################################################################################
     
     import os
     import re
-    
-    cf_ncview_cmap = cpath+'/colormaps_'+cname+'.h'
 
+    dir_ncview_cmap = os.getenv('DIR_NCVIEW_CMAP')
+    if dir_ncview_cmap is None:
+        print(" ERROR => the {} environement variable is not set".format('DIR_NCVIEW_CMAP'))
+        sys.exit(0)
+
+    if cname[:7] != 'ncview_' : print ' ERROR: a ncview colormap should begin with "ncview_" !'; sys.exit(0)
+    ncview_name = cname[7:]
+    
+    cf_ncview_cmap = dir_ncview_cmap+'/colormaps_'+ncview_name+'.h'
     if not os.path.exists(cf_ncview_cmap):
-        'ERROR: NCVIEW colormap '+cf_ncview_cmap+' not found!' ; sys.exit(0)
+        print 'ERROR: NCVIEW colormap '+cf_ncview_cmap+' not found!' ; sys.exit(0)
     else:
-        print '\n *** Getting NCVIEW colormap "'+cname+'" from file "'+cf_ncview_cmap+'"\n'
+        print '\n *** Getting NCVIEW colormap "'+ncview_name+'" from file "'+cf_ncview_cmap+'"'
 
     f = open(cf_ncview_cmap, 'r')
     cread_lines = f.readlines()
@@ -54,7 +100,7 @@ def ncview_cmap_to_array( cname, cpath ):
         if lstarted:
             for ve in ls[:-1]: vec.append(float(ve)) ; # [:-1] is to ommit the ',' at the end
     
-        if ls[0] == 'staticintcmap_'+cname+'[]=':
+        if ls[0] == 'staticintcmap_'+ncview_name+'[]=':
             lstarted = True        
             for ve in ls[1:-1]: vec.append(float(ve)) ; # [:-1] is to ommit the ',' at the end
 
@@ -69,652 +115,18 @@ def ncview_cmap_to_array( cname, cpath ):
     return MM
 
 
-def ncview_colmap( cname, cpath ):
-    #
-    #########################################################################################
-    #
-    # Get the NCVIEW colormap in the C header file and return an array ready for a colormap
-    #         Author: L. Brodeau, 2017
-    #
-    # cname: name of the NCVIEW colormap as in the NCVIEW header colormap files  [string]
-    #
-    # cpath: path to directory containing the NCVIEW header colormap files       [string]
-    #
-    #          => ex: colormap 'rainbow' is defined in header file 'colormaps_rainbow.h''
-    ##########################################################################################
-    #
-    M = ncview_cmap_to_array( cname, cpath )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
 
 
 
 
 
 
-def pal_blk():
-    M = nmp.array( [
-        [ 0. , 0., 0. ], # black
-        [ 0. , 0., 0. ]  # black
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-
-def pal_ncview():
-    M = nmp.array( [
-        [ 255,255,204  ],
-        [ 161,218,180  ],
-        [ 65,182,196  ],
-        [ 44,127,184  ],
-        [ 37,52,148  ]
-    ] ) / 255.
-    my_cmap = __build_colormap__(M, log_ctrl=ctrl)
-    return my_cmap
-
-
-
-
-
-
-# ['rgb(255,255,204)','rgb(161,218,180)','rgb(65,182,196)','rgb(44,127,184)','rgb(37,52,148)']
-
-
-# http://colorbrewer2.org/?type=sequential&scheme=YlGnBu&n=5
-def pal_cb1():
-    M = nmp.array( [
-        [ 255,255,204  ],
-        [ 161,218,180  ],
-        [ 65,182,196  ],
-        [ 44,127,184  ],
-        [ 37,52,148  ]
-    ] ) / 255.
-    my_cmap = __build_colormap__(M, log_ctrl=ctrl)
-    return my_cmap
-
-
-
-
-def pal_eke():
-    M = nmp.array( [
-        [ 0.  , 0.0 , 0.2  ], # black
-        [ 0.1 , 0.5 , 1.0  ], # blue
-        [ 0.2 , 1.0 , 0.0  ], # green
-        [ 1.  , 1.0 , 0.0  ], # yellow
-        [ 1.  , 0.0 , 0.0  ], # red
-        [0.2  , 0.27, 0.07 ] # brown
-    ] )
-    my_cmap = __build_colormap__(M, log_ctrl=ctrl)
-    return my_cmap
-
-
-def pal_bathy():
-    M = nmp.array( [
-        [ 0.0 , 0.0 , 0.4 ], # dark blue
-        [ 0.1 , 0.5 , 1.0  ], # blue
-        [ 0.2 , 1.0 , 0.0  ], # green
-        [ 1.  , 1.0 , 0.0  ], # yellow
-        [ 1.  , 0.0 , 0.0  ], # red
-        [0.2  , 0.27, 0.07 ] # brown
-    ] )
-    my_cmap = __build_colormap__(M, log_ctrl=ctrl)
-    return my_cmap
-
-
-#        [ 0.4 , 0.0 , 0.6 ], # violet
-def pal_mld():
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 0.1 , 0.5 , 1.0 ], # light blue
-        [ 0.13, 0.54, 0.13], # dark green
-        [ 0.2 , 1.0 , 0.0 ], # light green
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark redish brown
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-def pal_mld_r():
-    M = nmp.array( [
-        [ 0.4 , 0.0 , 0.6 ], # violet
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 0.1 , 0.5 , 1.0 ], # light blue
-        [ 0.13, 0.54, 0.13], # dark green
-        [ 0.2 , 1.0 , 0.0 ], # light green
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark redish brown
-    ] )
-    my_cmap = __build_colormap__(M[::-1,:])
-    return my_cmap
-
-
-
-def pal_jetblanc():
-    M = nmp.array( [
-        [ 0.6 , 0.0 , 0.8 ], # violet
-        [ 0.0 , 0.0 , 0.4 ], # dark blue
-        [ 0.1 , 0.5 , 1.0 ], # light blue
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ]  # dark redish brown
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-def pal_jetblanc_r():
-    M = nmp.array( [
-        [ 0.6 , 0.0 , 0.8 ], # violet
-        [ 0.0 , 0.0 , 0.4 ], # dark blue
-        [ 0.1 , 0.5 , 1.0 ], # light blue
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark redish brown
-    ] )
-    my_cmap = __build_colormap__(M[::-1,:])
-    return my_cmap
-
-
-
-def pal_amoc():
-    M = nmp.array( [
-        [ 0.4 , 0.0 , 0.6 ], # violet
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [0.68 , 0.98, 0.98], # light blue
-        [ 0.0 , 0.0 , 0.95], # dark blue
-        [ 0.2 , 1.0 , 0.0 ], # green
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark read
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-#        [ 0.2 , 1.0 , 0.0 ], # green
-
-def pal_sst():
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 0.4 , 0.0 , 0.6 ], # violet
-        [ 0. , 0.2 , 0.99], # dark blue
-        [0.68 , 0.98, 0.98], # light blue
-        [ 0.13, 0.54, 0.13], # dark green
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark read
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-def pal_sst_r():
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 0.4 , 0.0 , 0.6 ], # violet
-        [ 0. , 0.2 , 0.99], # dark blue
-        [0.68 , 0.98, 0.98], # light blue
-        [ 0.13, 0.54, 0.13], # dark green
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark read
-    ] )
-    my_cmap = __build_colormap__(M[::-1,:])
-    return my_cmap
-
-
-def pal_sstnw():
-    M = nmp.array( [
-        [ 0.4 , 0.0 , 0.6 ], # violet
-        [ 0. , 0.2 , 0.99], # dark blue
-        [0.68 , 0.98, 0.98], # light blue
-        [ 0.13, 0.54, 0.13], # dark green
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark read
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-
-
-
-
-def pal_sst0():
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 0.4 , 0.0 , 0.6 ], # violet
-        [ 0.0 , 0.0 , 0.95], # dark blue
-        [0.68 , 0.98, 0.98], # light blue
-        [46./255., 203./255., 35./255.], # green
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark read
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-#        [ 253./255., 238./255., 1. ], # really pale pink
-#        [ 0.2 , 1.0 , 0.0 ], # green
-
-def pal_sst0_r():
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 0.4 , 0.0 , 0.6 ], # violet
-        [ 0.0 , 0.0 , 0.95], # dark blue
-        [0.68 , 0.98, 0.98], # light blue
-        [46./255., 203./255., 35./255.], # green
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark read
-    ] )
-    my_cmap = __build_colormap__(M[::-1,:])
-    return my_cmap
-
-
-
-
-
-def pal_std():
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 0.8 , 0.8 , 0.8 ], # grey
-        [ 0.4 , 0.0 , 0.6 ], # violet
-        [ 0.0 , 0.0 , 0.95], # dark blue
-        [0.68 , 0.98, 0.98], # light blue
-        [ 0.13, 0.54, 0.13], # dark green
-        [ 0.2 , 1.0 , 0.0 ], # green
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ] # dark read
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-#        [  0. , 0. ,  1.0 ], # blue
-def pal_ice():
-    M = nmp.array( [
-        [  0. , 0.  , 0.3 ], # dark blue
-        [ 0.6 , 0.6 , 0.8 ], # light grey
-        [ 0.95 , 0.95 , 0.95 ],  # white
-        [ 1.0 , 1.0 , 1.0 ]  # white
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-def pal_blanc():
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ],  # white
-        [ 1.0 , 1.0 , 1.0 ]  # white
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-
-
-def pal_rms():
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ],
-        [ 0.1 , 0.5 , 1.0 ],
-        [ 0.2 , 1.0 , 0.0 ],
-        [ 1.0 , 1.0 , 0.0 ],
-        [ 1.0 , 0.0 , 0.0 ],
-        [ 0.2 , 0.3 , 0.1 ]
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-
-def pal_sigtr():
-    #[ 1.0 , 0.4 , 1.0 ], # violet pinkish
-    #[ 1.0 , 1.0 , 1.0 ], # white
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 0.0 , 0.8 , 1.0 ], #light blue
-        [ 0.1 , 0.5 , 1.0 ], #light blue
-        [ 0.0 , 0.0 , 0.4 ], # blue
-        [ 0.0 , 0.4 , 0.0 ], # dark green
-        [ 0.1 , 1.0 , 0.0 ], # green
-        [ 0.4 , 1.0 , 0.0 ], # vert pomme
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.4 , 0.0 ], # orange
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.6 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ]  # dark red
-    ] )
-    my_cmap = __build_colormap__(M[::-1,:])
-    return my_cmap
-
-
-def pal_sigtr_r():
-    #[ 1.0 , 0.4 , 1.0 ], # violet pinkish
-    #[ 1.0 , 1.0 , 1.0 ], # white
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 0.0 , 0.8 , 1.0 ], #light blue
-        [ 0.1 , 0.5 , 1.0 ], #light blue
-        [ 0.0 , 0.0 , 0.4 ], # blue
-        [ 0.0 , 0.4 , 0.0 ], # dark green
-        [ 0.1 , 1.0 , 0.0 ], # green
-        [ 0.4 , 1.0 , 0.0 ], # vert pomme
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 1.0 , 0.4 , 0.0 ], # orange
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 0.6 , 0.0 , 0.0 ], # red
-        [ 0.2 , 0.3 , 0.1 ]  # dark red
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-def pal_bbr():
-    M = nmp.array( [
-        [ 0.  , 0. , 0.2 ],
-        [ 0.  , 0. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 0. , 0.  ],
-        [ 0.6 , 0. , 0.  ]
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-def pal_bbr_r():
-    M = nmp.array( [
-        [ 0.  , 0. , 0.2 ],
-        [ 0.  , 0. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 0. , 0.  ],
-        [ 0.6 , 0. , 0.  ]
-    ] )
-    my_cmap = __build_colormap__(M[::-1,:])
-    return my_cmap
-
-
-
-
-def pal_bbr2():
-    M = nmp.array( [
-        [ 0.  , 1. , 1.  ], # cyan
-        [ 0.  , 0. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 0. , 0.  ],
-        [ 1.  , 1. , 0.  ]  # jaune
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-def pal_bbr2_r():
-    M = nmp.array( [
-        [ 0.  , 1. , 1.  ], # cyan
-        [ 0.  , 0. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 0. , 0.  ],
-        [ 1.  , 1. , 0.  ]  # jaune
-    ] )
-    my_cmap = __build_colormap__(M[::-1,:])
-    return my_cmap
-
-
-
-
-def pal_bbr0():
-    M = nmp.array( [
-        [ 0.  , 1. , 1.  ], # cyan
-        [ 0.  , 0. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 0. , 0.  ],
-        [ 1.  , 1. , 0.  ]  # jaune
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-
-def pal_bbr_cold():
-    M = nmp.array( [
-        [ 0.  , 1. , 1.  ], # cyan
-        [ 0.  , 0. , 1.  ],
-        [ 19./255.  , 7./255. , 129./255  ], # dark blue
-        [ .1  , .1 , .9  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 0.7  , 0. , 0.  ] # Dark red
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-# light red:         [ 1.  , 0.3 , 0.3  ]
-
-def pal_bbr_warm():
-    M = nmp.array( [
-        #        [ 0.3  , 0.3 , 1.  ],
-        #        [ 0.6  , 0.6 , 1.  ],
-        [ 19./255.  , 7./255. , 129./255  ], # dark blue
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 0.9  , 0.1 , 0.1  ],
-        [ 0.7  , 0. , 0.  ], # Dark red
-        #[ 1.  , 0.2 , 0.  ],
-        [ 1.  , 1. , 0.  ],  # jaune
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-#        [ 19./255.  , 7./255. , 129./255  ], # dark blue
-#         [ 0.  , 1. , 1.  ], # cyan
-#
-
-
-def pal_bbr0_r():
-    M = nmp.array( [
-        [ 0.  , 1. , 1.  ], # cyan
-        [ 0.  , 0. , 1.  ],
-        [ 1.  , 1. , 1.  ],
-        [ 1.  , 0. , 0.  ],
-        [ 1.  , 1. , 0.  ]  # jaune
-    ] )
-    my_cmap = __build_colormap__(M[::-1,:])
-    return my_cmap
-
-
-
-
-
-
-
-def pal_cold0():
-    M = nmp.array( [
-        [ 177./255.  , 250./255. , 122./255. ],   # greenish
-        [ 0.  , 1. , 1.  ], # cyan
-        [ 7./255.  , 11./255. , 122./255. ], # dark blue
-        [ 0.  , 0. , 1.  ], # true blue
-        [ 177./255.  , 189./255. , 250./255. ], # light blue
-        [ 1.  , 1. , 1.  ],
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-# #        [ 177./255.  , 250./255. , 122./255. ],   # greenish
-
-
-
-def pal_warm0():
-    M = nmp.array( [
-        [ 1.  , 1. , 1.  ],
-        [ 255./255.  , 254./255. , 198./255.  ], # very light yellow
-        [ 1.  , 1. , 0.  ],  # yellow
-        [ 244./255.  , 78./255. , 255./255.  ], # pink
-        [ 1.  , 0. , 0.  ], # true red
-        [ 139./255.  , 5./255. , 5./255.  ] # dark red
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-#        [ 247./255.  , 150./255. , 176./255.  ], # light red
-
-
-
-
-
-
-def pal_graylb():
-    M = nmp.array( [
-        [ 1.  , 1. , 1. ],
-        [ 0.1  , 0.1 , 0.1 ]
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-def pal_graylb_r():
-    M = nmp.array( [
-        [ 0.  , 0. , 0. ],
-        [ 1.  , 1. , 1. ]
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-def pal_graylb2():
-    M = nmp.array( [
-        [ 0.6  , 0.6 , 0.6 ],
-        [ 1.  , 1. , 1. ]
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-
-def pal_sigma():
-    M = nmp.array( [
-        [ 1.0 , 1.0 , 1.0 ], # white
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 0.2 , 1.0 , 0.0 ], # green
-        [ 0.1 , 0.5 , 1.0 ], # light blue
-        [ 0.0 , 0.0 , 0.4 ], # dark blue
-        [ 0.6 , 0.0 , 0.8 ]  # violet
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-def pal_sigma0():
-    M = nmp.array( [
-        [ 0.2 , 0.3 , 0.1 ], # dark redish brown
-        [ 1.0 , 0.0 , 0.0 ], # red
-        [ 1.0 , 1.0 , 0.0 ], # yellow
-        [ 0.2 , 1.0 , 0.0 ], # green
-        [ 0.1 , 0.5 , 1.0 ], # light blue
-        [ 0.0 , 0.0 , 0.4 ], # dark blue
-        [ 0.6 , 0.0 , 0.8 ], # violet
-        [ 1.0 , 1.0 , 1.0 ]  # white
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-def pal_mask():
-    M = nmp.array( [
-        [ 0.5 , 0.5 , 0.5 ], # gray
-        [ 0.5 , 0.5 , 0.5 ]  # gray
-    ] )
-    my_cmap = __build_colormap__(M)
-    return my_cmap
-
-
-
-
-#=======================================================================
-
-
-
-def chose_palette(cname):
-
-    if cname == 'jet'   : palette = cm.jet
-    if cname == 'rainbow'   : palette = cm.rainbow
-    if cname == 'rainbow_r'   : palette = cm.rainbow_r
-    if cname == 'hsv'   : palette = cm.hsv
-    if cname == 'hsv_r'   : palette = cm.hsv_r
-    if cname == 'viridis'   : palette = cm.viridis
-    if cname == 'viridis_r'   : palette = cm.viridis_r
-    if cname == 'gist_ncar'   : palette = cm.gist_ncar
-    if cname == 'gist_ncar_r'   : palette = cm.gist_ncar_r
-    if cname == 'nipy_spectral'   : palette = cm.nipy_spectral
-    if cname == 'nipy_spectral_r'   : palette = cm.nipy_spectral_r    
-    if cname == 'spectral'   : palette = cm.spectral
-    if cname == 'spectral_r'   : palette = cm.spectral_r
-    if cname == 'YlGnBu'   : palette = cm.YlGnBu
-    if cname == 'YlGnBu_r'   : palette = cm.YlGnBu_r
-    if cname == 'BrBG'   : palette = cm.BrBG
-    if cname == 'BrBG_r'   : palette = cm.BrBG_r
-    if cname == 'PiYG'   : palette = cm.PiYG
-    if cname == 'PiYG_r'   : palette = cm.PiYG_r
-    if cname == 'cubehelix'   : palette = cm.cubehelix
-    if cname == 'cubehelix_r' : palette = cm.cubehelix_r
-    if cname == 'RdBu'   : palette = cm.RdBu
-    if cname == 'RdBu_r'   : palette = cm.RdBu_r
-
-
-
-
-    if cname == 'blk'   : palette = pal_blk()
-    if cname == 'mld'   : palette = pal_mld()
-    if cname == 'mld_r' : palette = pal_mld_r()
-    if cname == 'rms'   : palette = pal_rms()
-    if cname == 'bbr'   : palette = pal_bbr()
-    if cname == 'bbr_r' : palette = pal_bbr_r()
-    if cname == 'bbr2'  : palette = pal_bbr2()
-    if cname == 'bbr2_r': palette = pal_bbr2_r()
-    if cname == 'bbr0'  : palette = pal_bbr0()
-    if cname == 'bbr0_r': palette = pal_bbr0_r()
-    if cname == 'bbr_warm'  : palette = pal_bbr_warm()
-    if cname == 'bbr_cold'  : palette = pal_bbr_cold()
-    if cname == 'cold0'  : palette = pal_cold0()
-    if cname == 'warm0'  : palette = pal_warm0()
-    if cname == 'ice'   : palette = pal_ice()
-    if cname == 'blanc'   : palette = pal_blanc()
-    if cname == 'sst'   : palette = pal_sst()
-    if cname == 'sst_r' : palette = pal_sst_r()
-    if cname == 'sstnw' : palette = pal_sstnw()
-    if cname == 'sst0'  : palette = pal_sst0()
-    if cname == 'sst0_r': palette = pal_sst0_r()
-    if cname == 'eke'   : palette = pal_eke()
-    if cname == 'cb1'   : palette = pal_cb1()
-    if cname == 'bathy' : palette = pal_bathy()
-    if cname == 'jetblanc' : palette = pal_jetblanc()
-    if cname == 'jetblanc_r' : palette = pal_jetblanc_r()
-    if cname == 'std'  : palette = pal_std()
-    if cname == 'sigtr'  : palette = pal_sigtr()
-    if cname == 'sigtr_r': palette = pal_sigtr_r()
-    if cname == 'amoc': palette = pal_amoc()
-    if cname == 'sigma': palette = pal_sigma()
-    if cname == 'sigma0': palette = pal_sigma0()
-    if cname == 'graylb': palette = pal_graylb()
-    if cname == 'graylb_r': palette = pal_graylb_r()
-    if cname == 'graylb2': palette = pal_graylb2()
-    if cname == 'mask': palette = pal_mask()
-
-    return palette
-
-
-
-
-
-
-
-# ===== local functions ======
+# ===== local ======
 
 
 def __build_colormap__(MC, log_ctrl=0):
+
+    import matplotlib.colors as mplc
 
     [ nc, n3 ] = nmp.shape(MC)
 
@@ -739,6 +151,296 @@ def __build_colormap__(MC, log_ctrl=0):
 
     cdict = {'red':vred, 'green':vgreen, 'blue':vblue}
 
-    my_cm = matplotlib.colors.LinearSegmentedColormap('my_colormap',cdict,256)
+    my_cm = mplc.LinearSegmentedColormap('my_colormap',cdict,256)
 
     return my_cm
+
+
+
+#=======================================================================
+
+
+
+class brkd_cmap:
+    
+    def __init__(self, name):
+        self.name = name
+
+    def clrmp(self):
+
+        cname = self.name
+
+        lrev = False        
+        if cname[-2:] == '_r':
+            lrev = True
+            cname = cname[:-2]
+        
+        if cname == 'blk':
+            M = nmp.array( [
+                [ 0. , 0., 0. ], # black
+                [ 0. , 0., 0. ]  # black
+                ] )
+
+        elif cname == 'cb1':
+            M = nmp.array( [
+                [ 255,255,204  ],
+                [ 161,218,180  ],
+                [ 65,182,196  ],
+                [ 44,127,184  ],
+                [ 37,52,148  ]
+                ] ) / 255.
+
+        elif cname == 'eke':
+            M = nmp.array( [
+                [ 0.  , 0.0 , 0.2  ], # black
+                [ 0.1 , 0.5 , 1.0  ], # blue
+                [ 0.2 , 1.0 , 0.0  ], # green
+                [ 1.  , 1.0 , 0.0  ], # yellow
+                [ 1.  , 0.0 , 0.0  ], # red
+                [0.2  , 0.27, 0.07 ] # brown
+                ] )
+
+        elif cname == 'bathy':
+            M = nmp.array( [
+                [ 0.0 , 0.0 , 0.4 ], # dark blue
+                [ 0.1 , 0.5 , 1.0  ], # blue
+                [ 0.2 , 1.0 , 0.0  ], # green
+                [ 1.  , 1.0 , 0.0  ], # yellow
+                [ 1.  , 0.0 , 0.0  ], # red
+                [0.2  , 0.27, 0.07 ] # brown
+                ] )
+
+        elif cname == 'mld':
+            M = nmp.array( [
+                [ 1.0 , 1.0 , 1.0 ], # white
+                [ 0.1 , 0.5 , 1.0 ], # light blue
+                [ 0.13, 0.54, 0.13], # dark green
+                [ 0.2 , 1.0 , 0.0 ], # light green
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 0.2 , 0.3 , 0.1 ] # dark redish brown
+                ] )
+        
+        elif cname == 'jetblanc':
+            M = nmp.array( [
+                [ 0.6 , 0.0 , 0.8 ], # violet
+                [ 0.0 , 0.0 , 0.4 ], # dark blue
+                [ 0.1 , 0.5 , 1.0 ], # light blue
+                [ 1.0 , 1.0 , 1.0 ], # white
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 0.2 , 0.3 , 0.1 ]  # dark redish brown
+                ] )
+        
+        elif cname == 'amoc':
+            M = nmp.array( [
+                [ 0.4 , 0.0 , 0.6 ], # violet
+                [ 1.0 , 1.0 , 1.0 ], # white
+                [ 1.0 , 1.0 , 1.0 ], # white
+                [0.68 , 0.98, 0.98], # light blue
+                [ 0.0 , 0.0 , 0.95], # dark blue
+                [ 0.2 , 1.0 , 0.0 ], # green
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 0.2 , 0.3 , 0.1 ] # dark read
+                ] )
+        
+        elif cname == 'sst1':
+            M = nmp.array( [
+                [ 1.0 , 1.0 , 1.0 ], # white
+                [ 0.4 , 0.0 , 0.6 ], # violet
+                [ 0. , 0.2 , 0.99], # dark blue
+                [0.68 , 0.98, 0.98], # light blue
+                [ 0.13, 0.54, 0.13], # dark green
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 0.2 , 0.3 , 0.1 ] # dark read
+                ] )
+            
+        elif cname == 'sst2':
+            M = nmp.array( [
+                [ 1.0 , 1.0 , 1.0 ], # white
+                [ 0.4 , 0.0 , 0.6 ], # violet
+                [ 0.0 , 0.0 , 0.95], # dark blue
+                [0.68 , 0.98, 0.98], # light blue
+                [46./255., 203./255., 35./255.], # green
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 0.2 , 0.3 , 0.1 ] # dark read
+                ] )
+
+        elif cname == 'sst3':
+            M = nmp.array( [
+                [ 0.4 , 0.0 , 0.6 ], # violet
+                [ 0. , 0.2 , 0.99], # dark blue
+                [0.68 , 0.98, 0.98], # light blue
+                [ 0.13, 0.54, 0.13], # dark green
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 0.2 , 0.3 , 0.1 ] # dark read
+                ] )
+            
+        elif cname == 'ice':
+            M = nmp.array( [
+                [  0. , 0.  , 0.3 ], # dark blue
+                [ 0.6 , 0.6 , 0.8 ], # light grey
+                [ 0.95 , 0.95 , 0.95 ],  # white
+                [ 1.0 , 1.0 , 1.0 ]  # white
+                ] )
+        
+        elif cname == 'blanc':
+            M = nmp.array( [
+                [ 1.0 , 1.0 , 1.0 ],  # white
+                [ 1.0 , 1.0 , 1.0 ]  # white
+                ] )
+            
+        elif cname == 'rms':
+            M = nmp.array( [
+                [ 1.0 , 1.0 , 1.0 ],
+                [ 0.1 , 0.5 , 1.0 ],
+                [ 0.2 , 1.0 , 0.0 ],
+                [ 1.0 , 1.0 , 0.0 ],
+                [ 1.0 , 0.0 , 0.0 ],
+                [ 0.2 , 0.3 , 0.1 ]
+                ] )
+
+        elif cname == 'sigtr':
+            M = nmp.array( [
+                [ 1.0 , 1.0 , 1.0 ], # white
+                [ 0.0 , 0.8 , 1.0 ], #light blue
+                [ 0.1 , 0.5 , 1.0 ], #light blue
+                [ 0.0 , 0.0 , 0.4 ], # blue
+                [ 0.0 , 0.4 , 0.0 ], # dark green
+                [ 0.1 , 1.0 , 0.0 ], # green
+                [ 0.4 , 1.0 , 0.0 ], # vert pomme
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.4 , 0.0 ], # orange
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 0.6 , 0.0 , 0.0 ], # red
+                [ 0.2 , 0.3 , 0.1 ]  # dark red
+                ] )
+            
+        elif cname == 'bbr':
+            M = nmp.array( [
+                [ 0.  , 0. , 0.2 ],
+                [ 0.  , 0. , 1.  ],
+                [ 1.  , 1. , 1.  ],
+                [ 1.  , 1. , 1.  ],
+                [ 1.  , 0. , 0.  ],
+                [ 0.6 , 0. , 0.  ]
+                ] )
+            
+        elif cname == 'bbr2':
+            M = nmp.array( [
+                [ 0.  , 1. , 1.  ], # cyan
+                [ 0.  , 0. , 1.  ],
+                [ 1.  , 1. , 1.  ],
+                [ 1.  , 1. , 1.  ],
+                [ 1.  , 0. , 0.  ],
+                [ 1.  , 1. , 0.  ]  # jaune
+                ] )
+            
+        elif cname == 'bbr0':
+            M = nmp.array( [
+                [ 0.  , 1. , 1.  ], # cyan
+                [ 0.  , 0. , 1.  ],
+                [ 1.  , 1. , 1.  ],
+                [ 1.  , 0. , 0.  ],
+                [ 1.  , 1. , 0.  ]  # jaune
+                ] )
+            
+        elif cname == 'bbr_cold':
+            M = nmp.array( [
+                [ 0.  , 1. , 1.  ], # cyan
+                [ 0.  , 0. , 1.  ],
+                [ 19./255.  , 7./255. , 129./255  ], # dark blue
+                [ .1  , .1 , .9  ],
+                [ 1.  , 1. , 1.  ],
+                [ 1.  , 1. , 1.  ],
+                [ 0.7  , 0. , 0.  ] # Dark red
+                ] )
+            
+        elif cname == 'bbr_warm':
+            M = nmp.array( [
+                [ 19./255.  , 7./255. , 129./255  ], # dark blue
+                [ 1.  , 1. , 1.  ],
+                [ 1.  , 1. , 1.  ],
+                [ 0.9  , 0.1 , 0.1  ],
+                [ 0.7  , 0. , 0.  ], # Dark red
+                [ 1.  , 1. , 0.  ],  # jaune
+                ] )
+            
+        elif cname == 'cold0':
+            M = nmp.array( [
+                [ 177./255.  , 250./255. , 122./255. ],   # greenish
+                [ 0.  , 1. , 1.  ], # cyan
+                [ 7./255.  , 11./255. , 122./255. ], # dark blue
+                [ 0.  , 0. , 1.  ], # true blue
+                [ 177./255.  , 189./255. , 250./255. ], # light blue
+                [ 1.  , 1. , 1.  ],
+                ] )
+            
+        elif cname == 'warm0':
+            M = nmp.array( [
+                [ 1.  , 1. , 1.  ],
+                [ 255./255.  , 254./255. , 198./255.  ], # very light yellow
+                [ 1.  , 1. , 0.  ],  # yellow
+                [ 244./255.  , 78./255. , 255./255.  ], # pink
+                [ 1.  , 0. , 0.  ], # true red
+                [ 139./255.  , 5./255. , 5./255.  ] # dark red
+                ] )
+            
+        elif cname == 'graylb':
+            M = nmp.array( [
+                [ 1.  , 1. , 1. ],
+                [ 0.1  , 0.1 , 0.1 ]
+                ] )
+            
+        elif cname == 'graylb2':
+            M = nmp.array( [
+                [ 0.6  , 0.6 , 0.6 ],
+                [ 1.  , 1. , 1. ]
+                ] )
+            
+        elif cname == 'sigma':
+            M = nmp.array( [
+                [ 1.0 , 1.0 , 1.0 ], # white
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 0.2 , 1.0 , 0.0 ], # green
+                [ 0.1 , 0.5 , 1.0 ], # light blue
+                [ 0.0 , 0.0 , 0.4 ], # dark blue
+                [ 0.6 , 0.0 , 0.8 ]  # violet
+                ] )
+
+        elif cname == 'sigma0':
+            M = nmp.array( [
+                [ 0.2 , 0.3 , 0.1 ], # dark redish brown
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 0.2 , 1.0 , 0.0 ], # green
+                [ 0.1 , 0.5 , 1.0 ], # light blue
+                [ 0.0 , 0.0 , 0.4 ], # dark blue
+                [ 0.6 , 0.0 , 0.8 ], # violet
+                [ 1.0 , 1.0 , 1.0 ]  # white
+                ] )
+            
+        elif cname == 'mask':
+            M = nmp.array( [
+                [ 0.5 , 0.5 , 0.5 ], # gray
+                [ 0.5 , 0.5 , 0.5 ]  # gray
+                ] )
+
+        else:
+            print 'ERROR: (''barakuda_colmap.py) => unknown "barakuda" colormap: '+cname
+            sys.exit(0)
+
+        if lrev:
+            # reverse colormap:
+            my_cmap = __build_colormap__(M[::-1,:])
+        else:
+            my_cmap = __build_colormap__(M)
+             
+        return my_cmap
+
+#=======================================================================
