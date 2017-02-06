@@ -131,14 +131,14 @@ class plot :
         #plt.hold(True)
         #if lkcont: plt.contour(VX, zVZ, XF, vc, colors='k', linewidths=0.2)
 
+        # Colorbar:
+        __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
+
         # Masking "rock":
         pal_lsm = bcm.chose_colmap('blk')
         norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
         prock = nmp.ma.masked_where(XMSK > 0.5, XMSK)
         cm = plt.imshow(prock, cmap=pal_lsm, norm=norm_lsm)
-
-        # Colorbar:
-        __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
 
         # X-axis:
         __nice_x_axis__(ax, plt, xmin, xmax, dx, cunit=cxunit, cfont=font_xylb)
