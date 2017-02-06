@@ -115,11 +115,20 @@ class plot :
 
         if lforce_lim: __force_min_and_max__(rmin, rmax, XF)
 
+        i_x_sbsmp = 1
+        dxgap = max(VX) - min(VX)
+        if dxgap > 160.: dx = 5.; i_x_sbsmp = 2
+        if dxgap < 50.:  dx = 2.
+        if dxgap < 25.:  dx = 1.        
+
         # Masking where mask is zero!
-        #XF = nmp.ma.masked_where(XMSK == 0, XF)
+        XF = nmp.ma.masked_where(XMSK == 0, XF)
+
+        #print 'LOLO: VX       =>', VX[:]
+        #print 'LOLO: XF[10,:] =>', XF[10,:]
 
         fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*5.), dpi=None, facecolor='w', edgecolor='k')
-        ax  = plt.axes([0.095, 0.06, 0.92, 0.88], axisbg = 'gray')
+        ax  = plt.axes([0.07, 0.06, 0.96, 0.88], axisbg='k')
         vc  = __vcontour__(rmin, rmax, dc)
 
         # Colormap:
@@ -135,13 +144,13 @@ class plot :
         __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
 
         # Masking "rock":
-        pal_lsm = bcm.chose_colmap('blk')
-        norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
-        prock = nmp.ma.masked_where(XMSK > 0.5, XMSK)
-        cm = plt.imshow(prock, cmap=pal_lsm, norm=norm_lsm)
+        #pal_lsm = bcm.chose_colmap('blk')
+        #norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
+        #prock = nmp.ma.masked_where(XMSK > 0.5, XMSK)
+        #cm = plt.pcolor(VX, zVZ, prock, cmap=pal_lsm, norm=norm_lsm)
 
         # X-axis:
-        __nice_x_axis__(ax, plt, xmin, xmax, dx, cunit=cxunit, cfont=font_xylb)
+        __nice_x_axis__(ax, plt, xmin, xmax, dx, i_sbsmp=i_x_sbsmp, cunit=cxunit, cfont=font_xylb)
 
         # Y-axis:
         plt.ylabel(czunit, **font_xylb)
@@ -537,7 +546,7 @@ class plot :
         # Z-axis:
         __nice_z_axis__(ax, plt, zmin, zmax, dz, i_sbsmp=i_z_jump, cunit=czunit, cfont=font_xylb)
 
-        ax.grid(color='k', linestyle='-', linewidth=0.1)
+        #ax.grid(color='k', linestyle='-', linewidth=0.1)
         plt.title(ctitle, **font_ttl)
 
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False)  ; #zonal

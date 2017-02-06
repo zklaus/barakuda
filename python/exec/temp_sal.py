@@ -18,8 +18,8 @@ import barakuda_tool as bt
 import barakuda_orca as bo
 import barakuda_plot as bp
 
-lfig0 = True
-lfig1 = True
+lfig0 = False
+lfig1 = False
 lfig2 = True
 
 venv_needed = {'ORCA','RUN','DIAG_D','COMP2D','i_do_sect','MM_FILE','NN_SST','NN_T','NN_S',
@@ -406,10 +406,10 @@ if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections
                                 cpal='ncview_nrl', xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_T_'+csname+'_'+CONFRUN, cbunit=r'$^{\circ}$C', cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Temperature, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
-                                cfig_type=fig_type, lforce_lim=True, i_cb_subsamp=2)
+                                cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2)
         
         bp.plot("vert_section")(vaxis, vdepth, ZS, imsk, 33.9, 35.9, 0.05,
-                                cpal='spectral', xmin=xmn, xmax=xmx, dx=5.,
+                                cpal='ncview_jaisnb', xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_S_'+csname+'_'+CONFRUN, cbunit='PSU', cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Salinity, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
                                 cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2)
@@ -423,7 +423,7 @@ if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections
                                 cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2)
         #
         bp.plot("vert_section")(vaxis, vdepth, OS, imsk, 33.9, 35.9, 0.05,
-                                cpal='spectral', xmin=xmn, xmax=xmx, dx=5.,
+                                cpal='ncview_jaisnb', xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_S_'+csname+'_'+CC, cbunit='PSU',
                                 cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Salinity, '+csname+', '+CC+cinfo,

@@ -4,9 +4,9 @@
 
 # Diag to test:
 icrosssect=0
-itempsal=0
+itempsal=1
 isflx=0
-imean=1
+imean=0
 imov=0
 issh=0
 its=0
@@ -17,9 +17,9 @@ iemp=0
 icmip5=0
 ihov=0
 
-CONFIG="ORCA1_L75"
-ARCH="T159_ece32_marenostrum"
-export RUN="LR1E" ; NC=nc ; jyear=1990
+#CONFIG="ORCA1_L75"
+#ARCH="T159_ece32_marenostrum"
+#export RUN="LR1E" ; NC=nc ; jyear=1990
 
 #CONFIG="ORCA1_L42"
 ##ARCH="ece22_triolith"
