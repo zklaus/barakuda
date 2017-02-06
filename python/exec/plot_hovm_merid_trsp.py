@@ -106,7 +106,7 @@ for joce in range(nbasins):
 
     bp.plot("vert_section")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xsalt[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
                             rmin, rmax, rdf,
-                            cpal='BrBG_r', xmin=yr1, xmax=yr2+1., dx=ittic, lkcont=False,
+                            cpal='PiYG_r', xmin=yr1, xmax=yr2+1., dx=ittic, lkcont=False,
                             zmin = vlat[0], zmax = vlat[Nlat-1], l_zlog=False, 
                             cfignm=path_fig+'MST_'+CONFRUN+'_'+cbas, cbunit=r'10$^3$ tons/s', cxunit='',
                             czunit=r'Latitude ($^{\circ}$N)',
