@@ -6,19 +6,18 @@
 #            are allowed
 #
 # Ex:
-# Name_Section1  lon1 lat0 lon2 lat0
-# Name_Section2  lon0 lat1 lon0 lat2
+# Name_Zonal_Section       lon1 lat0 lon2 lat0
+# Name_Meridional_Section  lon0 lat1 lon0 lat2
+#
 Eq_Atlantic       -45.       0.     10.    0.
 #
 Wedell_67S        -30.     -67.     11.  -67.
 #                               
 Indian_77E         77.     -75.     77.   10.
 #                               
-Atlantic_22W      -22.     -80.    -22.   90.
+Atlantic_22W      -22.     -80.    -22.   80.
 #                               
 MedSea_7W          -7.      34.     -7.   37.
-#                               
-Ovide_40N        -12.65   40.33    -8.7  40.33
 #                               
 Gibraltar          -7.    35.958   -4.  35.958
 #

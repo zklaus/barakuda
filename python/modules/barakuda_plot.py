@@ -158,6 +158,9 @@ class plot :
         # Fixing z ticks:
         __fix_z_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=l_z_increase)
 
+
+        plt.axis([ xmin, xmax, zmin, zmax ])
+
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #vert_section
         print cfignm+'.'+cfig_type+' created!\n'
