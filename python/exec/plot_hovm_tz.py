@@ -99,7 +99,7 @@ for coce in list_basin_names:
 
     [ rmin, rmax, rdf ] = bt.get_min_max_df(XTe,40)
     bp.plot("vert_section")(vyears[:], vdepth[:nz], XTe[:,:], XTe[:,:]*0.+1., rmin, rmax, rdf,
-                            cpal='bbr2', xmin=yr1, xmax=yr2+1., dx=ixtics, lkcont=False,
+                            cpal='RdBu', xmin=yr1, xmax=yr2+1., dx=ixtics, lkcont=False,
                             zmin = z0, zmax = zK, l_zlog=True,
                             cfignm=path_fig+'hov_temperature_'+CONFRUN+'_'+coce, cbunit=r'$^{\circ}$C', cxunit='',
                             czunit='Depth (m)',
@@ -109,7 +109,7 @@ for coce in list_basin_names:
     XSe = 1000.*XSe
     [ rmin, rmax, rdf ] = bt.get_min_max_df(XSe,40)
     bp.plot("vert_section")(vyears[:], vdepth[:nz], XSe[:,:], XSe[:,:]*0.+1., rmin, rmax, rdf,
-                            cpal='bbr2', xmin=yr1, xmax=yr2+1., dx=ixtics, lkcont=False,
+                            cpal='BrBG', xmin=yr1, xmax=yr2+1., dx=ixtics, lkcont=False,
                             zmin = z0, zmax = zK, l_zlog=True,
                             cfignm=path_fig+'hov_salinity_'+CONFRUN+'_'+coce, cbunit=r'10$^{-3}$PSU', cxunit='',
                             czunit='Depth (m)',

@@ -139,7 +139,7 @@ if l_obs_mld:
             Xmld_obs[ijloc] = zz
             mmask[ijloc] = 0. ; # these points won't be checked again only first occurence of the criterion matters!
             bp.plot("nproj")('nseas', 200., zmax_mld_atl, dz_mld, xlon, xlat, Xmld_obs[:,:],
-                             cfignm=path_fig+'mld_NEMO_001_NSeas_march_'+CONFRUN+'_vs_'+vdic['COMP2D'], cpal='sst0', cbunit='m',
+                             cfignm=path_fig+'mld_NEMO_001_NSeas_march_'+CONFRUN+'_vs_'+vdic['COMP2D'], cpal='sst1', cbunit='m',
                              ctitle='MLD NEMO, March, '+CONFRUN+' ('+cy1+'-'+cy2+')',
                              lkcont=True, cfig_type=fig_type, lforce_lim=True)
 
@@ -153,31 +153,31 @@ ji_lat0 = nmp.argmax(xlat[nj-1])
 
 
 bp.plot("nproj")('nseas', 200., zmax_mld_atl, dz_mld, xlon, xlat, mldr10[imnth,:,:],
-                 cfignm=path_fig+'mld_NSeas_march_'+CONFRUN, cpal='sst0', cbunit='(m)',
+                 cfignm=path_fig+'mld_NSeas_march_'+CONFRUN, cpal='sst1', cbunit='(m)',
                  ctitle='MLD, March, '+RUN+' ('+cy1+'-'+cy2+')',
                  lkcont=True, cfig_type=fig_type,
                  lforce_lim=True)
 
 bp.plot("nproj")('spstere', 50., 200., 10., xlon, xlat, mldr10[imnth,:,:],
-                 cfignm=path_fig+'mld_ACC_march_'+CONFRUN, cpal='sst0', cbunit='(m)',
+                 cfignm=path_fig+'mld_ACC_march_'+CONFRUN, cpal='sst1', cbunit='(m)',
                  ctitle='MLD, March, '+RUN+' ('+cy1+'-'+cy2+')',
                  lkcont=True, cfig_type=fig_type,
                  lforce_lim=True)
 
 bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], mldr10[imnth,:,:], Xmask[0,:,:], 0., 600., 20.,
-              corca=corca, lkcont=True, cpal='sst0',
+              corca=corca, lkcont=True, cpal='sst1',
               cfignm=path_fig+'mld_Global_march_'+CONFRUN, cbunit='(m)',
               ctitle='MLD, March, '+CONFRUN+' ('+cy1+'-'+cy2+')', lforce_lim=True, i_cb_subsamp=2,
               cfig_type=fig_type, lat_min=-80., lat_max=75., lpix=False)
 
 if l_obs_mld:
     bp.plot("nproj")('nseas', 200., zmax_mld_atl, dz_mld, xlon, xlat, Xmld_obs[:,:],
-                     cfignm=path_fig+'mld_obs_001_NSeas_march_'+CONFRUN, cpal='sst0', cbunit='(m)',
+                     cfignm=path_fig+'mld_obs_001_NSeas_march_'+CONFRUN, cpal='sst1', cbunit='(m)',
                      ctitle='MLD, March (Levitus 1980-1999)',
                      lkcont=True, cfig_type=fig_type, lforce_lim=True)
 
     bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xmld_obs[:,:], Xmask[0,:,:], 0., 600., 20.,
-                  corca=corca, lkcont=True, cpal='sst0',
+                  corca=corca, lkcont=True, cpal='sst1',
                   cfignm=path_fig+'mld_obs_001_Global_march_'+CONFRUN, cbunit='(m)',
                   ctitle='MLD, March (Levitus 1980-1999)', lforce_lim=True, i_cb_subsamp=2,
                   cfig_type=fig_type, lat_min=-80., lat_max=75., lpix=False)
@@ -213,13 +213,13 @@ if l_obs_mld:
 
 # Figures september:
 bp.plot("nproj")('spstere', 100., 2000., dz_mld, xlon, xlat, mldr10[imnth,:,:],
-                 cfignm=path_fig+'mld_ACC_september_'+CONFRUN, cpal='sst0', cbunit='(m)',
+                 cfignm=path_fig+'mld_ACC_september_'+CONFRUN, cpal='sst1', cbunit='(m)',
                  ctitle='MLD, September, '+RUN+' ('+cy1+'-'+cy2+')',
                  lkcont=True, cfig_type=fig_type,
                  lforce_lim=True)
 
 bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], mldr10[imnth,:,:], Xmask[0,:,:], 0., 600., 20.,
-              corca=corca, lkcont=True, cpal='sst0',
+              corca=corca, lkcont=True, cpal='sst1',
               cfignm=path_fig+'mld_Global_september_'+CONFRUN, cbunit='(m)',
               ctitle='MLD, September, '+CONFRUN+' ('+cy1+'-'+cy2+')', lforce_lim=True, i_cb_subsamp=2,
               cfig_type=fig_type, lat_min=-80., lat_max=75., lpix=False)
@@ -227,7 +227,7 @@ bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], mldr10[imnth,:,:], Xmask[0,:,:], 0., 6
 
 if l_obs_mld:
     bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xmld_obs[:,:], Xmask[0,:,:], 0., 600., 20.,
-                  corca=corca, lkcont=True, cpal='sst0',
+                  corca=corca, lkcont=True, cpal='sst1',
                   cfignm=path_fig+'mld_obs_001_Global_september_'+CONFRUN, cbunit='(m)',
                   ctitle='MLD, March (Levitus 1980-1999)', lforce_lim=True, i_cb_subsamp=2,
                   cfig_type=fig_type, lat_min=-80., lat_max=75., lpix=False)

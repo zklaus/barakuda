@@ -134,7 +134,7 @@ export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 export FIG_FORM="png"
 
 # About remote HOST to install HTML pages to:
-export ihttp=1 ; # do we export on a remote http server (1) or keep on the local machine (0)
+export ihttp=0 ; # do we export on a remote http server (1) or keep on the local machine (0)
 export RHOST=misu228.misu.su.se ; # remote host to send diagnostic page to///
 export RUSER=laurent ; # username associated to remote host (for file export)
 export RWWWD=/data/www/barakuda/CMIP5 ; # directory of the local or remote host to send the diagnostic page to
@@ -146,7 +146,7 @@ export RWWWD=/data/www/barakuda/CMIP5 ; # directory of the local or remote host 
 #########################
 
 # Movies of SST and SSS compared to OBS:
-export i_do_movi=1
+export i_do_movi=0
 
 # Basic 3D and surface averages:
 export i_do_mean=1

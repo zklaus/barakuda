@@ -30,6 +30,9 @@ export RUN="LR1E" ; NC=nc ; jyear=1990
 #ARCH="ece32_marenostrum"
 #export RUN="LR20" ; NC=nc4 ; jyear=2540
 
+CONFIG="ORCA1_L42"
+ARCH="ece22_triolith"
+export RUN="SPIN" ; NC=nc4 ; jyear=2540
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`

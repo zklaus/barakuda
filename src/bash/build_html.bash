@@ -75,12 +75,16 @@ EOF
     ${img_l} 3d_thetao_lev_${cr}.${ff} ${img_r}
     ${img_l} 3d_thetao_basins_${cr}.${ff} ${img_r}
     ${img_l} Nino34_${cr}.${ff} ${img_r}
-    ${img_l} hov_temperature_${cr}_GLO.${ff} ${img_r}
-    ${img_l} hov_temperature_${cr}_atl.${ff} ${img_r}
-    ${img_l} hov_temperature_${cr}_pac.${ff} ${img_r}
-    ${img_l} hov_temperature_${cr}_ind.${ff} ${img_r}
 EOF
-
+    list_hov_figs=`\ls ${HTML_DIR}/hov_temperature_${cr}*.${ff}`
+    if [ ! "${list_hov_figs}" = "" ]; then
+        echo "    ${ctl} Time-depth evolution of temperature${ctr}" >> index.html
+        for fhov in ${list_hov_figs}; do
+            fgn=`basename ${fhov}`
+            echo "    ${img_l} ${fgn} ${img_r}"  >> index.html
+        done
+    fi
+    
     # Salinity page
     cat >> index.html <<EOF
     ${ctl} Salinity time-series ${ctr}
@@ -88,13 +92,16 @@ EOF
     ${img_l} mean_sos_${cr}.${ff} ${img_r}
     ${img_l} 3d_so_lev_${cr}.${ff} ${img_r}
     ${img_l} 3d_so_basins_${cr}.${ff} ${img_r}
-    ${img_l} hov_salinity_${cr}_GLO.${ff} ${img_r}
-    ${img_l} hov_salinity_${cr}_atl.${ff} ${img_r}
-    ${img_l} hov_salinity_${cr}_pac.${ff} ${img_r}
-    ${img_l} hov_salinity_${cr}_ind.${ff} ${img_r}
 EOF
-
-
+    list_hov_figs=`\ls ${HTML_DIR}/hov_salinity_${cr}*.${ff}`
+    if [ ! "${list_hov_figs}" = "" ]; then
+        echo "    ${ctl} Time-depth evolution of salinity${ctr}" >> index.html
+        for fhov in ${list_hov_figs}; do
+            fgn=`basename ${fhov}`
+            echo "    ${img_l} ${fgn} ${img_r}"  >> index.html
+        done
+    fi
+    
 
     # Surface heat flux diagnostics:
     LIST_HF_FIG="htf_qnt htf_qsr \

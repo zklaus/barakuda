@@ -24,6 +24,6 @@ Gibraltar          -7.    35.958   -4.  35.958
 #
 Pacific_144W     -144.     -80.   -144.   90.
 #
-Eq_Pacific        115.       0.    -77.    0.
+#Eq_Pacific       115.       0.    -77.    0.
 #
 EOF
