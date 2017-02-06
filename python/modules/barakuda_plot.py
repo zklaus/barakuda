@@ -116,7 +116,7 @@ class plot :
         if lforce_lim: __force_min_and_max__(rmin, rmax, XF)
 
         # Masking where mask is zero!
-        XF = nmp.ma.masked_where(XMSK == 0, XF)
+        #XF = nmp.ma.masked_where(XMSK == 0, XF)
 
         fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*5.), dpi=None, facecolor='w', edgecolor='k')
         ax  = plt.axes([0.095, 0.06, 0.92, 0.88], axisbg = 'gray')
@@ -126,9 +126,16 @@ class plot :
         colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
-        cf = plt.contourf(VX, zVZ, XF, vc, cmap = colmap, norm = pal_norm)
-        plt.hold(True)
-        if lkcont: plt.contour(VX, zVZ, XF, vc, colors='k', linewidths=0.2)
+        #cf = plt.contourf(VX, zVZ, XF, vc, cmap = colmap, norm = pal_norm)
+        cf = plt.pcolor(VX, zVZ, XF, cmap=colmap, norm=pal_norm)
+        #plt.hold(True)
+        #if lkcont: plt.contour(VX, zVZ, XF, vc, colors='k', linewidths=0.2)
+
+        # Masking "rock":
+        pal_lsm = bcm.chose_colmap('blk')
+        norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
+        prock = nmp.ma.masked_where(XMSK > 0.5, XMSK)
+        cm = plt.imshow(prock, cmap=pal_lsm, norm=norm_lsm)
 
         # Colorbar:
         __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
@@ -1018,32 +1025,27 @@ class plot :
 
 
 
-
     def __time_depth_hovm(self,VT, VZ, XF, XMSK, rmin, rmax, dc, lkcont=True, cpal='jet',
-                          tmin=0., tmax=100., dt=5.,
-                          cfignm='fig', cbunit='', cxunit=' ', zmin = 0., zmax = 5000., l_zlog=False,
-                          cfig_type='pdf', czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1,
-                          vcont_spec1 = [], col_cont_spec1='w'):
+                          tmin=0., tmax=50., dt=5, cfignm='fig', cbunit='', ctunit=' ',
+                          zmin = 0., zmax = 5000., l_zlog=False, cfig_type='png',
+                          czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1, l_z_increase=False ):
 
-        import matplotlib.colors as colors   # colmap and co.
         import barakuda_colmap as bcm
 
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
         zVZ = __prepare_z_log_axis__(l_zlog, VZ)
 
-        XF = nmp.ma.masked_where(XMSK == 0, XF)
-
         if lforce_lim: __force_min_and_max__(rmin, rmax, XF)
 
+        # Masking where mask is zero!
+        XF = nmp.ma.masked_where(XMSK == 0, XF)
 
-        fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), dpi=None, facecolor='w', edgecolor='k')
-        ax = plt.axes([0.09, 0.08, 0.9, 0.82], axisbg = 'gray')
+        fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*5.), dpi=None, facecolor='w', edgecolor='k')
+        ax  = plt.axes([0.095, 0.06, 0.92, 0.88], axisbg = 'gray')
+        vc  = __vcontour__(rmin, rmax, dc)
 
-
-        vc = __vcontour__(rmin, rmax, dc)
-
-        # Colmap:
+        # Colormap:
         colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
@@ -1051,40 +1053,24 @@ class plot :
         plt.hold(True)
         if lkcont: plt.contour(VT, zVZ, XF, vc, colors='k', linewidths=0.2)
 
-        # contour for specific values on the ploted field:
-        if len(vcont_spec1) >= 1:
-            cfs1 = plt.contour(VT, zVZ, XF, vcont_spec1, colors=col_cont_spec1, linewidths = 2.)
-            plt.clabel(cfs1, inline=1, fmt='%4.1f', fontsize=11, manual=[(2080,2.)] )
-
-        ax.grid(color='k', linestyle='-', linewidth=0.1)
-
         # Colorbar:
-        clb = plt.colorbar(cf, ticks=vc)
-        if i_cb_subsamp > 1: __subsample_colorbar__(i_cb_subsamp, vc, clb, cb_or=cb_orient)
-        for t in clb.ax.get_yticklabels(): t.set_fontsize(13)
-        if cbunit != '': clb.set_label('('+cbunit+')', **font_clb)
-
-        plt.axis([ tmin, tmax, zmax, zmin])
-        plt.ylabel(czunit, **font_xylb)
+        __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
 
         # X-axis:
-        __nice_x_axis__(ax, plt, tmin, tmax, dt, cfont=font_xylb)
+        __nice_x_axis__(ax, plt, tmin, tmax, dt, cunit=ctunit, cfont=font_xylb)
+
+        # Y-axis:
+        plt.ylabel(czunit, **font_xylb)
 
         # Fixing z ticks:
-        __fix_z_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=False)
+        __fix_z_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=l_z_increase)
 
         plt.title(ctitle, **font_ttl)
-        plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False)
+        plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #vert_section
         print cfignm+'.'+cfig_type+' created!\n'
         plt.close(1)
 
         return
-
-
-
-
-
-
 
 
 

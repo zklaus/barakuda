@@ -89,14 +89,14 @@ for joce in range(nbasins):
 
     [ rmin, rmax, rdf ] = bt.get_min_max_df(Xheat[joce,jt_ini:,:],40)
 
-    bp.plot("vert_section")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xheat[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
-                            rmin, rmax, rdf,
-                            cpal='RdBu_r', xmin=yr1, xmax=yr2+1., dx=ittic, lkcont=False,
-                            zmin = vlat[0], zmax = vlat[Nlat-1], l_zlog=False, 
-                            cfignm=path_fig+'MHT_'+CONFRUN+'_'+cbas, cbunit='PW', cxunit='',
-                            czunit=r'Latitude ($^{\circ}$N)',
-                            ctitle=CONFRUN+': Northward advective meridional heat transport, '+cbasin,
-                            cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2, l_z_increase=True)
+    bp.plot("time_depth_hovm")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xheat[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
+                               rmin, rmax, rdf,
+                               cpal='RdBu_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=False,
+                               zmin = vlat[0], zmax = vlat[Nlat-1], l_zlog=False, 
+                               cfignm=path_fig+'MHT_'+CONFRUN+'_'+cbas, cbunit='PW', ctunit='',
+                               czunit=r'Latitude ($^{\circ}$N)',
+                               ctitle=CONFRUN+': Northward advective meridional heat transport, '+cbasin,
+                               cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2, l_z_increase=True)
 
 
 
@@ -104,13 +104,13 @@ for joce in range(nbasins):
 
     [ rmin, rmax, rdf ] = bt.get_min_max_df(Xsalt[joce,jt_ini:,:],40)
 
-    bp.plot("vert_section")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xsalt[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
-                            rmin, rmax, rdf,
-                            cpal='PiYG_r', xmin=yr1, xmax=yr2+1., dx=ittic, lkcont=False,
-                            zmin = vlat[0], zmax = vlat[Nlat-1], l_zlog=False, 
-                            cfignm=path_fig+'MST_'+CONFRUN+'_'+cbas, cbunit=r'10$^3$ tons/s', cxunit='',
-                            czunit=r'Latitude ($^{\circ}$N)',
-                            ctitle=CONFRUN+': Northward advective meridional salt transport, '+cbasin,
-                            cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2, l_z_increase=True)
-
+    bp.plot("time_depth_hovm")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xsalt[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
+                               rmin, rmax, rdf,
+                               cpal='PiYG_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=False,
+                               zmin = vlat[0], zmax = vlat[Nlat-1], l_zlog=False, 
+                               cfignm=path_fig+'MST_'+CONFRUN+'_'+cbas, cbunit=r'10$^3$ tons/s', ctunit='',
+                               czunit=r'Latitude ($^{\circ}$N)',
+                               ctitle=CONFRUN+': Northward advective meridional salt transport, '+cbasin,
+                               cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2, l_z_increase=True)
+    
 

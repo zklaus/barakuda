@@ -94,14 +94,6 @@ for csec in list_sections:
                               lforce_lim=False, vcont_spec1 = [], i_cb_subsamp=2)
     
 
-    #bp.plot("vert_section")(vtime_ann, vsigma_bounds, Xst_ann, Xst_ann*0.+1., rmin, rmax, dc,
-    #                        lkcont=True, cpal='bbr2_r', xmin=nmp.min(vtime_ann), xmax=nmp.max(vtime_ann), dx=ittic,
-    #                        cfignm='transport_sigma_class_'+csec+'_'+CONFRUN,
-    #                        cfig_type='png', czunit=r'$\sigma_0$',
-    #                        ctitle=r'Transport by $\sigma_0$ class, '+csec+', '+CONFRUN, i_cb_subsamp=1 )
-
-
-    
     # Volume transport for density > rsigma_dense
     # ====================================
 

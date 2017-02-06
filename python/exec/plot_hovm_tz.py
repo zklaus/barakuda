@@ -98,23 +98,23 @@ for coce in list_basin_names:
     zK = max(vdepth)
 
     [ rmin, rmax, rdf ] = bt.get_min_max_df(XTe,40)
-    bp.plot("vert_section")(vyears[:], vdepth[:nz], XTe[:,:], XTe[:,:]*0.+1., rmin, rmax, rdf,
-                            cpal='RdBu_r', xmin=yr1, xmax=yr2+1., dx=ixtics, lkcont=False,
-                            zmin = z0, zmax = zK, l_zlog=True,
-                            cfignm=path_fig+'hov_temperature_'+CONFRUN+'_'+coce, cbunit=r'$^{\circ}$C', cxunit='',
-                            czunit='Depth (m)',
-                            ctitle=CONFRUN+': Spatially-averaged temperature evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
-                            cfig_type=fig_type, lforce_lim=True, i_cb_subsamp=2)
+    bp.plot("time_depth_hovm")(vyears[:], vdepth[:nz], XTe[:,:], XTe[:,:]*0.+1., rmin, rmax, rdf,
+                               cpal='RdBu_r', tmin=yr1, tmax=yr2+1., dt=ixtics, lkcont=False,
+                               zmin = z0, zmax = zK, l_zlog=True,
+                               cfignm=path_fig+'hov_temperature_'+CONFRUN+'_'+coce, cbunit=r'$^{\circ}$C', ctunit='',
+                               czunit='Depth (m)',
+                               ctitle=CONFRUN+': Spatially-averaged temperature evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
+                               cfig_type=fig_type, lforce_lim=True, i_cb_subsamp=2)
 
     XSe = 1000.*XSe
     [ rmin, rmax, rdf ] = bt.get_min_max_df(XSe,40)
-    bp.plot("vert_section")(vyears[:], vdepth[:nz], XSe[:,:], XSe[:,:]*0.+1., rmin, rmax, rdf,
-                            cpal='PiYG_r', xmin=yr1, xmax=yr2+1., dx=ixtics, lkcont=False,
-                            zmin = z0, zmax = zK, l_zlog=True,
-                            cfignm=path_fig+'hov_salinity_'+CONFRUN+'_'+coce, cbunit=r'10$^{-3}$PSU', cxunit='',
-                            czunit='Depth (m)',
-                            ctitle=CONFRUN+': Spatially-averaged salinity evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
-                            cfig_type=fig_type, lforce_lim=True, i_cb_subsamp=2)
+    bp.plot("time_depth_hovm")(vyears[:], vdepth[:nz], XSe[:,:], XSe[:,:]*0.+1., rmin, rmax, rdf,
+                               cpal='PiYG_r', tmin=yr1, tmax=yr2+1., dt=ixtics, lkcont=False,
+                               zmin = z0, zmax = zK, l_zlog=True,
+                               cfignm=path_fig+'hov_salinity_'+CONFRUN+'_'+coce, cbunit=r'10$^{-3}$PSU', ctunit='',
+                               czunit='Depth (m)',
+                               ctitle=CONFRUN+': Spatially-averaged salinity evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
+                               cfig_type=fig_type, lforce_lim=True, i_cb_subsamp=2)
 
 
     jo = jo +1
