@@ -1273,7 +1273,7 @@ class plot :
 
         # Number of lines to plot:
         [ nb_plt, nbt ] = XD.shape
-        if len(vt) != nbt: print 'ERROR: plot_1d_multi.barakuda_plot.py => vt and XD do not agree in shape!'; sys.exit(0)
+        if len(vt) != nbt: print 'ERROR: plot_1d_multi.barakuda_plot.py => vt and XD do not agree in shape! =>', len(vt), nbt,'\n'; sys.exit(0)
         if len(vlabels) != nb_plt: print 'ERROR: plot_1d_multi.barakuda_plot.py => wrong number of labels...'; sys.exit(0)
         n0 = len(line_styles)
         if n0 > 0 and n0 != nb_plt: print 'ERROR: plot_1d_multi.barakuda_plot.py => wrong number line styles!!!'; sys.exit(0)
