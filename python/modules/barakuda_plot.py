@@ -102,7 +102,7 @@ class plot :
     # Functions:
 
 
-    def __vert_section(self,VX, VZ, XF, XMSK, rmin, rmax, dc, lkcont=True, cpal='jet',
+    def __vert_section(self, VX, VZ, XF, XMSK, rmin, rmax, dc, lkcont=True, cpal='jet', lzonal=True,
                        xmin=-80., xmax=85., dx=5, cfignm='fig', cbunit='', cxunit=' ',
                        zmin = 0., zmax = 5000., l_zlog=False, cfig_type='png',
                        czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1, l_z_increase=False ):
@@ -116,19 +116,17 @@ class plot :
         if lforce_lim: __force_min_and_max__(rmin, rmax, XF)
 
         i_x_sbsmp = 1
-        dxgap = max(VX) - min(VX)
-        if dxgap > 160.: dx = 5.; i_x_sbsmp = 2
+        dxgap = nmp.amax(VX) - nmp.amin(VX)
+        #print ' LOLO: dxgag =>', dxgap, max(VX), min(VX) ; print VX[:]
+        if dxgap > 140.: dx = 5.; i_x_sbsmp = 2
         if dxgap < 50.:  dx = 2.
         if dxgap < 25.:  dx = 1.        
 
         # Masking where mask is zero!
         XF = nmp.ma.masked_where(XMSK == 0, XF)
 
-        #print 'LOLO: VX       =>', VX[:]
-        #print 'LOLO: XF[10,:] =>', XF[10,:]
-
         fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*5.), dpi=None, facecolor='w', edgecolor='k')
-        ax  = plt.axes([0.07, 0.06, 0.96, 0.88], axisbg='k')
+        ax  = plt.axes([0.07, 0.06, 0.98, 0.88], axisbg='k')
         vc  = __vcontour__(rmin, rmax, dc)
 
         # Colormap:
@@ -136,7 +134,8 @@ class plot :
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
         #cf = plt.contourf(VX, zVZ, XF, vc, cmap = colmap, norm = pal_norm)
-        cf = plt.pcolor(VX, zVZ, XF, cmap=colmap, norm=pal_norm)
+        cf = plt.pcolormesh(VX, zVZ, XF, cmap=colmap, norm=pal_norm)
+        #cf = plt.pcolor(VX, zVZ, XF, cmap=colmap, norm=pal_norm)
         #plt.hold(True)
         #if lkcont: plt.contour(VX, zVZ, XF, vc, colors='k', linewidths=0.2)
 
@@ -150,16 +149,18 @@ class plot :
         #cm = plt.pcolor(VX, zVZ, prock, cmap=pal_lsm, norm=norm_lsm)
 
         # X-axis:
-        __nice_x_axis__(ax, plt, xmin, xmax, dx, i_sbsmp=i_x_sbsmp, cunit=cxunit, cfont=font_xylb)
+        if lzonal:
+            [vvx, ctck] = __name_longitude_ticks__(lon_min=xmin, lon_max=xmax, dlon=dx*i_x_sbsmp)            
+        else:
+            [vvx, ctck] =  __name_latitude_ticks__(lat_min=xmin, lat_max=xmax, dlat=dx*i_x_sbsmp)
+        plt.xticks(vvx,ctck)
+        ax.set_xlim(xmin,xmax)
 
-        # Y-axis:
+        # Z-axis:
         plt.ylabel(czunit, **font_xylb)
 
-        # Fixing z ticks:
+        # Fixing Z-axis ticks:
         __fix_z_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=l_z_increase)
-
-
-        plt.axis([ xmin, xmax, zmin, zmax ])
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #vert_section
@@ -167,6 +168,7 @@ class plot :
         plt.close(1)
 
         return
+
 
 
     def __2d(self,VX, VY, XF, XMSK, rmin, rmax, dc, corca='ORCA1', lkcont=True, cpal='jet',
@@ -212,7 +214,6 @@ class plot :
         if i_lat_lon == 1:
             [ny, nx] = nmp.shape(XF0)
             dlong  = abs(VX[11] - VX[10])
-            #VX0 = nmp.arange(0.,nx,dlong) + dlong/2. ; #lolo:
             VX0 = nmp.arange(0.,nx)
             VX0 = VX0*dlong + dlong/2.
 
@@ -268,12 +269,6 @@ class plot :
 
                 plt.clabel(cfs, inline=1, fmt='%4.1f', fontsize=10)
                 for c in cfs.collections: c.set_zorder(0.35)
-
-            ## Contours of continents:
-            ##cfm = plt.contour(VX0, VY, XMSK0, [ 0.7 ], colors='k', linewidths = 0.4)
-            ##for c in cfm.collections: c.set_zorder(1.)
-
-
 
         # Putting land-sea mask on top of current plot, cleaner than initial masking...
         # because won't influence contours since they are done
@@ -544,12 +539,11 @@ class plot :
         plt.legend(bbox_to_anchor=box_legend, shadow=False, fancybox=True)
 
         # X-axis
-        __nice_x_axis__(ax, plt, xmin, xmax, 15., cunit=cxunit, cfont=font_xylb)
+        __nice_x_axis__(ax, plt, xmin, xmax, 15., cunit=cxunit, cfont=font_xylb, dx_minor=0)
 
         # Z-axis:
         __nice_z_axis__(ax, plt, zmin, zmax, dz, i_sbsmp=i_z_jump, cunit=czunit, cfont=font_xylb)
 
-        #ax.grid(color='k', linestyle='-', linewidth=0.1)
         plt.title(ctitle, **font_ttl)
 
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False)  ; #zonal
@@ -1163,7 +1157,7 @@ class plot :
 
         plt.yticks( nmp.arange(-2.5,2.501,0.5) )
 
-        ax.grid(color='k', linestyle='-', linewidth=0.2)
+        #ax.grid(color='k', linestyle='-', linewidth=0.2)
         plt.ylabel(r'SST anomaly ($^{\circ}$C)', **font_xylb)
         plt.title('SST anomaly on Nino region 3.4', **font_ttl)
         cf_fig = cfignm+'.png'
@@ -1633,9 +1627,10 @@ def __vcontour__(zmin, zmax, zdc):
 
 
 
-def __name_coor_ticks__(lon_min=0., lon_max=360., dlon=30., lat_min=-90., lat_max=90., dlat=15., lon_ext=0):
+
+def __name_longitude_ticks__(lon_min=0., lon_max=360., dlon=30., lon_ext=0):
     #
-    # Builds nice ticks for X and Y (lon, lat) axes!
+    # Builds nice ticks for X (lon) axis!
     #
     # Arrange longitude axis !
     VX = nmp.arange(lon_min, lon_max+lon_ext+dlon, dlon); VX0 = nmp.arange(lon_min, lon_max+lon_ext+dlon, dlon);
@@ -1650,6 +1645,11 @@ def __name_coor_ticks__(lon_min=0., lon_max=360., dlon=30., lat_min=-90., lat_ma
                 cn_lon.append(str(jlon)+r'$^{\circ}$')
             else:
                 cn_lon.append(str(jlon)+r'$^{\circ}$E')
+    return VX, cn_lon
+
+def __name_latitude_ticks__(lat_min=-90., lat_max=90., dlat=15.):
+    #
+    # Builds nice ticks for Y (lat) axis!
     #
     # Arrange latitude axis !
     VY = nmp.arange(lat_min, lat_max+dlat, dlat)
@@ -1664,7 +1664,14 @@ def __name_coor_ticks__(lon_min=0., lon_max=360., dlon=30., lat_min=-90., lat_ma
             else:
                 cn_lat.append(str(jlat)+r'$^{\circ}$N')
     #
+    return VY, cn_lat
+
+def __name_coor_ticks__(lon_min=0., lon_max=360., dlon=30., lat_min=-90., lat_max=90., dlat=15., lon_ext=0):
+    # Builds nice ticks for X and Y (lon, lat) axes!
+    VX, cn_lon = __name_longitude_ticks__(lon_min=lon_min, lon_max=lon_max, dlon=dlon, lon_ext=lon_ext)
+    VY, cn_lat =  __name_latitude_ticks__(lat_min=lat_min, lat_max=lat_max, dlat=dlat)
     return VX, VY, cn_lon, cn_lat
+
 
 
 
@@ -1771,14 +1778,14 @@ def __nice_colorbar__(fig_hndl, plt_hndl, vcc,
 
     if cb_or == 'horizontal':
         if cax_other is not None:
-            clb = plt_hndl.colorbar(fig_hndl, cax=cax_other, ticks=vcc, drawedges=lkc, orientation='horizontal', pad=0.07, shrink=1., aspect=40)
+            clb = plt_hndl.colorbar(fig_hndl, cax=cax_other, ticks=vcc, drawedges=lkc, orientation='horizontal', pad=0.07, shrink=1., aspect=40, extend='both')
         else:
-            clb = plt_hndl.colorbar(fig_hndl,                ticks=vcc, drawedges=lkc, orientation='horizontal', pad=0.07, shrink=1., aspect=40)
+            clb = plt_hndl.colorbar(fig_hndl,                ticks=vcc, drawedges=lkc, orientation='horizontal', pad=0.07, shrink=1., aspect=40, extend='both')
     else:
         if cax_other is not None:
-            clb = plt_hndl.colorbar(fig_hndl, cax=cax_other, ticks=vcc, drawedges=lkc, pad=0.03)
+            clb = plt_hndl.colorbar(fig_hndl, cax=cax_other, ticks=vcc, drawedges=lkc, pad=0.03, extend='both')
         else:
-            clb = plt_hndl.colorbar(fig_hndl,                ticks=vcc, drawedges=lkc, pad=0.03)
+            clb = plt_hndl.colorbar(fig_hndl,                ticks=vcc, drawedges=lkc, pad=0.03, extend='both')
 
     if i_sbsmp > 1: __subsample_colorbar__(i_sbsmp, vcc, clb, cb_or=cb_or)
 

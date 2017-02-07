@@ -9,6 +9,8 @@
 # Name_Zonal_Section       lon1 lat0 lon2 lat0
 # Name_Meridional_Section  lon0 lat1 lon0 lat2
 #
+Eq_Pacific        110.       0.    -78.    0.
+#
 Eq_Atlantic       -45.       0.     10.    0.
 #
 Wedell_67S        -30.     -67.     11.  -67.
@@ -19,10 +21,10 @@ Atlantic_22W      -22.     -80.    -22.   80.
 #                               
 MedSea_7W          -7.      34.     -7.   37.
 #                               
-Gibraltar          -7.    35.958   -4.  35.958
+Gibraltar          -10.    35.958   0.  35.958
 #
-Pacific_144W     -144.     -80.   -144.   90.
+Pacific_144W     -144.     -80.   -144.   80.
 #
-#Eq_Pacific       115.       0.    -77.    0.
+Drake_58S        -140.     -58.      2.  -58.
 #
 EOF

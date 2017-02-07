@@ -20,6 +20,8 @@ import barakuda_plot as bp
 
 lfig0 = True
 lfig1 = True
+#lfig0 = False
+#lfig1 = False
 lfig2 = True
 
 venv_needed = {'ORCA','RUN','DIAG_D','COMP2D','i_do_sect','MM_FILE','NN_SST','NN_T','NN_S',
@@ -362,8 +364,6 @@ if lfig1:
 
 if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections
 
-    #lolo: ?
-
     vdico = bt.check_env_var(sys.argv[0], {'TS_SECTION_FILE'})
 
     vboxes, vlon1, vlat1, vlon2, vlat2 = bt.read_box_coordinates_in_ascii(vdico['TS_SECTION_FILE'], ctype='float')
@@ -372,9 +372,13 @@ if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections
     for csname in vboxes:
         
         [ i1, i2, j1, j2 ] = bo.coor2ind(vlon1[js], vlon2[js], vlat1[js], vlat2[js], xlon, xlat)
+        if i2>i1 and i2 < ni0-1: i2 = i2+1
+        if j2>j1 and j2 < nj0-1: j2 = j2+1
 
-        print csname, ' i1, i2, j1, j2 =', i1, i2, j1, j2
-        print   '(lon1, lon2, lat1, lat2) =', vlon1[js], vlon2[js], vlat1[js], vlat2[js]
+        print '\n *** Section: '+csname+':'
+        print ' lon1, lon2, lat1, lat2 =', vlon1[js], vlon2[js], vlat1[js], vlat2[js]
+        print ' => i1, i2, j1, j2 =', i1, i2, j1, j2
+        #print   ' xlon[j1,i1], xlon[j1,i2] =', xlon[j1,i1]-360., xlon[j1,i2]
         print ''
 
         if i1 > i2: print 'ERROR: temp_sal.py => i1 > i2 !'; sys.exit(0)
@@ -382,48 +386,55 @@ if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections
 
         #  N E M O
         #  ~~~~~~~
-        #lolo
+        #
+        lzonal = False
         if i1 == i2:
-            print csname+' => Meridional section!'
-            vaxis = xlat[j1:j2,i1]
-            ZT    = Tnemo_annual[:,j1:j2,i1] ; ZS = Snemo_annual[:,j1:j2,i1]
-            OT    = Tclim_annual[:,j1:j2,i1] ; OS = Sclim_annual[:,j1:j2,i1]
-            imsk  = imask[:,j1:j2,i1]
+            print ' ==> Meridional section!'
+            vaxis = xlat[j1:j2+1,i1]
+            ZT    = Tnemo_annual[:,j1:j2+1,i1] ; ZS = Snemo_annual[:,j1:j2+1,i1]
+            OT    = Tclim_annual[:,j1:j2+1,i1] ; OS = Sclim_annual[:,j1:j2+1,i1]
+            imsk  = imask[:,j1:j2+1,i1]
             cinfo = ', lon='+str(vlon1[js])
             xmn=vlat1[js]; xmx=vlat2[js]
         if j1 == j2:
-            print csname+' => Zonal section!'
-            vx = xlon[j1,i1:i2] ; vaxis = nmp.zeros(len(vx)) ; vaxis[:] = vx[:]
-            ivf = nmp.where(vx>180); vaxis[ivf] = vx[ivf] - 360.
-            ZT    = Tnemo_annual[:,j1,i1:i2] ; ZS = Snemo_annual[:,j1,i1:i2]
-            OT    = Tclim_annual[:,j1,i1:i2] ; OS = Sclim_annual[:,j1,i1:i2]
-            imsk  = imask[:,j1,i1:i2]
-            cinfo = ', lat='+str(vlat1[js])
+            print ' ==> Zonal section!'            
+            lzonal = True
             xmn=vlon1[js]; xmx=vlon2[js]
+            vx = xlon[j1,i1:i2+1] ; vaxis = nmp.zeros(len(vx)) ; vaxis[:] = vx[:]
+            if xmx<0. and xmn>0.:
+                xmx = 360. + xmx                
+            else:
+                ivf = nmp.where(vx>180.); vaxis[ivf] = vx[ivf] - 360.
+            ZT    = Tnemo_annual[:,j1,i1:i2+1] ; ZS = Snemo_annual[:,j1,i1:i2+1]
+            OT    = Tclim_annual[:,j1,i1:i2+1] ; OS = Sclim_annual[:,j1,i1:i2+1]
+            imsk  = imask[:,j1,i1:i2+1]
+            cinfo = ', lat='+str(vlat1[js])            
+            #if xmx < xmn and xmx <0.: xmx = 360. + xmx
+            #print 'LOLO: xmn, xmx =>', xmn, xmx ; #sys.exit(0)
 
                     
         bp.plot("vert_section")(vaxis, vdepth, ZT, imsk, 0., 30., 1.,
-                                cpal='ncview_nrl', xmin=xmn, xmax=xmx, dx=5.,
+                                cpal='ncview_nrl', lzonal=lzonal, xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_T_'+csname+'_'+CONFRUN, cbunit=r'$^{\circ}$C', cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Temperature, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
                                 cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2)
         
         bp.plot("vert_section")(vaxis, vdepth, ZS, imsk, 33.9, 35.9, 0.05,
-                                cpal='ncview_jaisnb', xmin=xmn, xmax=xmx, dx=5.,
+                                cpal='ncview_jaisnb', lzonal=lzonal, xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_S_'+csname+'_'+CONFRUN, cbunit='PSU', cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Salinity, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
                                 cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2)
 
         #  OBS:
         bp.plot("vert_section")(vaxis, vdepth, OT, imsk, 0., 30., 1.,
-                                cpal='ncview_nrl', xmin=xmn, xmax=xmx, dx=5.,
+                                cpal='ncview_nrl', lzonal=lzonal, xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_T_'+csname+'_'+CC, cbunit=r'$^{\circ}$C',
                                 cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Temperature, '+csname+', '+CC+cinfo,
                                 cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2)
         #
         bp.plot("vert_section")(vaxis, vdepth, OS, imsk, 33.9, 35.9, 0.05,
-                                cpal='ncview_jaisnb', xmin=xmn, xmax=xmx, dx=5.,
+                                cpal='ncview_jaisnb', lzonal=lzonal, xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_S_'+csname+'_'+CC, cbunit='PSU',
                                 cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Salinity, '+csname+', '+CC+cinfo,
