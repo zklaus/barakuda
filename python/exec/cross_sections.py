@@ -82,7 +82,7 @@ for jt in range(Nt): vtime[jt] = float(jyear) + (float(jt) + 0.5)/float(Nt)
 
 
 # Getting sections:
-vboxes, vlon1, vlat1, vlon2, vlat2 = bt.read_box_coordinates_in_ascii(f_sections, ctype='float')
+vboxes, vlon1, vlat1, vlon2, vlat2 = bt.read_coor(f_sections, ctype='float', lTS_bounds=False)
 
 
 js = -1

@@ -18,10 +18,10 @@ import barakuda_tool as bt
 import barakuda_orca as bo
 import barakuda_plot as bp
 
-lfig0 = True
-lfig1 = True
-#lfig0 = False
-#lfig1 = False
+#lfig0 = True
+#lfig1 = True
+lfig0 = False
+lfig1 = False
 lfig2 = True
 
 venv_needed = {'ORCA','RUN','DIAG_D','COMP2D','i_do_sect','MM_FILE','NN_SST','NN_T','NN_S',
@@ -366,7 +366,7 @@ if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections
 
     vdico = bt.check_env_var(sys.argv[0], {'TS_SECTION_FILE'})
 
-    vboxes, vlon1, vlat1, vlon2, vlat2 = bt.read_box_coordinates_in_ascii(vdico['TS_SECTION_FILE'], ctype='float')
+    vboxes, vlon1, vlat1, vlon2, vlat2, vTmin, vTmax, vSmin, vSmax = bt.read_coor(vdico['TS_SECTION_FILE'], ctype='float', lTS_bounds=True)
     
     js = 0
     for csname in vboxes:
@@ -412,28 +412,41 @@ if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections
             #if xmx < xmn and xmx <0.: xmx = 360. + xmx
             #print 'LOLO: xmn, xmx =>', xmn, xmx ; #sys.exit(0)
 
-                    
-        bp.plot("vert_section")(vaxis, vdepth, ZT, imsk, 0., 30., 1.,
+        Ta = vTmax[js] - vTmin[js]
+        if Ta < 1. : print 'ERROR: temp_sal.py => Problem with your min and max for T for section "'+csname+'" !'; sys.exit(0)
+        if Ta >= 25.:              dT = 1.
+        if Ta >= 10. and Ta < 25.: dT = 0.5
+        if Ta >=  5. and Ta < 10.: dT = 0.25
+        if Ta >   0. and Ta <  5.: dT = 0.1
+
+        Sa = vSmax[js] - vSmin[js]
+        if Sa < 0.001 : print 'ERROR: temp_sal.py => Problem with your min and max for S for section "'+csname+'" !'; sys.exit(0)
+        if Sa >= 3. :              dS = 0.1
+        if Sa >= 1.5 and Sa < 3. : dS = 0.05
+        if Sa >= 0.5 and Sa < 1.5: dS = 0.025
+        if Sa >= 0.  and Sa < 0.5: dS = 0.01
+
+        bp.plot("vert_section")(vaxis, vdepth, ZT, imsk, vTmin[js], vTmax[js], dT,
                                 cpal='ncview_nrl', lzonal=lzonal, xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_T_'+csname+'_'+CONFRUN, cbunit=r'$^{\circ}$C', cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Temperature, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
                                 cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2)
         
-        bp.plot("vert_section")(vaxis, vdepth, ZS, imsk, 33.9, 35.9, 0.05,
+        bp.plot("vert_section")(vaxis, vdepth, ZS, imsk, vSmin[js], vSmax[js], dS,
                                 cpal='ncview_jaisnb', lzonal=lzonal, xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_S_'+csname+'_'+CONFRUN, cbunit='PSU', cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Salinity, ('+cy1+'-'+cy2+'), '+csname+', '+CONFRUN+cinfo,
                                 cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2)
 
         #  OBS:
-        bp.plot("vert_section")(vaxis, vdepth, OT, imsk, 0., 30., 1.,
+        bp.plot("vert_section")(vaxis, vdepth, OT, imsk, vTmin[js], vTmax[js], dT,
                                 cpal='ncview_nrl', lzonal=lzonal, xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_T_'+csname+'_'+CC, cbunit=r'$^{\circ}$C',
                                 cxunit=r'Latitude ($^{\circ}$N)',
                                 czunit='Depth (m)', ctitle='Temperature, '+csname+', '+CC+cinfo,
                                 cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2)
         #
-        bp.plot("vert_section")(vaxis, vdepth, OS, imsk, 33.9, 35.9, 0.05,
+        bp.plot("vert_section")(vaxis, vdepth, OS, imsk, vSmin[js], vSmax[js], dS,
                                 cpal='ncview_jaisnb', lzonal=lzonal, xmin=xmn, xmax=xmx, dx=5.,
                                 cfignm=path_fig+'section_S_'+csname+'_'+CC, cbunit='PSU',
                                 cxunit=r'Latitude ($^{\circ}$N)',

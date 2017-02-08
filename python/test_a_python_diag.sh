@@ -17,9 +17,9 @@ iemp=0
 icmip5=0
 ihov=0
 
-#CONFIG="ORCA1_L75"
-#ARCH="T159_ece32_marenostrum"
-#export RUN="LR1E" ; NC=nc ; jyear=1990
+CONFIG="ORCA1_L75"
+ARCH="T159_ece32_marenostrum"
+export RUN="LR1E" ; NC=nc4 ; jyear=1990
 
 #CONFIG="ORCA1_L42"
 ##ARCH="ece22_triolith"
@@ -30,9 +30,9 @@ ihov=0
 #ARCH="ece32_marenostrum"
 #export RUN="LR20" ; NC=nc4 ; jyear=2540
 
-CONFIG="ORCA1_L42"
-ARCH="ece22_triolith"
-export RUN="SPIN" ; NC=nc4 ; jyear=2540
+#CONFIG="ORCA1_L42"
+#ARCH="ece22_triolith"
+#export RUN="SPIN" ; NC=nc4 ; jyear=2540
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -95,6 +95,7 @@ rm -f *.png
 
 
 if [ ${icrosssect} -eq 1 ]; then
+    export DIAG_D="."
     CMD="python exec/cross_sections.py ${ft} ${jyear}"
 fi
 

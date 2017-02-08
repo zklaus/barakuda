@@ -557,10 +557,11 @@ def mk_zonal(XF, XMSK):
 
 
 
-def read_box_coordinates_in_ascii(cf, ctype='int'):
+def read_coor(cf, ctype='int', lTS_bounds=False):
 
-    # cf : file containing sections
+    # cf : file containing sections or coordinates (name lon1 lat1 lon2 lat2)
     # ctype: 'int' or 'float'
+    # lTS_bounds: read and return the bounds (min and max) for T and S !
     
     chck4f(cf)
 
@@ -569,6 +570,7 @@ def read_box_coordinates_in_ascii(cf, ctype='int'):
     f.close()
 
     vboxes = [] ; vi1 = [] ; vj1 = [] ; vi2 = [] ; vj2 = []
+    vTs = [] ; vTl = [] ; vSs = [] ; vSl = [] ; 
     leof = False
     jl   = -1
 
@@ -592,11 +594,29 @@ def read_box_coordinates_in_ascii(cf, ctype='int'):
                 vi2.append(float(ls[3]))
                 vj2.append(float(ls[4]))
             else:
-                print 'ERROR: read_box_coordinates_in_ascii => ctype must be "int" or "float"'
+                print 'ERROR: read_coor => ctype must be "int" or "float"'
                 sys.exit(0)
-
+            #
+            if lTS_bounds:
+                # Min and max values for temperature and salinity
+                if len(ls) == 9:
+                    vTs.append(float(ls[5]))
+                    vTl.append(float(ls[6]))
+                    vSs.append(float(ls[7]))
+                    vSl.append(float(ls[8]))
+                elif len(ls) == 5:
+                    # no temp. sal. bounds given, chosing some defaults for you...
+                    vTs.append(float(-2.)) ; # deg.C
+                    vTl.append(float(30.)) ; # deg.C
+                    vSs.append(float(33.)) ; # PSU
+                    vSl.append(float(37.)) ; # PSU
+                else:
+                    print 'ERROR: read_coor => something wrong in line "'+ls[0]+'" !'
+                    sys.exit(0)
         #
         if ls[0] == 'EOF': leof = True
 
-
-    return vboxes, vi1, vj1, vi2, vj2
+    if lTS_bounds:
+        return vboxes, vi1, vj1, vi2, vj2,  vTs, vTl, vSs, vSl
+    else:
+        return vboxes, vi1, vj1, vi2, vj2

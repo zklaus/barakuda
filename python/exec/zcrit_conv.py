@@ -103,7 +103,7 @@ cf_mesh_mask = './mesh_mask.nc'
 
 
 # First will read name and coordinates of rectangular boxes to treat into file FILE_DEF_BOXES
-vboxes, vi1, vj1, vi2, vj2 = bt.read_box_coordinates_in_ascii(FILE_DEF_BOXES)
+vboxes, vi1, vj1, vi2, vj2 = bt.read_coor(FILE_DEF_BOXES)
 nbb = len(vboxes)
 print ''
 

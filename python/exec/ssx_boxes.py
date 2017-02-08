@@ -91,7 +91,7 @@ for jt in range(nt): vtime[jt] = float(jyear) + (float(jt) + 0.5)/float(nt)
 
 # First will read name and coordinates of rectangular boxes to treat into file 'FILE_DEF_BOXE'
 ##############################################################################################
-vboxes, vi1, vj1, vi2, vj2 = bt.read_box_coordinates_in_ascii(vdic['FILE_DEF_BOXE'])
+vboxes, vi1, vj1, vi2, vj2 = bt.read_coor(vdic['FILE_DEF_BOXE'])
 nbb = len(vboxes)
 print ''
 

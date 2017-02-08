@@ -77,7 +77,7 @@ FIG_FORM = 'png'
 
 # First will read name and coordinates of rectangular boxes to treat into file FILE_DEF_BOXES
 ##############################################################################################
-vboxes, vi1, vj1, vi2, vj2 = bt.read_box_coordinates_in_ascii(vdic['FILE_DEF_BOXES'])
+vboxes, vi1, vj1, vi2, vj2 = bt.read_coor(vdic['FILE_DEF_BOXES'])
 nbb = len(vboxes)
 print ''
 
