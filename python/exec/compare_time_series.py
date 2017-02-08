@@ -63,7 +63,7 @@ nbrun = len(clist_confruns)
 
 ittic = bt.iaxe_tick(nb_years)
 
-vtime = nmp.zeros(nb_years)
+Vt = nmp.zeros(        nb_years)
 Xf = nmp.zeros((nbrun, nb_years))
 
 
@@ -112,11 +112,11 @@ if i2dfl == 1:
                 nbm = len(vt0)
                 test_nb_mnth_rec(nbm, nb_years, cdiag)
                 VY, FY = bt.monthly_2_annual(vt0, vd0)
-                vtime[:nbm/12]   = VY[:]
+                Vt[:nbm/12]   = VY[:]
                 Xf[jrun,:nbm/12] = FY[:] ; Xf[jrun,nbm/12:] = -999.
                 jrun = jrun + 1
 
-            bp.plot("1d_multi")(vtime[:], Xf[:,:], clist_runs, cfig_type=cffig,
+            bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
                                 cfignm=cdiag+'_comparison_'+cocean, dt_year=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                 cyunit=vunit[jvar], ctitle = vname[jvar]+', '+list_basin_lgnms[joce], ymin=0, ymax=0)
             joce = joce + 1
@@ -151,13 +151,13 @@ if imld == 1:
                 nbm = len(vt0)
                 test_nb_mnth_rec(nbm, nb_years, cdiag)
                 VY, FY = bt.monthly_2_annual(vt0, vd0)
-                vtime[:nbm/12]   = VY[:]
+                Vt[:nbm/12]   = VY[:]
                 Xf[jrun,:nbm/12] = FY[:] ; Xf[jrun,nbm/12:] = -999.
                 lplot = lplot and lplot
             jrun = jrun + 1
 
         if lplot:
-            bp.plot("1d_multi")(vtime[:], Xf[:,:], clist_runs, cfig_type=cffig,
+            bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
                                 cfignm=cdiag+'_'+cbox+'_comparison', dt_year=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                 cyunit='m', ctitle = 'Mixed layer depth, '+bo.clgnm_mld_boxes[jbox], ymin=0, ymax=0)
         jbox = jbox+1
@@ -205,11 +205,11 @@ if i3dfl == 1:
                     nbm = len(vt0)
                     test_nb_mnth_rec(nbm, nb_years, cdiag)
                     VY, FY = bt.monthly_2_annual(vt0, vd0)
-                    vtime[:nbm/12]   = VY[:]
+                    Vt[:nbm/12]   = VY[:]
                     Xf[jrun,:nbm/12] = FY[:]  ; Xf[jrun,nbm/12:] = -999.
                     jrun = jrun + 1
 
-                bp.plot("1d_multi")(vtime[:], Xf[:,:], clist_runs, cfig_type=cffig,
+                bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
                                     cfignm=cdiag+'_comparison_'+cocean+'_'+cdepth, dt_year=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                     cyunit=vunit[jdiag], ctitle = vname[jdiag]+', '+list_basin_lgnms[joce]+', depth range = '+cdepth, ymin=0, ymax=0)
 
@@ -256,13 +256,13 @@ if iice == 1:
                     vt0, vd0 = bn.read_1d_series(cf_in, cvar+'_'+vlab[ipole], cv_t='time', l_return_time=True)
                     nbm = len(vt0)
                     test_nb_mnth_rec(nbm, nb_years, cdiag)
-                    vtime[:nbm/12]   = vt0[vmnth[jdiag]::12]
+                    Vt[:nbm/12]   = vt0[vmnth[jdiag]::12]
                     Xf[jrun,:nbm/12] = vd0[vmnth[jdiag]::12] ; Xf[jrun,nbm/12:] = -999.
                     jrun = jrun + 1
 
                 cdiag = 'seaice_'+cvar
                 cmnth = '%2.2i'%(vmnth[jdiag]+1)
-                bp.plot("1d_multi")(vtime, Xf, clist_runs, cfig_type=cffig,
+                bp.plot("1d_multi")(Vt, Xf, clist_runs, cfig_type=cffig,
                                     cfignm=cdiag+'_m'+str(cmnth)+'_comparison_'+cpole, dt_year=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                     cyunit=vunit[jdiag], ctitle = vname[jdiag]+', '+cpole, ymin=0, ymax=0)
 
@@ -302,19 +302,16 @@ if itrsp == 1:
             id_in = Dataset(cf_in)
             if jsect == 0:
                 if jrun == 0:
-                    vtime = nmp.zeros(nb_years*12)
                     vyear = nmp.zeros(nb_years)
                     Xtrsp = nmp.zeros((nbrun,nbsect,3,nb_years))
 
-                vtime_t = id_in.variables['time'][:] ; nbm = len(vtime_t) ; nby = nbm/12
+                Vt_t = id_in.variables['time'][:] ; nbm = len(Vt_t) ; nby = nbm/12
                 test_nb_mnth_rec(nbm, nb_years, cdiag)
 
-                if nby == nb_years: vtime[:] = vtime_t[:]
-
             Xtrsp[jrun,jsect,:,:] = -999.
-            vyear[:nby], Xtrsp[jrun,jsect,0,:nby] = bt.monthly_2_annual(vtime_t, id_in.variables['trsp_volu'][:nbm])
-            vyear[:nby], Xtrsp[jrun,jsect,1,:nby] = bt.monthly_2_annual(vtime_t, id_in.variables['trsp_heat'][:nbm])
-            vyear[:nby], Xtrsp[jrun,jsect,2,:nby] = bt.monthly_2_annual(vtime_t, id_in.variables['trsp_salt'][:nbm])
+            vyear[:nby], Xtrsp[jrun,jsect,0,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_volu'][:nbm])
+            vyear[:nby], Xtrsp[jrun,jsect,1,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_heat'][:nbm])
+            vyear[:nby], Xtrsp[jrun,jsect,2,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_salt'][:nbm])
 
             id_in.close()
 
@@ -360,16 +357,13 @@ if iamoc == 1:
             id_in = Dataset(cf_in)
             if jl == 0:
                 if jrun == 0:
-                    vtime = nmp.zeros(nb_years*12)
                     vyear = nmp.zeros(nb_years)
                     Xamoc = nmp.zeros((nbrun, nblat, nb_years))
-                vtime_t = id_in.variables['time'][:] ; nbm = len(vtime_t) ; nby = nbm/12
+                Vt_t = id_in.variables['time'][:] ; nbm = len(Vt_t) ; nby = nbm/12
                 test_nb_mnth_rec(nbm, nb_years, cdiag)
 
-                if nby == nb_years: vtime[:] = vtime_t[:]
-
             Xamoc[jrun,jl,:] = -999.
-            vyear[:nby], Xamoc[jrun,jl,:nby] = bt.monthly_2_annual(vtime_t[:nbm], id_in.variables['moc_atl'][:nbm])
+            vyear[:nby], Xamoc[jrun,jl,:nby] = bt.monthly_2_annual(Vt_t[:nbm], id_in.variables['moc_atl'][:nbm])
             id_in.close()
 
             jl = jl + 1
@@ -412,13 +406,13 @@ if ifwf == 1:
             test_nb_mnth_rec(nbm, nb_years, cdiag)
 
             VY, FY = bt.monthly_2_annual(vt0, vd0)
-            Xf[jrun,:nbm/12] = FY[:]  ; Xf[jrun,nbm/12:] = -999.
+            Vt[:nbm/12]      = VY[:]
+            Xf[jrun,:nbm/12] = FY[:] ; Xf[jrun,nbm/12:] = -999.
             jrun = jrun + 1
-
-        bp.plot("1d_multi")(VY, Xf[:,:], clist_runs, cfig_type=cffig,
+        
+        bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
                             cfignm='FWF_'+cdiag+'_comparison', dt_year=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                             cyunit=vunit[jdiag], ctitle = vname[jdiag]+' flux integrated over oceans (NEMO)', ymin=0, ymax=0)
-
         jdiag = jdiag+1
 
     if i_do_ifs_flx == 1:
@@ -457,10 +451,11 @@ if ifwf == 1:
                     test_nb_mnth_rec(nbm, nb_years, cdiag)
     
                     VY, FY = bt.monthly_2_annual(vt0, vd0)
+                    Vt[:nbm/12]      = VY[:]
                     Xf[jrun,:nbm/12] = FY[:]  ; Xf[jrun,nbm/12:] = -999.
                     jrun = jrun + 1
     
-                bp.plot("1d_multi")(VY, Xf[:,:], clist_runs, cfig_type=cffig,
+                bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
                                     cfignm='FWF_'+cdiag+'_IFS_comparison', dt_year=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                     cyunit=vunit[jdiag], ctitle = vname[jdiag]+' flux integrated over'+vstit[jdiag], ymin=0, ymax=0)
     
