@@ -120,7 +120,7 @@ export ICE_CLIM_12="${STORE_DIR}/ORCA1.L75/ORCA1.L75-I/ice_cover_180x360-ORCA1_H
 export NN_ICEF_CLIM="ice_cover"
 
 
-# A text file where the vertical hydraugraphical sections of interest are defined :
+# A text file where the cross sections (to compute transports) are defined :
 export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1.dat"
 
 # For transport by sigma-class:

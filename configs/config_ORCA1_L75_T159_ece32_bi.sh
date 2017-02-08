@@ -59,8 +59,7 @@ export NEMO_FILE_PREFIX="<RUN>_<TSTAMP>_"
 # => should get rid of TSTAMP actually...
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
-#export SCRATCH="/scratch/local/<JOB_ID>" ; # triolith
-export SCRATCH="/scratch/tmp"
+export SCRATCH="/scratch/local/<JOB_ID>"
 
 
 ####### NEMO => what fields in what files ??? ############
@@ -130,7 +129,7 @@ export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA1.dat"
 export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 
-# In what format should figures be produced ('png' recommanded, 'svg' works):
+# In what format should figures be produced ('png' recommanded, but 'svg' supported!):
 export FIG_FORM="png"
 
 # About remote HOST to send/install HTML pages to:
@@ -217,6 +216,6 @@ export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecad
 #========================== Marenostrum @ BSC =========================================================
 ### Shouldn't be needed elsewhere than MareNostrum, where it's a hello to have CDO working...
 ## => Only if you specified ece_run=2 and i_do_ifs_flx
-export MOD_CDO="gcc/4.7.2 intel/13.0.1 openmpi/1.8.1 NETCDF/4.1.3 HDF5/1.8.10 UDUNITS/2.1.24 CDO/1.7.0"
+#export MOD_CDO="gcc/4.7.2 intel/13.0.1 openmpi/1.8.1 NETCDF/4.1.3 HDF5/1.8.10 UDUNITS/2.1.24 CDO/1.7.0"
 #=======================================================================================================
 
