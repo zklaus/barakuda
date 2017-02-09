@@ -18,10 +18,10 @@ import barakuda_tool as bt
 import barakuda_orca as bo
 import barakuda_plot as bp
 
-#lfig0 = True
-#lfig1 = True
-lfig0 = False
-lfig1 = False
+lfig0 = True
+lfig1 = True
+#lfig0 = False
+#lfig1 = False
 lfig2 = True
 
 venv_needed = {'ORCA','RUN','DIAG_D','COMP2D','i_do_sect','MM_FILE','NN_SST','NN_T','NN_S',

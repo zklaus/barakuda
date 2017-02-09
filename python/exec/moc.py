@@ -83,13 +83,11 @@ idxm = nmp.where(msk_vert[:,:] > 0.);
 msk_vert[idxm] = 1.
 
 
-bp.plot("amoc_lat_depth")(vlat[:], -vz[:], amoc[:,:], msk_vert[:,:], -2., 20., 1., \
-                          cfig_type=fig_type, lkcont=True, cpal='ncview_nrl', ymin=0., ymax=70.,
-                          cfignm='AMOC_annual_'+CONFRUN, cbunit='Sv',
-                          cxunit=r'Latitude ($^{\circ}$N)', zmin = 5000., zmax = 0., l_zlog=False,
-                          czunit='Depth (m)', ctitle='AMOC, '+CONFRUN+' ('+cy1+'-'+cy2+')',
-                          lforce_lim=True, i_cb_subsamp=1)
-
+bp.plot("vert_section")( vlat[:], -vz[:], amoc[:,:], msk_vert[:,:], -2., 20., 1., \
+                         lkcont=True, cpal='ncview_nrl', lzonal=False, xmin=0., xmax=70., dx=5.,
+                         cfignm='AMOC_annual_'+CONFRUN, cbunit='Sv',
+                         zmin=0., zmax=5000., l_zlog=False, cfig_type=fig_type,
+                         czunit='Depth (m)', ctitle='AMOC, '+CONFRUN+' ('+cy1+'-'+cy2+')' )
 
 
 print '\n Bye!'

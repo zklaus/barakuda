@@ -101,7 +101,7 @@ class plot :
     # Functions:
 
 
-    def __vert_section(self, VX, VZ, XF, XMSK, rmin, rmax, dc, lkcont=True, cpal='jet', lzonal=True,
+    def __vert_section(self, VX, VZ, XF, XMSK, rmin, rmax, dc, lkcont=False, cpal='jet', lzonal=True,
                        xmin=-80., xmax=85., dx=5, cfignm='fig', cbunit='', cxunit=' ',
                        zmin = 0., zmax = 5000., l_zlog=False, cfig_type='png',
                        czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1, l_z_increase=False ):
@@ -132,20 +132,27 @@ class plot :
         colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
-        #cf = plt.contourf(VX, zVZ, XF, vc, cmap = colmap, norm = pal_norm)
-        cf = plt.pcolormesh(VX, zVZ, XF, cmap=colmap, norm=pal_norm)
-        #cf = plt.pcolor(VX, zVZ, XF, cmap=colmap, norm=pal_norm)
-        #plt.hold(True)
-        #if lkcont: plt.contour(VX, zVZ, XF, vc, colors='k', linewidths=0.2)
+
+        if lkcont:
+            from barakuda_tool import drown
+            Xtmp = nmp.zeros(nmp.shape(XF))
+            Xtmp[:,:] = XF[:,:]
+            drown(Xtmp, XMSK, k_ew=2, nb_max_inc=5, nb_smooth=5)
+            cf = plt.contourf(VX, zVZ, Xtmp, vc, cmap=colmap, norm=pal_norm)
+            plt.contour(      VX, zVZ, Xtmp, vc, colors='k', linewidths=0.2)
+            del Xtmp
+        else:
+            cf = plt.pcolormesh(VX, zVZ, XF, cmap=colmap, norm=pal_norm)
 
         # Colorbar:
         __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
 
         # Masking "rock":
-        #pal_lsm = bcm.chose_colmap('blk')
-        #norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
-        #prock = nmp.ma.masked_where(XMSK > 0.5, XMSK)
-        #cm = plt.pcolor(VX, zVZ, prock, cmap=pal_lsm, norm=norm_lsm)
+        if lkcont:
+            pal_lsm = bcm.chose_colmap('blk')
+            norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
+            prock = nmp.ma.masked_where(XMSK > 0.5, XMSK)
+            cm = plt.pcolor(VX, zVZ, prock, cmap=pal_lsm, norm=norm_lsm)
 
         # X-axis:
         if lzonal:
@@ -756,60 +763,6 @@ class plot :
         #
         #
         return
-
-
-
-
-
-    def __amoc_lat_depth(self,VY, VZ, Xamoc, XMSK, rmin, rmax, dc, lkcont=True, cpal='jet', ymin=-80., ymax=85.,
-                         cfignm='fig', cbunit='', cxunit=' ', zmin = 0., zmax = 5000., l_zlog=False,
-                         cfig_type='pdf', czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1):
-
-        import matplotlib.colors as colors   # colmap and co.
-        import barakuda_colmap as bcm
-
-        zVZ = __prepare_z_log_axis__(l_zlog, VZ)
-
-        Xamoc = nmp.ma.masked_where(XMSK == 0, Xamoc)
-
-        if lforce_lim: __force_min_and_max__(rmin, rmax, Xamoc)
-
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
-
-        fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), facecolor='w', edgecolor='k')  ; #amoc_lat_depth
-        ax  = plt.axes([0.1,  0.1,  0.94, 0.85], axisbg = 'gray')
-
-        vc = __vcontour__(rmin, rmax, dc)
-
-        # Colormap:
-        colmap = bcm.chose_colmap(cpal)
-        pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
-
-        # Plot:
-        cf = plt.contourf(VY, zVZ, Xamoc, vc, cmap = colmap, norm = pal_norm)
-        if lkcont: plt.contour(VY, zVZ, Xamoc, vc, colors='k', linewidths=0.2)
-
-        # Colorbar:
-        __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb)  #, fontsize=14)
-
-        plt.axis([ ymin, ymax, zmin, zmax])
-        plt.xlabel(cxunit, **font_xylb); plt.ylabel(czunit, **font_xylb)
-
-        # Fixing z ticks:
-        __fix_z_axis__(ax, plt, zmin, zmax, l_log=l_zlog)
-
-        plt.title(ctitle, **font_ttl)
-
-        plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False)  ; #amoc_lat_depth
-        print cfignm+'.'+cfig_type+' created!\n'
-
-        plt.close(1)
-
-        return
-
-
-
-
 
 
 
