@@ -12,13 +12,14 @@ from string import replace
 cv_rnf_dept = 'rodepth'
 cv_bathy_m  = 'Bathymetry'
 
-if len(sys.argv) != 3:
-    print 'Usage: '+sys.argv[0]+' <runoff_depth.nc> <bathy_meter.nc>'
+if len(sys.argv) != 4:
+    print 'Usage: '+sys.argv[0]+' <runoff_depth.nc> <bathy_meter.nc> <min depth (m)>'
     sys.exit(0)
 cf_rnf_dept  = sys.argv[1]
 cf_bathy_m   = sys.argv[2]
+cmin_dept    = sys.argv[3] ; rmin_depth = float(cmin_dept)
 
-cf_new = replace(cf_rnf_dept, '.nc', '_min20.nc')
+cf_new = replace(cf_rnf_dept, '.nc', '_min'+cmin_dept+'.nc')
 
 os.system('rm -f '+cf_new)
 os.system('cp '+cf_rnf_dept+' '+cf_new)
@@ -45,11 +46,11 @@ print 'File ', cf_new, 'is open...\n'
 xtemp  = f_new.variables[cv_rnf_dept][:,:,:]
 
 xnew[:,:] = xtemp[0,:,:]
-idx = nmp.where( (xbathy[:,:] > 20) & (xnew[:,:] < 20.))
+idx = nmp.where( (xbathy[:,:] >= rmin_depth) & (xnew[:,:] < rmin_depth) )
 
-print idx
+#print idx
 
-xnew[idx] = 20.
+xnew[idx] = rmin_depth
 
 # Updating:
 f_new.variables[cv_rnf_dept][0,:,:] = xnew[:,:]
