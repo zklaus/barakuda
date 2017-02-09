@@ -167,9 +167,9 @@ mask_soc[122:,:] = 0
 
 # Weddell Sea:
 mask_wed[:,:] = tmask[:,:]
-mask_wed[:,:226] = 0
-mask_wed[50:,:]  = 0
-mask_wed[:,285:] = 0
+mask_wed[:,:233] = 0
+mask_wed[55:,:]  = 0
+mask_wed[:,300:] = 0
 
 
 
