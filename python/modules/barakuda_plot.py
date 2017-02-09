@@ -1,4 +1,3 @@
-
 ########################################################################
 #
 #   B a r a K u d a
@@ -763,8 +762,8 @@ class plot :
 
 
     def __amoc_lat_depth(self,VY, VZ, Xamoc, XMSK, rmin, rmax, dc, lkcont=True, cpal='jet', ymin=-80., ymax=85.,
-                            cfignm='fig', cbunit='', cxunit=' ', zmin = 0., zmax = 5000., l_zlog=False,
-                            cfig_type='pdf', czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1):
+                         cfignm='fig', cbunit='', cxunit=' ', zmin = 0., zmax = 5000., l_zlog=False,
+                         cfig_type='pdf', czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1):
 
         import matplotlib.colors as colors   # colmap and co.
         import barakuda_colmap as bcm

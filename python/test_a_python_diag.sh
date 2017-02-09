@@ -3,8 +3,9 @@
 #  B E T A  ! ! !
 
 # Diag to test:
+iamoc=1
 icrosssect=0
-itempsal=1
+itempsal=0
 isflx=0
 imean=0
 imov=0
@@ -17,9 +18,9 @@ iemp=0
 icmip5=0
 ihov=0
 
-CONFIG="ORCA1_L75"
-ARCH="T159_ece32_marenostrum"
-export RUN="LR1E" ; NC=nc4 ; jyear=1990
+#CONFIG="ORCA1_L75"
+#ARCH="T159_ece32_marenostrum"
+#export RUN="LR1E" ; NC=nc4 ; jyear=1990
 
 #CONFIG="ORCA1_L42"
 ##ARCH="ece22_triolith"
@@ -30,9 +31,9 @@ export RUN="LR1E" ; NC=nc4 ; jyear=1990
 #ARCH="ece32_marenostrum"
 #export RUN="LR20" ; NC=nc4 ; jyear=2540
 
-#CONFIG="ORCA1_L42"
-#ARCH="ece22_triolith"
-#export RUN="SPIN" ; NC=nc4 ; jyear=2540
+CONFIG="ORCA1_L42"
+ARCH="ece22_triolith"
+export RUN="SPIN" ; NC=nc4 ; jyear=2540
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -90,9 +91,13 @@ rm -f *.png
 
 # Time for diags:
 
-
-
-
+if [ ${iamoc} -eq 1 ]; then
+    if [ ! -f ${DIAG_D}/clim/last_clim ]; then echo "Boooo!"; exit; fi
+    CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
+    iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
+    CMD="python exec/moc.py ${iclyear}"
+    echo ; echo " CMD = ${CMD} "; echo
+fi
 
 if [ ${icrosssect} -eq 1 ]; then
     export DIAG_D="."
