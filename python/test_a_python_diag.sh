@@ -3,9 +3,9 @@
 #  B E T A  ! ! !
 
 # Diag to test:
-iamoc=1
+iamoc=0
 icrosssect=0
-itempsal=0
+itempsal=1
 isflx=0
 imean=0
 imov=0
