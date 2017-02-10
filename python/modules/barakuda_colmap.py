@@ -11,13 +11,13 @@ import numpy as nmp
 
 # List of Barakuda home-made colormaps:
 list_barakuda = [ 'blk', 'cb1', 'eke', 'bathy', 'mld', 'jetblanc', 'amoc',
-                       'sst1', 'sst2', 'sst3', 'ice', 'blanc', 'rms',
-                       'sigtr', 'bbr', 'bbr2', 'bbr0', 'bbr_cold', 'bbr_warm',
-                       'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask' ]
+                  'sst1', 'sst2', 'sst3', 'ice', 'blanc', 'rms',
+                  'sigtr', 'bbr', 'bbr2', 'bbr0', 'bbr_cold', 'bbr_warm',
+                  'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask' ]
 
 # There is also NCVIEW colormaps, and the defauly Matplotlib colormaps...
 
-
+l_debug = False
 
 def chose_colmap( cname ):
 
@@ -28,7 +28,7 @@ def chose_colmap( cname ):
         
         # Maybe a barakuda colormap ?
     elif cname in list_barakuda or ( cname[-2:] == '_r' and cname[:-2] in list_barakuda):
-        print '\n *** Getting Barakuda colormap "'+cname+'" !'
+        if l_debug: print '\n *** Getting Barakuda colormap "'+cname+'" !'
         x = brkd_cmap(cname)
         ColorMap = x.clrmp()
         
@@ -39,7 +39,7 @@ def chose_colmap( cname ):
         list = mp.colormaps()
         if cname in list:
             # Yes it is!
-            print '\n *** Getting Matplotlib colormap "'+cname+'" !'
+            if l_debug: print '\n *** Getting Matplotlib colormap "'+cname+'" !'
             fToCall = getattr(cm, cname)
             ColorMap = fToCall
         else:
@@ -81,8 +81,7 @@ def ncview_cmap_to_array( cname ):
     cf_ncview_cmap = dir_ncview_cmap+'/colormaps_'+ncview_name+'.h'
     if not os.path.exists(cf_ncview_cmap):
         print 'ERROR: NCVIEW colormap '+cf_ncview_cmap+' not found!' ; sys.exit(0)
-    else:
-        print '\n *** Getting NCVIEW colormap "'+ncview_name+'" from file "'+cf_ncview_cmap+'"'
+    if l_debug: print '\n *** Getting NCVIEW colormap "'+ncview_name+'" from file "'+cf_ncview_cmap+'"'
 
     f = open(cf_ncview_cmap, 'r')
     cread_lines = f.readlines()

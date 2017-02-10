@@ -25,16 +25,6 @@ print ' ORCA = '+ORCA;
 print ' CASE = '+CASE; print ' NAME = '+NAME; print ' STORE_DIR = '+STORE_DIR
 
 
-if 'ORCA2' in ORCA:
-    ji_lat0 = 132
-elif 'ORCA1' in ORCA:
-    ji_lat0 = 265
-else:
-    print 'FIX ME!!! ssh.py => dont know ji_lat0 for conf '+ORCA+' !!!'; sys.exit(0)
-
-
-
-
 path_fig='./'
 fig_type='png'
 
@@ -172,6 +162,9 @@ XMOD[2,2,:,:] = 1./3. * ( XLW_MOD[5,:,:] + XLW_MOD[6,:,:] + XLW_MOD[7,:,:] )
 XMOD[3,2,:,:] = 1./3. * ( XLA_MOD[5,:,:] + XLA_MOD[6,:,:] + XLA_MOD[7,:,:] )
 XMOD[4,2,:,:] = 1./3. * ( XSE_MOD[5,:,:] + XSE_MOD[6,:,:] + XSE_MOD[7,:,:] )
 
+
+
+ji_lat0 = nmp.argmax(xlat[nj-1,:])
 
 # Creating 1D long. and lat.:
 vlon = nmp.zeros(ni) ;  vlon.shape = [ ni ] ; vlon[:] = xlon[0,:]

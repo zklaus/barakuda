@@ -149,7 +149,7 @@ if l_obs_mld:
 #################
 
 # the Jean-Marc Molines method:
-ji_lat0 = nmp.argmax(xlat[nj-1])
+ji_lat0 = nmp.argmax(xlat[nj-1,:])
 
 
 bp.plot("nproj")('nseas', 200., zmax_mld_atl, dz_mld, xlon, xlat, mldr10[imnth,:,:],

@@ -204,7 +204,7 @@ print '\n', tdd_true[:], '\n'
 
 # Creating 1D long. and lat.:
 vlon = nmp.zeros(ni) ; vlon[:] = xlon[0,:]
-ji_lat0 = nmp.argmax(xlat[nj-1])
+ji_lat0 = nmp.argmax(xlat[nj-1,:])
 vlat = nmp.zeros(nj) ; vlat[:] = xlat[:,ji_lat0]
 
 

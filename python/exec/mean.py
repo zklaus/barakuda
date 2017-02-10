@@ -66,10 +66,10 @@ for cf in [vdic['MM_FILE'], vdic['BM_FILE']]:
 id_mm = Dataset(vdic['MM_FILE'])
 list_variables = id_mm.variables.keys()
 rmask  = id_mm.variables['tmask'][0,:,:,:]
-rlon   = id_mm.variables['glamt'][0,:,:]
-rlat   = id_mm.variables['gphit'][0,:,:]
-re1t   = id_mm.variables['e1t'][0,:,:]
-re2t   = id_mm.variables['e2t'][0,:,:]
+xlon   = id_mm.variables['glamt'][0,:,:]
+xlat   = id_mm.variables['gphit'][0,:,:]
+xe1t   = id_mm.variables['e1t'][0,:,:]
+xe2t   = id_mm.variables['e2t'][0,:,:]
 if 'e3t_0' in list_variables[:]:
     Xe3t = id_mm.variables['e3t_0'][0,:,:,:] # we need the 3D field becaus partial steps!!!
 else:
@@ -89,8 +89,8 @@ if cfe_sflx in vdic['NEMO_SAVED_FILES']:
 
 Xa   = nmp.zeros((nj, ni))
 Xv   = nmp.zeros((nk, nj, ni))
-Xa[:,:] = re1t[:,:]*re2t[:,:]
-del re1t, re2t
+Xa[:,:] = xe1t[:,:]*xe2t[:,:]
+del xe1t, xe2t
 
 for jk in range(nk):
     Xv[jk,:,:] = Xa[:,:]*Xe3t[jk,:,:]
@@ -310,21 +310,23 @@ if l_mld:
 
         cbox = cname_b[ib] ; print '    *** treating '+cvar+' for '+cbox+', ('+bo.clgnm_mld_boxes[ib]+')'
 
-        i1 = 0 ; j1 = 0 ; i2 = ni-1 ; j2 = nj-1
+        i1 = nmp.argmax(xlat[nj-1,:])
+        j1 = 0 ; i2 = ni-1 ; j2 = nj-1
 
         rx1 = bo.r_lon_p1_mld[ib] ; rx2 = bo.r_lon_p2_mld[ib] ; ry1 = bo.r_lat_p1_mld[ib] ; ry2 = bo.r_lat_p2_mld[ib]
 
-        # Need to itterate because ORCA grid disytorded in the North...
+        # Need to itterate because ORCA grid distorded in the North...
         vold = [ -999, -999, -999, -999 ] ;  itt = 0
         while [ i1, i2, j1, j2 ] != vold and itt < 10 :
             itt = itt+1
             #print ' .... itt =', itt
             vold = [ i1, i2, j1, j2 ]
             #print 'seraching for rx1, rx2, ry1, ry2 = ', rx1, rx2, ry1, ry2
-            if rx1 > -900.: i1 = bt.find_index_from_value( rx1, rlon[j1,:] )
-            if rx2 > -900.: i2 = bt.find_index_from_value( rx2, rlon[j2,:] )
-            if ry1 > -900.: j1 = bt.find_index_from_value( ry1, rlat[:,i1] )
-            if ry2 > -900.: j2 = bt.find_index_from_value( ry2, rlat[:,i2] )
+            if ry1 > -900.: j1 = bt.find_index_from_value( ry1, xlat[:,i1] )
+            if rx1 > -900.: i1 = bt.find_index_from_value( rx1, xlon[j1,:] )
+            if rx2 > -900.: i2 = bt.find_index_from_value( rx2, xlon[j2,:] )
+            if ry1 > -900.: j1 = bt.find_index_from_value( ry1, xlat[:,i1] )
+            if ry2 > -900.: j2 = bt.find_index_from_value( ry2, xlat[:,i2] )
             #print '   => i1, i2, j1, j2 =>', i1, i2, j1, j2, '\n'
 
 
@@ -407,9 +409,9 @@ print '\n'
 # El nino box 3.4 #
 ###################
 
-[i1, j1] = bo.find_ij(lon1_nino, lat1_nino, rlon, rlat, 'c')
-[i2, j2] = bo.find_ij(lon2_nino, lat2_nino, rlon, rlat, 'c')
-print ' Nino box 3.4, longitude: '+str(rlon[10,i1])+' => '+str(rlon[10,i2])+' \ latitude: '+str(rlat[j1,50])+' => '+str(rlat[j2,50])
+[i1, j1] = bo.find_ij(lon1_nino, lat1_nino, xlon, xlat, 'c')
+[i2, j2] = bo.find_ij(lon2_nino, lat2_nino, xlon, xlat, 'c')
+print ' Nino box 3.4, longitude: '+str(xlon[10,i1])+' => '+str(xlon[10,i2])+' \ latitude: '+str(xlat[j1,50])+' => '+str(xlat[j2,50])
 
 id_in = Dataset(cf_T_in)
 if vdic['NN_SST'] == 'thetao':

@@ -20,13 +20,13 @@ venv_needed = {'ORCA','RUN','DIAG_D','NN_RNF','MM_FILE'}
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
 
-if 'ORCA2' in vdic['ORCA']:
-    ji_lat0 = 132
-elif 'ORCA1' in vdic['ORCA']:
-    #ji_lat0 = 265
-    ji_lat0 = 100
-else:
-    print 'FIX ME!!! '+sys.argv[0]+' => dont know ji_lat0 for conf '+vdic['ORCA']+' !!!'; sys.exit(0)
+#if 'ORCA2' in vdic['ORCA']:
+#    ji_lat0 = 132
+#elif 'ORCA1' in vdic['ORCA']:
+#    #ji_lat0 = 265
+#    ji_lat0 = 100
+#else:
+#    print 'FIX ME!!! '+sys.argv[0]+' => dont know ji_lat0 for conf '+vdic['ORCA']+' !!!'; sys.exit(0)
 
 
 

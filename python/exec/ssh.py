@@ -67,7 +67,7 @@ cztot = str(round(ztot,2))
 
 
 # the Jean-Marc Molines method:
-ji_lat0 = nmp.argmax(xlat[nj-1])  ; 
+ji_lat0 = nmp.argmax(xlat[nj-1,:])
 
 bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], ssh_plot[:,:], Xmask, -2., 2., 0.1,
               corca=vdic['ORCA'], lkcont=True, cpal='BrBG_r',

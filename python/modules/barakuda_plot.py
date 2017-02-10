@@ -166,7 +166,7 @@ class plot :
         plt.ylabel(czunit, **font_xylb)
 
         # Fixing Z-axis ticks:
-        __fix_z_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=l_z_increase)
+        __fix_depth_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=l_z_increase)
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #vert_section
@@ -971,7 +971,7 @@ class plot :
             plt.plot(VX,VX*0.+zz, 'k', linewidth=0.3)
 
         # Fixing z ticks:
-        __fix_z_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=False)
+        __fix_depth_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=False)
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=100, orientation='portrait', transparent=True)
@@ -983,18 +983,24 @@ class plot :
 
 
 
-    def __time_depth_hovm(self,VT, VZ, XF, XMSK, rmin, rmax, dc, lkcont=True, cpal='jet',
-                          tmin=0., tmax=50., dt=5, cfignm='fig', cbunit='', ctunit=' ',
-                          zmin = 0., zmax = 5000., l_zlog=False, cfig_type='png',
-                          czunit=' ', ctitle=' ', lforce_lim=False, i_cb_subsamp=1, l_z_increase=False ):
+    def __hovmoeller(self, VT, VY, XF, XMSK, rmin, rmax, dc, c_y_is='depth',
+                     lkcont=False, cpal='jet', tmin=0., tmax=50., dt=5,
+                     ymin=0., ymax=5000., dy=100., l_ylog=False,
+                     cfignm='fig', cbunit='', ctunit=' ', cfig_type='png',
+                     cyunit=' ', ctitle=' ', i_cb_subsamp=1,
+                     l_y_increase=False ):
+        #
+        # c_y_is : 'depth', 'latitude'
+        # lkcont : use contours rather than "pcolormesh" 
 
         import barakuda_colmap as bcm
 
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
-        zVZ = __prepare_z_log_axis__(l_zlog, VZ)
-
-        if lforce_lim: __force_min_and_max__(rmin, rmax, XF)
+        if c_y_is == 'depth':
+            zVY = __prepare_z_log_axis__(l_ylog, VY)
+        else:
+            zVY = VY
 
         # Masking where mask is zero!
         XF = nmp.ma.masked_where(XMSK == 0, XF)
@@ -1007,21 +1013,27 @@ class plot :
         colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
-        cf = plt.contourf(VT, zVZ, XF, vc, cmap = colmap, norm = pal_norm)
-        plt.hold(True)
-        if lkcont: plt.contour(VT, zVZ, XF, vc, colors='k', linewidths=0.2)
+        if lkcont:
+            cf = plt.contourf(VT, zVY, XF, vc, cmap = colmap, norm = pal_norm)
+            #plt.contour( VT, zVY, XF, vc, colors='k', linewidths=0.2)
+        else:
+            cf = plt.pcolormesh(VT, zVY, XF, cmap = colmap, norm = pal_norm)
 
-        # Colorbar:
         __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
 
-        # X-axis:
+        # Time-axis:
         __nice_x_axis__(ax, plt, tmin, tmax, dt, cunit=ctunit, cfont=font_xylb)
 
         # Y-axis:
-        plt.ylabel(czunit, **font_xylb)
-
-        # Fixing z ticks:
-        __fix_z_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=l_z_increase)
+        if c_y_is == 'depth':
+            plt.ylabel(cyunit, **font_xylb)
+            __fix_depth_axis__(ax, plt, ymin, ymax, l_log=l_ylog, l_z_inc=l_y_increase)
+        elif c_y_is == 'latitude':
+            [vvy, ctck] =  __name_latitude_ticks__(lat_min=ymin, lat_max=ymax, dlat=dy)
+            plt.yticks(vvy,ctck)
+            ax.set_ylim(ymin,ymax)
+        else:
+            print 'ERROR: plot_hoevmoller.barakuda_plot => axis "'+c_y_is+'" not supported!'; sys.exit(0)
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #vert_section
@@ -1857,7 +1869,7 @@ def __prepare_z_log_axis__(l_log, vz):
         zvz= vz
     return zvz
 
-def __fix_z_axis__(ax_hndl, plt_hndl, z0, zK, l_log=False, l_z_inc=True):
+def __fix_depth_axis__(ax_hndl, plt_hndl, z0, zK, l_log=False, l_z_inc=True):
     ax_hndl.get_yaxis().get_major_formatter().set_useOffset(False)
     if l_log:
         y_log_ofs = 10.

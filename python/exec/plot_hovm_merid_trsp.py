@@ -13,6 +13,8 @@ import barakuda_plot as bp
 import barakuda_tool as bt
 
 
+dy = 10. ; # latitude increment in figure...
+
 venv_needed = {'ORCA','RUN','DIAG_D','BM_FILE'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
@@ -89,14 +91,30 @@ for joce in range(nbasins):
 
     [ rmin, rmax, rdf ] = bt.get_min_max_df(Xheat[joce,jt_ini:,:],40)
 
-    bp.plot("time_depth_hovm")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xheat[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
-                               rmin, rmax, rdf,
-                               cpal='RdBu_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=False,
-                               zmin = vlat[0], zmax = vlat[Nlat-1], l_zlog=False, 
-                               cfignm=path_fig+'MHT_'+CONFRUN+'_'+cbas, cbunit='PW', ctunit='',
-                               czunit=r'Latitude ($^{\circ}$N)',
-                               ctitle=CONFRUN+': Northward advective meridional heat transport, '+cbasin,
-                               cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2, l_z_increase=True)
+    # Finding the first and last j that make sense (not NaN)
+    js = -1 ; lfound=False
+    while not lfound:
+        js = js + 1
+        if not nmp.isnan(Xheat[joce,1,js]): lfound=True
+    je = Nlat ; lfound=False
+    while not lfound:
+        je = je - 1
+        if not nmp.isnan(Xheat[joce,1,je]): lfound=True
+    #
+    dyh=dy/2
+    ymin = (int(vlat[js]/dyh)-1)*dyh
+    ymax = (int(vlat[je]/dyh)+1)*dyh
+    #print ' j: start, stop, Nlat, lat_min, lat_max =>', js, je, Nlat, vlat[js], vlat[je]
+    #print ' ymin, ymax =>', ymin, ymax
+    
+    bp.plot("hovmoeller")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xheat[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
+                          rmin, rmax, rdf, c_y_is='latitude',
+                          cpal='RdBu_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=False,
+                          ymin = ymin, ymax = ymax, dy=dy,
+                          cfignm=path_fig+'MHT_'+CONFRUN+'_'+cbas, cbunit='PW', ctunit='',
+                          cyunit=r'Latitude ($^{\circ}$N)',
+                          ctitle=CONFRUN+': Northward advective meridional heat transport, '+cbasin,
+                          cfig_type=fig_type, i_cb_subsamp=2, l_y_increase=True)
 
 
 
@@ -104,13 +122,13 @@ for joce in range(nbasins):
 
     [ rmin, rmax, rdf ] = bt.get_min_max_df(Xsalt[joce,jt_ini:,:],40)
 
-    bp.plot("time_depth_hovm")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xsalt[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
-                               rmin, rmax, rdf,
-                               cpal='PiYG_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=False,
-                               zmin = vlat[0], zmax = vlat[Nlat-1], l_zlog=False, 
-                               cfignm=path_fig+'MST_'+CONFRUN+'_'+cbas, cbunit=r'10$^3$ tons/s', ctunit='',
-                               czunit=r'Latitude ($^{\circ}$N)',
-                               ctitle=CONFRUN+': Northward advective meridional salt transport, '+cbasin,
-                               cfig_type=fig_type, lforce_lim=False, i_cb_subsamp=2, l_z_increase=True)
+    bp.plot("hovmoeller")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xsalt[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
+                          rmin, rmax, rdf, c_y_is='latitude',
+                          cpal='PiYG_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=False,
+                          ymin = ymin, ymax = ymax, dy=dy,
+                          cfignm=path_fig+'MST_'+CONFRUN+'_'+cbas, cbunit=r'10$^3$ tons/s', ctunit='',
+                          cyunit=r'Latitude ($^{\circ}$N)',
+                          ctitle=CONFRUN+': Northward advective meridional salt transport, '+cbasin,
+                          cfig_type=fig_type, i_cb_subsamp=2, l_y_increase=True)
     
 

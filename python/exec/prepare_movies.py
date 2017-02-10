@@ -130,7 +130,7 @@ if cvar == 'sss' or cvar == 'sst':
         print '       NEMO => '+str(ni)+', '+str(nj)+', '+str(nk)
         sys.exit(0)
     # Creating 1D long. and lat.:
-    ji_lat0 = nmp.argmax(xlat[nj-1])  ; #lolo
+    ji_lat0 = nmp.argmax(xlat[nj-1,:])
     vlon = nmp.zeros(ni) ; vlon[:] = xlon[20,:]
     vlat = nmp.zeros(nj) ; vlat[:] = xlat[:,ji_lat0]
 

@@ -54,17 +54,21 @@ r_lat_p2_ssx    = [    72.         ,   64.         ,   73.      ]
 
 
 
+
 # Definition of the boxes used to average MLD on
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #  => used into mean.py and plot_time_series.py and compare_time_series.py...
-cname_mld_boxes = [ 'Glob'  ,      'Sof40S'            ,      'Nof40N'           ,      'Nof55N'           , 'NAtl'                   , '40S40N']
-clgnm_mld_boxes = [ 'Global', r'South of 40$^{\circ}$S', 'North of 40$^{\circ}$N', 'North of 55$^{\circ}$N', 'Northern North Atlantic', '40$^{\circ}$S - 40$^{\circ}$N']
+cdgS=r'$^{\circ}$S'
+cdgN=r'$^{\circ}$N'
+
+cname_mld_boxes = [ 'Glob'  ,    'Sof40S'        ,      'Sof55S'      ,      'Nof40N'      , 'NAtl'                    , '40S40N'                   ]
+clgnm_mld_boxes = [ 'Global', 'South of 40'+cdgS , 'South of 55'+cdgS , 'North of 40'+cdgN , 'Northern North Atlantic' , '40$^{\circ}$S - 40'+cdgN  ]
                                                                                                            
-r_lon_p1_mld    = [   -999. ,     -999.                ,        -999.            ,        -999.            ,  -75.                    ,     -999.    ]
-r_lon_p2_mld    = [   -999. ,     -999.                ,        -999.            ,        -999.            ,   15.                    ,     -999.    ]
-                                                                                                           
-r_lat_p1_mld    = [   -999. ,     -999.                ,         40.             ,         55.             ,   50.                    ,      -40.    ]
-r_lat_p2_mld    = [   -999. ,      -40.                ,        -999.            ,        -999.            ,   68.                    ,       40.    ]
+r_lon_p1_mld    = [   -999. ,     -999.          ,        -999.       ,        -999.       ,  -75.                     ,     -999.                  ]
+r_lon_p2_mld    = [   -999. ,     -999.          ,        -999.       ,        -999.       ,   15.                     ,     -999.                  ]
+                                                                                                
+r_lat_p1_mld    = [   -999. ,     -999.          ,        -999        ,         40.        ,   50.                     ,      -40.                  ]
+r_lat_p2_mld    = [   -999. ,      -40.          ,        -55.        ,        -999.       ,   68.                     ,       40.                  ]
 
 
 

@@ -291,7 +291,7 @@ def get_min_max_df(ZZ, ndf):
 
 def find_index_from_value( val, VX ):
     if val > nmp.max(VX) or val < nmp.min(VX):
-        print 'ERROR: find_index_from_value.barakuda_tool => value outside range of Vector!'
+        print 'ERROR: find_index_from_value.barakuda_tool => value "'+str(val)+'"outside range of Vector!'
         print VX[:] ; print ' => value =', val
         sys.exit(0)
     jval = -1; jj = 0 ; lfound = False
