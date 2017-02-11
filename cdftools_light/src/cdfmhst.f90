@@ -32,7 +32,7 @@ PROGRAM cdfmhst
 
   INTEGER   :: jj,jk,jt                         !: dummy loop index
   INTEGER   :: narg, iargc                      !: command line
-  INTEGER   :: npiglo, npjglo, npk, nt          !: size of the domain
+  INTEGER   :: npiglo, npjglo, npk, Nt          !: size of the domain
   INTEGER   :: numout = 10
   INTEGER, DIMENSION(2)          ::  iloc
   LOGICAL    :: llglo = .false.                !: indicator for presence of new_maskglo.nc file
@@ -87,7 +87,7 @@ PROGRAM cdfmhst
 
   INTEGER, DIMENSION(5) :: vid_heat, vid_salt
   REAL :: ryear
-  REAL :: minus_one = -1.0
+  REAL, PARAMETER :: rmissing = -9999.
 
 
   !!  Read command line and output usage message if not compliant.
@@ -113,11 +113,11 @@ PROGRAM cdfmhst
   npk   = getdim (cfileVT,'depth')
 
   ctim = 'none'
-  nt    = getdim (cfileVT,'time', cdtrue=ctim) !LB
+  Nt    = getdim (cfileVT,'time', cdtrue=ctim) !LB
 
   !LB:
-  IF (nt == 0) THEN
-     PRINT *, 'nt=0, assume 1' ; nt = 1
+  IF (Nt == 0) THEN
+     PRINT *, 'Nt=0, assume 1' ; Nt = 1
   END IF
   !LB.
 
@@ -126,21 +126,21 @@ PROGRAM cdfmhst
   PRINT *, 'npiglo=', npiglo
   PRINT *, 'npjglo=', npjglo
   PRINT *, 'npk   =', npk
-  PRINT *, 'nt    =', nt
+  PRINT *, 'Nt    =', Nt
 
   ! Allocate arrays
   ALLOCATE ( zwkt(npiglo,npjglo), zmask(npiglo,npjglo,5), zvt(npiglo,npjglo) )
   ALLOCATE ( zwks(npiglo,npjglo) ,zvs(npiglo,npjglo) )
   ALLOCATE ( e1v(npiglo,npjglo),e3v(npiglo,npjglo), gphiv(npiglo,npjglo) )
-  ALLOCATE ( ztrpt(npiglo,npjglo,nt) , ztrps(npiglo,npjglo,nt) )
+  ALLOCATE ( ztrpt(npiglo,npjglo,Nt) , ztrps(npiglo,npjglo,Nt) )
   ALLOCATE ( vmerid_heat(npjglo,5), vmerid_salt(npjglo,5), vback_1d(npjglo) )
-  ALLOCATE ( merid_heat_glo(npjglo,nt), merid_heat_atl(npjglo,nt), merid_heat_pac(npjglo,nt) )
-  ALLOCATE ( merid_heat_ind(npjglo,nt), merid_heat_inp(npjglo,nt) )
-  ALLOCATE ( merid_salt_glo(npjglo,nt), merid_salt_atl(npjglo,nt), merid_salt_pac(npjglo,nt) )
-  ALLOCATE ( merid_salt_ind(npjglo,nt), merid_salt_inp(npjglo,nt) )
-  ALLOCATE ( zmtrp(npjglo,nt) )
+  ALLOCATE ( merid_heat_glo(npjglo,Nt), merid_heat_atl(npjglo,Nt), merid_heat_pac(npjglo,Nt) )
+  ALLOCATE ( merid_heat_ind(npjglo,Nt), merid_heat_inp(npjglo,Nt) )
+  ALLOCATE ( merid_salt_glo(npjglo,Nt), merid_salt_atl(npjglo,Nt), merid_salt_pac(npjglo,Nt) )
+  ALLOCATE ( merid_salt_ind(npjglo,Nt), merid_salt_inp(npjglo,Nt) )
+  ALLOCATE ( zmtrp(npjglo,Nt) )
   ALLOCATE ( dumlon(1,npjglo) , dumlat(1,npjglo))
-  ALLOCATE ( tim(nt) )
+  ALLOCATE ( tim(Nt) )
 
 
 
@@ -160,7 +160,7 @@ PROGRAM cdfmhst
   ztrps(:,:,:)= 0
 
 
-  DO jt = 1, nt !LB
+  DO jt = 1, Nt !LB
 
      DO jk = 1,npk
 
@@ -215,7 +215,7 @@ PROGRAM cdfmhst
 
   IF ( llglo ) THEN
 
-     DO jt = 1, nt !LB
+     DO jt = 1, Nt !LB
 
         ! Merid mean with mask
 
@@ -251,7 +251,7 @@ PROGRAM cdfmhst
 
 
 
-  tim  = getvar1d(cfileVT, trim(ctim), nt) !LB: nt
+  tim  = getvar1d(cfileVT, trim(ctim), Nt) !LB: nt
 
   PRINT *, ''
 
@@ -323,15 +323,15 @@ PROGRAM cdfmhst
 
   DO jj = 1, npjglo
 
-     vmerid_heat(jj,1) = SUM(merid_heat_glo(jj,:))/nt/1e15
-     vmerid_heat(jj,2) = SUM(merid_heat_atl(jj,:))/nt/1e15
-     vmerid_heat(jj,3) = SUM(merid_heat_pac(jj,:))/nt/1e15
-     vmerid_heat(jj,4) = SUM(merid_heat_ind(jj,:))/nt/1e15
+     vmerid_heat(jj,1) = SUM(merid_heat_glo(jj,:))/Nt/1e15
+     vmerid_heat(jj,2) = SUM(merid_heat_atl(jj,:))/Nt/1e15
+     vmerid_heat(jj,3) = SUM(merid_heat_pac(jj,:))/Nt/1e15
+     vmerid_heat(jj,4) = SUM(merid_heat_ind(jj,:))/Nt/1e15
 
-     vmerid_salt(jj,1) = SUM(merid_salt_glo(jj,:))/nt/1e6
-     vmerid_salt(jj,2) = SUM(merid_salt_atl(jj,:))/nt/1e6
-     vmerid_salt(jj,3) = SUM(merid_salt_pac(jj,:))/nt/1e6
-     vmerid_salt(jj,4) = SUM(merid_salt_ind(jj,:))/nt/1e6
+     vmerid_salt(jj,1) = SUM(merid_salt_glo(jj,:))/Nt/1e6
+     vmerid_salt(jj,2) = SUM(merid_salt_atl(jj,:))/Nt/1e6
+     vmerid_salt(jj,3) = SUM(merid_salt_pac(jj,:))/Nt/1e6
+     vmerid_salt(jj,4) = SUM(merid_salt_ind(jj,:))/Nt/1e6
 
      IF ( (vmerid_salt(jj,2) == 0.0).AND.(jj > 20) ) THEN
         vmerid_salt(jj,4) = 0.0
@@ -344,21 +344,9 @@ PROGRAM cdfmhst
 
   END DO
 
-
-  ! Smoothing Pacific, Indian and Indo-Pacific:
-  !DO jbasin = 3,5
-  !   vback_1d(:) = vmerid_heat(:,jbasin)
-  !   DO jj = 3, npjglo-2
-  !      vmerid_heat(jj,jbasin) = (vback_1d(jj) + vback_1d(jj-1) + vback_1d(jj+1) + vback_1d(jj-2) + vback_1d(jj+2))/5.
-  !   END DO
-  !   vback_1d(:) = vmerid_salt(:,jbasin)
-  !   DO jj = 3, npjglo-2
-  !      vmerid_salt(jj,jbasin) = (vback_1d(jj) + vback_1d(jj-1) + vback_1d(jj+1) + vback_1d(jj-2) + vback_1d(jj+2))/5.
-  !   END DO
-  !END DO
-
-  WHERE ( vmerid_heat == 0.0 ) vmerid_heat = sqrt(minus_one)
-  WHERE ( vmerid_salt == 0.0 ) vmerid_salt = sqrt(minus_one)
+  !! WTF:
+  WHERE ( vmerid_heat == 0.0 ) vmerid_heat = rmissing
+  WHERE ( vmerid_salt == 0.0 ) vmerid_salt = rmissing
 
 
 
@@ -391,7 +379,9 @@ PROGRAM cdfmhst
 
      DO jbasin = 1, nbasins
         ierr = NF90_DEF_VAR(idf_out, trim(vcv_name_t(jbasin)), NF90_FLOAT, (/idd_y,idd_t/), vid_heat(jbasin))
-        ierr = NF90_DEF_VAR(idf_out, trim(vcv_name_s(jbasin)), NF90_FLOAT, (/idd_y,idd_t/), vid_salt(jbasin))
+        ierr = NF90_PUT_ATT(idf_out, vid_heat(jbasin), '_FillValue', rmissing)        
+        ierr = NF90_DEF_VAR(idf_out, TRIM(vcv_name_s(jbasin)), NF90_FLOAT, (/idd_y,idd_t/), vid_salt(jbasin))
+        ierr = NF90_PUT_ATT(idf_out, vid_salt(jbasin), '_FillValue', rmissing)
      END DO
 
      ierr = NF90_ENDDEF(idf_out)
@@ -419,7 +409,7 @@ PROGRAM cdfmhst
 
   WRITE(*,'("Going to write record #",i4.4," into ",a)') jt_pos+1, trim(cf_out)
 
-  !DO jt = 1, nt
+  !DO jt = 1, Nt
   jt = 1 ! saving 1 record per year!
 
   ! Writing record jt for time vector and 1d fields:

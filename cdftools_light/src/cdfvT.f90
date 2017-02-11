@@ -41,10 +41,12 @@ PROGRAM cdfvT
   REAL(KIND=4) , DIMENSION (:),   ALLOCATABLE :: vdepth ! lolo
   REAL(KIND=4) , DIMENSION (:,:), ALLOCATABLE :: xlon, xlat  ! lolo
   REAL(KIND=4) , DIMENSION (:,:,:), ALLOCATABLE :: T_3D, S_3D, U_3D, V_3D, UEIV_3D, VEIV_3D, X_3D_u, X_3D_v   !: lolo
+  INTEGER(2)   , DIMENSION (:,:,:), ALLOCATABLE :: mask_3d
 
   REAL(KIND=8) , DIMENSION (:,:,:), ALLOCATABLE :: zcumulut, zcumulus  !: Arrays for cumulated values
   REAL(KIND=8) , DIMENSION (:,:,:), ALLOCATABLE :: zcumulvt, zcumulvs  !: Arrays for cumulated values
 
+  CHARACTER(LEN=256) :: cf_mm='mesh_mask.nc'
 
   CHARACTER(LEN=256) :: cf_t,cf_u,cf_v , cf_out, conf_tag , ctim !:
   TYPE (variable), DIMENSION(4)     :: typvar     !: structure for attributes
@@ -137,6 +139,7 @@ PROGRAM cdfvT
 
   ALLOCATE( T_3D(npiglo,npjglo,npk), S_3D(npiglo,npjglo,npk), U_3D(npiglo,npjglo,npk), V_3D(npiglo,npjglo,npk) )
   ALLOCATE( X_3D_u(npiglo,npjglo,npk), X_3D_v(npiglo,npjglo,npk) )
+  ALLOCATE( mask_3d(npiglo,npjglo,npk) )
 
   IF ( leiv ) ALLOCATE( UEIV_3D(npiglo,npjglo,npk), VEIV_3D(npiglo,npjglo,npk) )
 
@@ -149,10 +152,14 @@ PROGRAM cdfvT
   vtime  = getvar1d(cf_t, trim(ctim), nt) !LB
   vdepth = getvar1d(cf_t, trim(cv_depth), npk) !LB
   
-
-  CALL GETVAR_2D(idf_0, idv_0, cf_t, 'nav_lon', 0, 0, 0, xlon)
-  idf_0=0 ;  idv_0=0
-  CALL GETVAR_2D(idf_0, idv_0, cf_t, 'nav_lat', 0, 0, 0, xlat)
+  !LB: Read lon and lat in mesh_mask to avoid problem with files with missing values on "removed land processors":
+  xlon(:,:) = getvar(cf_mm, 'nav_lon', 1,npiglo,npjglo)
+  xlat(:,:) = getvar(cf_mm, 'nav_lat', 1,npiglo,npjglo)
+  
+  CALL GETMASK_3D(cf_mm, 'tmask', mask_3d)
+  !CALL GETVAR_2D(idf_0, idv_0, cf_t, 'nav_lon', 0, 0, 0, xlon)
+  !idf_0=0 ;  idv_0=0
+  !CALL GETVAR_2D(idf_0, idv_0, cf_t, 'nav_lat', 0, 0, 0, xlat)
 
 
 
@@ -212,10 +219,14 @@ PROGRAM cdfvT
         V_3D = V_3D + VEIV_3D
      END IF
 
+     !LB: to avoid problem with files with missing values on "removed land processors":
+     T_3D = T_3D*mask_3d
+     S_3D = S_3D*mask_3d
+     U_3D = U_3D*mask_3d
+     V_3D = V_3D*mask_3d
 
      zcumulut(:,:,:) = 0.d0 ;  zcumulvt(:,:,:) = 0.d0 !; total_time = 0.
      zcumulus(:,:,:) = 0.d0 ;  zcumulvs(:,:,:) = 0.d0
-
 
      ! temperature
      X_3D_u(1:npiglo-1,:, :) = 0.5 * ( T_3D(1:npiglo-1,:, :) + T_3D(2:npiglo,:, :) )  ! temper at Upoint
