@@ -70,7 +70,7 @@ PROGRAM cdfvT
   !!  Read command line
   narg= iargc()
   IF ( (narg < 5).OR.(narg > 7).OR.(narg == 6) ) THEN
-     PRINT *,' Usage : cdftransportiz <CONF_TAG> <name T> <name S> <name U> <name V> (<name Ueiv> <name Veiv>)'
+     PRINT *,' Usage : cdfvT <CONF_TAG> <name T> <name S> <name U> <name V> (<name Ueiv> <name Veiv>)'
      PRINT *,'    => files are: <CONF_TAG>_grid_T.nc <CONF_TAG>_grid_U.nc <CONF_TAG>_grid_V.nc'     
      PRINT *,' Files mesh_mask.nc must be in te current directory'
      STOP
