@@ -992,6 +992,7 @@ class plot :
         #
         # c_y_is : 'depth', 'latitude'
         # lkcont : use contours rather than "pcolormesh" 
+        #
 
         import barakuda_colmap as bcm
 
@@ -999,14 +1000,16 @@ class plot :
 
         if c_y_is == 'depth':
             zVY = __prepare_z_log_axis__(l_ylog, VY)
+            vax = [0.095, 0.06, 0.92, 0.88]
         else:
             zVY = VY
+            vax = [0.05, 0.06, 0.98, 0.88]
 
         # Masking where mask is zero!
         XF = nmp.ma.masked_where(XMSK == 0, XF)
 
         fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*5.), dpi=None, facecolor='w', edgecolor='k')
-        ax  = plt.axes([0.095, 0.06, 0.92, 0.88], axisbg = 'gray')
+        ax  = plt.axes(vax, axisbg = 'gray')
         vc  = __vcontour__(rmin, rmax, dc)
 
         # Colormap:
@@ -1022,7 +1025,11 @@ class plot :
         __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
 
         # Time-axis:
-        __nice_x_axis__(ax, plt, tmin, tmax, dt, cunit=ctunit, cfont=font_xylb)
+        dt_minor=0
+        if (dt>=2)  and (dt<10) and (dt%2 == 0) : dt_minor=1
+        if (dt>=10) and (dt<50) and (dt%5 == 0) : dt_minor=5
+        if (dt>=50) and (dt%50 == 0) : dt_minor=10
+        __nice_x_axis__(ax, plt, tmin, tmax, dt, cunit=ctunit, cfont=font_xylb, dx_minor=dt_minor)
 
         # Y-axis:
         if c_y_is == 'depth':

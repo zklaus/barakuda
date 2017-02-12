@@ -3,9 +3,10 @@
 #  B E T A  ! ! !
 
 # Diag to test:
+imhst=1
 iamoc=0
 icrosssect=0
-itempsal=1
+itempsal=0
 isflx=0
 imean=0
 imov=0
@@ -31,9 +32,14 @@ ihov=0
 #ARCH="ece32_marenostrum"
 #export RUN="LR20" ; NC=nc4 ; jyear=2540
 
-CONFIG="ORCA1_L42"
-ARCH="ece22_triolith"
-export RUN="SPIN" ; NC=nc4 ; jyear=2540
+
+CONFIG="ORCA1_L75"
+ARCH="T159_ece32_triolith"
+export RUN="LB2E" ; NC=nc4 ; jyear=2010
+
+#CONFIG="ORCA1_L42"
+#ARCH="ece22_triolith"
+#export RUN="SPIN" ; NC=nc4 ; jyear=2540
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -90,6 +96,11 @@ echo ; echo " *** DIAG_D=${DIAG_D} !"; echo
 rm -f *.png
 
 # Time for diags:
+
+if [ ${imhst} -eq 1 ]; then
+    CMD="python exec/plot_hovm_merid_trsp.py"
+    echo ; echo " CMD = ${CMD} "; echo
+fi
 
 if [ ${iamoc} -eq 1 ]; then
     if [ ! -f ${DIAG_D}/clim/last_clim ]; then echo "Boooo!"; exit; fi

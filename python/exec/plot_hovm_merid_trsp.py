@@ -56,6 +56,7 @@ for joce in range(nbasins):
     if joce == 0:
         Xheat = nmp.zeros(nbasins*Nby*Nlat) ; Xheat.shape = [ nbasins, Nby, Nlat ]
         Xsalt = nmp.zeros(nbasins*Nby*Nlat) ; Xsalt.shape = [ nbasins, Nby, Nlat ]
+        rmiss_val = id_in.variables['zomht_'+cbas].getncattr('_FillValue')
 
     Xheat[joce,:,:] = id_in.variables['zomht_'+cbas][:,:]
     Xsalt[joce,:,:] = id_in.variables['zomst_'+cbas][:,:]
@@ -68,7 +69,7 @@ print ''
 
 
 
-imask  = nmp.zeros(Nlat*Nby); imask.shape = [ Nby, Nlat ]
+mask  = nmp.zeros((Nby, Nlat)) + 1.
 
 for joce in range(nbasins):
 
@@ -80,36 +81,37 @@ for joce in range(nbasins):
     cbas   = list_basin_names[joce] ; # name as in cf_in ...
     cbasin = list_basin_lgnms[joce] ; # long name of basin
 
-    imask[:,:] = 0
-    Lfinite = nmp.isfinite(Xheat[joce,:,:]) ; idx_good = nmp.where(Lfinite)
-    imask[idx_good] = 1
+    #mask[:,:] = 0
+    #Lfinite = nmp.isfinite(Xheat[joce,:,:]) ; idx_good = nmp.where(Lfinite)
+    #mask[idx_good] = 1
             
     # time record to consider to chose a min and a max for colorbar:
     jt_ini = 5
     if Nby <= 10: jt_ini = 1
     if Nby ==  1: jt_ini = 0
 
-    [ rmin, rmax, rdf ] = bt.get_min_max_df(Xheat[joce,jt_ini:,:],40)
-
     # Finding the first and last j that make sense (not NaN)
     js = -1 ; lfound=False
     while not lfound:
         js = js + 1
-        if not nmp.isnan(Xheat[joce,1,js]): lfound=True
+        #if not nmp.isnan(Xheat[joce,1,js]): lfound=True
+        if Xheat[joce,1,js] != rmiss_val:  lfound=True
     je = Nlat ; lfound=False
     while not lfound:
         je = je - 1
-        if not nmp.isnan(Xheat[joce,1,je]): lfound=True
-    #
+        #if not nmp.isnan(Xheat[joce,1,je]): lfound=True
+        if Xheat[joce,1,je] != rmiss_val:  lfound=True
+        
     dyh=dy/2
     ymin = (int(vlat[js]/dyh)-1)*dyh
     ymax = (int(vlat[je]/dyh)+1)*dyh
-    #print ' j: start, stop, Nlat, lat_min, lat_max =>', js, je, Nlat, vlat[js], vlat[je]
-    #print ' ymin, ymax =>', ymin, ymax
-    
-    bp.plot("hovmoeller")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xheat[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
+
+    # min and max for field:
+    [ rmin, rmax, rdf ] = bt.get_min_max_df(Xheat[joce,jt_ini:,js+1:je-1],40)
+        
+    bp.plot("hovmoeller")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xheat[joce,:,:])), mask,
                           rmin, rmax, rdf, c_y_is='latitude',
-                          cpal='RdBu_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=False,
+                          cpal='RdBu_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=True,
                           ymin = ymin, ymax = ymax, dy=dy,
                           cfignm=path_fig+'MHT_'+CONFRUN+'_'+cbas, cbunit='PW', ctunit='',
                           cyunit=r'Latitude ($^{\circ}$N)',
@@ -120,11 +122,11 @@ for joce in range(nbasins):
 
     # Salt transport
 
-    [ rmin, rmax, rdf ] = bt.get_min_max_df(Xsalt[joce,jt_ini:,:],40)
+    [ rmin, rmax, rdf ] = bt.get_min_max_df(Xsalt[joce,jt_ini:,js+1:je-1],40)
 
-    bp.plot("hovmoeller")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xsalt[joce,:,:])), nmp.flipud(nmp.rot90(imask[:,:])),
+    bp.plot("hovmoeller")(vyear[:], vlat[:], nmp.flipud(nmp.rot90(Xsalt[joce,:,:])), mask,
                           rmin, rmax, rdf, c_y_is='latitude',
-                          cpal='PiYG_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=False,
+                          cpal='PiYG_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=True,
                           ymin = ymin, ymax = ymax, dy=dy,
                           cfignm=path_fig+'MST_'+CONFRUN+'_'+cbas, cbunit=r'10$^3$ tons/s', ctunit='',
                           cyunit=r'Latitude ($^{\circ}$N)',

@@ -275,14 +275,14 @@ def get_min_max_df(ZZ, ndf):
     nn = int(round(float(ndf)/rn1,0))
     zdf = zdf/nn
 
-
     fact = 10**(-(int(math.log10(zdf))-1))
     zdf = round(zdf*fact,0)
     zdf = zdf/fact
 
-
-
-
+    # we want zmax and rmin to be mutilples of zdf :
+    zmax = zdf*int(round(zmax/zdf))
+    zmin = zdf*int(round(zmin/zdf))
+    
     return [ zmin, zmax, zdf ]
 
 
