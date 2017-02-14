@@ -181,10 +181,13 @@ ${PYTH} ${PYBRKD_EXEC_PATH}/compare_time_series.py ${YEAR_INI} ${YEAR_END}
 
 
 # Starting to configure HTML index file:
-sed -e "s|{CONFRUN}|Comparison ${NRUNS}|g" \
-    -e "s|{TITLE}|Ocean, ${EXTRA_CONF}: comparing ${VRUNS[*]}|g" \
-    -e "s|{NRUNS}|${NRUNS}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" \
-    ${BARAKUDA_ROOT}/src/html/conf_start.html >  index.html
+if [ "${EXTRA_CONF}" = "" ]; then echo "Problem, variable EXTRA_CONF is not set!" ; exit; fi
+TITLE="Ocean diagnostics<br>Comparison of experiments: \"${VRUNS[*]}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
+if [ ${ece_run} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
+CONFRUN="Comparison ${NRUNS}"
+sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${CONFRUN}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" \
+    ${BARAKUDA_ROOT}/src/html/conf_start.html > index.html
+
 
 list_figs=`\ls *.${FIG_FORMAT}`
 
