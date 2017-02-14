@@ -27,12 +27,8 @@ export CONF_INI_DIR="${STORE_DIR}/${CONF}/${CONF}-I"
 # In what directory of the local machine to save the diagnostics:
 export DIAG_DIR="${STORE_DIR}/tmp/barakuda/cmip5"
 
-# --- only for problematic hosts ----
-#module add NCO/4.2.3    
-#module add PYTHON/2.7.3
-# -----------------------------------
+export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
-export PYTHON_HOME="${HOME}/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
 # Is it an ec-earth run?
 export ece_run=0 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run done from traditional NEMO setup
@@ -44,6 +40,9 @@ export ece_run=0 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run
 #                  #   If you select '2', make sure 'cdo' is available and working!!!
 #
 export Y_INI_EC=1990 ;    # initial year if ec-earth run...
+export TRES_IFS=159  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
+export AGCM_INFO="IFS T${TRES_IFS}"
+###--- end EC-Earth IFS relate section ---
 
 # List of suffixed of files that have been saved by NEMO and that are needed for the diags:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
