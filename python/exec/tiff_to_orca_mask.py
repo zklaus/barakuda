@@ -17,15 +17,13 @@ if narg != 2:
     print 'Usage: '+sys.argv[0]+' <mesh_mask>'; sys.exit(0)
 cf_mm = sys.argv[1]
 
-cim_pac = 'mask_pac.tiff'
-cim_atl = 'mask_atl.tiff'
-cim_ind = 'mask_ind.tiff'
 
-for cf in [ cim_pac , cim_atl , cim_ind ]:
-    if not os.path.exists(cf):
-        print 'PROBLEM! image '+cf+' is not here!!!' ; sys.exit(0)
-    else:
-        print ' *** good, '+cf+' is here...'
+
+vbasins = [   'pac'   ,    'atl' ,     'ind'  ,   'soc'   ,   'arc'  ,  'wed'    ]
+vbnames = [ 'Pacific' , 'Atlantic' , 'Indian' , 'Southern', 'Arctic' , 'Weddell' ]
+vocesea = [ 'Ocean'   ,  'Ocean'   ,  'Ocean' ,  'Ocean'  ,  'Ocean' ,   'Sea'   ]
+vmandat = [  True     ,   True     ,   True   ,    False  ,    False ,   False   ] ; # Mandatory ?
+
 
 
 # Opening mesh_mask:
@@ -37,45 +35,66 @@ f_mm.close()
 
 (nj,ni) = nmp.shape(nav_lon)
 
-
 cf_bm = string.replace(os.path.basename(cf_mm), 'mesh_', 'basin_')
 
 
-# Opening Images:
-pic_pac = Image.open(cim_pac)
-pic_atl = Image.open(cim_atl)
-pic_ind = Image.open(cim_ind)
 
-im_pac_array = nmp.flipud( nmp.array(pic_pac) )
-im_atl_array = nmp.flipud( nmp.array(pic_atl) )
-im_ind_array = nmp.flipud( nmp.array(pic_ind) )
-
-(njp,nip) = im_pac_array.shape
-(nja,nia) = im_atl_array.shape
-(nji,nii) = im_ind_array.shape
-
-if (njp,nip) != (nj,ni) or (nja,nia) != (nj,ni) or (nji,nii) != (nj,ni):
-    print 'ERRO: something is wrong with the shapes of 2D arrays:'
-    print nj,ni
-    print njp,nip
-    print nja,nia
-    print nji,nii
-    sys.exit(0)
+nb_bas = len(vbasins)
 
 
-mask_pac = nmp.zeros((nj,ni))
-idx_pac = nmp.where(im_pac_array > 0)
-mask_pac[idx_pac] = 1
 
-mask_atl = nmp.zeros((nj,ni))
-idx_atl = nmp.where(im_atl_array > 0)
-mask_atl[idx_atl] = 1
+vtreat = nmp.zeros(nb_bas, dtype=bool)
 
-mask_ind = nmp.zeros((nj,ni))
-idx_ind = nmp.where(im_ind_array > 0)
-mask_ind[idx_ind] = 1
+jb = 0 ; Nbt = 0
+for cb in vbasins:
 
-now = datetime.datetime.now()
+    cf_tiff = 'mask_'+cb+'.tiff'
+
+    if not os.path.exists(cf_tiff):
+        if vmandat[jb]:
+            print 'PROBLEM! image '+cf_tiff+' is not here!!!' ; sys.exit(0)
+    else:
+        print ' *** good, '+cf_tiff+' is here...'
+        vtreat[jb] = True
+        Nbt = Nbt + 1
+
+    jb = jb+1
+
+#print vtreat
+
+
+XBASINS = nmp.zeros((Nbt,nj,ni))
+
+jb = 0 ; jbt = 0
+for cb in vbasins:
+
+    if vtreat[jb]:
+
+        cf_tiff = 'mask_'+cb+'.tiff'
+
+        # Opening Images:
+        pic = Image.open(cf_tiff)
+
+        xtmp = nmp.flipud( nmp.array(pic) )
+        (njb,nib) = xtmp.shape
+
+        if (njb,nib) != (nj,ni):
+            print 'ERROR: something is wrong with the shapes of 2D arrays with basin '+cb+':'
+            print nj,ni
+            print njb,nib
+            sys.exit(0)
+
+        xmsk    = nmp.zeros((nj,ni))
+        idx_sea = nmp.where(xtmp > 0)
+        xmsk[idx_sea] = 1
+        XBASINS[jbt,:,:] = xmsk[:,:]
+        jbt = jbt + 1
+
+    jb = jb + 1
+
+
+
+now   = datetime.datetime.now()
 cdate = now.strftime("%Y-%m-%d")
 
 
@@ -87,20 +106,23 @@ f_out.createDimension('x', ni)
 f_out.createDimension('y', nj)
 
 
-id_lon = f_out.createVariable('nav_lon' ,'f4',('y','x',))
-id_lat = f_out.createVariable('nav_lat' ,'f4',('y','x',))
-
-id_pac  = f_out.createVariable('tmaskpac','f4',('y','x',))
-id_atl  = f_out.createVariable('tmaskatl','f4',('y','x',))
-id_ind  = f_out.createVariable('tmaskind','f4',('y','x',))
-
+id_lon  = f_out.createVariable('nav_lon' ,'f4',('y','x',))
+id_lat  = f_out.createVariable('nav_lat' ,'f4',('y','x',))
 
 id_lon[:,:] = nav_lon[:,:]
 id_lat[:,:] = nav_lat[:,:]
 
-id_pac[:,:] = mask_pac[:,:]*mask[:,:]
-id_atl[:,:] = mask_atl[:,:]*mask[:,:]
-id_ind[:,:] = mask_ind[:,:]*mask[:,:]
+
+jb = 0 ; jbt = 0
+for cb in vbasins:
+
+    if vtreat[jb]:
+        id_bas  = f_out.createVariable('tmask'+cb,'f4',('y','x',))
+        id_bas.long_name = vbnames[jb]+' '+vocesea[jb]+' basin mask'
+        id_bas[:,:] = XBASINS[jbt,:,:]*mask[:,:]
+        jbt = jbt + 1
+        
+    jb = jb + 1
 
 f_out.About  = 'ORCA025, mask for main ocean basins, created with orca_mesh_mask_to_bitmap.py, Gimp, and tiff_to_orca_mask.py, '+cdate+'.'
 f_out.Author = 'L. Brodeau (https://github.com/brodeau/barakuda)'
