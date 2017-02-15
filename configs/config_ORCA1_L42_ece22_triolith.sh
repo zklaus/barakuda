@@ -25,7 +25,7 @@ export STORE_DIR="/proj/bolinc/users/x_laubr"
 export CONF_INI_DIR="${STORE_DIR}/${CONF}/${CONF}-I"
 
 # In what directory of the local machine to save the diagnostics:
-export DIAG_DIR="${STORE_DIR}/tmp/barakuda/cmip5"
+export DIAG_DIR="${STORE_DIR}/barakuda/cmip5"
 
 export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
@@ -105,7 +105,7 @@ export NN_QSOL="soshfldo"       ; # name of net surface solar flux in "FILE_FLX_
 
 # Land-sea mask and basins files:
 export MM_FILE="${CONF_INI_DIR}/mesh_mask_ORCA1_ecearth2_42l_NoCaspian.nc4"
-export BM_FILE="${CONF_INI_DIR}/basin_mask_ORCA1_ecearth2_42l_NoCaspian.nc4"
+export BM_FILE="${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece2.2_cmip5.nc4"
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO run):
 export F_T_CLIM_3D_12="${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly.nc4"
