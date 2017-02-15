@@ -17,14 +17,10 @@ if narg != 2:
     print 'Usage: '+sys.argv[0]+' <mesh_mask>'; sys.exit(0)
 cf_mm = sys.argv[1]
 
-
-
-vbasins = [   'pac'   ,    'atl' ,     'ind'  ,   'soc'   ,   'arc'  ,  'wed'    ]
-vbnames = [ 'Pacific' , 'Atlantic' , 'Indian' , 'Southern', 'Arctic' , 'Weddell' ]
-vocesea = [ 'Ocean'   ,  'Ocean'   ,  'Ocean' ,  'Ocean'  ,  'Ocean' ,   'Sea'   ]
-vmandat = [  True     ,   True     ,   True   ,    False  ,    False ,   False   ] ; # Mandatory ?
-
-
+vbasins = [   'pac'   ,    'atl' ,     'ind'  ,   'soc'   ,   'arc'  ,  'wed'    ,  'lab'     ]
+vbnames = [ 'Pacific' , 'Atlantic' , 'Indian' , 'Southern', 'Arctic' , 'Weddell' , 'Labrador' ]
+vocesea = [ 'Ocean'   ,  'Ocean'   ,  'Ocean' ,  'Ocean'  ,  'Ocean' ,   'Sea'   ,   'Sea'    ]
+vmandat = [  True     ,   True     ,   True   ,    False  ,    False ,   False   ,   False    ] ; # Mandatory ?
 
 # Opening mesh_mask:
 f_mm = Dataset(cf_mm)
@@ -37,11 +33,7 @@ f_mm.close()
 
 cf_bm = string.replace(os.path.basename(cf_mm), 'mesh_', 'basin_')
 
-
-
 nb_bas = len(vbasins)
-
-
 
 vtreat = nmp.zeros(nb_bas, dtype=bool)
 
