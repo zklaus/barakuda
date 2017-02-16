@@ -586,12 +586,11 @@ PROGRAM cdfsigtrp
 
   END DO
 
-
   ierr = NF90_CLOSE(idf_out)
 
+  PRINT *, '  *** cdfsigtrp => '//TRIM(cf_out)//' written!'; PRINT *, ''
 
 CONTAINS
-
 
 
   SUBROUTINE section_init(cdfile,cdsection,kimin,kimax,kjmin,kjmax,knumber)
@@ -647,6 +646,6 @@ CONTAINS
     CLOSE(numit)
 
   END SUBROUTINE section_init
-
+  
 
 END PROGRAM cdfsigtrp

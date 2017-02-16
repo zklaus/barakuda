@@ -163,7 +163,7 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${ece_run} -eq 2 ] && [ ${NBL} -eq 75 ] && [ ${i_do_ifs_flx} -eq 1 ]; then
             echo; echo; echo "Fluxes of freshwater at the surface from IFS..."
-            echo "LAUNCHING: ./src/bash/extract_ifs_surf_fluxes.sh in the background!"
+            echo " *** CALLING: ./src/bash/extract_ifs_surf_fluxes.sh in the background!"
             ${BARAKUDA_ROOT}/src/bash/extract_ifs_surf_fluxes.sh &
             pid_flxl=$! ; echo
         fi
@@ -173,13 +173,13 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_movi} -eq 1 ]; then
             echo; echo; echo "2D maps of NEMO - OBS for SST and SSS (for movies)"
-            echo "CALLING: prepare_movies.py ${ft} ${jyear} sst"
+            echo " *** CALLING: prepare_movies.py ${ft} ${jyear} sst"
             ${PYTH} ${PYBRKD_EXEC_PATH}/prepare_movies.py ${ft} ${jyear} sst &
             pid_movt=$! ; echo
-            echo "CALLING: prepare_movies.py ${ft} ${jyear} sss"
+            echo " *** CALLING: prepare_movies.py ${ft} ${jyear} sss"
             ${PYTH} ${PYBRKD_EXEC_PATH}/prepare_movies.py ${ft} ${jyear} sss &
             pid_movs=$! ; echo
-            echo "CALLING: prepare_movies.py ${fj} ${jyear} ice"
+            echo " *** CALLING: prepare_movies.py ${fj} ${jyear} ice"
             ${PYTH} ${PYBRKD_EXEC_PATH}/prepare_movies.py ${fj} ${jyear} ice &
             pid_movi=$! ; echo
         fi
@@ -189,7 +189,7 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_mean} -eq 1 ]; then
             echo; echo; echo "Global monthly values"
-            echo "CALLING: mean.py ${ft} ${jyear}"
+            echo " *** CALLING: mean.py ${ft} ${jyear}"
             ${PYTH} ${PYBRKD_EXEC_PATH}/mean.py ${ft} ${jyear} &
             pid_mean=$! ; echo
         fi
@@ -199,7 +199,7 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_trsp} -gt 0 ] || [ ${i_do_mht} -eq 1 ]; then
             if [ ! -f ${fvt} ]; then
-                echo; echo; echo " *** doing: ./cdfvT.x ${CPREF}${TTAG_ann} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV}"
+                echo; echo; echo " *** CALLING: ./cdfvT.x ${CPREF}${TTAG_ann} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV}"
                 ./cdfvT.x ${CPREF}${TTAG_ann} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} &
                 pid_vtvt=$! ; echo
             fi
@@ -211,17 +211,53 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_ssx_box} -eq 1 ]; then
             echo; echo; echo "Box monthly values"
-            echo "CALLING: ssx_boxes ${ft} ${jyear} ${NN_SST} ${NN_SSS}"
+            echo " *** CALLING: ssx_boxes ${ft} ${jyear} ${NN_SST} ${NN_SSS}"
             ${PYTH} ${PYBRKD_EXEC_PATH}/ssx_boxes.py ${ft} ${jyear} ${NN_SST} ${NN_SSS} &
             pid_boxa=$! ; echo
         fi
 
+
+        #~~~~~~~
+        #  MOC
+        #~~~~~~~
+        if [ ${i_do_amoc} -eq 1 ]; then
+            echo; echo; echo "MOC"
+            rm -f moc.nc *.tmp
+            echo " *** CALLING: ./cdfmoc.x ${fv} ${NN_V} ${NN_V_EIV}"
+            ./cdfmoc.x ${fv} ${NN_V} ${NN_V_EIV} &
+            pid_amoc=$! ; echo
+        fi
+
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        #  Transport by sigma-class
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if [ ${i_do_sigt} -eq 1 ]; then
+            echo; echo
+            if [ ! -f ./dens_section.dat ]; then
+                if [ -f ${DENSITY_SECTION_FILE} ]; then
+                    echo "Copying ${DENSITY_SECTION_FILE} to here: `pwd` !"; cp ${DENSITY_SECTION_FILE} ./dens_section.dat
+                else
+                    echo; echo "WARNING: Can't do Transport by sigma-class: ${DENSITY_SECTION_FILE} is missing!!!"
+                fi
+            fi
+            echo " *** CALLING: ./cdfsigtrp.x ${ft} ${fu} ${fv} 24.8 28.6 19 ${jyear} ${DIAG_D}  ${NN_T} ${NN_S} ${NN_U} ${NN_V}"; echo
+            ./cdfsigtrp.x ${ft} ${fu} ${fv} 24.8 28.6 19 ${jyear} ${DIAG_D} ${NN_T} ${NN_S} ${NN_U} ${NN_V} &
+            pid_sigt=$! ; echo
+        fi
+
+
+
+
         
         echo
         echo " Gonna wait for level #1 to be done !"
-        wait  ${pid_mean} ${pid_vtvt} ${pid_boxa}
+        ###wait  ${pid_mean} ${pid_vtvt} ${pid_boxa}
+        wait
         echo " .... diag level #1 done...." ; echo        
         echo
+
+
+
 
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,36 +276,6 @@ while ${lcontinue}; do
             fi
         fi
         
-
-        #~~~~~~~
-        #  MOC
-        #~~~~~~~
-        if [ ${i_do_amoc} -eq 1 ]; then
-            echo; echo; echo "MOC"
-            rm -f moc.nc *.tmp
-            echo " *** doing: ./cdfmoc.x ${fv} ${NN_V} ${NN_V_EIV}"
-            ./cdfmoc.x ${fv} ${NN_V} ${NN_V_EIV} &
-            pid_amoc=$! ; echo
-        fi
-
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        #  Transport by sigma-class
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if [ ${i_do_sigt} -eq 1 ]; then
-            echo; echo
-            if [ ! -f ./dens_section.dat ]; then
-                if [ -f ${DENSITY_SECTION_FILE} ]; then
-                    echo "Copying ${DENSITY_SECTION_FILE} to here: `pwd` !"; cp ${DENSITY_SECTION_FILE} ./dens_section.dat
-                else
-                    echo; echo "WARNING: Can't do Transport by sigma-class: ${DENSITY_SECTION_FILE} is missing!!!"
-                fi
-            fi
-            echo " *** doing: ./cdfsigtrp.x ${ft} ${fu} ${fv} 24.8 28.6 19 ${jyear} ${DIAG_D}  ${NN_T} ${NN_S} ${NN_U} ${NN_V}"; echo
-            ./cdfsigtrp.x ${ft} ${fu} ${fv} 24.8 28.6 19 ${jyear} ${DIAG_D} ${NN_T} ${NN_S} ${NN_U} ${NN_V} &
-            pid_sigt=$! ; echo
-        fi
-
-
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # VOLUME, HEAT and SALT transports through specified section
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -302,7 +308,7 @@ while ${lcontinue}; do
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
-            echo "CALLING: dmv.py ${ft} ${cyear}"
+            echo " *** CALLING: dmv.py ${ft} ${cyear}"
             ${PYTH} ${PYBRKD_EXEC_PATH}/dmv.py ${ft} ${cyear} &
             pid_dmvl=$! ; echo
         fi
@@ -378,7 +384,7 @@ while ${lcontinue}; do
 	    lst_sec=`cat ${TS_SECTION_FILE} | grep -v -E '(^#|EOF)' | awk -F ' ' '{print $1}'`
             echo; echo; echo "Cross-sections on specified transects:"
             echo "${lst_sec}"; echo
-            echo "CALLING: cross_sections.py ${ft} ${jyear}"
+            echo " *** CALLING: cross_sections.py ${ft} ${jyear}"
             ${PYTH} ${PYBRKD_EXEC_PATH}/cross_sections.py ${ft} ${jyear} &
             echo
         fi
@@ -393,7 +399,7 @@ while ${lcontinue}; do
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
-            echo "CALLING: prof_TS_z_box.py ${cyear}"
+            echo " *** CALLING: prof_TS_z_box.py ${cyear}"
             ${PYTH} ${PYBRKD_EXEC_PATH}/prof_TS_z_box.py ${cyear} &
             echo;echo
         fi
@@ -418,7 +424,7 @@ while ${lcontinue}; do
             diro=${DIAG_D}/amo ; mkdir -p ${diro}
             echo; echo; echo "AMO SST time series "
             echo; echo
-            echo "CALLING: amo.py ${cyear}"
+            echo " *** CALLING: amo.py ${cyear}"
             ${PYTH} ${PYBRKD_EXEC_PATH}/amo.py ${cyear}
             echo;echo;
             mv -f  AMO_SST_Atl_${CONFRUN}_${cyear}.nc ${diro}/
@@ -431,7 +437,7 @@ while ${lcontinue}; do
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
-            echo "CALLING: zcrit_conv.py ${cyear}"
+            echo " *** CALLING: zcrit_conv.py ${cyear}"
             ${PYTH} ${PYBRKD_EXEC_PATH}/zcrit_conv.py ${cyear}
             echo;echo
         fi
@@ -454,7 +460,7 @@ while ${lcontinue}; do
 
             diro=${DIAG_D}/transport_sections ; mkdir -p ${diro}
 
-            echo "CALLING: /home/x_laubr/DEV/CDFTOOLS/bin/cdficeflux ${fj}"
+            echo " *** CALLING: /home/x_laubr/DEV/CDFTOOLS/bin/cdficeflux ${fj}"
             /home/x_laubr/DEV/CDFTOOLS/bin/cdficeflux ${fj}
 
             list_ice=`cat transport_ice.dat | grep '-'`
@@ -593,7 +599,7 @@ if [ ${ISTAGE} -eq 2 ]; then
     echo "    => ${DIAG_1D_LIST}"; echo
 
     for fd in ${DIAG_1D_LIST}; do
-        echo "CALLING: plot_time_series.py ${fd}"
+        echo " *** CALLING: plot_time_series.py ${fd}"
         ${PYTH} ${PYBRKD_EXEC_PATH}/plot_time_series.py ${fd} ; echo
         echo
     done
@@ -602,12 +608,12 @@ if [ ${ISTAGE} -eq 2 ]; then
     if [ ${i_do_mean} -eq 1 ]; then
 
          # 5-month-running mean SST anomaly on Nino region 3.4 graph:
-        echo "CALLING: plot_enso.py Nino34_${CONFRUN}.nc"
+        echo " *** CALLING: plot_enso.py Nino34_${CONFRUN}.nc"
         ${PYTH} ${PYBRKD_EXEC_PATH}/plot_enso.py Nino34_${CONFRUN}.nc
         echo; echo
 
         # Hovmuller of temperature and salinity
-        echo "CALLING: plot_hovm_tz.py"
+        echo " *** CALLING: plot_hovm_tz.py"
         ${PYTH} ${PYBRKD_EXEC_PATH}/plot_hovm_tz.py
         echo; echo
         #
@@ -616,7 +622,7 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     if [ ${i_do_sigt} -eq 1 ]; then
         # Transport by sigma-class
-        echo "CALLING: plot_trsp_sigma.py"
+        echo " *** CALLING: plot_trsp_sigma.py"
         ${PYTH} ${PYBRKD_EXEC_PATH}/plot_trsp_sigma.py
         echo; echo; echo
     fi
@@ -626,7 +632,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         #
         # Hovmullers of advective meridional heat/salt transport
         echo; echo
-        echo "CALLING: plot_hovm_merid_trsp.py"
+        echo " *** CALLING: plot_hovm_merid_trsp.py"
         ${PYTH} ${PYBRKD_EXEC_PATH}/plot_hovm_merid_trsp.py
         echo; echo; echo
         #
@@ -705,7 +711,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 cd ${DIAG_D}/
                 export DIRS_2_EXP="${DIRS_2_EXP} moc"
                 rm -rf moc; mkdir moc; cd moc/
-                echo; echo; echo "CALLING: moc.py ${iclyear}"
+                echo; echo; echo " *** CALLING: moc.py ${iclyear}"
                 ${PYTH} ${PYBRKD_EXEC_PATH}/moc.py ${iclyear}
                 cd ../
                 echo
@@ -719,7 +725,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 cd ${DIAG_D}/
                 export DIRS_2_EXP="${DIRS_2_EXP} mld"
                 rm -rf mld; mkdir mld; cd mld/
-                echo; echo; echo "CALLING: mld.py ${iclyear}"; echo
+                echo; echo; echo " *** CALLING: mld.py ${iclyear}"; echo
                 ${PYTH} ${PYBRKD_EXEC_PATH}/mld.py ${iclyear}
                 cd ../
                 echo
@@ -733,7 +739,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 cd ${DIAG_D}/
                 export DIRS_2_EXP="${DIRS_2_EXP} sea_ice"
                 rm -rf sea_ice; mkdir sea_ice; cd sea_ice/
-                echo; echo; echo "CALLING: ice.py ${iclyear}"; echo
+                echo; echo; echo " *** CALLING: ice.py ${iclyear}"; echo
                 ${PYTH} ${PYBRKD_EXEC_PATH}/ice.py ${iclyear}
                 cd ../
                 echo
@@ -746,7 +752,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 export DIRS_2_EXP="${DIRS_2_EXP} ssh"
                 cd ${DIAG_D}/
                 rm -rf ssh; mkdir ssh; cd ssh/
-                echo "CALLING: ssh.py ${iclyear}"; echo
+                echo " *** CALLING: ssh.py ${iclyear}"; echo
                 ${PYTH} ${PYBRKD_EXEC_PATH}/ssh.py ${iclyear}
                 cd ../ ;  echo
             else
@@ -781,7 +787,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 export DIRS_2_EXP="${DIRS_2_EXP} temp_sal"
                 DIRS_2_EXP_RREF="${DIRS_2_EXP_RREF} temp_sal"
                 mkdir -p temp_sal; cd temp_sal/
-                echo; echo; echo "CALLING: temp_sal.py ${iclyear}"; echo
+                echo; echo; echo " *** CALLING: temp_sal.py ${iclyear}"; echo
                 ${PYTH} ${PYBRKD_EXEC_PATH}/temp_sal.py ${iclyear}
                 cd ../
                 echo

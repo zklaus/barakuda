@@ -120,14 +120,14 @@ export NN_ICEF_CLIM="ice_cover"
 
 
 # A text file where the cross sections (to compute transports) are defined :
-export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025.dat"
+export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_y1050.dat"
 
 # For transport by sigma-class:
-export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA025.dat"
+export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA025_y1050.dat"
 
 # Files with the list of rectangular domains to "analyze" more closely:
-export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025.txt"
-export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025.txt"
+export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025_y1050.txt"
+export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025_y1050.txt"
 
 # In what format should figures be produced ('png' recommanded, but 'svg' supported!):
 export FIG_FORM="png"
@@ -167,7 +167,7 @@ z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
 export i_do_mht=1
 
 # Transport by sigma class
-export i_do_sigt=0
+export i_do_sigt=1
 
 # Sea-ice diags
 export i_do_ice=1  ; # Sea-ice diags

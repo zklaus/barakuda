@@ -253,6 +253,6 @@ PROGRAM cdfvT
 
   END DO ! jt
 
-  PRINT *, '  ***   => '//trim(cf_out)//' written!'; PRINT *, ''
+  PRINT *, '  *** cdfvT => '//trim(cf_out)//' written!'; PRINT *, ''
 
 END PROGRAM cdfvT

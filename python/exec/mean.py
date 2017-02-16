@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-
+#
 #       B a r a K u d a
 #
 #     Generate misc. spatial averaging out of NEMO output files...
 #
 #       L. Brodeau, november 2013
+#
 
 import sys
 import os
@@ -580,15 +581,4 @@ for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
     jvar = jvar + 1
     print '\n'
 
-
-
-
-
-
-
-
-
-print '\n'
-
-
-
+print '\n *** EXITING mean.py for year '+cyear+' !\n'

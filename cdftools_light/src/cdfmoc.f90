@@ -53,7 +53,7 @@ PROGRAM cdfmoc
 
    REAL(KIND=8) ,DIMENSION(:,:,:) ,   ALLOCATABLE ::  zomsf                 !: jpbasins x npjglo x npk
 
-   CHARACTER(LEN=256) :: cf_v , cfileoutnc='moc.nc', ctim, cv_v, cv_veiv
+   CHARACTER(LEN=256) :: cf_v , cf_out='moc.nc', ctim, cv_v, cv_veiv
 
    CHARACTER(LEN=256) :: cf_mm='mesh_mask.nc', cf_bm='new_maskglo.nc'
    TYPE(variable)    ,DIMENSION(:), ALLOCATABLE   :: typvar                   !: structure for attribute
@@ -199,7 +199,7 @@ PROGRAM cdfmoc
    dumlon(:,:) = 0.   ! set the dummy longitude to 0
 
    ! create output fileset
-   ncout =create(cfileoutnc, 'none', 1,npjglo,npk,cdep='depthw')
+   ncout =create(cf_out, 'none', 1,npjglo,npk,cdep='depthw')
    ierr= createvar(ncout ,typvar,jpbasins, ipk,id_varout )
    ierr= putheadervar(ncout, cf_v,1, npjglo,npk,pnavlon=dumlon,pnavlat=dumlat,pdep=gdepw)
 
@@ -279,5 +279,7 @@ PROGRAM cdfmoc
    END DO
 
    ierr = closeout(ncout)
+
+   PRINT *, '  *** cdfmoc => '//TRIM(cf_out)//' written!'; PRINT *, ''
 
 END PROGRAM cdfmoc

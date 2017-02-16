@@ -188,3 +188,5 @@ for jt in range(nt):
                          cfignm=path_fig+'/'+cv+'_'+cdate, cpal='ice', cbunit='(frac.)',
                          ctitle='Ice frac. '+CONFRUN+' ('+cdate+')',
                          lkcont=True, cfig_type=fig_type, lforce_lim=True)
+
+print '\n *** EXITING prepare_movies.py for year '+cy+', var ='+cvar+' !\n'
