@@ -348,6 +348,10 @@ function barakuda_check_year_is_complete()
 
 function barakuda_import_files()
 {
+    # Import command:
+    CIMP="rsync -L"
+    if [ "${CONF}" = "ORCA025.L75" ]; then CIMP="ln -sf" ; fi
+    
     # On what file type to test file presence:
     cgrid_test=`echo ${NEMO_SAVED_FILES} | cut -d ' ' -f2`
     echo " *** testing on files \"${cgrid_test}\" !"; echo
@@ -366,17 +370,12 @@ function barakuda_import_files()
                 check_if_file ${NEMO_OUT_D}/${cpf}${f2i}${sgz}
                 if [ ! -f ./${f2i} ]; then
                     echo "Importing ${f2i}${sgz} ..."
-                    echo "rsync -L ${NEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
-                    rsync -L ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
+                    echo "${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
+                    ${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
                     if [ "${sgz}" = ".gz" ]; then gunzip -f ./${f2i}.gz ; fi
                     if [ "${sgz}" = "4"   ]; then
-                        #if ${L_CONV2NC3}; then
-                        #    echo "Need to convert back to netcdf3!"; echo "nccopy -k classic ${f2i}4 ${f2i}"
-                        #    ${NCDF_DIR}/bin/nccopy -k classic ${f2i}4 ${f2i} ;  rm ${f2i}4
-                        #else
                         echo "mv -f ./${f2i}4 ./${f2i}"
                         mv -f ./${f2i}4 ./${f2i}
-                        #fi
                     fi
                     check_if_file ${f2i}
                     echo " ... done!"; echo

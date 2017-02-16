@@ -3,13 +3,13 @@
 #  B E T A  ! ! !
 
 # Diag to test:
-imhst=1
+imhst=0
 iamoc=0
 icrosssect=0
 itempsal=0
 isflx=0
 imean=0
-imov=0
+imov=1
 issh=0
 its=0
 imld=0
@@ -33,9 +33,14 @@ ihov=0
 #export RUN="LR20" ; NC=nc4 ; jyear=2540
 
 
-CONFIG="ORCA1_L75"
-ARCH="T159_ece32_triolith"
-export RUN="LB2E" ; NC=nc4 ; jyear=2010
+#CONFIG="ORCA1_L75"
+#ARCH="T159_ece32_triolith"
+#export RUN="LB2E" ; NC=nc4 ; jyear=2010
+
+CONFIG="ORCA025_L75"
+ARCH="T511_ece32_triolith"
+export RUN="HC71" ; NC=nc ; jyear=1990
+
 
 #CONFIG="ORCA1_L42"
 #ARCH="ece22_triolith"
@@ -47,7 +52,7 @@ export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
 . ${BARAKUDA_ROOT}/src/bash/bash_functions.bash
 . ${BARAKUDA_ROOT}/configs/config_${CONFIG}_${ARCH}.sh
 
-ORCA_LIST="ORCA1.L75 ORCA1.L46 ORCA1.L42 ORCA2.L31 ORCA2.L46"
+ORCA_LIST="ORCA025.L75 ORCA1.L75 ORCA1.L46 ORCA1.L42 ORCA2.L31 ORCA2.L46"
 
 for og in ${ORCA_LIST}; do
     ca=""; ca=`echo ${CONFIG} | grep ${og}` ; if [ "${ca}" != "" ]; then export ORCA=${og}; fi
@@ -141,10 +146,11 @@ if [ ${imean} -eq 1 ]; then
     CMD="python exec/mean.py ${ft} ${jyear}"
 fi
 
-
 if [ ${imov} -eq 1 ]; then
-    CMD="python exec/prepare_movies.py ${ft} ${jyear} sss"
-    #CMD="python exec/prepare_movies.py ${fj} ${jyear} ice"
+    for cv in ice sst sss; do
+        python exec/prepare_movies.py ${ft} ${jyear} ${cv}
+    done
+    exit
 fi
 
 if [ ${issh} -eq 1 ]; then

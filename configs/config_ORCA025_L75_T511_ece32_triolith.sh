@@ -45,7 +45,7 @@ export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
 
 # List of suffixed of files that have been saved by NEMO and that are needed for the diags:
-export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod SBC"
+export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
 
 # Directory structure in which to find NEMO output file (use <ORCA> and <RUN>):
 export NEMO_OUT_STRCT="${STORE_DIR}/run/<RUN>/output/nemo"
@@ -108,8 +108,8 @@ export MM_FILE=${CONF_INI_DIR}/mesh_mask_ORCA025.L75_ece3.2_2017.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA025_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO run):
-export F_T_CLIM_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA025.L75_WOA2009_monthly_Uwe_2015.nc4
-export F_S_CLIM_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA025.L75_WOA2009_monthly_Uwe_2015.nc4
+export F_T_CLIM_3D_12=${CONF_INI_DIR}/barakuda_clim/thetao_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
+export F_S_CLIM_3D_12=${CONF_INI_DIR}/barakuda_clim/so_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
 export SST_CLIM_12=${CONF_INI_DIR}/barakuda_clim/sst_1x1-ORCA025_Reynolds_mnth_1982-2005.nc4
 export NN_T_CLIM="thetao"
 export NN_S_CLIM="so"
@@ -158,13 +158,13 @@ export i_do_amoc=1
 export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to look in for max of AMOC
 
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
-export i_do_trsp=0  ; # transport of mass, heat and salt through specified sections
+export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
 
 # Meridional heat/salt transport (advective)
-export i_do_mht=0
+export i_do_mht=1
 
 # Transport by sigma class
 export i_do_sigt=0

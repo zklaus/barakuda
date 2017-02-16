@@ -201,21 +201,22 @@ class plot :
             i_lat_lon = 0
 
 
-
-        # Don't want to modify XF array, working with XFtmp:
-        [ny, nx] = nmp.shape(XF)
-        XFtmp = nmp.zeros(ny*nx) ; XFtmp.shape = [ny, nx]
-        XFtmp[:,:] = XF[:,:]
-
         # First drowning the field:
-        bt.drown(XFtmp, XMSK, k_ew=2, nb_max_inc=20, nb_smooth=10)
+        if not lpix:
+            # Don't want to modify XF array, working with XFtmp:
+            [ny, nx] = nmp.shape(XF)
+            XFtmp = nmp.zeros((ny,nx))
+            XFtmp[:,:] = XF[:,:]
+            bt.drown(XFtmp, XMSK, k_ew=2, nb_max_inc=20, nb_smooth=10)
+        else:
+            XFtmp = XF
 
-        rlon_ext = 32.
+        ilon_ext = 32
 
         if lforce_lim: __force_min_and_max__(rmin, rmax, XFtmp)
 
-        XMSK0 = bo.lon_reorg_orca(XMSK,corca, rlon_ext)
-        XF0   = bo.lon_reorg_orca(XFtmp,  corca, rlon_ext)
+        XMSK0 = bo.lon_reorg_orca(XMSK,corca, ilon_ext)
+        XF0   = bo.lon_reorg_orca(XFtmp,  corca, ilon_ext)
 
         if i_lat_lon == 1:
             [ny, nx] = nmp.shape(XF0)
@@ -233,7 +234,7 @@ class plot :
         # FIGURE
         # ~~~~~~
         fig = plt.figure(num = 1, figsize=fig_size, dpi=None, facecolor='w', edgecolor='k')
-        ax  = plt.axes([0.05, 0.06, 1., 0.86], axisbg = 'white')
+        ax  = plt.axes([0.05, 0.06, 1., 0.86], axisbg = '0.5')
 
         vc = __vcontour__(rmin, rmax, dc); #print vc, '\n'
 
@@ -241,20 +242,19 @@ class plot :
         colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
-
         if lpix:
             # Pixelized plot:
+            XF0 = nmp.ma.masked_where(XMSK0 == 0, XF0)
             if i_lat_lon == 1:
-                cf = plt.pcolor(VX0, VY, XF0, cmap = colmap, norm = pal_norm)
+                cf = plt.pcolormesh(VX0, VY, XF0, cmap = colmap, norm = pal_norm)
             else:
-                cf = plt.pcolor(         XF0, cmap = colmap, norm = pal_norm)
-
+                cf = plt.imshow(             XF0, cmap = colmap, norm = pal_norm)
         else:
             # Contour fill plot:
             if i_lat_lon == 1:
                 cf = plt.contourf(VX0, VY, XF0, vc, cmap = colmap, norm = pal_norm)
             else:
-                cf = plt.contourf(XF0, vc, cmap = colmap, norm = pal_norm)
+                cf = plt.contourf(         XF0, vc, cmap = colmap, norm = pal_norm)
 
             for c in cf.collections: c.set_zorder(0.15)
 
@@ -262,7 +262,7 @@ class plot :
                 if i_lat_lon == 1:
                     cfk = plt.contour(VX0, VY, XF0, vc, colors='k', linewidths = 0.2)
                 else:
-                    cfk = plt.contour(XF0, vc, colors='k', linewidths = 0.2)
+                    cfk = plt.contour(         XF0, vc, colors='k', linewidths = 0.2)
 
                 for c in cfk.collections: c.set_zorder(0.25)
 
@@ -271,21 +271,22 @@ class plot :
                 if i_lat_lon == 1:
                     cfs = plt.contour(VX0, VY, XF0, vcont_spec, colors='black', linewidths = 1.5)
                 else:
-                    cfs = plt.contour(XF0, vcont_spec, colors='black', linewidths = 1.5)
+                    cfs = plt.contour(         XF0, vcont_spec, colors='black', linewidths = 1.5)
 
                 plt.clabel(cfs, inline=1, fmt='%4.1f', fontsize=10)
                 for c in cfs.collections: c.set_zorder(0.35)
 
-        # Putting land-sea mask on top of current plot, cleaner than initial masking...
-        # because won't influence contours since they are done
-        # field needs to be DROWNED prior to this though!!!
-        idx_land = nmp.where(XMSK0[:,:] < 0.5)
-        XF0 = nmp.ma.masked_where(XMSK0[:,:] > 0.5, XF0)
-        XF0[idx_land] = 1000.
-        if i_lat_lon == 1:
-            cf0 = plt.pcolor(VX0, VY, XF0, cmap = bcm.chose_colmap("mask"))
-        else:
-            cf0 = plt.pcolor(XF0, cmap = bcm.chose_colmap("mask"))
+        if not lpix:
+            # Putting land-sea mask on top of current plot, cleaner than initial masking...
+            # because won't influence contours since they are done
+            # field needs to be DROWNED prior to this though!!!
+            idx_land = nmp.where(XMSK0[:,:] < 0.5)
+            XF0 = nmp.ma.masked_where(XMSK0[:,:] > 0.5, XF0)
+            XF0[idx_land] = 1000.
+            if i_lat_lon == 1:
+                cf0 = plt.pcolormesh(VX0, VY, XF0, cmap=bcm.chose_colmap("mask"))
+            else:
+                cf0 = plt.imshow(             XF0, cmap=bcm.chose_colmap("mask"))
 
         # Colorbar:
         ifsize = 14.*100./float(DPI_DEF)
@@ -295,12 +296,12 @@ class plot :
 
         # X and Y nice ticks:
         if i_lat_lon == 1:
-            [vvx, vvy, clon, clat] = __name_coor_ticks__(lon_ext=rlon_ext);
+            [vvx, vvy, clon, clat] = __name_coor_ticks__(lon_ext=ilon_ext);
             plt.yticks(vvy,clat) ; plt.xticks(vvx,clon)
-            plt.axis([ 0., 360.+rlon_ext-2., lat_min, lat_max])
+            plt.axis([ 0., 360.+ilon_ext-2., lat_min, lat_max])
         else:
-            #ax.set_xlim(0., 360.+rlon_ext-2.)
-            plt.axis([ 0., float(nx)+rlon_ext-2., 0, float(ny)])
+            #ax.set_xlim(0., 360.+ilon_ext-2.)
+            plt.axis([ 0., float(nx)+ilon_ext-2., 0, float(ny)])
 
         plt.title(ctitle, **font_ttl)
 
