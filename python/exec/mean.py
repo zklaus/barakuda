@@ -421,8 +421,10 @@ print ' +++ mean.py => Done with 2D surface averaging diags!\n'
 
 print '\n\n +++ mean.py => Starting ENSO diags!'
 
-[i1, j1] = bo.find_ij(lon1_nino, lat1_nino, xlon, xlat, 'c')
-[i2, j2] = bo.find_ij(lon2_nino, lat2_nino, xlon, xlat, 'c')
+print lon1_nino, lon2_nino, lat1_nino, lat2_nino
+[ i1, i2, j1, jdum ] = bo.coor2ind(lon1_nino, lon2_nino, lat1_nino, lat1_nino, xlon, xlat)
+[ i1, i2, j2, jdum ] = bo.coor2ind(lon1_nino, lon2_nino, lat2_nino, lat2_nino, xlon, xlat)
+i2 = i2-1
 print ' Nino box 3.4, longitude: '+str(xlon[10,i1])+' => '+str(xlon[10,i2])+' \ latitude: '+str(xlat[j1,50])+' => '+str(xlat[j2,50])
 
 id_in = Dataset(cf_T_in)
@@ -433,18 +435,6 @@ else:
 id_in.close()
 
 Vts = bo.mean_2d(Xs_m[:,j1:j2+1,i1:i2+1], mask[0,0,j1:j2+1,i1:i2+1], Xa[j1:j2+1,i1:i2+1])
-
-
-#if 'cf_out' in locals() or 'cf_out' in globals():
-#    f = open(cf_out, 'a'); # 'w' would erase...
-#    f.write('#      Year       Mean ()\n')
-#    for jt in range(nt):
-#        f.write('%13.6f'%vtime[jt])
-#        f.write('  '+'%13.6f'%round(Vts[jt],6))
-#        f.write('\n')
-#    f.close()
-#    print cf_out+' written!'
-
 # NETCDF:
 cf_out   = vdic['DIAG_D']+'/Nino34_'+CONFRUN+'.nc' ;  cv1 = vdic['NN_SST']
 bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
@@ -498,8 +488,6 @@ for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
 
     for cocean in list_basin_names[:]:
 
-        print '          ===> basin '+cocean
-        
         colnm = list_basin_lgnms[joce]
 
         print '          ===> '+cvar+' in basin '+cocean+' ('+colnm+')'
