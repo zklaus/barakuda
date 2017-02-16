@@ -151,7 +151,7 @@ export i_do_movi=1
 export i_do_mean=1
 
 # IFS surface fluxes of heat and freshwater
-export i_do_ifs_flx=0 ; # only relevant when ece_run=2...
+export i_do_ifs_flx=1 ; # only relevant when ece_run=2...
 
 # AMOC:
 export i_do_amoc=1

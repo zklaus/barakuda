@@ -246,13 +246,9 @@ while ${lcontinue}; do
         fi
 
 
-
-
-        
         echo
         echo " Gonna wait for level #1 to be done !"
-        ###wait  ${pid_mean} ${pid_vtvt} ${pid_boxa}
-        wait
+        wait ${pid_vtvt}
         echo " .... diag level #1 done...." ; echo        
         echo
 
