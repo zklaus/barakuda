@@ -1,0 +1,1 @@
+config_ORCA025_L75_T511_ece32_triolith.sh
