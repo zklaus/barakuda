@@ -24,6 +24,7 @@ export CONF_INI_DIR="/proj/bolinc/users/x_laubr/INPUTS_ORCA1_LIM3_PISCES_V7_ecea
 # In what directory of the local machine to save the diagnostics:
 export DIAG_DIR="${STORE_DIR}/tmp/barakuda/${CONF}_ece32b"
 
+export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
 
 # Is it an ec-earth run?
@@ -36,7 +37,9 @@ export ece_run=2 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run
 #                  #   If you select '2', make sure 'cdo' is available and working!!!
 #
 export Y_INI_EC=1990 ;    # initial year if ec-earth run...
-
+export TRES_IFS=255  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
+export AGCM_INFO="IFS T${TRES_IFS}"
+###--- end EC-Earth IFS relate section ---
 
 # List of suffixed of files that have been saved by NEMO and that are needed for the diags:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod SBC"
@@ -55,25 +58,32 @@ export NEMO_FILE_PREFIX="<RUN>_<TSTAMP>_"
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="/scratch/local/<JOB_ID>"
 
-export PYTHON_HOME=${HOME}/opt/Canopy_64bit/User
 
-# If variables names in NEMO files are not the default...
+####### NEMO => what fields in what files ??? ############
+#       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#   => depends on the XIOS *.xml setup you used...
+#   => always specify a string for the NN_* variables
+#      even when missing from your files (ex: NN_MLD="xx")
+#
+# State variables and others in grid_T files:
 export NN_SST="tos"
 export NN_SSS="sos"
 export NN_SSH="zos"
 export NN_T="thetao"
 export NN_S="so"
 export NN_MLD="mldr10_1"
+#
+# State variables and others in grid_U files:
 export NN_U="uo"
-export NN_V="vo"
-#export NN_U_EIV="vozoeivu"
-#export NN_V_EIV="vomeeivv"
-export NN_U_EIV="0" ; # ignore
-export NN_V_EIV="0" ; # ignore
 export NN_TAUX="tauuo"
+export NN_U_EIV="0" ; # 0 => ignore
+# State variables and others in grid_V files:
+export NN_V="vo"
 export NN_TAUY="tauvo"
-
-export FILE_ICE_SUFFIX="icemod" ; # in what file to find ice fraction and volume?
+export NN_V_EIV="0" ; # 0 => ignore
+#
+# Sea-ice fields:
+export FILE_ICE_SUFFIX="icemod" ; # in what file type extension to find ice fields
 export NN_ICEF="siconc" ; # name of ice fraction in "FILE_ICE_SUFFIX" file...
 export NN_ICET="sivolu" ; # ice thickness or rather volume...
 
