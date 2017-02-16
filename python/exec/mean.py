@@ -80,13 +80,15 @@ id_mm.close()
 [ nk, nj, ni ] = rmask.shape
 
 
+# About heat and freshwater fluxes:
 cfe_sflx = vdic['FILE_FLX_SUFFIX']
 l_fwf = False
 l_htf = False
 if cfe_sflx in vdic['NEMO_SAVED_FILES']:
-    l_fwf = True
-    l_htf = True
+    if vdic['NN_FWF']  != 'X': l_fwf = True
+    if vdic['NN_QNET'] != 'X': l_htf = True
     cf_F_in = replace(cf_T_in, 'grid_T', cfe_sflx)
+
 
 Xa   = nmp.zeros((nj, ni))
 Xv   = nmp.zeros((nk, nj, ni))
@@ -131,6 +133,8 @@ del rmask, msk_tmp
 # Heat fluxes
 if l_htf:
 
+    print '\n\n +++ mean.py => Starting heat flux diags!'
+
     cv_qnt = vdic['NN_QNET']
     cv_qsr = vdic['NN_QSOL']
 
@@ -149,7 +153,6 @@ if l_htf:
     id_in.close()
     l_htf = l_qnt ; # Forgeting heat flux if both Qnet is missing...
 
-if l_htf:
     [ nt, nj0, ni0 ] = QNT_m.shape
     vtime = nmp.zeros(nt)
     for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./12.
@@ -165,10 +168,12 @@ if l_htf:
                             cu_t='year', cu_d='PW',  cln_d ='Globally averaged net heat flux (nemo:'+cv_qnt+')',
                             vd2=vqsr, cvar2='Qsol',  cln_d2='Globally averaged net solar heat flux (nemo:'+cv_qsr+')',
                             )
-
+    print ' +++ mean.py => Done with heat flux diags!\n'
 
 # Freshwater fluxes
 if l_fwf:
+
+    print '\n\n +++ mean.py => Starting freshwater flux diags!'
 
     cv_fwf = vdic['NN_FWF']
     cv_emp = vdic['NN_EMP']
@@ -181,6 +186,9 @@ if l_fwf:
     
     id_in = Dataset(cf_F_in)
     list_variables = id_in.variables.keys()
+
+    if not cv_fwf in list_variables[:]: print 'PROBLEM with fwf! mean.py!'; sys.exit(0)
+
     FWF_m = id_in.variables[cv_fwf][:,:,:]
     print '   *** E-P-R ('+cv_fwf+') read!'
 
@@ -265,7 +273,7 @@ if l_fwf:
                             vd7=vevb, cvar7='Eb',    cln_d7='Globally averaged evaporation with sea-ice consideration (nemo:'+cv_evb+')'
                             )
 
-
+    print ' +++ mean.py => Done with freshwater flux diags!\n'
 
 
 
@@ -275,6 +283,8 @@ if l_fwf:
 ####################################
 # MLD time serie in different boxes:
 ####################################
+
+print '\n\n +++ mean.py => Starting MLD diags!'
 l_mld = False
 print '\nSpatially-averaged MLD in different boxes'
 
@@ -343,16 +353,17 @@ if l_mld:
         bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
                                 cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on rectangular box '+cbox)
 
+print ' +++ mean.py => Done with MLD diags!\n'
 
-
-
-
+        
 
 
 
 #############################################
 # 2D (surface) averaging for temperature and salinity #
 #############################################
+
+print '\n\n +++ mean.py => Starting 2D surface averaging diags!'
 
 jvar = 0
 
@@ -397,9 +408,7 @@ for cvar in [ vdic['NN_SST'], vdic['NN_SSS'], vdic['NN_SSH'] ]:
 
     jvar = jvar + 1
 
-
-
-print '\n'
+print ' +++ mean.py => Done with 2D surface averaging diags!\n'
 
 
 
@@ -409,6 +418,8 @@ print '\n'
 ###################
 # El nino box 3.4 #
 ###################
+
+print '\n\n +++ mean.py => Starting ENSO diags!'
 
 [i1, j1] = bo.find_ij(lon1_nino, lat1_nino, xlon, xlat, 'c')
 [i2, j2] = bo.find_ij(lon2_nino, lat2_nino, xlon, xlat, 'c')
@@ -439,7 +450,7 @@ cf_out   = vdic['DIAG_D']+'/Nino34_'+CONFRUN+'.nc' ;  cv1 = vdic['NN_SST']
 bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
                         cu_t='year', cu_d='K', cln_d='2D-average of SST Nino box 3.4')
 
-
+print ' +++ mean.py => Done with ENSO diags!\n'
 
 
 
@@ -449,18 +460,19 @@ bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
 # 3D averaging for temperature and salinity #
 #############################################
 
+print '\n\n +++ mean.py => Starting 3D-averaging diags!'
+
 jvar = 0
 
 for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
 
-
+    print '      ==> variable '+cvar
 
     # DATA:
     id_in = Dataset(cf_T_in)
     vdepth = id_in.variables['deptht'][:]
     Xd_m = id_in.variables[cvar][:,:,:,:]
     id_in.close()
-
 
     if jvar == 0:
         j100m  = bt.find_index_from_value(100.  , vdepth) ; print 'j100m  = ', j100m,  '=> ', vdepth[j100m]
@@ -477,22 +489,20 @@ for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
         for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./12.
         print ' * Montly calendar: ', vtime[:]
 
-
-
     # Annual mean array for current year:
     Xd_y = nmp.zeros((1, nk, nj, ni))
 
     Xd_y[0,:,:,:] = nmp.mean(Xd_m, axis=0)
 
-
-
     joce = 0
 
     for cocean in list_basin_names[:]:
+
+        print '          ===> basin '+cocean
         
         colnm = list_basin_lgnms[joce]
 
-        print 'Treating '+cvar+' for '+cocean+' ('+colnm+')'
+        print '          ===> '+cvar+' in basin '+cocean+' ('+colnm+')'
 
         # I) Montly mean for diffrent depth ranges
         # ========================================
@@ -580,5 +590,9 @@ for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
 
     jvar = jvar + 1
     print '\n'
+
+
+print ' +++ mean.py => Done with 3D-averaging diags!\n'
+
 
 print '\n *** EXITING mean.py for year '+cyear+' !\n'
