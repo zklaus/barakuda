@@ -17,6 +17,8 @@ ibpsi=0    ; # Do a climatology for barotropic stream function
 
 export BARAKUDA_ROOT=`pwd`
 
+#ltonc4=false
+
 # Checking available configs
 list_conf=`\ls configs/config_*.sh` ; list_conf=`echo ${list_conf} | sed -e s/'configs\/config_'/''/g -e s/'.sh'/''/g`
 
@@ -247,38 +249,26 @@ done
 if [ ${ivt} -eq 1 ]; then
     fo=aclim_${CONFRUN}_${CY1}-${CY2}_VT.nc
     # Averaged VT file:
-    ncra -O ${CPREF}*_VT.nc -o ${fo}
-    rm -f ${CPREF}*_VT.nc
-
-    # Converting to netcdf4 with maximum compression level:
-    ${CP2NC4} ${fo} ${fo}4 &
-
+    ncra -O ${CPREF}*_VT.nc -o ${fo} &
 fi
 
 if [ ${iamoc} -eq 1 ]; then
     fo=aclim_${CONFRUN}_${CY1}-${CY2}_MOC.nc
     # Averaged MOC file:
-    ncra -O ${CPREF}*_MOC.nc -o ${fo}
-    # Converting to netcdf4 with maximum compression level:
-    ${CP2NC4} ${fo} ${fo}4 &
+    ncra -O ${CPREF}*_MOC.nc -o ${fo} &
 fi
 
 
 if [ ${ibpsi} -eq 1 ]; then
     fo=aclim_${CONFRUN}_${CY1}-${CY2}_PSI.nc
     # Averaged PSI file:
-    ncra -O ${CPREF}*_PSI.nc -o ${fo}
-    # Converting to netcdf4 with maximum compression level:
-    ${CP2NC4} ${fo} ${fo}4 &
+    ncra -O ${CPREF}*_PSI.nc -o ${fo} &
 fi
 
 
-echo;echo;echo;
+echo
 
-
-
-
-
+wait
 
 echo "Phase 2:"; ls ; echo
 
@@ -292,7 +282,7 @@ for suff in grid_T grid_U grid_V icemod SBC VT MOC PSI; do
     if [ -f ./${CPREF}${CY1}0101_${CY1}1231_${suff}.nc ]; then
 
         echo ; echo ; echo ; echo " Treating ${suff} files!"; echo
-
+        
         f2c=mclim_${CONFRUN}_${CY1}-${CY2}_${suff}.nc
         f2c_reg=mclim_${CONFRUN}_${CY1}-${CY2}_${REGG}.nc
 
@@ -308,12 +298,13 @@ for suff in grid_T grid_U grid_V icemod SBC VT MOC PSI; do
             if [ -f ./${CPREF}${CY1}0101_${CY1}1231_${suff}.nc ]; then
                 echo; ls ; echo
                 echo "ncra -F -O -d time_counter,${jm},,12 ${CPREF}*0101_*1231_${suff}.nc -o mean_m${cm}_${suff}.nc"
-                ncra -F -O -d time_counter,${jm},,12 ${CPREF}*0101_*1231_${suff}.nc -o mean_m${cm}_${suff}.nc
+                ncra -F -O -d time_counter,${jm},,12 ${CPREF}*0101_*1231_${suff}.nc -o mean_m${cm}_${suff}.nc &
                 echo
             fi
-
+            
         done
 
+        wait
         rm -f ${CPREF}*0101_*1231_${suff}.nc
 
         echo; ls ; echo
@@ -327,23 +318,27 @@ for suff in grid_T grid_U grid_V icemod SBC VT MOC PSI; do
         echo
 
         # Converting to netcdf4 with maximum compression level:
-        echo; ls ; echo
-        echo "${CP2NC4} ${f2c} ${f2c}4"
-        ${CP2NC4} ${f2c} ${f2c}4 &
-        echo
+        #echo; ls ; echo
+        #echo "${CP2NC4} ${f2c} ${f2c}4"
+        #${CP2NC4} ${f2c} ${f2c}4 &
+        #echo
 
     else
         echo ; echo ; echo ; echo " Ignoring monthly ${suff} files!"; echo
     fi
-
+    
 done ; # loop along files suffixes
 
 wait
 wait
 
+rm -f ${CPREF}*_VT.nc
+
+
+
 for cl in aclim mclim; do
-    echo "mv -f ${cl}_${CONFRUN}*.nc4 ${CLIM_DIR}/"
-    mv -f ${cl}_${CONFRUN}*.nc4 ${CLIM_DIR}/
+    echo "mv -f ${cl}_${CONFRUN}*.nc* ${CLIM_DIR}/"
+    mv -f ${cl}_${CONFRUN}*.nc* ${CLIM_DIR}/
     echo
 done
 
