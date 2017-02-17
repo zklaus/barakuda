@@ -579,7 +579,9 @@ if [ ${ISTAGE} -eq 2 ]; then
     DIAG_1D_LIST=""
 
     if [ ${i_do_mean} -eq 1 ]; then
-        DIAG_1D_LIST="${DIAG_1D_LIST} 3d_so mean_sos 3d_thetao mean_tos mean_zos mean_fwf mean_htf mean_mldr10_1"
+        DIAG_1D_LIST="${DIAG_1D_LIST} 3d_so mean_sos 3d_thetao mean_tos mean_zos mean_mldr10_1"
+        if [ ! "${NN_QNET}" = "X" ]; then DIAG_1D_LIST="${DIAG_1D_LIST} mean_htf"; fi
+        if [ ! "${NN_FWF}"  = "X" ]; then DIAG_1D_LIST="${DIAG_1D_LIST} mean_fwf"; fi
     fi
     if [ ${i_do_amoc} -eq 1 ]; then DIAG_1D_LIST="${DIAG_1D_LIST} amoc";        fi
     if [ ${i_do_trsp} -gt 0 ]; then DIAG_1D_LIST="${DIAG_1D_LIST} transport_sections" ; fi
