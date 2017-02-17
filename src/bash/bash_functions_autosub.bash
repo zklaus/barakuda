@@ -64,9 +64,12 @@ function barakuda_setup()
         echo " ERROR: scratch directory ${SCRATCH} not there!!!"
         exit
     fi
-    export TMP_DIR=${SCRATCH}/barakuda_${RUN}_tmp
+    if [ ${ISTAGE} -eq 1 ]; then
+        export TMP_DIR=${SCRATCH}/barakuda_${RUN}_tmp
+    else
+        export TMP_DIR=${SCRATCH}/html_${RUN}_tmp
+    fi
     echo " IMPORTANT the TMP_DIR work directory is set to:" ; echo " ${TMP_DIR}"; echo ; sleep 2
-    
     rm -rf ${TMP_DIR}
     mkdir -p ${DIAG_D} ${TMP_DIR}
     

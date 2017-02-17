@@ -49,7 +49,6 @@ fi
 
 # If from auto-submit run (ece_run=10) then overides a few functions with:
 if [ ${ece_run} -ge 10 ]; then
-    export TMP_DIR=${SCRATCH}/barakuda_${RUN}_tmp
     . ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash
 fi
 
