@@ -25,26 +25,23 @@ export STORE_DIR="/gpfs/scratch/bsc32/bsc32325"
 export CONF_INI_DIR="/gpfs/projects/bsc32/bsc32325/ORCA1/ORCA1-I/barakuda_clim"
 
 # In what directory of the local machine to save the diagnostics:
-export DIAG_DIR="${STORE_DIR}/barakuda/${CONF}_ece32_ee"
+export DIAG_DIR="/scratch/Earth/lbrodeau/barakuda/${CONF}_ece32_ee"
 
-# --- only for problematic hosts ----
-module add NCO/4.2.3    
-module add PYTHON/2.7.3
-# -----------------------------------
 
-export PYTHON_HOME="/apps/PYTHON/2.7.3" ; # HOME to python distribution with matplotlib and basemap !
+export PYTHON_HOME="/home/Earth/lbrodeau/opt/Canopy/User" ; # HOME to python distribution with matplotlib and basemap !
 
 
 # Is it an ec-earth run?
-export ece_run=0 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run done from traditional NEMO setup
+export ece_run=10; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run done from traditional NEMO setup
 #                  # 1 => it's an OCEAN-ONLY EC-Earth run done from a EC-Earth setup
 #                  # 2 => it's a  COUPLED  EC-Earth run
 #                  #      Both 1 and 2 imply that NEMO files are stored in something like
 #                  #       ${STORE_DIR}/<RUN>/output/nemo/<YYY>
 #                  #       where YYY starts from '001' to
-#                  #   If you select '2', make sure 'cdo' is available and working!!!
+#                  #      If you select '2', make sure 'cdo' is available and working!!!
+#                  # 10 => this run controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
-export Y_INI_EC=1990 ;    # initial year if ec-earth run...
+export Y_INI_EC=1958 ;    # initial year if ece_run /= 0 !!!
 export TRES_IFS=XXX  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
 export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
@@ -53,7 +50,7 @@ export AGCM_INFO="IFS T${TRES_IFS}"
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
 
 # Directory structure in which to find NEMO output file (use <ORCA> and <RUN>):
-export NEMO_OUT_STRCT="${STORE_DIR}/tmp/<RUN>"
+export NEMO_OUT_STRCT="/esarchive/exp/nemo/<RUN>/${Y_INI_EC}0101/fc00/outputs"
 
 export TSTAMP="1m"   ; # output time-frequency stamp as in NEMO output files...
 
@@ -65,7 +62,7 @@ export NEMO_FILE_PREFIX="<RUN>_<TSTAMP>_"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 #export SCRATCH="/scratch/local/<JOB_ID>" ; # triolith
-export SCRATCH="/scratch/tmp"
+export SCRATCH="/scratch/Earth/lbrodeau"
 
 
 ####### NEMO => what fields in what files ??? ############
@@ -110,8 +107,8 @@ export NN_QSOL="qsr_oce"  ; # name of net surface solar flux in "FILE_FLX_SUFFIX
 ################################################################################################
 
 # Land-sea mask and basins files:
-export MM_FILE=/gpfs/projects/bsc32/bsc32325/ORCA1/ec-earth3.2/mesh_mask.nc4
-export BM_FILE=/gpfs/projects/bsc32/bsc32325/ORCA1/ec-earth3.2/basin_mask.nc4
+export MM_FILE=/scratch/Earth/lbrodeau/ORCA1-I/mesh_mask.nc4
+export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO run):
 export F_T_CLIM_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4

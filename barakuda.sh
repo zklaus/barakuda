@@ -47,6 +47,13 @@ else
     echo "PROBLEM: cannot find file ${fconfig} !"; exit
 fi
 
+# If from auto-submit run (ece_run=10) then overides a few functions with:
+if [ ${ece_run} -ge 10 ]; then
+    export TMP_DIR=${SCRATCH}/barakuda_${RUN}_tmp
+    . ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash
+fi
+
+
 # List of CDFTOOLS executables needed for the diagnostics:
 export L_EXEC="cdfmaxmoc.x cdfmoc.x cdfvT.x cdftransportiz.x cdficediags.x cdfmhst.x cdfsigtrp.x"
 
@@ -109,7 +116,6 @@ if ${LFORCEDIAG}; then lcontinue=false; fi
 while ${lcontinue}; do
 
     export cyear=`printf "%04d" ${jyear}`
-
     cpf=""
     if [ ${ISTAGE} -eq 1 ] && [ ${ece_run} -gt 0 ]; then
         iy=$((${jyear}-${YEAR_INI}+1+${YEAR_INI}-${YEAR_INI_F}))

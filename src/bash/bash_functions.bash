@@ -47,6 +47,14 @@ function barakuda_init()
     export l_clim_diag=false
     export IFREQ_SAV_YEARS=1
     #
+    if [ ! "`which ncdump 2>/dev/null`" = "" ]; then
+        export NCDUMP="ncdump"
+    elif [ -f ${NCDF_DIR}/bin/ncdump ]; then
+        export NCDUMP="${NCDF_DIR}/bin/ncdump"
+    else
+        echo "ERROR: cannot find command 'ncdump' on your system..."; exit
+    fi
+    #
 }
 
 function barakuda_check()
@@ -108,7 +116,7 @@ function barakuda_setup()
         done
     fi
 
-# Names for temperature, salinity, u- and v-current...
+    # Names for temperature, salinity, u- and v-current...
     if [ -z ${NN_T} ] || [ -z ${NN_S} ] || [ -z ${NN_U} ] || [ -z ${NN_V} ]; then
         echo "NN_T, NN_S, NN_U and NN_V are NOT given a value into"
         echo " in ${fconfig} "
@@ -296,7 +304,7 @@ function barakuda_import_mesh_mask()
         fi
     fi
     #Fix, in case old nemo (prior version 3.6) must rename some metrics param:
-    ca=""; ca=`${NCDF_DIR}/bin/ncdump -h mesh_mask.nc  | grep 'e3t('`
+    ca=""; ca=`${NCDUMP} -h mesh_mask.nc  | grep 'e3t('`
     if [ ! "${ca}" = "" ]; then
         echo "Renaming some metrics into mesh_mask.nc !!!"
         ncrename -v e3t_0,e3t_1d -v e3w_0,e3w_1d -v gdept_0,gdept_1d -v gdepw_0,gdepw_1d  mesh_mask.nc
@@ -329,7 +337,7 @@ function barakuda_check_year_is_complete()
     export i_get_file=1
     echo " *** (${cyear} => from ${cy1} to ${cy2})"
     export TTAG=${cy1}0101_${cy2}1231 # calendar-related part of the file name
-        # Testing if the current year-group has been done
+    # Testing if the current year-group has been done
     for ft in ${NEMO_SAVED_FILES}; do
         if ${lcontinue}; then
             ftst=${NEMO_OUT_D}/${cpf}${CPREF}${TTAG}_${ft} ;  cfxt="0"
@@ -351,7 +359,7 @@ function barakuda_import_files()
     # Import command:
     CIMP="rsync -L"
     if [ "${CONF}" = "ORCA025.L75" ]; then CIMP="ln -sf" ; fi
-    
+
     # On what file type to test file presence:
     cgrid_test=`echo ${NEMO_SAVED_FILES} | cut -d ' ' -f2`
     echo " *** testing on files \"${cgrid_test}\" !"; echo
@@ -624,12 +632,12 @@ epstopng()
 ipresent_var_in_ncf()
 {
     ipv=0
-    ca=`${NCDF_DIR}/bin/ncdump -h $1 | grep "${2}(time_counter" | grep float`
+    ca=`${NCDUMP} -h $1 | grep "${2}(time_counter" | grep float`
     if [ ! "${ca}" = "" ]; then
         #echo "   variable ${2} is present in file $1"
         ipv=1
-    #else
-    #    echo "   variable ${2} is NOT present in file $1"
+        #else
+        #    echo "   variable ${2} is NOT present in file $1"
     fi
     echo "${ipv}"
 }
@@ -663,4 +671,3 @@ function contains_string()
 #    if [ "${fc}" = ".gz" ]; then lgz=true; fi
 #    echo ${lgz}
 #}
-
