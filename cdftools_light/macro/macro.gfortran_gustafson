@@ -1,0 +1,15 @@
+
+# Install 'libnetcdff-dev'
+
+NCDF_DIR=/shared/earth/software/netCDF-Fortran/4.2-foss-2015a
+
+NCDF= -I$(NCDF_DIR)/include -L$(NCDF_DIR)/lib -lnetcdff -lnetcdf
+
+F90=gfortran
+
+# -fdefault-real-8 -fbounds-check
+
+FFLAGS= -O2 -I./mod -J./mod $(NCDF)
+
+#INSTALL=../bin/
+
