@@ -51,6 +51,11 @@ else
     echo "PROBLEM: cannot find file ${fconfig} !"; exit
 fi
 
+# If from auto-submit run (ece_run=10) then overides a few functions with:
+if [ ${ece_run} -ge 10 ]; then
+    . ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash
+fi
+
 barakuda_setup
 
 echo
