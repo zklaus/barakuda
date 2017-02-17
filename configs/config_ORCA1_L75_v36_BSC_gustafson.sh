@@ -19,13 +19,13 @@ export HOST=MARENOSTRUM ; # this has no importance at all, it will just become a
 export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
 
 # File system / path on which most netcdf data will be read:
-export STORE_DIR="/gpfs/scratch/bsc32/bsc32325"
+export STORE_DIR="/scratch/Earth/lbrodeau"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/gpfs/projects/bsc32/bsc32325/ORCA1/ORCA1-I/barakuda_clim"
+export CONF_INI_DIR="${STORE_DIR}/ORCA1-I/barakuda_clim"
 
 # In what directory of the local machine to save the diagnostics:
-export DIAG_DIR="/scratch/Earth/lbrodeau/barakuda/${CONF}_ece32_ee"
+export DIAG_DIR="/scratch/Earth/${USER}/barakuda/${CONF}_ece32_ee"
 
 
 export PYTHON_HOME="/home/Earth/lbrodeau/opt/Canopy/User" ; # HOME to python distribution with matplotlib and basemap !
@@ -62,7 +62,7 @@ export NEMO_FILE_PREFIX="<RUN>_<TSTAMP>_"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 #export SCRATCH="/scratch/local/<JOB_ID>" ; # triolith
-export SCRATCH="/scratch/Earth/lbrodeau"
+export SCRATCH="/scratch/Earth/${USER}"
 
 
 ####### NEMO => what fields in what files ??? ############
