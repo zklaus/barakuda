@@ -104,20 +104,22 @@ EOF
     
 
     # Surface heat flux diagnostics:
-    LIST_HF_FIG="htf_qnt htf_qsr \
+    if [ ! "${NN_QNET}" = "X" ]; then
+        LIST_HF_FIG="htf_qnt htf_qsr \
         htf_qnt_NEMO_IFS htf_qnt_NEMO_IFS_annual \
         htf_qsr_NEMO_IFS htf_qsr_NEMO_IFS_annual"
-    #
-    cat >> index.html <<EOF
+        #
+        cat >> index.html <<EOF
     ${ctl} Surface Heat flux time-series ${ctr}
 EOF
-    for fd in ${LIST_HF_FIG}; do
-        fgn="mean_${fd}_${cr}.${ff}"; fgf="${HTML_DIR}/${fgn}"
-        if [ -f ${fgf} ]; then
-            echo "${img_l} ${fgn} ${img_r}" >> index.html
-        fi
-    done
-
+        for fd in ${LIST_HF_FIG}; do
+            fgn="mean_${fd}_${cr}.${ff}"; fgf="${HTML_DIR}/${fgn}"
+            if [ -f ${fgf} ]; then
+                echo "${img_l} ${fgn} ${img_r}" >> index.html
+            fi
+        done
+    fi
+    
     # Freshwater flux diagnostics:
     LIST_FW_FIG="zos fwf_fwf fwf_emp fwf_prc fwf_rnf fwf_clv \
         fwf_evp_NEMO_IFS fwf_evp_NEMO_IFS_annual \
@@ -160,7 +162,7 @@ EOF
     if [ ${i_do_trsp} -gt 0 ]; then
         # Adding transport section part:
         echo "    ${ctl} Transport through sections ${ctr}" >> index.html
-        list_section=`cat ${TRANSPORT_SECTION_FILE} | grep '-'`
+        list_section=`cat ${TRANSPORT_SECTION_FILE} | grep -v '^#' | grep '-'`
         for cs in ${list_section}; do
             echo ${cs}
             echo "    ${img_l} transport_vol_${cs}_${cr}.${ff} ${img_r}"  >> index.html

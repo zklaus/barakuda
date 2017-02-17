@@ -110,13 +110,13 @@ for cb in vbasins:
 
     if vtreat[jb]:
         id_bas  = f_out.createVariable('tmask'+cb,'f4',('y','x',))
-        id_bas.long_name = vbnames[jb]+' '+vocesea[jb]+' basin mask'
+        id_bas.long_name = vbnames[jb]+' '+vocesea[jb]+' basin'
         id_bas[:,:] = XBASINS[jbt,:,:]*mask[:,:]
         jbt = jbt + 1
         
     jb = jb + 1
 
-f_out.About  = 'ORCA025, mask for main ocean basins, created with orca_mesh_mask_to_bitmap.py, Gimp, and tiff_to_orca_mask.py, '+cdate+'.'
+f_out.About  = 'ORCA025, masks for main ocean basins, created with orca_mesh_mask_to_bitmap.py, Gimp, and tiff_to_orca_mask.py, '+cdate+'.'
 f_out.Author = 'L. Brodeau (https://github.com/brodeau/barakuda)'
 
 f_out.close()
