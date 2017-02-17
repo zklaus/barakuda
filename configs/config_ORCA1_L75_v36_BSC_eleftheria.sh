@@ -69,7 +69,7 @@ export SCRATCH="/scratch/Earth/lbrodeau"
 #       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   => depends on the XIOS *.xml setup you used...
 #   => always specify a string for the NN_* variables
-#      even when missing from your files (ex: NN_MLD="xx")
+#      USE "X" if the field is not present your NEMO output file
 #
 # State variables and others in grid_T files:
 export NN_SST="tos"
@@ -211,14 +211,4 @@ export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1_ARCTI
 
 export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
 
-
-
-
-# Place for potential specific host-related survival tricks:
-
-#========================== Marenostrum @ BSC =========================================================
-### Shouldn't be needed elsewhere than MareNostrum, where it's a hello to have CDO working...
-## => Only if you specified ece_run=2 and i_do_ifs_flx
-export MOD_CDO="gcc/4.7.2 intel/13.0.1 openmpi/1.8.1 NETCDF/4.1.3 HDF5/1.8.10 UDUNITS/2.1.24 CDO/1.7.0"
-#=======================================================================================================
 

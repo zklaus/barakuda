@@ -37,9 +37,10 @@ export ece_run=2 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run
 #                  #      Both 1 and 2 imply that NEMO files are stored in something like
 #                  #       ${STORE_DIR}/<RUN>/output/nemo/<YYY>
 #                  #       where YYY starts from '001' to
-#                  #   If you select '2', make sure 'cdo' is available and working!!!
+#                  #      If you select '2', make sure 'cdo' is available and working!!!
+#                  # 10 => this run controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
-export Y_INI_EC=1990 ;    # initial year if ec-earth run...
+export Y_INI_EC=1990 ;    # initial year if ece_run /= 0 !!!
 export TRES_IFS=511  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
 export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
@@ -209,15 +210,4 @@ export i_do_icet=0 ; # treat sea-ice volume transport!
 export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_ARCTIC.dat"
 
 export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
-
-
-
-
-# Place for potential specific host-related survival tricks:
-
-#========================== Marenostrum @ BSC =========================================================
-### Shouldn't be needed elsewhere than MareNostrum, where it's a hello to have CDO working...
-## => Only if you specified ece_run=2 and i_do_ifs_flx
-#export MOD_CDO="gcc/4.7.2 intel/13.0.1 openmpi/1.8.1 NETCDF/4.1.3 HDF5/1.8.10 UDUNITS/2.1.24 CDO/1.7.0"
-#=======================================================================================================
 

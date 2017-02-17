@@ -66,7 +66,7 @@ export SCRATCH="/scratch/local/<JOB_ID>"
 #       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   => depends on the XIOS *.xml setup you used...
 #   => always specify a string for the NN_* variables
-#      even when missing from your files (ex: NN_MLD="xx")
+#      USE "X" if the field is not present your NEMO output file
 #
 # State variables and others in grid_T files:
 export NN_SST="sosstsst"
