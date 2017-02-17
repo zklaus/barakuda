@@ -185,8 +185,8 @@ EOF
 
     if [ ${i_do_sigt} -eq 1 ]; then
         # Adding transport by sigma class section part:
-        echo "${ctl} Transport by sigma class at Nordic sills${ctr}" >> index.html
-        list_section=`cat ${DENSITY_SECTION_FILE} | grep '_'`
+        echo "${ctl} Transport by sigma class at overflow sills${ctr}" >> index.html
+        list_section=`cat ${DENSITY_SECTION_FILE} | grep -v '^#' | grep '_'`
         for cs in ${list_section}; do
             echo ${cs}
             echo "    ${img_l} transport_sigma_class_${cs}_${cr}.${ff} ${img_r}"  >> index.html
