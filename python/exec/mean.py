@@ -422,10 +422,9 @@ print ' +++ mean.py => Done with 2D surface averaging diags!\n'
 print '\n\n +++ mean.py => Starting ENSO diags!'
 
 print lon1_nino, lon2_nino, lat1_nino, lat2_nino
-[ i1, i2, j1, jdum ] = bo.coor2ind(lon1_nino, lon2_nino, lat1_nino, lat1_nino, xlon, xlat)
-[ i1, i2, j2, jdum ] = bo.coor2ind(lon1_nino, lon2_nino, lat2_nino, lat2_nino, xlon, xlat)
-i2 = i2-1
-print ' Nino box 3.4, longitude: '+str(xlon[10,i1])+' => '+str(xlon[10,i2])+' \ latitude: '+str(xlat[j1,50])+' => '+str(xlat[j2,50])
+( i1, j1 ) = bo.ij_from_xy(lon1_nino, lat1_nino, xlon, xlat)
+( i2, j2 ) = bo.ij_from_xy(lon2_nino, lat2_nino, xlon, xlat)
+print ' Nino box 3.4, longitude: '+str(xlon[j1,i1])+' => '+str(xlon[j2,i2])+' \ latitude: '+str(xlat[j1,i1])+' => '+str(xlat[j2,i2])
 
 id_in = Dataset(cf_T_in)
 if vdic['NN_SST'] == 'thetao':
