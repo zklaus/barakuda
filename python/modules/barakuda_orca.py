@@ -306,9 +306,9 @@ def ij_from_xy(xx, yy, xlon, xlat):
 
 
 
-def line_vert_hori(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
+def transect_zon_or_med(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
     #
-    # LOLO: test and replace coor2ind...
+    # LOLO: test and replace transect_zon_or_med...
     #
     ji1=0 ; ji2=0 ; jj1=0 ; jj2=0
     lhori = False ; lvert = False
@@ -316,7 +316,7 @@ def line_vert_hori(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
     if y1 == y2: lhori = True
     if x1 == x2: lvert = True
     #
-    if not (lhori or lvert) : print 'coor2ind only supports horizontal or vertical sections so far...'; sys.exit(0)
+    if not (lhori or lvert) : print 'transect_zon_or_med only supports horizontal or vertical sections!'; sys.exit(0)
     #
     (ji1,jj1) = ij_from_xy(x1, y1, xlon, xlat)
     (ji2,jj2) = ij_from_xy(x2, y2, xlon, xlat)
@@ -324,76 +324,4 @@ def line_vert_hori(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
     if lhori and (jj1 != jj2): jj2=jj1
     if lvert and (ji1 != ji2): ji2=ji1
     #
-    return [ ji1, ji2, jj1, jj2 ]
-
-
-def coor2ind(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
-    #
-    #=============================================================
-    # Input:
-    #       x1, x2: longitudes of points 1 and 2 (float)
-    #       y1, y2: latitudes  of points 1 and 2 (float)
-    #       xlon  : 2D array of longitudes of the ORCA grid
-    #       xlat  : 2D array of latitudes  of the ORCA grid
-    # Output:
-    #       [ ji1, ji2, jj1, jj2 ] i and j indices corresponding
-    #=============================================================    
-    #
-    ji1=0 ; ji2=0 ; jj1=0 ; jj2=0
-    lhori = False ; lvert = False
-    #
-    if x1 < 0.: x1 = x1 + 360.
-    if x2 < 0.: x2 = x2 + 360.
-    #
-    if y1 == y2: lhori = True
-    if x1 == x2: lvert = True
-    #
-    if not (lhori or lvert) : print 'coor2ind only supports horizontal or vertical sections so far...'; sys.exit(0)
-    #if lhori: print 'coor2ind horizontal mode not done yet'; sys.exit(0)
-    #
-    [nj , ni] = xlon.shape
-    iwa = nmp.where(xlon < 0.) ; xlon[iwa] = xlon[iwa] + 360. # Want only positive values in longitude:
-    #
-    jj1 = 0
-    # Loop along updated jj1
-    for jc in range(5):
-        #
-        # 1/ Finding ji1 from longitude position
-        #    Lookin in regular region of the grid (jj1 pas trop grand, ici = 0):
-        dist = 1000.
-        for ji in range(ni):
-            dd = abs(x1 - xlon[jj1,ji])
-            if dd > 360.: dd = dd - 360.
-            if dd < dist: dist = dd ; ji1 = ji
-        #
-        # 2/ Finding jj1 from latitude position and updated ji1
-        dist = 1000.
-        for jj in range(nj):
-            dd = abs(y1 - xlat[jj,ji1])
-            if dd < dist: dist = dd ; jj1 = jj
-        if y1 == -90.: jj1 = 0
-    #
-    if lvert:
-        ji2 = ji1
-        # Neet to find jj2 !
-        dist = 1000.
-        for jj in range(nj):
-            dd = abs(y2 - xlat[jj,ji2])
-            if dd < dist: dist = dd ; jj2 = jj
-    if y2 ==  90.: jj2 = nj-1
-    #
-    if lhori:
-        jj2 = jj1
-        # Neet to find ji2 !
-        dist = 1000.
-        for ji in range(ni):
-            dd = abs(x2 - xlon[jj2,ji])
-            if dd > 360.: dd = dd - 360.
-            if dd < dist: dist = dd ; ji2 = ji
-    #
-    return [ ji1, ji2, jj1, jj2 ]
-
-
-
-
-
+    return ( ji1, ji2, jj1, jj2 )

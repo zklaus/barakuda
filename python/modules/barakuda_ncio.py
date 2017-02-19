@@ -422,3 +422,28 @@ def wrt_appnd_2dt_series(vx, vy, vt, xd, cf, cvar1, missing_val=-9999.,
     print '   *** '+str(Nt)+' snapshots of fields saved into '+cf+' !\n'
 
 
+def write_2d_mask(cf_out, MSK, xlon=[], xlat=[], name='mask'):
+
+    (nj,ni) = nmp.shape(MSK)
+
+    f_out = Dataset(cf_out, 'w', format='NETCDF3_CLASSIC')
+
+    # Dimensions:
+    f_out.createDimension('x', ni)
+    f_out.createDimension('y', nj)
+
+    if (xlon != []) and (xlat != []):
+        if (xlon.shape == (nj,ni)) and (xlon.shape == xlat.shape):
+            id_lon  = f_out.createVariable('nav_lon' ,'f4',('y','x',))
+            id_lat  = f_out.createVariable('nav_lat' ,'f4',('y','x',))
+            id_lon[:,:] = xlon[:,:]
+            id_lat[:,:] = xlat[:,:]
+        
+    id_msk  = f_out.createVariable(name ,'i1',('y','x',))
+    id_msk[:,:] = MSK[:,:]
+
+    f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
+    f_out.close()
+
+    return
+

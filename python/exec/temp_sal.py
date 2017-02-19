@@ -371,7 +371,7 @@ if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections
     js = 0
     for csname in vboxes:
         
-        [ i1, i2, j1, j2 ] = bo.coor2ind(vlon1[js], vlon2[js], vlat1[js], vlat2[js], xlon, xlat)
+        [ i1, i2, j1, j2 ] = bo.transect_zon_or_med(vlon1[js], vlon2[js], vlat1[js], vlat2[js], xlon, xlat)
         if i2>i1 and i2 < ni0-1: i2 = i2+1
         if j2>j1 and j2 < nj0-1: j2 = j2+1
 

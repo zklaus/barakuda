@@ -92,15 +92,15 @@ for csname in vboxes:
     
     print'\n *** '+sys.argv[0]+': treating section '+csname
     
-    [ i1, i2, j1, j2 ] = bo.coor2ind(vlon1[js], vlon2[js], vlat1[js], vlat2[js], xlon, xlat)
+    ( i1, i2, j1, j2 ) = bo.transect_zon_or_med(vlon1[js], vlon2[js], vlat1[js], vlat2[js], xlon, xlat)
 
     print csname+' :'
     print   '(lon1, lon2, lat1, lat2) =', vlon1[js], vlon2[js], vlat1[js], vlat2[js]
     print   ' => i1, i2, j1, j2 =', i1, i2, j1, j2
     print ''
 
-    if i1 > i2: print 'ERROR: temp_sal.py => i1 > i2 !'; sys.exit(0)
-    if j1 > j2: print 'ERROR: temp_sal.py => j1 > j2 !'; sys.exit(0)
+    if i1 > i2: print 'ERROR: cross_sections.py => i1 > i2 !'; sys.exit(0)
+    if j1 > j2: print 'ERROR: cross_sections.py => j1 > j2 !'; sys.exit(0)
 
 
     if i1 == i2:
