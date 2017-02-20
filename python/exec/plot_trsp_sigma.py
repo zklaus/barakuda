@@ -25,8 +25,6 @@ CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
 
 rsigdense0 = bphy.rsigma_dense
 
-l_force_lim = True
-
 cfig_type = 'png'
 
 path_fig =  vdic['DIAG_D']+'/'
@@ -85,13 +83,13 @@ for csec in list_sections:
     # We want rmax to be a multile of 0.2:
     rmax = nmp.amax(nmp.abs(Xst_ann))
     r1   = round(rmax+0.05,1)*100; rmax = (r1 + r1%20)/100. ; rmin = -rmax
-    dc = (int(round(100*(rmax+0.6)/20.,2))/5*5)/100.
+    dc = max( (int(round(100*(rmax+0.6)/20.,2))/5*5)/100. , 0.01 )    
     
-    bp.plot("trsp_sig_class")(vtime_ann, vsigma_bounds, Xst_ann, rmin, rmax, dc, dsigma,
-                              lkcont=True, cpal='bbr2_r', dt_year=ittic,
+    bp.plot("trsp_sig_class")(vtime_ann, vsigma_bounds, Xst_ann, rmin, rmax, dc,
+                              lkcont=False, cpal='bbr2_r', dt=ittic,
                               cfignm='transport_sigma_class_'+csec+'_'+CONFRUN,
                               cfig_type='png', ctitle=r'Transport by $\sigma_0$ class, '+csec+', '+CONFRUN,
-                              lforce_lim=False, vcont_spec1 = [], i_cb_subsamp=2)
+                              vcont_spec1 = [], i_cb_subsamp=2)
     
 
     # Volume transport for density > rsigma_dense
@@ -116,11 +114,10 @@ id_in.close()
 ittic = bt.iaxe_tick(nbm/12)
 
 bp.plot("1d_multi")(vtime_ann, v278, list_sections, cfignm='tr_sigma_gt278_'+CONFRUN,
-                    dt_year=ittic, cyunit='Sv',
+                    dt=ittic, cyunit='Sv',
                     ctitle=r'Transport of volume for $\sigma_0$ > '+str(rsigdense0)+', '+CONFRUN,
                     ymin=0., ymax=0.)
 
 
-
-print '\n trsp_sigma.py => done!\n\n\n'
+print '\n trsp_sigma.py => done!\n\n'
 

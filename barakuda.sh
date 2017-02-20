@@ -715,7 +715,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 export DIRS_2_EXP="${DIRS_2_EXP} moc"
                 rm -rf moc; mkdir moc; cd moc/
                 echo; echo; echo " *** CALLING: moc.py ${iclyear}"
-                ${PYTH} ${PYBRKD_EXEC_PATH}/moc.py ${iclyear}
+                ${PYTH} ${PYBRKD_EXEC_PATH}/moc.py ${iclyear} &
                 cd ../
                 echo
             fi
@@ -729,7 +729,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 export DIRS_2_EXP="${DIRS_2_EXP} mld"
                 rm -rf mld; mkdir mld; cd mld/
                 echo; echo; echo " *** CALLING: mld.py ${iclyear}"; echo
-                ${PYTH} ${PYBRKD_EXEC_PATH}/mld.py ${iclyear}
+                ${PYTH} ${PYBRKD_EXEC_PATH}/mld.py ${iclyear} &
                 cd ../
                 echo
             fi
@@ -743,7 +743,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 export DIRS_2_EXP="${DIRS_2_EXP} sea_ice"
                 rm -rf sea_ice; mkdir sea_ice; cd sea_ice/
                 echo; echo; echo " *** CALLING: ice.py ${iclyear}"; echo
-                ${PYTH} ${PYBRKD_EXEC_PATH}/ice.py ${iclyear}
+                ${PYTH} ${PYBRKD_EXEC_PATH}/ice.py ${iclyear} &
                 cd ../
                 echo
             fi
@@ -756,7 +756,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 cd ${DIAG_D}/
                 rm -rf ssh; mkdir ssh; cd ssh/
                 echo " *** CALLING: ssh.py ${iclyear}"; echo
-                ${PYTH} ${PYBRKD_EXEC_PATH}/ssh.py ${iclyear}
+                ${PYTH} ${PYBRKD_EXEC_PATH}/ssh.py ${iclyear} &
                 cd ../ ;  echo
             else
                 echo; echo "WARNING: did not find ${NN_SSH} into ${ftcli} !!!!"; echo
@@ -790,13 +790,15 @@ if [ ${ISTAGE} -eq 2 ]; then
                 export DIRS_2_EXP="${DIRS_2_EXP} temp_sal"
                 DIRS_2_EXP_RREF="${DIRS_2_EXP_RREF} temp_sal"
                 mkdir -p temp_sal; cd temp_sal/
-                echo; echo; echo " *** CALLING: temp_sal.py ${iclyear}"; echo
-                ${PYTH} ${PYBRKD_EXEC_PATH}/temp_sal.py ${iclyear}
+                echo; echo; echo " *** CALLING: temp_sal.py ${iclyear} &"; echo
+                ${PYTH} ${PYBRKD_EXEC_PATH}/temp_sal.py ${iclyear} &
                 cd ../
                 echo
                 
             done ; # for COMP2D in ${list_comp_2d}; do
 
+            wait
+            
         else
             echo; echo
             echo " NO CLIMATO FOUND ...";

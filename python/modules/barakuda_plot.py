@@ -116,7 +116,6 @@ class plot :
 
         i_x_sbsmp = 1
         dxgap = nmp.amax(VX) - nmp.amin(VX)
-        #print ' LOLO: dxgag =>', dxgap, max(VX), min(VX) ; print VX[:]
         if dxgap > 140.: dx = 5.; i_x_sbsmp = 2
         if dxgap < 50.:  dx = 2.
         if dxgap < 25.:  dx = 1.        
@@ -868,9 +867,9 @@ class plot :
 
 
 
-    def __trsp_sig_class(self,VT, vsigma_bounds, XF, rmin, rmax, dc, dsig,
-                         lkcont=True, cpal='sigtr', dt_year=5., cfignm='fig',
-                         cfig_type='pdf', ctitle='', lforce_lim=False, vcont_spec1 = [],
+    def __trsp_sig_class(self,VT, vsigma_bounds, XF, rmin, rmax, dc,
+                         lkcont=True, cpal='sigtr', dt=5., cfignm='fig',
+                         cfig_type='pdf', ctitle='', vcont_spec1 = [],
                          i_cb_subsamp=2):
 
         # Plot transport by sigma class...
@@ -880,10 +879,8 @@ class plot :
 
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
-        if lforce_lim: __force_min_and_max__(rmin, rmax, XF)
-
         fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), dpi=None, facecolor='w', edgecolor='k') ; #trsp_sig_class
-        ax = plt.axes([0.055,  -0.025, 0.92, 0.98], axisbg = 'white')
+        ax = plt.axes([0.07,  -0.025, 0.91, 0.98], axisbg = '0.5')
 
         vc = __vcontour__(rmin, rmax, dc)
 
@@ -895,8 +892,8 @@ class plot :
         mpl.rcParams['contour.negative_linestyle'] = 'solid'
         plt.contour.negative_linestyle='solid'
 
-        cf = plt.contourf(VT, vsigma_bounds[:-1], XF, vc, cmap = colmap, norm = pal_norm)
-        #cf = plt.pcolor(VT, vsigma_bounds[:-1], XF, cmap = colmap, norm = pal_norm)
+        #cf = plt.contourf(VT, vsigma_bounds[:-1], XF, vc, cmap = colmap, norm = pal_norm)
+        cf = plt.pcolormesh(VT, vsigma_bounds[:-1], XF,  cmap = colmap, norm = pal_norm)
         if lkcont:
             cfc = plt.contour(VT, vsigma_bounds[:-1], XF, nmp.arange(-3.,3.,0.5), colors='k', linewidths=0.4)
 
@@ -905,15 +902,13 @@ class plot :
             cfs1 = plt.contour(VT, vsigma_bounds[:-1], XF, vcont_spec1, colors='white', linewidths = 1.)
             plt.clabel(cfs1, inline=1, fmt='%4.1f', fontsize=11, manual=[(2080,2.)] )
 
-
-        # COLOR BAR:
-        __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, lkc=True, cb_or='horizontal', cunit='Sv', cfont=font_clb, fontsize=12)
+        __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cb_or='horizontal', cunit='Sv', cfont=font_clb, fontsize=10)
 
         # AXES:
         y1 = int(min(VT))  ; y2 = int(max(VT))+1
         plt.axis([y1, y2, vsigma_bounds[nbins], vsigma_bounds[0]])
 
-        __nice_x_axis__(ax, plt, y1, y2, dt_year, cfont=font_xylb)
+        __nice_x_axis__(ax, plt, y1, y2, dt, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
 
         plt.yticks( nmp.flipud(vsigma_bounds) )
 
@@ -921,7 +916,7 @@ class plot :
         plt.ylabel(r'$\sigma_0$', **label_big)
 
         plt.title(ctitle, **font_ttl)
-        plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=True) ; #trsp_sig_class
+        plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #trsp_sig_class
         print cfignm+'.'+cfig_type+' created!\n'
         plt.close(1)
 
@@ -1026,11 +1021,7 @@ class plot :
         __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
 
         # Time-axis:
-        dt_minor=0
-        if (dt>=2)  and (dt<10) and (dt%2 == 0) : dt_minor=1
-        if (dt>=10) and (dt<50) and (dt%5 == 0) : dt_minor=5
-        if (dt>=50) and (dt%50 == 0) : dt_minor=10
-        __nice_x_axis__(ax, plt, tmin, tmax, dt, cunit=ctunit, cfont=font_xylb, dx_minor=dt_minor)
+        __nice_x_axis__(ax, plt, tmin, tmax, dt, cunit=ctunit, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
 
         # Y-axis:
         if c_y_is == 'depth':
@@ -1052,7 +1043,7 @@ class plot :
 
 
 
-    def __enso(self,VT, VSST, cfignm='fig', dt_year=5):
+    def __enso(self,VT, VSST, cfignm='fig', dt=5):
 
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
@@ -1125,7 +1116,7 @@ class plot :
         plt.plot(VT, xnino[:,3], 'k', linewidth=0.7)
         plt.axis([min(VT), max(VT), -2.5, 2.5])
 
-        __nice_x_axis__(ax, plt, y1, y2, dt_year, cfont=font_xylb)
+        __nice_x_axis__(ax, plt, y1, y2, dt, cfont=font_xylb)
 
         plt.yticks( nmp.arange(-2.5,2.501,0.5) )
 
@@ -1150,7 +1141,7 @@ class plot :
 
 
 
-    def __1d_mon_ann(self,VTm, VTy, VDm, VDy, cfignm='fig', dt_year=5, cyunit='', ctitle='',
+    def __1d_mon_ann(self,VTm, VTy, VDm, VDy, cfignm='fig', dt=5, cyunit='', ctitle='',
                      ymin=0, ymax=0, dy=0, i_y_jump=1, mnth_col='b', plt_m03=False, plt_m09=False,
                      cfig_type='png', l_tranparent_bg=True, fig_size=FIG_SIZE_DEF):
 
@@ -1205,9 +1196,9 @@ class plot :
                 locs, labels = plt.yticks() #lolo?
                 if i_y_jump > 1: __subsample_axis__(plt, 'y', i_y_jump)
 
-        __nice_x_axis__(ax, plt, y1, y2, dt_year, cfont=font_xylb)
+        __nice_x_axis__(ax, plt, y1, y2, dt, cfont=font_xylb)
 
-        ax.grid(color='k', linestyle='-', linewidth=0.2)
+        #ax.grid(color='k', linestyle='-', linewidth=0.2)
 
         plt.ylabel('('+cyunit+')', **font_xylb)
 
@@ -1226,7 +1217,7 @@ class plot :
 
 
 
-    def __1d_multi(self,vt, XD, vlabels, cfignm='fig', dt_year=5, i_t_jump=1, cyunit='', ctitle='',
+    def __1d_multi(self,vt, XD, vlabels, cfignm='fig', dt=5, i_t_jump=1, cyunit='', ctitle='',
                    cfig_type='png', ymin=0, ymax=0, lzonal=False, xmin=0, xmax=0,
                    loc_legend='lower center', line_styles=[], fig_size=FIG_SIZE_DEF,
                    l_tranparent_bg=True, cxunit='', lmask=True):
@@ -1273,7 +1264,7 @@ class plot :
         ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
 
         if lzonal:
-            dt_year = 15. ; # x-axis increment (latitude!)
+            dt = 15. ; # x-axis increment (latitude!)
             if xmin == 0 and xmax == 0:
                 y1 = -90. ; y2 = 90.
             else:
@@ -1295,9 +1286,9 @@ class plot :
         if lzonal:
             __nice_x_axis__(ax, plt, y1, y2, 10., cfont=font_xylb)
         else:
-            __nice_x_axis__(ax, plt, y1, y2, dt_year, i_sbsmp=i_t_jump, cfont=font_xylb)
+            __nice_x_axis__(ax, plt, y1, y2, dt, i_sbsmp=i_t_jump, cfont=font_xylb)
 
-        ax.grid(color='k', linestyle='-', linewidth=0.2)
+        #ax.grid(color='k', linestyle='-', linewidth=0.2)
 
         if lzonal: plt.xlabel(r'Latitude ($^{\circ}$N)', **font_xylb)
 
@@ -1331,7 +1322,7 @@ class plot :
 
 
 
-    def __1d(self,vt, VF, cfignm='fig', dt_year=5, i_t_jump=1, cyunit='', ctitle='',
+    def __1d(self,vt, VF, cfignm='fig', dt=5, i_t_jump=1, cyunit='', ctitle='',
                 cfig_type='png', ymin=0, ymax=0, xmin=0, xmax=0,
                 loc_legend='lower center', line_styles='-', fig_size=FIG_SIZE_DEF,
                 l_tranparent_bg=False, cxunit='', lmask=True):
@@ -1367,11 +1358,11 @@ class plot :
         else:
             plt.axis([y1, y2, ymin,     ymax])
 
-        print nmp.arange(y1, y2+dt_year, dt_year)
+        print nmp.arange(y1, y2+dt, dt)
 
-        __nice_x_axis__(ax, plt, y1, y2, dt_year, i_sbsmp=i_t_jump, cfont=font_xylb)
+        __nice_x_axis__(ax, plt, y1, y2, dt, i_sbsmp=i_t_jump, cfont=font_xylb)
 
-        ax.grid(color='k', linestyle='-', linewidth=0.2)
+        #ax.grid(color='k', linestyle='-', linewidth=0.2)
 
         if cyunit != '': plt.ylabel('('+cyunit+')', **font_xylb)
         if cxunit != '': plt.xlabel('('+cxunit+')', **font_xylb)
@@ -1799,7 +1790,7 @@ def __subsample_axis__(plt_hndl, cax, i_sbsmp, icpt=1):
         locs, labels = plt_hndl.yticks()
     else:
         print ' Error: __subsample_axis__.barakuda_plot => only "x" or "y" please'; sys.exit(0)
-    cpt = icpt # with ipct = 1: tick priting will start at y1+dt_year on x axis rather than y1
+    cpt = icpt # with ipct = 1: tick priting will start at y1+dt on x axis rather than y1
     for rr in locs:
         if cpt % i_sbsmp == 0:
             if rr%1.0 == 0.:
@@ -1914,6 +1905,11 @@ def __nb_col_row_legend__(nn):
         nbc = 4 ; nbr = nn/nbc + 1
     return nbc, nbr
     
-        
+def __time_axis_minor_ticks__(dt):
+    dt_mnr=0
+    if (dt>=2)  and (dt<10) and (dt%2 == 0) : dt_mnr=1
+    if (dt>=10) and (dt<50) and (dt%5 == 0) : dt_mnr=5
+    if (dt>=50) and (dt%50 == 0) : dt_mnr=10
+    return dt_mnr
 
 

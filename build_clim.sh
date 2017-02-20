@@ -17,8 +17,6 @@ ibpsi=0    ; # Do a climatology for barotropic stream function
 
 export BARAKUDA_ROOT=`pwd`
 
-#ltonc4=false
-
 # Checking available configs
 list_conf=`\ls configs/config_*.sh` ; list_conf=`echo ${list_conf} | sed -e s/'configs\/config_'/''/g -e s/'.sh'/''/g`
 
@@ -340,12 +338,22 @@ wait
 rm -f ${CPREF}*_VT.nc
 
 
-
-for cl in aclim mclim; do
-    echo "mv -f ${cl}_${CONFRUN}*.nc* ${CLIM_DIR}/"
-    mv -f ${cl}_${CONFRUN}*.nc* ${CLIM_DIR}/
+list=`\ls [am]clim_${CONFRUN}*.nc`
+for ff in ${list}; do
+    fn=`echo ${ff} | sed -e s/'.nc'/'.nc4'/g`
+    echo "${NCDF_DIR}/bin/nccopy -k 4 -d 9  ${ff} ${fn} &"
+    ${NCDF_DIR}/bin/nccopy -k 4 -d 9  ${ff} ${fn} &
     echo
 done
+
+wait
+
+for cl in aclim mclim; do
+    echo "mv -f ${cl}_${CONFRUN}*.nc4 ${CLIM_DIR}/"
+    mv -f ${cl}_${CONFRUN}*.nc4 ${CLIM_DIR}/
+    echo
+done
+
 
 echo;echo
 echo "${CY1}-${CY2}" > ${CLIM_DIR}/last_clim

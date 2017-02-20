@@ -97,6 +97,6 @@ print 'mean value for anomaly = ', nmp.sum(xnino[:,3])/nt
 
 
 
-bp.plot("enso")( vtime, xnino[:,0], cfignm=cname, dt_year=ittic )
+bp.plot("enso")( vtime, xnino[:,0], cfignm=cname, dt=ittic )
 
 
