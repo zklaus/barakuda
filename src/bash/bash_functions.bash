@@ -430,8 +430,14 @@ function barakuda_import_files()
             fi
         fi
     done
-    echo
+    #
+    # Testing if ALL required files are present now:
+    for gt in ${NEMO_SAVED_FILES}; do
+        ftt="./${CRT1}_${gt}.nc" ;  check_if_file ${ftt}
+    done
+    echo; echo "All required files are in `pwd` for year ${cyear} !"; echo
 }
+
 
 function build_clim_usage()
 {

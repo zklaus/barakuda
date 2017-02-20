@@ -149,12 +149,6 @@ while ${lcontinue}; do
 
         barakuda_import_files
 
-        # Testing if ALL required files are present now:
-        for gt in ${NEMO_SAVED_FILES}; do
-            ftt="./${CRT1}_${gt}.nc" ;  check_if_file ${ftt}
-        done
-        echo; echo "All required files are in `pwd` for year ${cyear} !"; echo
-
         # Files to work with for current year:
         ft=${CRT1}_grid_T.nc
         fu=${CRT1}_grid_U.nc
