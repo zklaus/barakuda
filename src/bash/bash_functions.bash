@@ -157,12 +157,12 @@ function barakuda_setup()
         elif [ ! -z "${LSB_JOBID}" ]; then
             # MARENOSTRUM / Barcelona
             export TMP_DIR=${TMPDIR}
-            #
         else
-            export TMP_DIR=${HOME}/tmp/barakuda_${CONFRUN}_${script}
+            # Default:
+            export TMP_DIR=${SCRATCH}/barakuda_${RUN}_tmp
         fi
     else
-        export TMP_DIR=${DIAG_D}/tmp
+        export TMP_DIR=${SCRATCH}/html_${RUN}_tmp
     fi
     echo " IMPORTANT the TMP_DIR work directory is set to:" ; echo " ${TMP_DIR}"; echo ; sleep 2
 
