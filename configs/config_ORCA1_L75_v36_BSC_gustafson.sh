@@ -107,18 +107,18 @@ export NN_QSOL="qsr_oce"  ; # name of net surface solar flux in "FILE_FLX_SUFFIX
 ################################################################################################
 
 # Land-sea mask and basins files:
-export MM_FILE=/scratch/Earth/lbrodeau/ORCA1-I/mesh_mask.nc4
+export MM_FILE=/esnas/obs/barakuda/ORCA1.L75/mesh_mask.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO run):
-export F_T_CLIM_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export F_S_CLIM_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export SST_CLIM_12=${CONF_INI_DIR}/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc4
+export F_T_CLIM_3D_12=/esnas/obs/barakuda/ORCA1.L75/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
+export F_S_CLIM_3D_12=/esnas/obs/barakuda/ORCA1.L75/so_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
+export SST_CLIM_12=/esnas/obs/barakuda/ORCA1.L75/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc4
 export NN_T_CLIM="thetao"
 export NN_S_CLIM="so"
 export NN_SST_CLIM="tos"
 
-export ICE_CLIM_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
+export ICE_CLIM_12=/esnas/obs/barakuda/ORCA1.L75/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_CLIM="ice_cover"
 
 
