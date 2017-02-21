@@ -165,7 +165,7 @@ function barakuda_setup()
         export TMP_DIR=${SCRATCH}/html_${RUN}_tmp
     fi
     echo " IMPORTANT the TMP_DIR work directory is set to:" ; echo " ${TMP_DIR}"; echo ; sleep 2
-    
+
     rm -rf ${TMP_DIR}
     mkdir -p ${DIAG_D} ${TMP_DIR}
 
