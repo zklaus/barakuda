@@ -41,10 +41,8 @@ PROGRAM cdfsigtrp
   IMPLICIT NONE
   INTEGER   :: nbins                                  !: number of density classes
   INTEGER   :: ji, jk, jt, jclass, jsec,jiso , jbin,jarg  !: dummy loop index
-  INTEGER   :: ipos                                   !: working variable
   INTEGER   :: narg, iargc                            !: command line
   INTEGER   :: npiglo,npjglo, npk, nk, nt                                !: vertical size, number of wet layers in the section
-  INTEGER   :: numout=11                              !: ascii output
 
   INTEGER                            :: nsection                    !: number of sections (overall)
   INTEGER ,DIMENSION(:), ALLOCATABLE :: imina, imaxa, jmina, jmaxa  !: sections limits
@@ -53,7 +51,7 @@ PROGRAM cdfsigtrp
   ! added to write in netcdf
   INTEGER :: kx=1, ky=1                ! dims of netcdf output file
   INTEGER :: nboutput=2                ! number of values to write in cdf output
-  INTEGER :: ncout, ierr, istatus      ! for netcdf output
+  INTEGER :: ierr, istatus      ! for netcdf output
   INTEGER, DIMENSION(:), ALLOCATABLE ::  ipk, id_varout
 
   REAL(KIND=4), DIMENSION (:),     ALLOCATABLE :: gdept, gdepw !: depth of T and W points
@@ -72,11 +70,9 @@ PROGRAM cdfsigtrp
   REAL(KIND=8), DIMENSION (:,:), ALLOCATABLE   :: zwtrp, zwtrpbin       !: transport arrays
   ! added to write in netcdf
   REAL(KIND=4), DIMENSION(:,:), ALLOCATABLE ::  dumlon, dumlat
-  REAL(KIND=4), DIMENSION(:), ALLOCATABLE   ::  pdep
 
   REAL(KIND=4) ,DIMENSION(:), ALLOCATABLE  ::  tim !LB
 
-  REAL(KIND=4), DIMENSION (1)               ::  dummy1, dummy2
   TYPE(variable), DIMENSION(:), ALLOCATABLE :: typvar  ! structure of output
   TYPE(variable), DIMENSION(:), ALLOCATABLE :: typvarin  !: structure for recovering input informations such as iwght
   CHARACTER(LEN=256), DIMENSION(:),ALLOCATABLE :: cvarname !: names of input variables
@@ -89,11 +85,9 @@ PROGRAM cdfsigtrp
   CHARACTER(LEN=256), DIMENSION (:), ALLOCATABLE :: csection                     !: section name
   CHARACTER(LEN=256) :: cfilet, cfileu, cfilev, cfilesec='dens_section.dat'      !: files name
   CHARACTER(LEN=256) :: cf_mm='mesh_mask.nc'                                     !: coordinates files
-  CHARACTER(LEN=256) :: cfilout='trpsig.txt'                                     !: output file
-  CHARACTER(LEN=256) :: cdum, cf_dep_iso, cf_trp_srf, cf_trp_bin !LB             !: dummy string
+  CHARACTER(LEN=256) :: cdum
   ! added to write in netcdf
-  CHARACTER(LEN=256) :: cfileoutnc , ctim
-  CHARACTER(LEN=256) :: cdunits, cdlong_name, cdshort_name, cdep
+  CHARACTER(LEN=256) :: ctim
 
   LOGICAL    :: l_merid                     !: flag is true for meridional working section
   LOGICAL    :: lfncout = .false.
@@ -110,8 +104,8 @@ PROGRAM cdfsigtrp
  
   INTEGER :: jt_pos, idf_out, idd_t, idd_sbins, idv_time, idv_sbins
 
-  INTEGER :: idf_0=0, idv_0=0, &
-       &     idf_t=0, idv_t=0, idf_s=0, idv_s=0, idf_u=0, idv_u=0, idf_v=0, idv_v=0
+  INTEGER :: idf_0=0, idv_0=0, idf_t=0, idv_t=0, idf_s=0, idv_s=0, idf_u=0, &
+     &       idv_u=0, idf_v=0, idv_v=0
 
 
 
@@ -261,10 +255,10 @@ PROGRAM cdfsigtrp
 
   !lolo
   ! get e3u, e3v  at all levels
-  CALL GETVAR_2D(idf_0, idv_0, cf_mm, 'e2u',   0, 0, 0, E2U_2D) ; idf_0 = 0. ; idv_0 = 0.
-  CALL GETVAR_2D(idf_0, idv_0, cf_mm, 'e1v',   0, 0, 0, E1V_2D) ; idf_0 = 0. ; idv_0 = 0.
-  CALL GETVAR_3D(idf_0, idv_0, cf_mm, 'e3u_0', 0, 0, E3U_3D) ; idf_0 = 0. ; idv_0 = 0.
-  CALL GETVAR_3D(idf_0, idv_0, cf_mm, 'e3v_0', 0, 0, E3V_3D) ; idf_0 = 0. ; idv_0 = 0.
+  CALL GETVAR_2D(idf_0, idv_0, cf_mm, 'e2u',   0, 0, 0, E2U_2D) ; idf_0 = 0 ; idv_0 = 0
+  CALL GETVAR_2D(idf_0, idv_0, cf_mm, 'e1v',   0, 0, 0, E1V_2D) ; idf_0 = 0 ; idv_0 = 0
+  CALL GETVAR_3D(idf_0, idv_0, cf_mm, 'e3u_0', 0, 0, E3U_3D) ; idf_0 = 0 ; idv_0 = 0
+  CALL GETVAR_3D(idf_0, idv_0, cf_mm, 'e3v_0', 0, 0, E3V_3D) ; idf_0 = 0 ; idv_0 = 0
   CALL GETVAR_3D(idf_0, idv_0, cf_mm, 'e3w_0', 0, 0, E3W_3D)
 
 
@@ -357,12 +351,12 @@ PROGRAM cdfsigtrp
               tmpm(1,:,2) = S_3D(imin+1,jmin+1:jmin+1+npts,jk)
 
               zmask(:,jk)=tmpm(1,:,1)*tmpm(1,:,2)
-              WHERE ( zmask(:,jk) /= 0 ) zmask(:,jk)=1
+              WHERE ( zmask(:,jk) /= 0._8 ) zmask(:,jk)=1._8
               ! do not take special care for land value, as the corresponding velocity point is masked
               zs(:,jk) = 0.5 * ( tmpm(1,:,1) + tmpm(1,:,2) )
 
               ! limitation to 'wet' points
-              IF ( SUM(zs(:,jk))  == 0 ) THEN
+              IF ( SUM(zs(:,jk))  == 0._8 ) THEN
                  nk=jk ! first vertical point of the section full on land
                  EXIT  ! as soon as all the points are on land
               ENDIF
@@ -414,12 +408,12 @@ PROGRAM cdfsigtrp
               tmpz(:,1,2) = S_3D(imin+1:imin+1+npts,jmin+1,jk)
 
               zmask(:,jk)=tmpz(:,1,1)*tmpz(:,1,2)
-              WHERE ( zmask(:,jk) /= 0 ) zmask(:,jk)=1
+              WHERE ( zmask(:,jk) /= 0._8 ) zmask(:,jk)=1._8
               ! do not take special care for land value, as the corresponding velocity point is masked
               zs(:,jk) = 0.5 * ( tmpz(:,1,1) + tmpz(:,1,2) )
 
               ! limitation to 'wet' points
-              IF ( SUM(zs(:,jk))  == 0 ) THEN
+              IF ( SUM(zs(:,jk))  == 0._8 ) THEN
                  nk=jk ! first vertical point of the section full on land
                  EXIT  ! as soon as all the points are on land
               ENDIF
@@ -499,7 +493,7 @@ PROGRAM cdfsigtrp
            DO ji=1, npts
               zwtrpbin(ji,jbin) = zwtrp(ji,jbin+1) -  zwtrp(ji,jbin)
            END DO
-           XOUT(jsec,jbin,jt)=SUM(zwtrpbin(:,jbin))/1.e6
+           XOUT(jsec,jbin,jt)= REAL( SUM(zwtrpbin(:,jbin))/1.e6 , 4)
         END DO
 
 
@@ -608,8 +602,8 @@ CONTAINS
     CHARACTER(LEN=256) :: cline
     LOGICAL :: lfirst
 
-    INTEGER :: idf_0=0, idv_0=0, &
-         idf_t=0, idv_t=0, idf_s=0, idv_s=0, idf_u=0, idv_u=0, idf_v=0, idv_v=0
+    INTEGER :: idf_0=0, idv_0=0, idf_t=0, idv_t=0, idf_s=0, idv_s=0, &
+       &       idf_u=0, idv_u=0, idf_v=0, idv_v=0
 
 
 

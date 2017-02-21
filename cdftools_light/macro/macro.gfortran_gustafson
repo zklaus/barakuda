@@ -9,7 +9,9 @@ F90=gfortran
 
 # -fdefault-real-8 -fbounds-check
 
-FFLAGS= -O2 -I./mod -J./mod $(NCDF)
+#FFLAGS= -O0 -Wall -Wextra -ffpe-trap=zero,overflow,underflow -fbacktrace -I./mod -J./mod $(NCDF)
+
+FFLAGS= -O2 -ffpe-trap=zero,overflow,underflow -fbacktrace -I./mod -J./mod $(NCDF)
 
 #INSTALL=../bin/
 
