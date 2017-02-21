@@ -148,10 +148,10 @@ export RWWWD=/bsc/www/htdocs/public/${USER}/BaraKuda ; # directory of the local 
 #########################
 
 # Movies of SST and SSS compared to OBS:
-export i_do_movi=0
+export i_do_movi=1
 
 # Basic 3D and surface averages:
-export i_do_mean=0
+export i_do_mean=1
 
 # IFS surface fluxes of heat and freshwater
 export i_do_ifs_flx=0 ; # only relevant when ece_run=2...
@@ -181,7 +181,7 @@ export i_do_bb=0   ; # Budget and other stuffs on a given rectangular box!
 # => produces time-series f(t)  (mean of 2D fields)
 
 # Vertical profiles on of box-averaged as a function of time...
-export i_do_box_TS_z=1 ; # do sigma vert. profiles on given boxes... # 1 => no figures, 2 => figures
+export i_do_box_TS_z=0 ; # do sigma vert. profiles on given boxes... # 1 => no figures, 2 => figures
 #                 # => needs file FILE_DEF_BOXES !!!
 # => produces time-series f(t,z)
 
@@ -193,7 +193,6 @@ export MLD_CRIT="1000,725,500"
 # => TS_SECTION_FILE must be defined!
 export i_do_sect=1
 export TS_SECTION_FILE="${BARAKUDA_ROOT}/data/TS_sections.dat"
-
 
 
 # BETA / TESTING / NERDY (at your own risks...):

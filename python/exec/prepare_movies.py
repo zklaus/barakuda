@@ -17,7 +17,7 @@ import barakuda_tool as bt
 import barakuda_plot as bp
 
 
-venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','NN_SST','NN_T','NN_S','FILE_ICE_SUFFIX','NN_ICEF',
+venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','NN_SST','NN_T','NN_SSS','NN_S','FILE_ICE_SUFFIX','NN_ICEF',
                'F_T_CLIM_3D_12','F_S_CLIM_3D_12','SST_CLIM_12','NN_SST_CLIM','NN_T_CLIM','NN_S_CLIM'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
@@ -109,9 +109,14 @@ if cvar == 'sst':
     else:
         Vnemo = id_in.variables[vdic['NN_SST']][:,:,:]
     cv = 'dsst'
+
 if cvar == 'sss':
-    Vnemo = id_in.variables[vdic['NN_S']][:,0,:,:]
+    if vdic['NN_SSS'] == 'so' or vdic['NN_SSS'] == 'vosaline' :   #lolo:bad !!! should check shape!!!
+        Vnemo = id_in.variables[vdic['NN_SSS']][:,0,:,:]
+    else:
+        Vnemo = id_in.variables[vdic['NN_SSS']][:,:,:]
     cv = 'dsss'
+
 if cvar == 'ice':
     Vnemo = id_in.variables[vdic['NN_ICEF']][:,:,:]
 id_in.close()

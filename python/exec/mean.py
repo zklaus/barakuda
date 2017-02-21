@@ -30,7 +30,7 @@ lat2_nino = 5.
 cv_evb = 'evap_ao_cea' ; # debug evap in ec-earth...
 
 venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','BM_FILE','NEMO_SAVED_FILES','FILE_FLX_SUFFIX',
-               'NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD',
+               'NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD','ANNUAL_3D', 'TSTAMP',
                'NN_FWF','NN_EMP','NN_P','NN_RNF','NN_CLV','NN_E',
                'NN_QNET','NN_QSOL'}
 
@@ -451,6 +451,10 @@ print ' +++ mean.py => Done with ENSO diags!\n'
 
 print '\n\n +++ mean.py => Starting 3D-averaging diags!'
 
+if vdic['ANNUAL_3D'] == '1y':
+    cf_T_in = replace(cf_T_in, vdic['TSTAMP'], vdic['ANNUAL_3D'])
+    print ' LOLO: USING 1Y file !!! =>', cf_T_in
+
 jvar = 0
 
 for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
@@ -469,19 +473,22 @@ for cvar in [ vdic['NN_T'] , vdic['NN_S'] ]:
 
     [ nt, nk0, nj0, ni0 ] = Xd_m.shape
 
-    if nt != 12: print 'ERROR: '+cnexec+' => only treating monthly data so far...'; sys.exit(0)
+    if nt != 12 and nt != 1 : print 'ERROR: '+cnexec+' => only treating monthly or annual data so far...'; sys.exit(0)
 
     if [ nk0, nj0, ni0 ] != [ nk, nj, ni ]: print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'; sys.exit(0)
 
     if jvar == 0:
         vtime = nmp.zeros(nt)
-        for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./12.
-        print ' * Montly calendar: ', vtime[:]
+        for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./float(nt)
+        print ' * Calendar: ', vtime[:]
 
     # Annual mean array for current year:
     Xd_y = nmp.zeros((1, nk, nj, ni))
 
-    Xd_y[0,:,:,:] = nmp.mean(Xd_m, axis=0)
+    if nt == 12:
+        Xd_y[0,:,:,:] = nmp.mean(Xd_m, axis=0)
+    else:
+        Xd_y[0,:,:,:] = Xd_m[0,:,:,:]
 
     joce = 0
 

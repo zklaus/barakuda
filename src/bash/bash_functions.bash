@@ -100,12 +100,8 @@ function barakuda_setup()
     export PYTH="${PYTHON_HOME}/bin/python -W ignore" ; # which Python installation to use
     export PYTHONPATH=${PYTHON_HOME}/lib/python2.7/site-packages:${BARAKUDA_ROOT}/python/modules ; # PATH to python barakuda modules
     export PYBRKD_EXEC_PATH=${BARAKUDA_ROOT}/python/exec         ; # PATH to python barakuda executable
-    
+
     echo " PYTHON_HOME => "${PYTHON_HOME} ; echo
-    if [ ! -f ${PYTHON_HOME}/bin/python ]; then
-        echo "ERROR: we could not find ${PYTHON_HOME}/bin/python => set a correct PYTHON_HOME in your config file!"; exit
-    fi
-    
     echo "  TRANSPORT_SECTION_FILE => ${TRANSPORT_SECTION_FILE} !" ; echo
 
     if ${l_clim_diag} ; then
