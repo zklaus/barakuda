@@ -150,22 +150,22 @@ function barakuda_setup()
         # We need a scratch/temporary directory to copy these files to and gunzip them:
         # Normal case, inside a batch job scheduler:
         if [ ! -z "${SLURM_JOBID}" ]; then
-            # NSC / Sweden
+            # NSC / Sweden ; Gustafson / BSC
             SCRATCH=`echo ${SCRATCH} | sed -e "s|<JOB_ID>|${SLURM_JOBID}|g"`
-            export TMP_DIR=${SCRATCH}/${RUN}
+            export TMP_DIR=${SCRATCH}/tmp_${RUN}_barakuda
             #
         elif [ ! -z "${LSB_JOBID}" ]; then
-            # MARENOSTRUM / Barcelona
+            # MARENOSTRUM / BSC
             export TMP_DIR=${TMPDIR}
         else
             # Default:
-            export TMP_DIR=${SCRATCH}/barakuda_${RUN}_tmp
+            export TMP_DIR=${SCRATCH}/tmp_${RUN}_barakuda
         fi
     else
         export TMP_DIR=${SCRATCH}/html_${RUN}_tmp
     fi
     echo " IMPORTANT the TMP_DIR work directory is set to:" ; echo " ${TMP_DIR}"; echo ; sleep 2
-
+    
     rm -rf ${TMP_DIR}
     mkdir -p ${DIAG_D} ${TMP_DIR}
 

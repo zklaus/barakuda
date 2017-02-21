@@ -198,8 +198,8 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_trsp} -gt 0 ] || [ ${i_do_mht} -eq 1 ]; then
             if [ ! -f ${fvt} ]; then
-                echo; echo; echo " *** CALLING: ./cdfvT.x ${CPREF}${TTAG_ann} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV}"
-                ./cdfvT.x ${CPREF}${TTAG_ann} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} &
+                echo; echo; echo " *** CALLING: ./cdfvT.x ${CRT1} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV}"
+                ./cdfvT.x ${CRT1} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} &
                 pid_vtvt=$! ; echo
             fi
         fi
@@ -265,7 +265,7 @@ while ${lcontinue}; do
                 echo "PROBLEM: file ${fvt} is not here, skipping meridional transports section"
             else
                 rm -f merid_heat_trp.dat merid_salt_trp.dat
-                echo " *** doing: ./cdfmhst.x ${fvt} ${fo} ${jyear}"
+                echo " *** CALLING: ./cdfmhst.x ${fvt} ${fo} ${jyear}"
                 ./cdfmhst.x ${fvt} ${fo} ${jyear} &
                 pid_mhst=$! ; echo
             fi
@@ -288,8 +288,8 @@ while ${lcontinue}; do
             if [ ! -f ${fvt} ]; then
                 echo "PROBLEM: file ${fvt} is not here, skipping transport section!"
             else
-                echo " *** doing: ./cdftransportiz.x ${CPREF}${TTAG_ann} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp}"
-                ./cdftransportiz.x ${CPREF}${TTAG_ann} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &
+                echo " *** CALLING: ./cdftransportiz.x ${CRT1} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp}"
+                ./cdftransportiz.x ${CRT1} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &
                 pid_trsp=$! ; echo
             fi
         fi   ; # ${i_do_trsp} -gt 0
@@ -322,7 +322,7 @@ while ${lcontinue}; do
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
-            echo " *** doing: ${PYTH} ${PYBRKD_EXEC_PATH}/budget_rectangle_box.py ${cyear} 100 uv"
+            echo " *** CALLING: ${PYTH} ${PYBRKD_EXEC_PATH}/budget_rectangle_box.py ${cyear} 100 uv"
             ${PYTH} ${PYBRKD_EXEC_PATH}/budget_rectangle_box.py ${cyear} 100 uv &
             pid_bbbb=$! ; echo
         fi
@@ -365,7 +365,7 @@ while ${lcontinue}; do
                 ncks  -A -v ${NN_ICET} ${fj} -o tmp_ice.nc
                 ncrename -v ${NN_ICET},ice_thic tmp_ice.nc
             fi
-            echo " *** doing: ./cdficediags.x tmp_ice.nc ${jyear} ${DIAG_D} ${coic}"
+            echo " *** CALLING: ./cdficediags.x tmp_ice.nc ${jyear} ${DIAG_D} ${coic}"
             ./cdficediags.x tmp_ice.nc ${jyear} ${DIAG_D} ${coic} &
 
         fi
