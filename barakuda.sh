@@ -82,6 +82,10 @@ fi
 cyear_ini=`printf "%04d" ${YEAR_INI}`
 cyear_end=`printf "%04d" ${YEAR_END}`
 
+
+# The right python executable and barakuda must be found:
+export PATH=${PYBRKD_EXEC_PATH}:${PYTHON_HOME}/bin:${PATH}
+
 # setup over...
 ###########################################################################################
 
@@ -173,13 +177,13 @@ while ${lcontinue}; do
         if [ ${i_do_movi} -eq 1 ]; then
             echo; echo; echo "2D maps of NEMO - OBS for SST and SSS (for movies)"
             echo " *** CALLING: prepare_movies.py ${ft} ${jyear} sst"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/prepare_movies.py ${ft} ${jyear} sst &
+            prepare_movies.py ${ft} ${jyear} sst &
             pid_movt=$! ; echo
             echo " *** CALLING: prepare_movies.py ${ft} ${jyear} sss"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/prepare_movies.py ${ft} ${jyear} sss &
+            prepare_movies.py ${ft} ${jyear} sss &
             pid_movs=$! ; echo
             echo " *** CALLING: prepare_movies.py ${fj} ${jyear} ice"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/prepare_movies.py ${fj} ${jyear} ice &
+            prepare_movies.py ${fj} ${jyear} ice &
             pid_movi=$! ; echo
         fi
 
@@ -189,7 +193,7 @@ while ${lcontinue}; do
         if [ ${i_do_mean} -eq 1 ]; then
             echo; echo; echo "Global monthly values"
             echo " *** CALLING: mean.py ${ft} ${jyear}"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/mean.py ${ft} ${jyear} &
+            mean.py ${ft} ${jyear} &
             pid_mean=$! ; echo
         fi
 
@@ -211,7 +215,7 @@ while ${lcontinue}; do
         if [ ${i_do_ssx_box} -eq 1 ]; then
             echo; echo; echo "Box monthly values"
             echo " *** CALLING: ssx_boxes ${ft} ${jyear} ${NN_SST} ${NN_SSS}"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/ssx_boxes.py ${ft} ${jyear} ${NN_SST} ${NN_SSS} &
+            ssx_boxes.py ${ft} ${jyear} ${NN_SST} ${NN_SSS} &
             pid_boxa=$! ; echo
         fi
 
@@ -304,7 +308,7 @@ while ${lcontinue}; do
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
             echo " *** CALLING: dmv.py ${ft} ${cyear}"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/dmv.py ${ft} ${cyear} &
+            dmv.py ${ft} ${cyear} &
             pid_dmvl=$! ; echo
         fi
 
@@ -322,8 +326,8 @@ while ${lcontinue}; do
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
-            echo " *** CALLING: ${PYTH} ${PYBRKD_EXEC_PATH}/budget_rectangle_box.py ${cyear} 100 uv"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/budget_rectangle_box.py ${cyear} 100 uv &
+            echo " *** CALLING: budget_rectangle_box.py ${cyear} 100 uv"
+            budget_rectangle_box.py ${cyear} 100 uv &
             pid_bbbb=$! ; echo
         fi
 
@@ -380,7 +384,7 @@ while ${lcontinue}; do
             echo; echo; echo "Cross-sections on specified transects:"
             echo "${lst_sec}"; echo
             echo " *** CALLING: cross_sections.py ${ft} ${jyear}"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/cross_sections.py ${ft} ${jyear} &
+            cross_sections.py ${ft} ${jyear} &
             echo
         fi
         
@@ -395,7 +399,7 @@ while ${lcontinue}; do
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
             echo " *** CALLING: prof_TS_z_box.py ${cyear}"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/prof_TS_z_box.py ${cyear} &
+            prof_TS_z_box.py ${cyear} &
             echo;echo
         fi
 
@@ -420,7 +424,7 @@ while ${lcontinue}; do
             echo; echo; echo "AMO SST time series "
             echo; echo
             echo " *** CALLING: amo.py ${cyear}"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/amo.py ${cyear}
+            amo.py ${cyear}
             echo;echo;
             mv -f  AMO_SST_Atl_${CONFRUN}_${cyear}.nc ${diro}/
             echo
@@ -433,7 +437,7 @@ while ${lcontinue}; do
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
             echo " *** CALLING: zcrit_conv.py ${cyear}"
-            ${PYTH} ${PYBRKD_EXEC_PATH}/zcrit_conv.py ${cyear}
+            zcrit_conv.py ${cyear}
             echo;echo
         fi
 
@@ -597,7 +601,7 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     for fd in ${DIAG_1D_LIST}; do
         echo " *** CALLING: plot_time_series.py ${fd}"
-        ${PYTH} ${PYBRKD_EXEC_PATH}/plot_time_series.py ${fd} ; echo
+        plot_time_series.py ${fd} ; echo
         echo
     done
     echo ; echo ; echo
@@ -606,12 +610,12 @@ if [ ${ISTAGE} -eq 2 ]; then
 
          # 5-month-running mean SST anomaly on Nino region 3.4 graph:
         echo " *** CALLING: plot_enso.py Nino34_${CONFRUN}.nc"
-        ${PYTH} ${PYBRKD_EXEC_PATH}/plot_enso.py Nino34_${CONFRUN}.nc
+        plot_enso.py Nino34_${CONFRUN}.nc
         echo; echo
 
         # Hovmuller of temperature and salinity
         echo " *** CALLING: plot_hovm_tz.py"
-        ${PYTH} ${PYBRKD_EXEC_PATH}/plot_hovm_tz.py
+        plot_hovm_tz.py
         echo; echo
         #
     fi
@@ -620,7 +624,7 @@ if [ ${ISTAGE} -eq 2 ]; then
     if [ ${i_do_sigt} -eq 1 ]; then
         # Transport by sigma-class
         echo " *** CALLING: plot_trsp_sigma.py"
-        ${PYTH} ${PYBRKD_EXEC_PATH}/plot_trsp_sigma.py
+        plot_trsp_sigma.py
         echo; echo; echo
     fi
 
@@ -630,7 +634,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         # Hovmullers of advective meridional heat/salt transport
         echo; echo
         echo " *** CALLING: plot_hovm_merid_trsp.py"
-        ${PYTH} ${PYBRKD_EXEC_PATH}/plot_hovm_merid_trsp.py
+        plot_hovm_merid_trsp.py
         echo; echo; echo
         #
     fi
@@ -709,7 +713,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 export DIRS_2_EXP="${DIRS_2_EXP} moc"
                 rm -rf moc; mkdir moc; cd moc/
                 echo; echo; echo " *** CALLING: moc.py ${iclyear}"
-                ${PYTH} ${PYBRKD_EXEC_PATH}/moc.py ${iclyear} &
+                moc.py ${iclyear} &
                 cd ../
                 echo
             fi
@@ -723,7 +727,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 export DIRS_2_EXP="${DIRS_2_EXP} mld"
                 rm -rf mld; mkdir mld; cd mld/
                 echo; echo; echo " *** CALLING: mld.py ${iclyear}"; echo
-                ${PYTH} ${PYBRKD_EXEC_PATH}/mld.py ${iclyear} &
+                mld.py ${iclyear} &
                 cd ../
                 echo
             fi
@@ -737,7 +741,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 export DIRS_2_EXP="${DIRS_2_EXP} sea_ice"
                 rm -rf sea_ice; mkdir sea_ice; cd sea_ice/
                 echo; echo; echo " *** CALLING: ice.py ${iclyear}"; echo
-                ${PYTH} ${PYBRKD_EXEC_PATH}/ice.py ${iclyear} &
+                ice.py ${iclyear} &
                 cd ../
                 echo
             fi
@@ -750,7 +754,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 cd ${DIAG_D}/
                 rm -rf ssh; mkdir ssh; cd ssh/
                 echo " *** CALLING: ssh.py ${iclyear}"; echo
-                ${PYTH} ${PYBRKD_EXEC_PATH}/ssh.py ${iclyear} &
+                ssh.py ${iclyear} &
                 cd ../ ;  echo
             else
                 echo; echo "WARNING: did not find ${NN_SSH} into ${ftcli} !!!!"; echo
@@ -785,7 +789,7 @@ if [ ${ISTAGE} -eq 2 ]; then
                 DIRS_2_EXP_RREF="${DIRS_2_EXP_RREF} temp_sal"
                 mkdir -p temp_sal; cd temp_sal/
                 echo; echo; echo " *** CALLING: temp_sal.py ${iclyear} &"; echo
-                ${PYTH} ${PYBRKD_EXEC_PATH}/temp_sal.py ${iclyear} &
+                temp_sal.py ${iclyear} &
                 cd ../
                 echo
                 
