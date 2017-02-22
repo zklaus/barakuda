@@ -182,6 +182,9 @@ while ${lcontinue}; do
             echo " *** CALLING: prepare_movies.py ${ft} ${jyear} sss"
             prepare_movies.py ${ft} ${jyear} sss &
             pid_movs=$! ; echo
+            echo " *** CALLING: prepare_movies.py ${ft} ${jyear} mld"
+            prepare_movies.py ${ft} ${jyear} mld &
+            pid_movm=$! ; echo
             echo " *** CALLING: prepare_movies.py ${fj} ${jyear} ice"
             prepare_movies.py ${fj} ${jyear} ice &
             pid_movi=$! ; echo
@@ -486,7 +489,7 @@ while ${lcontinue}; do
 
         echo
         echo " Waiting for backround jobs for current year (${jyear}) !"
-        wait ${pid_movt} ${pid_movs} ${pid_movi} ${pid_mean} ${pid_flxl}
+        wait ${pid_movt} ${pid_movs} ${pid_movm} ${pid_movi} ${pid_mean} ${pid_flxl}
         wait
         echo "  Done waiting for year ${cyear} !"
         if [ ${i_do_movi} -eq 1 ]; then rsync -avP movies ${DIAG_D}/ ; fi
