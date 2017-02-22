@@ -575,6 +575,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         rm -f *_${CONFRUN}.gif
         convert -delay ${idelay} -loop 0 movies/dsst_*.png dsst_${CONFRUN}.gif &
         convert -delay ${idelay} -loop 0 movies/dsss_*.png dsss_${CONFRUN}.gif &
+        convert -delay ${idelay} -loop 0 movies/mld_*.png   mld_${CONFRUN}.gif &
         convert -delay ${idelay} -loop 0 movies/icen_*.png icen_${CONFRUN}.gif &
         convert -delay ${idelay} -loop 0 movies/ices_*.png ices_${CONFRUN}.gif &
     fi
