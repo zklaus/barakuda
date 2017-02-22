@@ -1712,8 +1712,9 @@ def __subsample_colorbar__(i_sbsmp, vcc, clb_hndl, cb_or='vertical'):
     if nmp.max(nmp.abs(vcc))>5 and nmp.sum(vcc-vc) == 0. : lcint=True
 
     cpt = 0
-    if int(vcc[0]) % 2 != 0: cpt = 1   # not an even number !
-
+    nn = int(round(abs(vcc[-1]-vcc[0])/abs(vcc[0]-vcc[1]),0))
+    if nn % 2 != 0: cpt = 1
+    #if int(vcc[0]) % 2 != 0: cpt = 1   # not an even number !
     for rr in vcc:
         if cpt % i_sbsmp == 0:
             if lcint:
