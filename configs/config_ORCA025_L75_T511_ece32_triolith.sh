@@ -29,6 +29,7 @@ export DIAG_DIR="${STORE_DIR}/barakuda/${CONF}_ece32"
 
 export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
+export DIR_NCVIEW_CMAP="${BARAKUDA_ROOT}/src/ncview_colormaps"
 
 # Is it an ec-earth run?
 export ece_run=2 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run done from traditional NEMO setup
