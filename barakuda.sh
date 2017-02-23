@@ -56,7 +56,6 @@ if [ "${ANNUAL_3D}" = "1y" ]; then
     . ${BARAKUDA_ROOT}/src/bash/bash_functions_1y.bash
 fi
 
-
 # List of CDFTOOLS executables needed for the diagnostics:
 export L_EXEC="cdfmaxmoc.x cdfmoc.x cdfvT.x cdftransportiz.x cdficediags.x cdfmhst.x cdfsigtrp.x"
 
@@ -176,12 +175,14 @@ while ${lcontinue}; do
         ft3d=${ft1m}
         fu3d=${fu1m}
         fv3d=${fv1m}
-        [[ ${NEMO_SAVED_FILES_3D} =~ (^|[[:space:]])"grid_U"($|[[:space:]]) ]] \
-            && CFG3D=${CRT1Y}; ft3d=${ft1y}; fu3d=${fu1y}; fv3d=${fv1y} \
-            || echo "...default"
-        echo ""
+        if [ "${ANNUAL_3D}" = "1y" ]; then
+            [[ ${NEMO_SAVED_FILES_3D} =~ (^|[[:space:]])"grid_U"($|[[:space:]]) ]] \
+                && CFG3D=${CRT1Y}; ft3d=${ft1y}; fu3d=${fu1y}; fv3d=${fv1y} \
+                || echo "...default"
+            echo ""
+        fi
         fvt=${CFG3D}_VT.nc
-
+        
 
         # -- time to compute diagnostics --
 

@@ -48,15 +48,17 @@ export TRES_IFS=XXX  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=25
 export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
 
-# List of suffixed of files that have been saved by NEMO and that are needed for the diags:
+# List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T"
 
 # Directory structure in which to find NEMO output file (use <ORCA> and <RUN>):
 export NEMO_OUT_STRCT="/scratch/Earth/etourign/barakuda/<RUN>"
 
 export TSTAMP="1m"    ; # output time-frequency stamp as in NEMO output files...
-export ANNUAL_3D="1y" ; # leave blanck "" if 3D is also 
-export NEMO_SAVED_FILES_3D="grid_T grid_U grid_V"
+
+# In case 3D fields have been saved on an annual mean basis rather than montly:
+export ANNUAL_3D="1y" ;   # leave blanck "" if 3D fields are in monthly files...
+export NEMO_SAVED_FILES_3D="grid_T grid_U grid_V" ; #     ''
 
 # How does the nemo files prefix looks like
 # Everything before "<year_related_info>_grid_<X>" or "<year_related_info>_icemod"
