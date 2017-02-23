@@ -8,7 +8,8 @@ iamoc=0
 icrosssect=0
 itempsal=0
 isflx=0
-imean=1
+imean=0
+imean_3d=1
 imov=0
 issh=0
 its=0
@@ -37,10 +38,13 @@ ihov=0
 #ARCH="T159_ece32_triolith"
 #export RUN="LB2E" ; NC=nc4 ; jyear=2010
 
-CONFIG="ORCA025_L75"
-ARCH="T511_ece32_triolith"
-export RUN="HC71" ; NC=nc ; jyear=1990
+#CONFIG="ORCA025_L75"
+#ARCH="T511_ece32_triolith"
+#export RUN="HC71" ; NC=nc ; jyear=1990
 
+CONFIG="ORCA025_L75"
+ARCH="etienne"
+export RUN="a0ez" ; NC=nc ; jyear=1945
 
 #CONFIG="ORCA1_L42"
 #ARCH="ece22_triolith"
@@ -89,6 +93,11 @@ if [ ${icrosssect} -eq 1 ] || [ ${imean} -eq 1 ] || [ ${imov} -eq 1 ]; then
     check_if_file ${ft}
     fj=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_icemod.${NC}
     check_if_file ${fj}
+fi
+
+if [ ${imean_3d} -eq 1 ]; then
+    ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
+    check_if_file ${ft}
 fi
 
 
@@ -143,8 +152,15 @@ if [ ${isflx} -eq 1 ]; then
 fi
 
 if [ ${imean} -eq 1 ]; then
+    export DIAG_D="."
     CMD="python exec/mean.py ${ft} ${jyear}"
 fi
+
+if [ ${imean_3d} -eq 1 ]; then
+    export DIAG_D="."
+    CMD="python exec/mean_3d.py ${ft} ${jyear}"
+fi
+
 
 if [ ${imov} -eq 1 ]; then
     for cv in ice sst sss; do

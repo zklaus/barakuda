@@ -1157,6 +1157,9 @@ class plot :
         if len(VTm) != len(VDm): print 'ERROR: plot_1d_mon_ann.barakuda_plot => VTm and VDm do not agree in size'; sys.exit(0)
         if len(VTy) != len(VDy): print 'ERROR: plot_1d_mon_ann.barakuda_plot => VTy and VDy do not agree in size'; sys.exit(0)
 
+        l_add_monthly = True
+        if Nt1 == Nt2: l_add_monthly = False
+
         fig = plt.figure(num = 1, figsize=fig_size, facecolor='w', edgecolor='k')
 
         ax = plt.axes(AXES_DEF) ; #1d_mon_ann
@@ -1164,15 +1167,16 @@ class plot :
         if mnth_col == 'g': mnth_col = b_gre
         if mnth_col == 'b': mnth_col = b_blu
 
-        plt.plot(VTm, VDm, mnth_col, label=r'monthly', linewidth=1)
+        if l_add_monthly:
+            plt.plot(VTm, VDm, mnth_col, label=r'monthly', linewidth=1)
         plt.plot(VTy, VDy, b_red, label=r'annual', linewidth=2)
         
         ax.get_yaxis().get_major_formatter().set_useOffset(False); # Prevents from using scientific notations in axess ticks numbering
 
-        if plt_m03: plt.plot(VTm[2:Nt1:12], VDm[2:Nt1:12], 'orange', label=r'March',     linewidth=2)
-        if plt_m09: plt.plot(VTm[8:Nt1:12], VDm[8:Nt1:12], 'orange', label=r'September', linewidth=2)
-
-        if plt_m03 or plt_m09: plt.legend(loc='lower center', shadow=True, fancybox=True)
+        if l_add_monthly:
+            if plt_m03: plt.plot(VTm[2:Nt1:12], VDm[2:Nt1:12], 'orange', label=r'March',     linewidth=2)
+            if plt_m09: plt.plot(VTm[8:Nt1:12], VDm[8:Nt1:12], 'orange', label=r'September', linewidth=2)
+            if plt_m03 or plt_m09: plt.legend(loc='lower center', shadow=True, fancybox=True)
 
         # Time bounds for t-axis:
         y1 = int(min(VTy)-0.5)
@@ -1712,7 +1716,8 @@ def __subsample_colorbar__(i_sbsmp, vcc, clb_hndl, cb_or='vertical'):
     if nmp.max(nmp.abs(vcc))>5 and nmp.sum(vcc-vc) == 0. : lcint=True
 
     cpt = 0
-    if int(vcc[0]) % 2 != 0: cpt = 1   # not an even number !
+    nn = int(round(abs(vcc[-1]-vcc[0])/abs(vcc[0]-vcc[1]),0))
+    if nn % 2 != 0: cpt = 1
 
     for rr in vcc:
         if cpt % i_sbsmp == 0:

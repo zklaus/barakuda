@@ -87,6 +87,7 @@ cyear_ini=`printf "%04d" ${YEAR_INI}`
 cyear_end=`printf "%04d" ${YEAR_END}`
 
 
+# The right python executable and barakuda must be found:
 export PATH=${PYBRKD_EXEC_PATH}:${PYTHON_HOME}/bin:${PATH}
 
 # setup over...
@@ -226,6 +227,9 @@ while ${lcontinue}; do
             echo " *** CALLING: prepare_movies.py ${ft1m} ${jyear} sss &"
             prepare_movies.py ${ft1m} ${jyear} sss &
             pid_movs=$! ; echo
+            echo " *** CALLING: prepare_movies.py ${ft1m} ${jyear} mld &"
+            prepare_movies.py ${ft1m} ${jyear} mld &
+            pid_movm=$! ; echo
             echo " *** CALLING: prepare_movies.py ${fj1m} ${jyear} ice &"
             prepare_movies.py ${fj1m} ${jyear} ice &
             pid_movi=$! ; echo
@@ -503,17 +507,17 @@ while ${lcontinue}; do
 
         echo
         echo " Waiting for backround jobs for current year (${jyear}) !"
-        wait ${pid_movt} ${pid_movs} ${pid_movi} ${pid_mean} ${pid_flxl}
+        wait ${pid_movt} ${pid_movs} ${pid_movm} ${pid_movi} ${pid_mean} ${pid_flxl}
         wait
         echo "  Done waiting for year ${cyear} !"
         if [ ${i_do_movi} -eq 1 ]; then rsync -avP movies ${DIAG_D}/ ; fi
         rm -f *.tmp broken_line_* tmp_ice.nc
         rm -f ${CRT1}_*.nc ${CRT1Y}_*.nc ; #debug
-        echo ; echo
+        echo
 
-        # DIAGS ARE DONE !!!
+        echo " ---- DIAGS ARE DONE FOR YEAR ${cyear} ! ---"
         echo "${cyear}" > ${fcompletion}
-
+        echo; echo
 
     fi ; # if ${lcontinue}; then
 
@@ -533,13 +537,10 @@ done ; # while ${lcontinue}; do
 
 
 
-
-
-l_pclim=false
-
-
 # PREPARING HTML PAGE
 # ~~~~~~~~~~~~~~~~~~~
+
+l_pclim=false
 
 if [ ${ISTAGE} -eq 2 ]; then
 
@@ -589,6 +590,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         rm -f *_${CONFRUN}.gif
         convert -delay ${idelay} -loop 0 movies/dsst_*.png dsst_${CONFRUN}.gif &
         convert -delay ${idelay} -loop 0 movies/dsss_*.png dsss_${CONFRUN}.gif &
+        convert -delay ${idelay} -loop 0 movies/mld_*.png   mld_${CONFRUN}.gif &
         convert -delay ${idelay} -loop 0 movies/icen_*.png icen_${CONFRUN}.gif &
         convert -delay ${idelay} -loop 0 movies/ices_*.png ices_${CONFRUN}.gif &
     fi

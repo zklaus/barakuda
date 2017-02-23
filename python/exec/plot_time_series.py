@@ -32,13 +32,29 @@ CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
 
 ff = vdic['FIG_FORM'] ; # format for figures (usually "png" or "svg")
 
-def __test_nb_years__(nb_months, cd):
-    if nb_months%12 != 0:
+def __test_nb_years__(vt, cd):
+    nb_rec = len(vt)
+    # Monthly or Annual time-series?
+    idt = int( vt[1] - vt[0] )
+    if (idt == 0) and (nb_rec%12 == 0):
+        # Montly time-series
+        nb_m = nb_rec
+        nb_y = nb_rec/12
+    elif idt == 1:
+        # Annual time-series
+        nb_m = -1
+        nb_y = nb_rec
+    else:
         print 'ERROR: '+csn+' for diag='+cd
-        print '       => number of "supposed" monthly time records not a multiple of 12!'
-        print '       => Nb. rec. = '+str(nb_months)
+        print '       => the time vector seems to be neither monthly nor annual!'
+        print '       => Nb. rec. = '+str(nb_rec)
         sys.exit(0)
-    return nb_months/12
+    ttick = bt.iaxe_tick(nb_y)
+    return (nb_y, nb_m, nb_rec, ttick)
+
+
+
+
 
 narg = len(sys.argv)
 if narg != 2:
@@ -101,7 +117,6 @@ elif cdiag == 'mean_zos':
     cyu   = r'm'
     ym = yp = 0.
 
-
 elif  cdiag == '3d_thetao':
     cvar  = vdic['NN_T']
     idfig = 'ts3d'
@@ -135,20 +150,15 @@ elif cdiag == 'mean_mldr10_1':
     cyu   = r'm'
     ym = yp = 0.
 
-
 elif cdiag == 'transport_sections':
     idfig = 'transport'
     print '  Using TRANSPORT_SECTION_FILE = '+vdic['TRANSPORT_SECTION_FILE']
     list_sections = bt.get_sections_from_file(vdic['TRANSPORT_SECTION_FILE'])
     print 'List of sections to treat: ', list_sections
 
-
-
 elif cdiag == 'seaice':
     idfig = 'ice'
     cyu  = r'10$^6$km$^2$'
-
-
 
 else:
     print 'ERROR: '+csn+' => diagnostic '+cdiag+' unknown!'; sys.exit(0)
@@ -156,34 +166,94 @@ else:
 
 
 
-
-
-
-
-
-##########################################
-# Basic temp., sali. and SSH time series #
-##########################################
+###########################################################################
+# Time series of 2D-averaged  2D fields such as SST, SSS, SSH, MLD, ect...
+###########################################################################
 
 if idfig == 'simple':
 
     cf_in = 'mean_'+cvar+'_'+CONFRUN+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
     id_in = Dataset(cf_in)
-    vtime = id_in.variables['time'][:] ; nbm = len(vtime)
+    vtime = id_in.variables['time'][:]
     vvar  = id_in.variables[cvar][:]
     id_in.close()
-    nby = __test_nb_years__(nbm, cdiag)
+    (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
 
     # Annual data
     VY, FY = bt.monthly_2_annual(vtime[:], vvar[:])
-
-    ittic = bt.iaxe_tick(nbm/12)
 
     # Time to plot
     bp.plot("1d_mon_ann")(vtime, VY, vvar, FY, cfignm=cdiag+'_'+CONFRUN, dt=ittic,
                           cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
 
 
+
+####################################################################################
+# Time series of 3D-averaged 3D fields such as SST, SSS, SSH, MLD, ect...
+####################################################################################
+
+if idfig == 'ts3d':
+
+    list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
+    
+    nb_oce = len(list_basin_names)
+
+    vzrange = [ '0-bottom', '0-100'  , '100-1000',   '1000-bottom'  ] ;  nbzrange = len(vzrange)
+    vlab    = [ 'AllDepth', '0m-100m', '100m-1000m', '1000m-bottom' ]
+
+    joce = 0
+    for coce in list_basin_names[:]:
+        #lolo
+        cf_in = '3d_'+cvar+'_'+CONFRUN+'_'+coce+'.nc' ;  bt.chck4f(cf_in, script_name=csn)
+        id_in = Dataset(cf_in)
+        vtime = id_in.variables['time'][:]
+        if joce == 0: (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
+        jz = 0
+        for czr in vzrange:
+            if not joce and not jz:
+                FM = nmp.zeros((nb_oce, nbzrange, nbr))
+            print '   * reading '+cvar+'_'+czr+' in '+cf_in
+            FM[joce,jz,:]  = id_in.variables[cvar+'_'+czr][:]
+            jz = jz + 1
+        id_in.close()
+
+        # Annual data (if makes sence):
+        if joce == 0:
+            VY = nmp.zeros(nby)
+            FY = nmp.zeros((nb_oce, 4, nby))
+        if nbm >= 12:
+            # the file contains monthly data (nbm=-1 otherwize)            
+            VY[:], FY[joce,:,:] = bt.monthly_2_annual(vtime[:], FM[joce,:,:])
+        else:
+            # the file contains annual data
+            VY[:]        = vtime[:]
+            FY[joce,:,:] = FM[joce,:,:]
+            
+
+        print ' *** '+list_basin_lgnms[joce]+' done...\n'
+        joce = joce + 1
+
+    # One plot only for global:
+    bp.plot("1d_mon_ann")(vtime, VY, FM[0,0,:], FY[0,0,:], cfignm=cdiag+'_'+CONFRUN, dt=ittic,
+                          cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
+
+
+    # Global for different depth:
+    bp.plot("1d_multi")(vtime, FM[0,:,:], vlab[:], cfignm=cdiag+'_lev_'+CONFRUN, dt=ittic,
+                        loc_legend='out', cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
+
+
+    # Show each ocean (All depth):
+    bp.plot("1d_multi")(vtime, FM[:,0,:], list_basin_lgnms, cfignm=cdiag+'_basins_'+CONFRUN, dt=ittic,
+                        loc_legend='out', cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
+
+
+
+
+#############################################################
+# Time series of 2D-average of surface heat flux components
+#   - might include IFS (atmosphere) fields when EC-Earth
+#############################################################
 
 if idfig == 'htf':
 
@@ -192,14 +262,14 @@ if idfig == 'htf':
 
     id_in = Dataset(cf_in)
     list_var = id_in.variables.keys()
-    vtime = id_in.variables['time'][:] ; nbm = len(vtime)
+    vtime = id_in.variables['time'][:]
     vqnt  = id_in.variables[cvar][:]
     if cvr2 in list_var[:]:
         l_qsr = True
         vqsr  = id_in.variables[cvr2][:]
     id_in.close()
 
-    nby = __test_nb_years__(nbm, cdiag)
+    (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
 
     # Checking if there a potential file for IFS:
     l_htf_ifs = False
@@ -219,8 +289,6 @@ if idfig == 'htf':
     else:
         print '       => Nope!\n'
         
-    ittic = bt.iaxe_tick(nbm/12)
-
     # Annual data
     VY, FY = bt.monthly_2_annual(vtime, vqnt)
     # Time to plot
@@ -271,7 +339,10 @@ if idfig == 'htf':
 
 
 
-
+###################################################################
+# Time series of 2D-average of surface freshwater flux components
+#   - might include IFS (atmosphere) fields when EC-Earth
+###################################################################
 
 if idfig == 'fwf':
 
@@ -280,7 +351,7 @@ if idfig == 'fwf':
 
     id_in = Dataset(cf_in)
     list_var = id_in.variables.keys()
-    vtime = id_in.variables['time'][:] ; nbm = len(vtime)
+    vtime = id_in.variables['time'][:]
     vfwf  = id_in.variables[cvar][:]
     if cvr2 in list_var[:]:
         l_rnf = True
@@ -304,7 +375,7 @@ if idfig == 'fwf':
         vevb  = id_in.variables[cvr7][:]
     id_in.close()
 
-    nby = __test_nb_years__(nbm, cdiag)
+    (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
 
     # Checking if there a potential file for IFS:
     l_fwf_ifs = False
@@ -331,8 +402,6 @@ if idfig == 'fwf':
     else:
         print '       => Nope!\n'
         
-    ittic = bt.iaxe_tick(nbm/12)
-
     # Annual data
     VY, FY = bt.monthly_2_annual(vtime, vfwf)
     # Time to plot
@@ -513,55 +582,8 @@ if idfig == 'fwf':
         #                    ctitle = CONFRUN+': fresh-water budgets', ymin=ym, ymax=yp, cfig_type=ff)
 
 
-if idfig == 'ts3d':
-
-    list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
-    
-    nb_oce = len(list_basin_names)
-
-    vzrange = [ '0-bottom', '0-100'  , '100-1000',   '1000-bottom'  ] ;  nbzrange = len(vzrange)
-    vlab    = [ 'AllDepth', '0m-100m', '100m-1000m', '1000m-bottom' ]
-
-    joce = 0
-    for coce in list_basin_names[:]:
-
-        cf_in = '3d_'+cvar+'_'+CONFRUN+'_'+coce+'.nc' ;  bt.chck4f(cf_in, script_name=csn)
-        id_in = Dataset(cf_in)
-        vtime = id_in.variables['time'][:] ; nbm = len(vtime)
-        jz = 0
-        for czr in vzrange:
-            if not joce and not jz:
-                FM = nmp.zeros((nb_oce, nbzrange, nbm))
-            print '   * reading '+cvar+'_'+czr+' in '+cf_in
-            FM[joce,jz,:]  = id_in.variables[cvar+'_'+czr][:]
-            jz = jz + 1
-        id_in.close()
-
-        nby = __test_nb_years__(nbm, cdiag)
-
-        # Annual data:
-        if not joce:
-            FY = nmp.zeros((nb_oce, 4, nby))
-        VY, FY[joce,:,:] = bt.monthly_2_annual(vtime[:], FM[joce,:,:])
-
-        print ' *** '+list_basin_lgnms[joce]+' done...\n'
-        joce = joce + 1
-
-    ittic = bt.iaxe_tick(nby)
-
-    # One plot only for global:
-    bp.plot("1d_mon_ann")(vtime, VY, FM[0,0,:], FY[0,0,:], cfignm=cdiag+'_'+CONFRUN, dt=ittic,
-                          cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
 
 
-    # Global for different depth:
-    bp.plot("1d_multi")(vtime, FM[0,:,:], vlab[:], cfignm=cdiag+'_lev_'+CONFRUN, dt=ittic,
-                        loc_legend='out', cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
-
-
-    # Show each ocean (All depth):
-    bp.plot("1d_multi")(vtime, FM[:,0,:], list_basin_lgnms, cfignm=cdiag+'_basins_'+CONFRUN, dt=ittic,
-                        loc_legend='out', cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
 
 
 
@@ -584,31 +606,44 @@ if idfig == 'amoc':
         [ c1, c2 ] = clr.split('-') ; clat_info = '+'+c1+'N+'+c2+'N'
         cf_in = 'max_moc_atl_'+clat_info+'.nc' ; bt.chck4f(cf_in, script_name=csn)
         id_in = Dataset(cf_in)
-        if not jl:
-            vtime = id_in.variables['time'][:] ; nbm = len(vtime)
+        if jl==0:
+            vtime = id_in.variables['time'][:]
+            (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
             vlabels = nmp.zeros(nblat, dtype = nmp.dtype('a8'))
-            Xamoc   = nmp.zeros((nblat , nbm))
+            Xamoc   = nmp.zeros((nblat , nbr))
         vlabels[jl] = clat_info
         Xamoc[jl,:] = id_in.variables['moc_atl'][:]
         id_in.close()
-
-        nby = __test_nb_years__(nbm, cdiag)
-
+        
         jl = jl + 1
 
-    VY, FY = bt.monthly_2_annual(vtime, Xamoc[i40,:])
 
-    ittic = bt.iaxe_tick(nbm/12)
+    # Plot annual+montly for AMOC at 40
+    #lolo    VY, FY = bt.monthly_2_annual(vtime, Xamoc[i40,:])
+    VY = nmp.zeros(nby)
+    FY = nmp.zeros(nby)
+    if nbm >= 12:
+        VY[:], FY[joce,:,:] = bt.monthly_2_annual(vtime, Xamoc[i40,:])
+    else:
+        # the file contains annual data
+        VY[:] = vtime[:]
+        FY[:] = Xamoc[i40,:]
 
     # Time to plot
     bp.plot("1d_mon_ann")(vtime, VY, Xamoc[i40,:], FY, cfignm=cdiag+'_'+CONFRUN, dt=ittic,
                           cyunit=cyu, ctitle = CONFRUN+': '+r'Max. of AMOC between '+vlabels[i40],
                           ymin=ym, ymax=yp, dy=1., i_y_jump=2, cfig_type=ff)
 
-    # Annual:
-    VY, FY  = bt.monthly_2_annual(vtime, Xamoc[:,:])
 
-    # Time to plot
+    # Plot annual for AMOC at specified latitudes:
+    FY = nmp.zeros((nblat , nby))
+    if nbm >= 12:
+        # the file contains monthly data (nbm=-1 otherwize)            
+        VY[:], FY[:,:]  = bt.monthly_2_annual(vtime, Xamoc[:,:])
+    else:
+        # the file contains annual data
+        FY[:,:] = Xamoc[:,:]
+
     bp.plot("1d_multi")(VY, FY, vlabels, cfignm=cdiag+'_'+CONFRUN+'_comp', dt=ittic,
                         cyunit=cyu, ctitle = CONFRUN+': '+r'Max. of AMOC', ymin=0, ymax=0,
                         loc_legend='out', cfig_type=ff)
@@ -625,19 +660,17 @@ if idfig == 'ice':
     # montly sea-ice volume and extent, Arctic and Antarctic...
     cf_in = 'seaice_diags.nc' ;  bt.chck4f(cf_in, script_name=csn)
     id_in = Dataset(cf_in)
-    vtime = id_in.variables['time'][:] ; nbm = len(vtime)
+    vtime = id_in.variables['time'][:]
     vvolu_n  = id_in.variables['volu_ne'][:]
     varea_n  = id_in.variables['area_ne'][:]
     vvolu_s  = id_in.variables['volu_se'][:]
     varea_s  = id_in.variables['area_se'][:]
     id_in.close()
 
-    nby = __test_nb_years__(nbm, cdiag)
+    (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
 
     cyua = r'10$^6$km$^2$'
     cyuv = r'10$^3$km$^3$'
-
-    ittic = bt.iaxe_tick(nby)
 
     vtime_y = nmp.zeros(nby)
     Xplt = nmp.zeros((2 , nby))
@@ -674,7 +707,7 @@ if idfig == 'ice':
 
 
 if idfig == 'transport':
-
+    #lolo
     js = 0
     for csec in list_sections:
 
@@ -684,18 +717,22 @@ if idfig == 'transport':
         id_in = Dataset(cf_in)
         if js == 0:
             vtime = id_in.variables['time'][:]
-            nbm = len(vtime)
-        Xtrsp   = nmp.zeros((3 , nbm)) ; # time + 3 types of transport
+            (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
+        Xtrsp   = nmp.zeros((3 , nbr)) ; # time + 3 types of transport
         Xtrsp[0,:] = id_in.variables['trsp_volu'][:]
         Xtrsp[1,:] = id_in.variables['trsp_heat'][:]
         Xtrsp[2,:] = id_in.variables['trsp_salt'][:]
         id_in.close()
 
-        nby = __test_nb_years__(nbm, cdiag)
-
-        VY, FY  = bt.monthly_2_annual(vtime, Xtrsp[:,:])
-
-        ittic = bt.iaxe_tick(nbm/12)
+        # Plot annual+montly for AMOC at 40
+        VY = nmp.zeros(nby)
+        FY = nmp.zeros((3 , nby))
+        if nbm >= 12:
+            VY[:], FY[:,:] = bt.monthly_2_annual(vtime, Xtrsp[:,:])
+        else:
+            # the file contains annual data
+            VY[:]   = vtime[:]
+            FY[:,:] = Xtrsp[:,:]
 
         # Transport of volume:
         bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[0,:], FY[0,:], cfignm='transport_vol_'+csec+'_'+CONFRUN,
@@ -720,12 +757,9 @@ if idfig == 'mld':
         if os.path.exists(cf_in_m):
             print ' Opening '+cf_in_m
             vt0, vd0 = bn.read_1d_series(cf_in_m, cvar, cv_t='time', l_return_time=True)
-            nbm = len(vt0)
-
-            nby = __test_nb_years__(nbm, cdiag)
-
+            if jbox==0: (nby, nbm, nbr, ittic) = __test_nb_years__(vt0, cdiag)
             VY, FY = bt.monthly_2_annual(vt0, vd0)
-            ittic = bt.iaxe_tick(nbm/12)
+
             bp.plot("1d_mon_ann")(vt0, VY, vd0, FY, cfignm=cdiag+'_'+CONFRUN+'_'+cbox, dt=ittic, cyunit=cyu,
                                   ctitle = CONFRUN+': '+clnm+bo.clgnm_mld_boxes[jbox], ymin=ym, ymax=yp,
                                   plt_m03=True, plt_m09=True, cfig_type=ff)

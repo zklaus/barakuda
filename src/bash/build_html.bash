@@ -57,6 +57,7 @@ EOF
         ${ctl} Evolution of SST and SSS biases (w.r.t observations) ${ctr}
         ${img_l} dsst_${cr}.gif ${img_r}
         ${img_l} dsss_${cr}.gif ${img_r}
+        ${img_l}  mld_${cr}.gif ${img_r}
 EOF
     fi
 
