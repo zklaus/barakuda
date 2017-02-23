@@ -64,12 +64,13 @@ barakuda_setup
 
 echo
 echo " SETTINGS: "
-echo "   *** CLIM_DIR = ${CLIM_DIR} "
-echo "   *** TMP_DIR  = ${TMP_DIR} "
-echo "   *** CONFIG   = ${CONFIG} "
-echo "   *** GRID     = ${ORCA} "
-echo "   *** RUN      = ${RUN} "
-echo "   *** CPREF    = ${CPREF} "
+echo "   *** NEMO_OUT_D = ${NEMO_OUT_D} "
+echo "   *** CLIM_DIR   = ${CLIM_DIR} "
+echo "   *** TMP_DIR    = ${TMP_DIR} "
+echo "   *** CONFIG     = ${CONFIG} "
+echo "   *** GRID       = ${ORCA} "
+echo "   *** RUN        = ${RUN} "
+echo "   *** CPREF      = ${CPREF} "
 echo "   *** IFREQ_SAV_YEARS = ${IFREQ_SAV_YEARS} "
 echo
 
@@ -199,10 +200,19 @@ while ${lcontinue}; do
         # Computing time-series of spatially-averaged variables
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_mean} -eq 1 ]; then
-            echo; echo; echo "Global monthly values"
-            echo " *** CALLING: mean.py ${ft1m} ${jyear} &"
-            mean.py ${ft1m} ${jyear} &
-            pid_mean=$! ; echo
+            echo; echo; echo "3D-averaging for time series"
+            echo " *** CALLING: mean_3d.py ${ft1m} ${jyear} T &"
+            mean_3d.py ${ft1m} ${jyear} T &
+            pid_mn3dt=$! ; echo
+            sleep 30
+            echo " *** CALLING: mean_3d.py ${ft1m} ${jyear} S &"
+            mean_3d.py ${ft1m} ${jyear} S &
+            pid_mn3ds=$! ; echo
+            sleep 30
+            echo; echo; echo "2D-averaging for time series"
+            echo " *** CALLING: mean_2d.py ${ft1m} ${jyear} &"
+            mean_2d.py ${ft1m} ${jyear} &
+            pid_mn2d=$! ; echo
         fi
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -507,7 +517,7 @@ while ${lcontinue}; do
 
         echo
         echo " Waiting for backround jobs for current year (${jyear}) !"
-        wait ${pid_movt} ${pid_movs} ${pid_movm} ${pid_movi} ${pid_mean} ${pid_flxl}
+        wait  ${pid_mn3dt} ${pid_mn3ds} ${pid_movt} ${pid_movs} ${pid_movm} ${pid_movi} ${pid_mn2d} ${pid_flxl}
         wait
         echo "  Done waiting for year ${cyear} !"
         if [ ${i_do_movi} -eq 1 ]; then rsync -avP movies ${DIAG_D}/ ; fi

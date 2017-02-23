@@ -15,8 +15,8 @@
 export CONF=ORCA025.L75 ; # horizontal global ORCA configuration
 export NBL=75           ; # number of levels
 
-export HOST=GUSTAFSON ; # this has no importance at all, it will just become an "info" on the web-page!
-export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
+export HOST=GUSTAFSON.bsc.es ; # this has no importance at all, it will just become an "info" on the web-page!
+export EXTRA_CONF="NEMO 3.6 + LIM 3 + IFS-T511 (EC-Earth 3.2b)" ;   #  // same here ...
 
 # File system / path on which most netcdf data will be read:
 export STORE_DIR="/scratch/Earth/lbrodeau"
@@ -26,7 +26,6 @@ export CONF_INI_DIR="/esnas/obs/barakuda/ORCA025.L75"
 
 # In what directory of the local machine to save the diagnostics:
 export DIAG_DIR="/scratch/Earth/${USER}/barakuda/${CONF}_ece3"
-
 
 export PYTHON_HOME="/home/Earth/lbrodeau/opt/Canopy/User" ; # HOME to python distribution with matplotlib and basemap !
 
