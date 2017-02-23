@@ -1833,7 +1833,7 @@ def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_L, dx, i_sbsmp=1, cunit=None, cfon
     locs, labels = plt_hndl.xticks()
     ax_hndl.get_xaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering...
     if i_sbsmp > 1: __subsample_axis__( plt, 'x', i_sbsmp)
-    if x_0%5 != 0: __force_lowest_bound_axis__( plt, 'x') ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
+    if x_0%dx != 0: __force_lowest_bound_axis__( plt, 'x', imult=dx) ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
     ax_hndl.set_xlim(x_0,x_L)
     if not cunit is None:
         if cfont is None:

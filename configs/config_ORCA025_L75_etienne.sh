@@ -16,7 +16,9 @@ export CONF=ORCA025.L75 ; # horizontal global ORCA configuration
 export NBL=75           ; # number of levels
 
 export HOST=GUSTAFSON.bsc.es ; # this has no importance at all, it will just become an "info" on the web-page!
-export EXTRA_CONF="NEMO 3.6 + LIM 3 + IFS-T511 (EC-Earth 3.2b)" ;   #  // same here ...
+export EXTRA_CONF="NEMO 3.6 + LIM 3 + IFS-T511 (EC-Earth 3.2b)<br>\
+10 years spinup with constant CMIP5 forcing from 1950 using EC-Earth 3.2.0,<br>\
+and from 1950 onwards CMIP6 forcing using EC-Earth 3.2.1 (primavera branch)" ;   #  // same here ...
 
 # File system / path on which most netcdf data will be read:
 export STORE_DIR="/scratch/Earth/lbrodeau"
