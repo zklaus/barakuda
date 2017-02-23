@@ -1306,7 +1306,7 @@ class plot :
                 # Shrink Y axis's height by % on the bottom
                 box = ax.get_position()
                 ax.set_position([box.x0, box.y0 + box.height*y_leg, box.width, box.height*(1.-y_leg)])                
-                plt.legend(bbox_to_anchor=(0.5, -0.05), ncol=nb_col, shadow=True, fancybox=True)
+                plt.legend(bbox_to_anchor=(0.8, -0.05), ncol=nb_col, shadow=True, fancybox=True)
             else:
                 plt.legend(loc=loc_legend, ncol=nb_col, shadow=True, fancybox=True)
 
