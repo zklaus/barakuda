@@ -188,13 +188,11 @@ for jt in range(nt):
                       ctitle='SSS (NEMO - obs), '+CONFRUN+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
 
-
-
     if cvar == 'mld':
         bp.plot("2d")(vlon, vlat, Vnemo[jt,:,:], imask[:,:],  mmin, mmax, dmld,
                       corca=vdic['ORCA'], lkcont=False, cpal='ncview_nrl',
                       cfignm=path_fig+'/'+cvar+'_'+cdate,
-                      cbunit='m', cfig_type=fig_type, lat_min=-65., lat_max=75.,
+                      cbunit='m', cfig_type=fig_type, lat_min=-80., lat_max=75.,
                       ctitle='Mixed-Layer depth, '+CONFRUN+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
     
