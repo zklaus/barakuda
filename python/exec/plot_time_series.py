@@ -623,7 +623,7 @@ if idfig == 'amoc':
     VY = nmp.zeros(nby)
     FY = nmp.zeros(nby)
     if nbm >= 12:
-        VY[:], FY[joce,:,:] = bt.monthly_2_annual(vtime, Xamoc[i40,:])
+        VY[:], FY[:] = bt.monthly_2_annual(vtime, Xamoc[i40,:])
     else:
         # the file contains annual data
         VY[:] = vtime[:]
