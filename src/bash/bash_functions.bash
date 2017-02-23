@@ -194,6 +194,8 @@ function barakuda_setup()
         fi
     fi
 
+    echo "${NEMO_OUT_D}" > ${DIAG_D}/NEMO_output_location.info
+
     if [ -z ${NCDF_DIR} ]; then
         if [ ! -z ${NETCDF_DIR} ]; then
             export NCDF_DIR=${NETCDF_DIR}
