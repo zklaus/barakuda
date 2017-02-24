@@ -189,7 +189,7 @@ export i_do_box_TS_z=1 ; # do sigma vert. profiles on given boxes... # 1 => no f
 
 # Deep Mixed volume in prescribed boxes:
 export i_do_dmv=1
-export MLD_CRIT="1000,725,500"
+export MLD_CRIT="1000,725,500,100,0"
 
 # User-defined meridional or zonal cross sections (for temperature and salinity)
 # => TS_SECTION_FILE must be defined!
