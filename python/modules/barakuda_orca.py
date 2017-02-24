@@ -202,10 +202,13 @@ def mean_3d(XD, LSM, XVOL):
         sys.exit(0)
 
     vmean = nmp.zeros(lt)
-    XX = LSM[:,:,:]*XVOL[:,:,:]
-
+    
+    XX = LSM[:,:,:]*XVOL[:,:,:]*1.E-6
+    rd = nmp.sum( XX )
+    XX = XX/rd
+    
     for jt in range(lt):
-        vmean[jt] = nmp.sum( XD[jt,:,:,:]*XX ) / nmp.sum( XX )
+        vmean[jt] = nmp.sum( XD[jt,:,:,:]*XX )*1.E6
 
     return vmean
 
@@ -228,9 +231,12 @@ def mean_2d(XD, LSM, XAREA):
         sys.exit(0)
 
     vmean = nmp.zeros(lt)
-    XX = LSM[:,:]*XAREA[:,:]
+    XX = LSM[:,:]*XAREA[:,:]*1.E-6
+    rd = nmp.sum( XX )
+    XX = XX/rd
+    
     for jt in range(lt):
-        vmean[jt] = nmp.sum( XD[jt,:,:]*XX ) / nmp.sum( XX )
+        vmean[jt] = nmp.sum( XD[jt,:,:]*XX )*1.E6
 
     return vmean
 
