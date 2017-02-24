@@ -231,12 +231,12 @@ def mean_2d(XD, LSM, XAREA):
         sys.exit(0)
 
     vmean = nmp.zeros(lt)
-    XX = LSM[:,:]*XAREA[:,:]*1.E-6
+    XX = LSM[:,:]*XAREA[:,:]
     rd = nmp.sum( XX )
-    XX = XX/rd
+    XX = XX/rd ; #boo
     
     for jt in range(lt):
-        vmean[jt] = nmp.sum( XD[jt,:,:]*XX )*1.E6
+        vmean[jt] = nmp.sum( XD[jt,:,:]*XX )
 
     return vmean
 
