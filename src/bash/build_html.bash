@@ -235,7 +235,7 @@ function build_sub_html()
             -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
             index.tmp > ${cdiag}/index.html
         rm -f index.tmp
-        cd ${cdiag}/ ; ln -sf ../logo.png . ; cd ../
+        cd ${cdiag}/ ; ln -sf ../logo.*g . ; cd ../
     done
     
     for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
@@ -283,7 +283,7 @@ function build_sub_html()
                 -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|${RUNREF}|g" \
                 index.tmp > ${cdiag}/index_${RUNREF}.html
             rm -f index.tmp
-            cd ${cdiag}/ ; ln -sf ../logo.png . ; cd ../
+            cd ${cdiag}/ ; ln -sf ../logo.*g . ; cd ../
         done
         for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
             cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp

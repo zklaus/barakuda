@@ -200,7 +200,7 @@ done
 cat ${BARAKUDA_ROOT}/src/html/conf_end.html >> index.html ; # Closing HTML file...
 
 cp ${BARAKUDA_ROOT}/src/html/conf_*.html  .
-cp ${BARAKUDA_ROOT}/src/html/logo.png     .
+cp ${BARAKUDA_ROOT}/src/html/logo.*g     .
 echo; echo
 
 
