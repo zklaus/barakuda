@@ -110,7 +110,7 @@ export NN_QSOL="qsr"         ; # name of net surface solar flux in "FILE_FLX_SUF
 
 # Land-sea mask and basins files:
 export MM_FILE=${STORE_DIR}/ORCA1/ec-earth3.2/mesh_mask.nc4
-export BM_FILE=${STORE_DIR}/ORCA1/ec-earth3.2/basin_mask.nc4
+export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO run):
 export F_T_CLIM_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
