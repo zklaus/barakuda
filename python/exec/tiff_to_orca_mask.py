@@ -17,10 +17,10 @@ if narg != 2:
     print 'Usage: '+sys.argv[0]+' <mesh_mask>'; sys.exit(0)
 cf_mm = sys.argv[1]
 
-vbasins = [   'pac'   ,    'atl' ,     'ind'  ,   'soc'   ,   'nna'                   ,   'arc' ,  'wed'    ,  'lab'    ,  'gin'   ]
-vbnames = [ 'Pacific' , 'Atlantic' , 'Indian' , 'Southern', 'Northern North Atlantic' , 'Arctic' , 'Weddell' , 'Labrador',   'GIN'  ]
-vocesea = [ 'Ocean'   ,  'Ocean'   ,  'Ocean' ,  'Ocean'  ,  'Ocean'                  ,  'Ocean' ,   'Sea'   ,   'Sea'   ,   'Seas' ]
-vmandat = [  True     ,   True     ,   True   ,    False  ,    False                  ,    False ,   False   ,   False   ,   False  ] ; # Mandatory ?
+vbasins = [   'pac'   ,    'atl' ,     'ind'  ,   'soc'   ,   'arc'  ,  'wed'    ,  'lab'     ,  'med'  , 'gin'  ]
+vbnames = [ 'Pacific' , 'Atlantic' , 'Indian' , 'Southern', 'Arctic' , 'Weddell' , 'Labrador' ,  'Med'  , 'GIN'  ]
+vocesea = [ 'Ocean'   ,  'Ocean'   ,  'Ocean' ,  'Ocean'  ,  'Ocean' ,   'Sea'   ,   'Sea'    ,  'Sea'  , 'Seas' ]
+vmandat = [  True     ,   True     ,   True   ,    False  ,    False ,   False   ,   False    ,   False ,  False ] ; # Mandatory ?
 
 # Opening mesh_mask:
 f_mm = Dataset(cf_mm)

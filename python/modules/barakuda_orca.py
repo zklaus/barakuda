@@ -6,7 +6,7 @@ import numpy as nmp
 
 # Definition of the boxes used to average MLD on
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#  => used into mean.py and plot_time_series.py and compare_time_series.py...
+
 cdgS=r'$^{\circ}$S'
 cdgN=r'$^{\circ}$N'
 
@@ -202,10 +202,15 @@ def mean_3d(XD, LSM, XVOL):
         sys.exit(0)
 
     vmean = nmp.zeros(lt)
+    
     XX = LSM[:,:,:]*XVOL[:,:,:]
-
-    for jt in range(lt):
-        vmean[jt] = nmp.sum( XD[jt,:,:,:]*XX ) / nmp.sum( XX )
+    rd = nmp.sum( XX )
+    XX = XX/rd
+    if rd > 0.:
+        for jt in range(lt):
+            vmean[jt] = nmp.sum( XD[jt,:,:,:]*XX )
+    else:
+        vmean[:] = nmp.nan
 
     return vmean
 
@@ -229,8 +234,15 @@ def mean_2d(XD, LSM, XAREA):
 
     vmean = nmp.zeros(lt)
     XX = LSM[:,:]*XAREA[:,:]
-    for jt in range(lt):
-        vmean[jt] = nmp.sum( XD[jt,:,:]*XX ) / nmp.sum( XX )
+    rd = nmp.sum( XX )
+
+    # Sometimes LSM can be 0 everywhere! => rd == 0. !
+    if rd > 0.:
+        XX = XX/rd
+        for jt in range(lt):
+            vmean[jt] = nmp.sum( XD[jt,:,:]*XX )
+    else:
+        vmean[:] = nmp.nan
 
     return vmean
 

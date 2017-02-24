@@ -8,7 +8,8 @@ iamoc=0
 icrosssect=0
 itempsal=0
 isflx=0
-imean=1
+imean2d=0
+imean3d=1
 imov=0
 issh=0
 its=0
@@ -37,14 +38,17 @@ ihov=0
 #ARCH="T159_ece32_triolith"
 #export RUN="LB2E" ; NC=nc4 ; jyear=2010
 
-CONFIG="ORCA025_L75"
-ARCH="T511_ece32_triolith"
-export RUN="HC71" ; NC=nc ; jyear=1990
+#CONFIG="ORCA025_L75"
+#ARCH="T511_ece32_triolith"
+#export RUN="HC71" ; NC=nc ; jyear=1990
 
+#CONFIG="ORCA025_L75"
+#ARCH="etienne"
+#export RUN="a0ez" ; NC=nc ; jyear=1945
 
-#CONFIG="ORCA1_L42"
-#ARCH="ece22_triolith"
-#export RUN="SPIN" ; NC=nc4 ; jyear=2540
+CONFIG="ORCA1_L75"
+ARCH="T255_ece32_triolith"
+export RUN="LB10" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -84,11 +88,16 @@ if [ ${ece_run} -gt 0 ]; then
 fi
 CPREF=`echo ${NEMO_FILE_PREFIX} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<RUN>|${RUN}|g" -e "s|<TSTAMP>|${TSTAMP}|g"`
 
-if [ ${icrosssect} -eq 1 ] || [ ${imean} -eq 1 ] || [ ${imov} -eq 1 ]; then
+if [ ${icrosssect} -eq 1 ] || [ ${imean2d} -eq 1 ] || [ ${imov} -eq 1 ]; then
     ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
     check_if_file ${ft}
-    fj=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_icemod.${NC}
+    fj=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_${FILE_ICE_SUFFIX}.${NC}
     check_if_file ${fj}
+fi
+
+if [ ${imean3d} -eq 1 ]; then
+    ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
+    check_if_file ${ft}
 fi
 
 
@@ -142,9 +151,16 @@ if [ ${isflx} -eq 1 ]; then
     CMD="${BARAKUDA_ROOT}/src/bash/extract_ifs_surf_fluxes.sh"
 fi
 
-if [ ${imean} -eq 1 ]; then
-    CMD="python exec/mean.py ${ft} ${jyear}"
+if [ ${imean2d} -eq 1 ]; then
+    export DIAG_D="."
+    CMD="python exec/mean_2d.py ${ft} ${jyear}"
 fi
+
+if [ ${imean3d} -eq 1 ]; then
+    export DIAG_D="."
+    CMD="python exec/mean_3d.py ${ft} ${jyear} T"
+fi
+
 
 if [ ${imov} -eq 1 ]; then
     for cv in ice sst sss; do
@@ -286,26 +302,6 @@ if [ ${irnf} -eq 1 ]; then
 
 fi
 
-if [ ${iice} -eq 1 ]; then
-    export RUN=cp70
-    export ORCA=ORCA1.L75
-    export DIAG_D=/proj/bolinc/users/x_laubr/tmp/barakuda/ORCA1.L75_ece32b/ORCA1.L75-${RUN}
-    export MM_FILE=/proj/bolinc/users/x_laubr/klaus/mesh_mask.nc
-    export BM_FILE=/proj/bolinc/users/x_laubr/klaus/basin_mask.nc
-
-    export COMP2D="CLIM"
-    export FILE_ICE_SUFFIX="icemod"
-    export NN_ICEF="siconc" ; # name of ice fraction in "FILE_ICE_SUFFIX" file...
-    export NN_ICET="sivolu" ; # ice thickness or rather volume...
-    #export NN_ICEF="iiceconc" ; # name of ice fraction in "FILE_ICE_SUFFIX" file...
-    #export NN_ICET="iicethic" ; # ice thickness but 'sit' is only in icemod file !!!
-
-    export ICE_CLIM_12=${STORE_DIR}/ORCA1.L75/ORCA1.L75-I/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
-    export NN_ICEF_CLIM="ice_cover"
-
-    python exec/ice.py 1996 2000
-
-fi
 
 
 

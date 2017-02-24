@@ -18,7 +18,7 @@ export NBL=42         ; # number of levels
 export HOST=TRIOLITH ; # this has no importance at all, it will just become an "info" on the web-page!
 export EXTRA_CONF="LIM2, NEMO 2.X (EC-Earth 2_CMIP5)" ;   #  // same here ...
 
-# Path to directory containing NEMO output files:
+# File system / path on which most netcdf data will be read:
 export STORE_DIR="/proj/bolinc/users/x_laubr"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
@@ -29,6 +29,7 @@ export DIAG_DIR="${STORE_DIR}/barakuda/cmip5"
 
 export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
+export DIR_NCVIEW_CMAP="${BARAKUDA_ROOT}/src/ncview_colormaps"
 
 # Is it an ec-earth run?
 export ece_run=0 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run done from traditional NEMO setup
@@ -44,13 +45,17 @@ export TRES_IFS=159  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=25
 export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
 
-# List of suffixed of files that have been saved by NEMO and that are needed for the diags:
+# List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
 
 # Directory structure in which to find NEMO output file (use <ORCA> and <RUN>):
 export NEMO_OUT_STRCT="${STORE_DIR}/CMIP5/<RUN>-SAVED/NEMO"
 
 export TSTAMP="MM"   ; # output time-frequency stamp as in NEMO output files...
+
+# In case 3D fields have been saved on an annual mean basis rather than montly:
+export ANNUAL_3D="" ;   # leave blanck "" if 3D fields are in monthly files...
+export NEMO_SAVED_FILES_3D="" ; #     ''
 
 # How does the nemo files prefix looks like
 # Everything before "<year_related_info>_grid_<X>" or "<year_related_info>_icemod"
@@ -66,7 +71,7 @@ export SCRATCH="/scratch/local/<JOB_ID>"
 #       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   => depends on the XIOS *.xml setup you used...
 #   => always specify a string for the NN_* variables
-#      even when missing from your files (ex: NN_MLD="xx")
+#      USE "X" if the field is not present your NEMO output file
 #
 # State variables and others in grid_T files:
 export NN_SST="sosstsst"
@@ -190,7 +195,6 @@ export MLD_CRIT="1000,725,500"
 # => TS_SECTION_FILE must be defined!
 export i_do_sect=1
 export TS_SECTION_FILE="${BARAKUDA_ROOT}/data/TS_sections.dat"
-
 
 
 # BETA / TESTING / NERDY (at your own risks...):

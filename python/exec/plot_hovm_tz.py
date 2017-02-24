@@ -103,7 +103,7 @@ for coce in list_basin_names:
                           ymin = z0, ymax = zK, l_ylog=True,
                           cfignm=path_fig+'hov_temperature_'+CONFRUN+'_'+coce, cbunit=r'$^{\circ}$C', ctunit='',
                           cyunit='Depth (m)',
-                          ctitle=CONFRUN+': Spatially-averaged temperature evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
+                          ctitle=CONFRUN+': Temperature evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
                           cfig_type=fig_type, i_cb_subsamp=2)
 
     XSe = 1000.*XSe
@@ -113,7 +113,7 @@ for coce in list_basin_names:
                           ymin = z0, ymax = zK, l_ylog=True,
                           cfignm=path_fig+'hov_salinity_'+CONFRUN+'_'+coce, cbunit=r'10$^{-3}$PSU', ctunit='',
                           cyunit='Depth (m)',
-                          ctitle=CONFRUN+': Spatially-averaged salinity evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
+                          ctitle=CONFRUN+': Salinity evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
                           cfig_type=fig_type, i_cb_subsamp=2)
 
 

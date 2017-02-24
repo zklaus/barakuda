@@ -100,12 +100,8 @@ function barakuda_setup()
     export PYTH="${PYTHON_HOME}/bin/python -W ignore" ; # which Python installation to use
     export PYTHONPATH=${PYTHON_HOME}/lib/python2.7/site-packages:${BARAKUDA_ROOT}/python/modules ; # PATH to python barakuda modules
     export PYBRKD_EXEC_PATH=${BARAKUDA_ROOT}/python/exec         ; # PATH to python barakuda executable
-    
+
     echo " PYTHON_HOME => "${PYTHON_HOME} ; echo
-    if [ ! -f ${PYTHON_HOME}/bin/python ]; then
-        echo "ERROR: we could not find ${PYTHON_HOME}/bin/python => set a correct PYTHON_HOME in your config file!"; exit
-    fi
-    
     echo "  TRANSPORT_SECTION_FILE => ${TRANSPORT_SECTION_FILE} !" ; echo
 
     if ${l_clim_diag} ; then
@@ -197,6 +193,8 @@ function barakuda_setup()
             for ex in ${L_EXEC}; do check_if_file cdftools_light/bin/${ex} "Compile CDFTOOLS executables!"; done
         fi
     fi
+
+    echo "${NEMO_OUT_D}" > ${DIAG_D}/NEMO_output_location.info
 
     if [ -z ${NCDF_DIR} ]; then
         if [ ! -z ${NETCDF_DIR} ]; then

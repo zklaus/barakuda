@@ -1157,6 +1157,9 @@ class plot :
         if len(VTm) != len(VDm): print 'ERROR: plot_1d_mon_ann.barakuda_plot => VTm and VDm do not agree in size'; sys.exit(0)
         if len(VTy) != len(VDy): print 'ERROR: plot_1d_mon_ann.barakuda_plot => VTy and VDy do not agree in size'; sys.exit(0)
 
+        l_add_monthly = True
+        if Nt1 == Nt2: l_add_monthly = False
+
         fig = plt.figure(num = 1, figsize=fig_size, facecolor='w', edgecolor='k')
 
         ax = plt.axes(AXES_DEF) ; #1d_mon_ann
@@ -1164,15 +1167,16 @@ class plot :
         if mnth_col == 'g': mnth_col = b_gre
         if mnth_col == 'b': mnth_col = b_blu
 
-        plt.plot(VTm, VDm, mnth_col, label=r'monthly', linewidth=1)
+        if l_add_monthly:
+            plt.plot(VTm, VDm, mnth_col, label=r'monthly', linewidth=1)
         plt.plot(VTy, VDy, b_red, label=r'annual', linewidth=2)
         
         ax.get_yaxis().get_major_formatter().set_useOffset(False); # Prevents from using scientific notations in axess ticks numbering
 
-        if plt_m03: plt.plot(VTm[2:Nt1:12], VDm[2:Nt1:12], 'orange', label=r'March',     linewidth=2)
-        if plt_m09: plt.plot(VTm[8:Nt1:12], VDm[8:Nt1:12], 'orange', label=r'September', linewidth=2)
-
-        if plt_m03 or plt_m09: plt.legend(loc='lower center', shadow=True, fancybox=True)
+        if l_add_monthly:
+            if plt_m03: plt.plot(VTm[2:Nt1:12], VDm[2:Nt1:12], 'orange', label=r'March',     linewidth=2)
+            if plt_m09: plt.plot(VTm[8:Nt1:12], VDm[8:Nt1:12], 'orange', label=r'September', linewidth=2)
+            if plt_m03 or plt_m09: plt.legend(loc='lower center', shadow=True, fancybox=True)
 
         # Time bounds for t-axis:
         y1 = int(min(VTy)-0.5)
@@ -1302,7 +1306,7 @@ class plot :
                 # Shrink Y axis's height by % on the bottom
                 box = ax.get_position()
                 ax.set_position([box.x0, box.y0 + box.height*y_leg, box.width, box.height*(1.-y_leg)])                
-                plt.legend(bbox_to_anchor=(0.5, -0.05), ncol=nb_col, shadow=True, fancybox=True)
+                plt.legend(bbox_to_anchor=(0.8, -0.05), ncol=nb_col, shadow=True, fancybox=True)
             else:
                 plt.legend(loc=loc_legend, ncol=nb_col, shadow=True, fancybox=True)
 
@@ -1714,7 +1718,7 @@ def __subsample_colorbar__(i_sbsmp, vcc, clb_hndl, cb_or='vertical'):
     cpt = 0
     nn = int(round(abs(vcc[-1]-vcc[0])/abs(vcc[0]-vcc[1]),0))
     if nn % 2 != 0: cpt = 1
-    #if int(vcc[0]) % 2 != 0: cpt = 1   # not an even number !
+
     for rr in vcc:
         if cpt % i_sbsmp == 0:
             if lcint:
@@ -1829,7 +1833,7 @@ def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_L, dx, i_sbsmp=1, cunit=None, cfon
     locs, labels = plt_hndl.xticks()
     ax_hndl.get_xaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering...
     if i_sbsmp > 1: __subsample_axis__( plt, 'x', i_sbsmp)
-    if x_0%5 != 0: __force_lowest_bound_axis__( plt, 'x') ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
+    if x_0%dx != 0: __force_lowest_bound_axis__( plt, 'x', imult=dx) ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
     ax_hndl.set_xlim(x_0,x_L)
     if not cunit is None:
         if cfont is None:

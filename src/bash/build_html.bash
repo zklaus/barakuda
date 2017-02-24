@@ -77,7 +77,7 @@ EOF
     ${img_l} 3d_thetao_basins_${cr}.${ff} ${img_r}
     ${img_l} Nino34_${cr}.${ff} ${img_r}
 EOF
-    list_hov_figs=`\ls ${HTML_DIR}/hov_temperature_${cr}*.${ff}`
+    list_hov_figs=`\ls -v ${HTML_DIR}/hov_temperature_${cr}*.${ff}`
     if [ ! "${list_hov_figs}" = "" ]; then
         echo "    ${ctl} Time-depth evolution of temperature${ctr}" >> index.html
         for fhov in ${list_hov_figs}; do
@@ -94,7 +94,7 @@ EOF
     ${img_l} 3d_so_lev_${cr}.${ff} ${img_r}
     ${img_l} 3d_so_basins_${cr}.${ff} ${img_r}
 EOF
-    list_hov_figs=`\ls ${HTML_DIR}/hov_salinity_${cr}*.${ff}`
+    list_hov_figs=`\ls -v ${HTML_DIR}/hov_salinity_${cr}*.${ff}`
     if [ ! "${list_hov_figs}" = "" ]; then
         echo "    ${ctl} Time-depth evolution of salinity${ctr}" >> index.html
         for fhov in ${list_hov_figs}; do
@@ -174,7 +174,7 @@ EOF
 
     # Checking if figures with time-series of MLD in specified boxes are here and adding them:
     if [ ${i_do_mean} -eq 1 ]; then
-        list_mld_figs=`\ls ${HTML_DIR}/mean_mldr10_1_${cr}*.${ff}`
+        list_mld_figs=`\ls -v ${HTML_DIR}/mean_mldr10_1_${cr}*.${ff}`
         if [ ! "${list_mld_figs}" = "" ]; then
             echo "    ${ctl} Horizontally-averaged Mixed-Layer Depth in different regions${ctr}" >> index.html
             for fmld in ${list_mld_figs}; do
@@ -235,7 +235,7 @@ function build_sub_html()
             -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
             index.tmp > ${cdiag}/index.html
         rm -f index.tmp
-        cd ${cdiag}/ ; ln -sf ../logo.png . ; cd ../
+        cd ${cdiag}/ ; ln -sf ../logo.*g . ; cd ../
     done
     
     for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
@@ -250,7 +250,7 @@ function build_sub_html()
     # T&S sections:
     if [ ${i_do_sect} -eq 1 ]; then
         cat ${BARAKUDA_ROOT}/src/html/conf_start.html > index.tmp
-        list_sec_figs=`\ls ${DIAG_D}/temp_sal/section_T_*_${cr}.${ff}`
+        list_sec_figs=`\ls -v ${DIAG_D}/temp_sal/section_T_*_${cr}.${ff}`
         if [ ! "${list_sec_figs}" = "" ]; then
             echo "    ${ctl} Meridional and zonal cross-sections of T & S (specified in data/TS_sections.dat) ${ctr}" >> index.tmp
             for fsct in ${list_sec_figs}; do
@@ -283,7 +283,7 @@ function build_sub_html()
                 -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|${RUNREF}|g" \
                 index.tmp > ${cdiag}/index_${RUNREF}.html
             rm -f index.tmp
-            cd ${cdiag}/ ; ln -sf ../logo.png . ; cd ../
+            cd ${cdiag}/ ; ln -sf ../logo.*g . ; cd ../
         done
         for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
             cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp

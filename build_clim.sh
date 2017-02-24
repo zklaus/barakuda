@@ -341,8 +341,8 @@ rm -f ${CPREF}*_VT.nc
 list=`\ls [am]clim_${CONFRUN}*.nc`
 for ff in ${list}; do
     fn=`echo ${ff} | sed -e s/'.nc'/'.nc4'/g`
-    echo "${CP2NC4}  ${ff} ${fn} &"
-    ${CP2NC4}  ${ff} ${fn} &
+    echo "${NCDF_DIR}/bin/nccopy -k 4 -d 9  ${ff} ${fn} &"
+    ${NCDF_DIR}/bin/nccopy -k 4 -d 9  ${ff} ${fn} &
     echo
 done
 

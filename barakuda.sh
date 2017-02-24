@@ -52,6 +52,9 @@ if [ ${ece_run} -ge 10 ]; then
     . ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash
 fi
 
+if [ "${ANNUAL_3D}" = "1y" ]; then
+    . ${BARAKUDA_ROOT}/src/bash/bash_functions_1y.bash
+fi
 
 # List of CDFTOOLS executables needed for the diagnostics:
 export L_EXEC="cdfmaxmoc.x cdfmoc.x cdfvT.x cdftransportiz.x cdficediags.x cdfmhst.x cdfsigtrp.x"
@@ -60,12 +63,13 @@ barakuda_setup
 
 echo
 echo " SETTINGS: "
-echo "   *** CLIM_DIR = ${CLIM_DIR} "
-echo "   *** TMP_DIR  = ${TMP_DIR} "
-echo "   *** CONFIG   = ${CONFIG} "
-echo "   *** GRID     = ${ORCA} "
-echo "   *** RUN      = ${RUN} "
-echo "   *** CPREF    = ${CPREF} "
+echo "   *** NEMO_OUT_D = ${NEMO_OUT_D} "
+echo "   *** CLIM_DIR   = ${CLIM_DIR} "
+echo "   *** TMP_DIR    = ${TMP_DIR} "
+echo "   *** CONFIG     = ${CONFIG} "
+echo "   *** GRID       = ${ORCA} "
+echo "   *** RUN        = ${RUN} "
+echo "   *** CPREF      = ${CPREF} "
 echo "   *** IFREQ_SAV_YEARS = ${IFREQ_SAV_YEARS} "
 echo
 
@@ -153,51 +157,63 @@ while ${lcontinue}; do
 
         barakuda_import_files
 
-        # Files to work with for current year:
-        ft=${CRT1}_grid_T.nc
-        fu=${CRT1}_grid_U.nc
-        fv=${CRT1}_grid_V.nc
-        fj=${CRT1}_${FILE_ICE_SUFFIX}.nc ; # can be icemod or grid_T ....
-        fvt=${CRT1}_VT.nc
+        # Monthly files to work with for current year:
+        ft1m=${CRT1}_grid_T.nc
+        fu1m=${CRT1}_grid_U.nc
+        fv1m=${CRT1}_grid_V.nc
+        fj1m=${CRT1}_${FILE_ICE_SUFFIX}.nc ; # can be icemod or grid_T ....
+        #
+        # Annual files to work with for current year:
+        CRT1Y=`echo ${CRT1} | sed -e s/"_${TSTAMP}_"/"_${ANNUAL_3D}_"/g`
+        ft1y=${CRT1Y}_grid_T.nc
+        fu1y=${CRT1Y}_grid_U.nc
+        fv1y=${CRT1Y}_grid_V.nc
+        fj1y=${CRT1Y}_${FILE_ICE_SUFFIX}.nc ; # can be icemod or grid_T ....
+        CFG3D=${CRT1}
+        #
+        # Files that contain the 3D fields (might be monthly or annaual sometimes (when "${ANNUAL_3D}" = "1y")        
+        ft3d=${ft1m}
+        fu3d=${fu1m}
+        fv3d=${fv1m}
+        if [ "${ANNUAL_3D}" = "1y" ]; then
+            [[ ${NEMO_SAVED_FILES_3D} =~ (^|[[:space:]])"grid_U"($|[[:space:]]) ]] \
+                && CFG3D=${CRT1Y}; ft3d=${ft1y}; fu3d=${fu1y}; fv3d=${fv1y} \
+                || echo "...default"
+            echo ""
+        fi
+        fvt=${CFG3D}_VT.nc
+        
 
+        # -- time to compute diagnostics --
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # If coupled EC-Earth simu, attempting to compute ocean-averaged fluxes from IFS too (E, P, E-P)
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${ece_run} -eq 2 ] && [ ${NBL} -eq 75 ] && [ ${i_do_ifs_flx} -eq 1 ]; then
             echo; echo; echo "Fluxes of freshwater at the surface from IFS..."
-            echo " *** CALLING: ./src/bash/extract_ifs_surf_fluxes.sh in the background!"
+            echo " *** CALLING: ./src/bash/extract_ifs_surf_fluxes.sh &"
             ${BARAKUDA_ROOT}/src/bash/extract_ifs_surf_fluxes.sh &
             pid_flxl=$! ; echo
         fi
 
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # 2D maps of NEMO - OBS for SST and SSS (for movies)
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if [ ${i_do_movi} -eq 1 ]; then
-            echo; echo; echo "2D maps of NEMO - OBS for SST and SSS (for movies)"
-            echo " *** CALLING: prepare_movies.py ${ft} ${jyear} sst"
-            prepare_movies.py ${ft} ${jyear} sst &
-            pid_movt=$! ; echo
-            echo " *** CALLING: prepare_movies.py ${ft} ${jyear} sss"
-            prepare_movies.py ${ft} ${jyear} sss &
-            pid_movs=$! ; echo
-            echo " *** CALLING: prepare_movies.py ${ft} ${jyear} mld"
-            prepare_movies.py ${ft} ${jyear} mld &
-            pid_movm=$! ; echo
-            echo " *** CALLING: prepare_movies.py ${fj} ${jyear} ice"
-            prepare_movies.py ${fj} ${jyear} ice &
-            pid_movi=$! ; echo
-        fi
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Computing time-series of spatially-averaged variables
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_mean} -eq 1 ]; then
-            echo; echo; echo "Global monthly values"
-            echo " *** CALLING: mean.py ${ft} ${jyear}"
-            mean.py ${ft} ${jyear} &
-            pid_mean=$! ; echo
+            echo; echo; echo "3D-averaging for time series"
+            echo " *** CALLING: mean_3d.py ${ft1m} ${jyear} T &"
+            mean_3d.py ${ft1m} ${jyear} T &
+            pid_mn3dt=$! ; echo
+            sleep 30
+            echo " *** CALLING: mean_3d.py ${ft1m} ${jyear} S &"
+            mean_3d.py ${ft1m} ${jyear} S &
+            pid_mn3ds=$! ; echo
+            sleep 30
+            echo; echo; echo "2D-averaging for time series"
+            echo " *** CALLING: mean_2d.py ${ft1m} ${jyear} &"
+            mean_2d.py ${ft1m} ${jyear} &
+            pid_mn2d=$! ; echo
         fi
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -205,11 +221,30 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_trsp} -gt 0 ] || [ ${i_do_mht} -eq 1 ]; then
             if [ ! -f ${fvt} ]; then
-                echo; echo; echo " *** CALLING: ./cdfvT.x ${CRT1} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV}"
-                ./cdfvT.x ${CRT1} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} &
+                echo; echo; echo " *** CALLING: ./cdfvT.x ${CFG3D} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} &"
+                ./cdfvT.x ${CFG3D} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} &
                 pid_vtvt=$! ; echo
             fi
         fi
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # 2D maps of NEMO - OBS for SST and SSS (for movies)
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if [ ${i_do_movi} -eq 1 ]; then
+            echo; echo; echo "2D maps of NEMO - OBS for SST and SSS (for movies)"
+            echo " *** CALLING: prepare_movies.py ${ft1m} ${jyear} sst &"
+            prepare_movies.py ${ft1m} ${jyear} sst &
+            pid_movt=$! ; echo
+            echo " *** CALLING: prepare_movies.py ${ft1m} ${jyear} sss &"
+            prepare_movies.py ${ft1m} ${jyear} sss &
+            pid_movs=$! ; echo
+            echo " *** CALLING: prepare_movies.py ${ft1m} ${jyear} mld &"
+            prepare_movies.py ${ft1m} ${jyear} mld &
+            pid_movm=$! ; echo
+            echo " *** CALLING: prepare_movies.py ${fj1m} ${jyear} ice &"
+            prepare_movies.py ${fj1m} ${jyear} ice &
+            pid_movi=$! ; echo
+        fi        
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Computing time-series of spatially-averaged variables
@@ -217,11 +252,10 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_ssx_box} -eq 1 ]; then
             echo; echo; echo "Box monthly values"
-            echo " *** CALLING: ssx_boxes ${ft} ${jyear} ${NN_SST} ${NN_SSS}"
-            ssx_boxes.py ${ft} ${jyear} ${NN_SST} ${NN_SSS} &
+            echo " *** CALLING: ssx_boxes ${ft1m} ${jyear} ${NN_SST} ${NN_SSS} &"
+            ssx_boxes.py ${ft1m} ${jyear} ${NN_SST} ${NN_SSS} &
             pid_boxa=$! ; echo
         fi
-
 
         #~~~~~~~
         #  MOC
@@ -229,8 +263,8 @@ while ${lcontinue}; do
         if [ ${i_do_amoc} -eq 1 ]; then
             echo; echo; echo "MOC"
             rm -f moc.nc *.tmp
-            echo " *** CALLING: ./cdfmoc.x ${fv} ${NN_V} ${NN_V_EIV}"
-            ./cdfmoc.x ${fv} ${NN_V} ${NN_V_EIV} &
+            echo " *** CALLING: ./cdfmoc.x ${fv3d} ${NN_V} ${NN_V_EIV} &"
+            ./cdfmoc.x ${fv3d} ${NN_V} ${NN_V_EIV} &
             pid_amoc=$! ; echo
         fi
 
@@ -246,20 +280,17 @@ while ${lcontinue}; do
                     echo; echo "WARNING: Can't do Transport by sigma-class: ${DENSITY_SECTION_FILE} is missing!!!"
                 fi
             fi
-            echo " *** CALLING: ./cdfsigtrp.x ${ft} ${fu} ${fv} 24.8 28.6 19 ${jyear} ${DIAG_D}  ${NN_T} ${NN_S} ${NN_U} ${NN_V}"; echo
-            ./cdfsigtrp.x ${ft} ${fu} ${fv} 24.8 28.6 19 ${jyear} ${DIAG_D} ${NN_T} ${NN_S} ${NN_U} ${NN_V} &
+            echo " *** CALLING: ./cdfsigtrp.x ${ft3d} ${fu3d} ${fv3d} 24.8 28.6 19 ${jyear} ${DIAG_D}  ${NN_T} ${NN_S} ${NN_U} ${NN_V} &"; echo
+            ./cdfsigtrp.x ${ft3d} ${fu3d} ${fv3d} 24.8 28.6 19 ${jyear} ${DIAG_D} ${NN_T} ${NN_S} ${NN_U} ${NN_V} &
             pid_sigt=$! ; echo
         fi
-
 
         echo
         echo " Gonna wait for level #1 to be done !"
         wait ${pid_vtvt}
+        #wait
         echo " .... diag level #1 done...." ; echo        
         echo
-
-
-
 
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -272,17 +303,17 @@ while ${lcontinue}; do
                 echo "PROBLEM: file ${fvt} is not here, skipping meridional transports section"
             else
                 rm -f merid_heat_trp.dat merid_salt_trp.dat
-                echo " *** CALLING: ./cdfmhst.x ${fvt} ${fo} ${jyear}"
+                echo " *** CALLING: ./cdfmhst.x ${fvt} ${fo} ${jyear} &"
                 ./cdfmhst.x ${fvt} ${fo} ${jyear} &
                 pid_mhst=$! ; echo
             fi
         fi
+                
         
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # VOLUME, HEAT and SALT transports through specified section
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_trsp} -gt 0 ]; then
-
             echo; echo; echo "Transports of volume, heat and salt through different sections"
             if [ -z ${TRANSPORT_SECTION_FILE} ]; then
                 echo "Please specify which TRANSPORT_SECTION_FILE to use into the config file!" ; exit
@@ -295,13 +326,12 @@ while ${lcontinue}; do
             if [ ! -f ${fvt} ]; then
                 echo "PROBLEM: file ${fvt} is not here, skipping transport section!"
             else
-                echo " *** CALLING: ./cdftransportiz.x ${CRT1} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp}"
-                ./cdftransportiz.x ${CRT1} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &
+                echo " *** CALLING: ./cdftransportiz.x ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &"
+                ./cdftransportiz.x ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &
                 pid_trsp=$! ; echo
             fi
-        fi   ; # ${i_do_trsp} -gt 0
-
-
+        fi
+        
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         #  Deep Mixed Volume (DMV) on a given box
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -310,11 +340,10 @@ while ${lcontinue}; do
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
-            echo " *** CALLING: dmv.py ${ft} ${cyear}"
-            dmv.py ${ft} ${cyear} &
+            echo " *** CALLING: dmv.py ${ft1m} ${cyear} &"
+            dmv.py ${ft1m} ${cyear} &
             pid_dmvl=$! ; echo
         fi
-
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Budget and other stuffs on a given rectangular box!
@@ -329,7 +358,7 @@ while ${lcontinue}; do
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
-            echo " *** CALLING: budget_rectangle_box.py ${cyear} 100 uv"
+            echo " *** CALLING: budget_rectangle_box.py ${cyear} 100 uv &"
             budget_rectangle_box.py ${cyear} 100 uv &
             pid_bbbb=$! ; echo
         fi
@@ -339,6 +368,7 @@ while ${lcontinue}; do
         wait ${pid_amoc} ; # moc needs to be done to call cdfmaxmoc.x ...
         echo
         echo " .... diag level #2 done...." ; echo ; echo
+
 
 
         #~~~~~~~~~~~
@@ -351,7 +381,7 @@ while ${lcontinue}; do
             for clat in ${LMOCLAT}; do
                 cslat=`echo ${clat} | sed -e s/'-'/' '/g`
                 echo "  *** ./cdfmaxmoc.x moc.nc atl ${cslat} 500 1500 ${jyear} ${DIAG_D}"
-                ./cdfmaxmoc.x moc.nc atl ${cslat} 500 1500 ${jyear} ${DIAG_D} &
+                ./cdfmaxmoc.x moc.nc atl ${cslat} 500 1500 ${jyear} ${DIAG_D}
             done
         fi
 
@@ -361,22 +391,21 @@ while ${lcontinue}; do
         #~~~~~~~~~
         if [ ${i_do_ice} -eq 1 ]; then
             echo; echo; echo "Sea-ice extent and volume..." ; rm -f tmp_ice.nc
-            echo "ncks  -A -v ${NN_ICEF} ${fj} -o tmp_ice.nc"
-            ncks  -A -v ${NN_ICEF} ${fj} -o tmp_ice.nc
+            echo "ncks  -A -v ${NN_ICEF} ${fj1m} -o tmp_ice.nc"
+            ncks  -A -v ${NN_ICEF} ${fj1m} -o tmp_ice.nc
             ncrename -v ${NN_ICEF},ice_frac tmp_ice.nc
             coic=""
             if [ -z ${NN_ICET} ]; then
                 coic="oic" ; # means only ice concentration available!
             else
-                echo "ncks  -A -v ${NN_ICET} ${fj} -o tmp_ice.nc"
-                ncks  -A -v ${NN_ICET} ${fj} -o tmp_ice.nc
+                echo "ncks  -A -v ${NN_ICET} ${fj1m} -o tmp_ice.nc"
+                ncks  -A -v ${NN_ICET} ${fj1m} -o tmp_ice.nc
                 ncrename -v ${NN_ICET},ice_thic tmp_ice.nc
             fi
-            echo " *** CALLING: ./cdficediags.x tmp_ice.nc ${jyear} ${DIAG_D} ${coic}"
+            echo " *** CALLING: ./cdficediags.x tmp_ice.nc ${jyear} ${DIAG_D} ${coic} &"
             ./cdficediags.x tmp_ice.nc ${jyear} ${DIAG_D} ${coic} &
 
         fi
-
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Temperature and Salinity on cross meridional/zonal sections
@@ -386,12 +415,12 @@ while ${lcontinue}; do
 	    lst_sec=`cat ${TS_SECTION_FILE} | grep -v -E '(^#|EOF)' | awk -F ' ' '{print $1}'`
             echo; echo; echo "Cross-sections on specified transects:"
             echo "${lst_sec}"; echo
-            echo " *** CALLING: cross_sections.py ${ft} ${jyear}"
-            cross_sections.py ${ft} ${jyear} &
+            echo " *** CALLING: cross_sections.py ${ft3d} ${jyear} &"
+            cross_sections.py ${ft3d} ${jyear} &
             echo
         fi
-        
 
+        
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         #  Vertical profiles of T,S and density horizontally averaged
         #  on rectangular boxes defined into FILE_DEF_BOXES
@@ -401,7 +430,7 @@ while ${lcontinue}; do
             if [ -z ${FILE_DEF_BOXES} ]; then
                 echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
             fi
-            echo " *** CALLING: prof_TS_z_box.py ${cyear}"
+            echo " *** CALLING: prof_TS_z_box.py ${cyear} &"
             prof_TS_z_box.py ${cyear} &
             echo;echo
         fi
@@ -462,8 +491,8 @@ while ${lcontinue}; do
 
             diro=${DIAG_D}/transport_sections ; mkdir -p ${diro}
 
-            echo " *** CALLING: /home/x_laubr/DEV/CDFTOOLS/bin/cdficeflux ${fj}"
-            /home/x_laubr/DEV/CDFTOOLS/bin/cdficeflux ${fj}
+            echo " *** CALLING: /home/x_laubr/DEV/CDFTOOLS/bin/cdficeflux ${fj1m}"
+            /home/x_laubr/DEV/CDFTOOLS/bin/cdficeflux ${fj1m}
 
             list_ice=`cat transport_ice.dat | grep '-'`
 
@@ -489,17 +518,17 @@ while ${lcontinue}; do
 
         echo
         echo " Waiting for backround jobs for current year (${jyear}) !"
-        wait ${pid_movt} ${pid_movs} ${pid_movm} ${pid_movi} ${pid_mean} ${pid_flxl}
+        wait  ${pid_mn3dt} ${pid_mn3ds} ${pid_movt} ${pid_movs} ${pid_movm} ${pid_movi} ${pid_mn2d} ${pid_flxl}
         wait
         echo "  Done waiting for year ${cyear} !"
         if [ ${i_do_movi} -eq 1 ]; then rsync -avP movies ${DIAG_D}/ ; fi
         rm -f *.tmp broken_line_* tmp_ice.nc
-        rm -f ${CRT1}_*.nc ; #debug
-        echo ; echo
+        rm -f ${CRT1}_*.nc ${CRT1Y}_*.nc ; #debug
+        echo
 
-        # DIAGS ARE DONE !!!
+        echo " ---- DIAGS ARE DONE FOR YEAR ${cyear} ! ---"
         echo "${cyear}" > ${fcompletion}
-
+        echo; echo
 
     fi ; # if ${lcontinue}; then
 
@@ -519,13 +548,10 @@ done ; # while ${lcontinue}; do
 
 
 
-
-
-l_pclim=false
-
-
 # PREPARING HTML PAGE
 # ~~~~~~~~~~~~~~~~~~~
+
+l_pclim=false
 
 if [ ${ISTAGE} -eq 2 ]; then
 
@@ -844,8 +870,11 @@ if [ ${ISTAGE} -eq 2 ]; then
     echo; echo
 
     cp ${BARAKUDA_ROOT}/src/html/conf_*.html ${HTML_DIR}/
-    cp ${BARAKUDA_ROOT}/src/html/logo.png    ${HTML_DIR}/
-    if [ ${ece_run} -gt 0 ]; then cp ${BARAKUDA_ROOT}/src/html/logo_ece.png ${HTML_DIR}/logo.png ; fi
+    cp ${BARAKUDA_ROOT}/src/html/logo.*g    ${HTML_DIR}/
+    if [ ${ece_run} -gt 0 ]; then
+        cp ${BARAKUDA_ROOT}/src/html/logo_ece.svg ${HTML_DIR}/logo.svg
+        cp ${BARAKUDA_ROOT}/src/html/logo_ece.png ${HTML_DIR}/logo.png
+    fi
     
     mv -f index.html ${HTML_DIR}/
 

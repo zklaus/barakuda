@@ -57,6 +57,7 @@ function barakuda_import_files()
         ftt="./${CRT1}_${gt}.nc" ;  check_if_file ${ftt}
     done
     echo; echo "All required files are in `pwd` for year ${cyear} !"; echo
+    #
 }
 
 

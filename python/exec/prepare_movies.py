@@ -27,7 +27,7 @@ print ' ORCA = ', vdic['ORCA'][:7]
 CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
 
 tmin=-4.  ;  tmax=-tmin ;  dtemp = 0.25
-smin=-1.  ;  smax=-smin ;  dsali = 0.05
+smin=-1.4 ;  smax=-smin ;  dsali = 0.1
 mmin=0.   ;  mmax=1500. ;  dmld  = 50.
 
 
@@ -166,7 +166,9 @@ if vdic['ORCA'][:5] == 'ORCA0': lpix = True
 for jt in range(nt):
 
     cm = "%02d" % (jt+1)
-    cdate = cy+cm
+    cdate  = cy+cm
+    cdatet = cy+'/'+cm
+
 
     if cvar == 'sst':
         bp.plot("2d")(vlon, vlat, Vnemo[jt,:,:] - Vclim[jt,:,:],
@@ -174,7 +176,7 @@ for jt in range(nt):
                       corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r',
                       cfignm=path_fig+'/'+cv+'_'+cdate,
                       cbunit='K', cfig_type=fig_type, lat_min=-65., lat_max=75.,
-                      ctitle='SST (NEMO - obs) '+CONFRUN+' ('+cdate+')',
+                      ctitle='SST (NEMO - obs), '+CONFRUN+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
 
     if cvar == 'sss':
@@ -183,34 +185,31 @@ for jt in range(nt):
                       corca=vdic['ORCA'], lkcont=False, cpal='PiYG_r',
                       cfignm=path_fig+'/'+cv+'_'+cdate,
                       cbunit='PSU', cfig_type=fig_type, lat_min=-65., lat_max=75.,
-                      ctitle='SSS (NEMO - obs) '+CONFRUN+' ('+cdate+')',
+                      ctitle='SSS (NEMO - obs), '+CONFRUN+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
-
-
 
     if cvar == 'mld':
         bp.plot("2d")(vlon, vlat, Vnemo[jt,:,:], imask[:,:],  mmin, mmax, dmld,
                       corca=vdic['ORCA'], lkcont=False, cpal='ncview_nrl',
                       cfignm=path_fig+'/'+cvar+'_'+cdate,
-                      cbunit='m', cfig_type=fig_type, lat_min=-65., lat_max=75.,
-                      ctitle='MLD '+CONFRUN+' ('+cdate+')',
+                      cbunit='m', cfig_type=fig_type, lat_min=-80., lat_max=75.,
+                      ctitle='Mixed-Layer depth, '+CONFRUN+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
     
     if cvar == 'ice':
         # Extraoplating sea values on continents:
         bt.drown(Vnemo[jt,:,:], imask, k_ew=2, nb_max_inc=10, nb_smooth=10)
-	#
         # ICE north:
         cv = "icen"
         bp.plot("nproj")('npol2', 0., 1., 0.1, xlon, xlat, Vnemo[jt,:,:],
                          cfignm=path_fig+'/'+cv+'_'+cdate, cpal='ice', cbunit='(frac.)',
-                         ctitle='Ice frac. '+CONFRUN+' ('+cdate+')',
+                         ctitle='Ice concentration, '+CONFRUN+' ('+cdatet+')',
                          lkcont=True, cfig_type=fig_type, lforce_lim=True)
 
         cv = "ices"
         bp.plot("nproj")('spstere', 0., 1., 0.1, xlon, xlat, Vnemo[jt,:,:],
                          cfignm=path_fig+'/'+cv+'_'+cdate, cpal='ice', cbunit='(frac.)',
-                         ctitle='Ice frac. '+CONFRUN+' ('+cdate+')',
+                         ctitle='Ice concentration, '+CONFRUN+' ('+cdatet+')',
                          lkcont=True, cfig_type=fig_type, lforce_lim=True)
 
 
