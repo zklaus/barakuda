@@ -172,10 +172,10 @@ for z_crit in vMLD_crit:
         xtmp[:,:] = xe1t[:,:]*xe2t[:,:]
     
     
-        # Deepest ML in march:
+        # Deepest ML in march or september:
         rML_max       = nmp.max(xmld[icold,:,:])
     
-        # Mean ML in march where ML > zcrit:
+        # Mean ML in march or september where ML > zcrit:
         rd = nmp.sum(xtmp[:,:]*msk_deep[icold,:,:])
         if rd > 0:
             rML_deep_mean = nmp.sum(xmld[icold,:,:]*xtmp[:,:]*msk_deep[icold,:,:])/rd
@@ -216,8 +216,8 @@ for z_crit in vMLD_crit:
 
         bnc.wrt_appnd_1d_series([float(jyear)], [VDMV[2]], cf_out, cv_dmv_m,  cu_t='year', cu_d='10^3 km^3', cln_d=long_name1,
                                 vd2=[rc_WINT],       cvar2=cv_dmv_jfm,     cln_d2=long_name2,
-                                vd3=[rML_max],       cvar3='ML_max',       cln_d3=long_name3,
-                                vd4=[rML_deep_mean], cvar4='ML_deep_mean', cln_d4=long_name4)
+                                vd3=[rML_max],       cvar3='ML_max',       cln_d3=long_name3, cun3='m',
+                                vd4=[rML_deep_mean], cvar4='ML_deep_mean', cln_d4=long_name4, cun4='m')
 
 
 
