@@ -21,6 +21,7 @@ EXEC = ./bin/cdfpsi.x \
        ./bin/cdfsigtrp.x \
        ./bin/cdficediags.x \
        ./bin/cdfmoc.x \
+       ./bin/cdfcurl.x \
        ./bin/cdfvT.x \
        ./bin/cdftransportiz.x
 
