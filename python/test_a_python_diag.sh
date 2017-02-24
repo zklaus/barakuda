@@ -42,13 +42,13 @@ ihov=0
 #ARCH="T511_ece32_triolith"
 #export RUN="HC71" ; NC=nc ; jyear=1990
 
-CONFIG="ORCA025_L75"
-ARCH="etienne"
-export RUN="a0ez" ; NC=nc ; jyear=1945
+#CONFIG="ORCA025_L75"
+#ARCH="etienne"
+#export RUN="a0ez" ; NC=nc ; jyear=1945
 
-#CONFIG="ORCA1_L42"
-#ARCH="ece22_triolith"
-#export RUN="SPIN" ; NC=nc4 ; jyear=2540
+CONFIG="ORCA1_L75"
+ARCH="T255_ece32_triolith"
+export RUN="LB10" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
