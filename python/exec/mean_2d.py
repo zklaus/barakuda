@@ -406,7 +406,7 @@ print ' +++ '+cnexec+' => Done with 2D surface averaging diags!\n'
 # El nino box 3.4 #
 ###################
 
-print '\n\n +++ '+cnexec+' => Starting ENSO diags!'
+print '\n\n +++ '+cnexec+' => Starting ENSO diag!'
 
 print lon1_nino, lon2_nino, lat1_nino, lat2_nino
 ( i1, j1 ) = bo.ij_from_xy(lon1_nino, lat1_nino, xlon, xlat)
@@ -421,12 +421,56 @@ else:
 id_in.close()
 
 Vts = bo.mean_2d(Xs_m[:,j1:j2+1,i1:i2+1], mask[0,j1:j2+1,i1:i2+1], Xa[j1:j2+1,i1:i2+1])
-# NETCDF:
+
+cunit='deg.C'
+if Vts[0] > 100.: cunit='K'
+
 cf_out   = vdic['DIAG_D']+'/Nino34_'+CONFRUN+'.nc' ;  cv1 = vdic['NN_SST']
-bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
-                        cu_t='year', cu_d='K', cln_d='2D-average of SST Nino box 3.4')
+bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1, cu_t='year', cu_d=cunit,
+                        cln_d='2D-average of SST over Nino box 3.4 for ENSO computation later')
 
 print ' +++ '+cnexec+' => Done with ENSO diags!\n'
+
+
+
+
+
+
+##########################################################
+# AMO (Atlantic Multidecadal Oscillation) Index
+##########################################################
+
+print '\n\n +++ '+cnexec+' => Starting AMO diag!'
+# Finding index jb of Atlantic mask:
+jb=0
+while list_basin_names[jb] != 'atl' : jb=jb+1    
+print ' *** index Atl is ', jb, list_basin_names[jb]
+msk_natl = nmp.zeros((nj,ni))
+msk_natl[:,:] = mask[jb,:,:]
+msk_natl[nmp.where(xlat< 2.)] = 0
+msk_natl[nmp.where(xlat>68.)] = 0
+#debug: bnc.write_2d_mask('mask_AMO.nc', msk_natl)
+
+id_in = Dataset(cf_T_in)
+if vdic['NN_SST'] == 'thetao':
+    Xs_m = id_in.variables[vdic['NN_SST']][:,0,:,:]
+else:
+    Xs_m = id_in.variables[vdic['NN_SST']][:,:,:]
+id_in.close()
+
+Vts = bo.mean_2d(Xs_m, msk_natl, Xa)
+
+cunit='deg.C'
+if Vts[0] > 100.: cunit='K'
+
+cf_out   = vdic['DIAG_D']+'/mean_SST_NAtl_'+CONFRUN+'.nc' ;  cv1 = vdic['NN_SST']
+bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1, cu_t='year', cu_d=cunit,
+                        cln_d='2D-average of SST over North Atlantic to compute AMO later')
+del msk_natl, Vts
+print ' +++ '+cnexec+' => Done with AMO diag!\n'
+
+
+
 
 
 

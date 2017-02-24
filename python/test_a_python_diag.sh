@@ -8,8 +8,8 @@ iamoc=0
 icrosssect=0
 itempsal=0
 isflx=0
-imean2d=0
-imean3d=1
+imean2d=1
+imean3d=0
 imov=0
 issh=0
 its=0
@@ -42,13 +42,13 @@ ihov=0
 #ARCH="T511_ece32_triolith"
 #export RUN="HC71" ; NC=nc ; jyear=1990
 
-#CONFIG="ORCA025_L75"
-#ARCH="etienne"
-#export RUN="a0ez" ; NC=nc ; jyear=1945
+CONFIG="ORCA025_L75"
+ARCH="etienne"
+export RUN="a0ez" ; NC=nc ; jyear=1945
 
-CONFIG="ORCA1_L75"
-ARCH="T255_ece32_triolith"
-export RUN="LB10" ; NC=nc4 ; jyear=1990
+#CONFIG="ORCA1_L75"
+#ARCH="T255_ece32_triolith"
+#export RUN="LB10" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
