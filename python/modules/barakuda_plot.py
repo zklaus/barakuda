@@ -1045,92 +1045,72 @@ class plot :
 
     def __enso(self,VT, VSST, cfignm='fig', dt=5):
 
+        # Plot a ENSO-like graph from a SST time series VSST
+        #     VSST contains montly data!
+        import barakuda_stat as bs
+        
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
         Nt = len(VT)
-
-        if len(VT) != len(VSST): print 'ERROR: plot_enso.barakuda_plot => VT and VSST do not agree in size'; sys.exit(0)
-
-        print ' Nt =>', Nt
-
-        # Array to contain nino series:
-        xnino = nmp.zeros(Nt*4) ; xnino.shape = [ Nt, 4 ]
-
+        if len(VSST) != Nt: print 'ERROR: plot_enso.barakuda_plot => VT and VSST do not agree in size'; sys.exit(0)
+        xnino = nmp.zeros((Nt,4))
         xnino[:,0] = VSST[:]
 
         # 5-month running mean:
-        for jt in nmp.arange(2,Nt-2):
-            xnino[jt,1] = (xnino[jt-2,0] + xnino[jt-1,0] + xnino[jt,0] + xnino[jt+1,0] + xnino[jt+2,0]) / 5.
-
-        xnino[0:2,1] = xnino[2,1] ; xnino[Nt-2:Nt,1] = xnino[Nt-3,1]
-
-        print '\n'
-
-        print 'mean value for sst mean = ', nmp.sum(xnino[:,0])/Nt
-        print 'mean value for sst 5-m-r mean = ', nmp.sum(xnino[:,1])/Nt
-
+        #for jt in nmp.arange(2,Nt-2):
+        #    xnino[jt,1] = (xnino[jt-2,0] + xnino[jt-1,0] + xnino[jt,0] + xnino[jt+1,0] + xnino[jt+2,0]) / 5.
+        xnino[:,1] = bs.running_mean_5(xnino[:,0])
+        #xnino[0:2,1] = xnino[2,1] ; xnino[Nt-2:Nt,1] = xnino[Nt-3,1]
 
         # least-square curve for 5-month running mean:
-        sumx  = nmp.sum(VT[:]) ; sumy  = nmp.sum(xnino[:,1])
-        sumxx = nmp.sum(VT[:]*VT[:])
-        sumxy = nmp.sum(VT[:]*xnino[:,1])
-        a = ( sumx*sumy - Nt*sumxy ) / ( sumx*sumx - Nt*sumxx )
-        b = ( sumy - a*sumx ) / Nt
-        print 'a, b =', a, b
+        #sumx  = nmp.sum(VT[:]) ; sumy  = nmp.sum(xnino[:,1])
+        #sumxx = nmp.sum(VT[:]*VT[:])
+        #sumxy = nmp.sum(VT[:]*xnino[:,1])
+        #a = ( sumx*sumy - Nt*sumxy ) / ( sumx*sumx - Nt*sumxx )
+        #b = ( sumy - a*sumx ) / Nt
+        #print 'a, b =', a, b
+        #
+        # Least-square linear trend:
+        (za,zb) = bs.least_sqr_line(VT[:], xnino[:,1])
+        xnino[:,2] = za*VT[:] + zb
+        #print 'mean value for least-square linear trend = ', nmp.sum(xnino[:,2])/Nt
 
-        # least-square linear trend:
-        xnino[:,2] = a*VT[:] + b
-        print 'mean value for least-square linear trend = ', nmp.sum(xnino[:,2])/Nt
-
-        # anomaly
+        # Anomaly
         xnino[:,3] = xnino[:,1] - xnino[:,2] ; # anomaly for 5-month running mean
-        print 'mean value for anomaly = ', nmp.sum(xnino[:,3])/Nt
+        #print 'mean value for anomaly = ', nmp.sum(xnino[:,3])/Nt
 
-        # FIGURE ENSO
-        #############
-
-        vsst_plus  = nmp.zeros(Nt) ; vsst_plus.shape = [ Nt ]
-        vsst_minus = nmp.zeros(Nt) ; vsst_minus.shape = [ Nt ]
-
-        vsst_plus[:]  = xnino[:,3]
-        vsst_minus[:] = xnino[:,3]
-
+        vsst_plus = nmp.zeros(Nt)
+        vsst_mins = nmp.zeros(Nt)
+        vsst_plus[:] = xnino[:,3]
+        vsst_mins[:] = xnino[:,3]
         vsst_plus[nmp.where(xnino[:,3] < 0. )] = 0.
-        vsst_minus[nmp.where(xnino[:,3] > 0. )] = 0.
+        vsst_mins[nmp.where(xnino[:,3] > 0. )] = 0.
+        vsst_plus[0]  = 0. ; vsst_mins[0]  = 0.
+        vsst_plus[-1] = 0. ; vsst_mins[-1] = 0.
 
-        vsst_plus[0] = 0. ; vsst_minus[0] = 0.
-        vsst_plus[Nt-1] = 0. ; vsst_minus[Nt-1] = 0.
+        y1 = int(min(VT)) ; y2 = int(max(VT)+0.25)
 
-        y1 = int(min(VT))
-        y2 = int(max(VT)+0.25)
+        fig = plt.figure(num = 2, figsize=FIG_SIZE_DEF, facecolor='w', edgecolor='k')
+        ax  = plt.axes(AXES_DEF)
 
-        fig = plt.figure(num = 2, figsize=FIG_SIZE_DEF, facecolor='w', edgecolor='k') ; #enso
-        ax = plt.axes(AXES_DEF)
+        plt.plot(VT, 0.*VT+0.4, 'r--', linewidth=1.5)
+        plt.plot(VT, 0.*VT-0.4, 'b--', linewidth=1.5)
 
-        xnino[:,0] =  0.4 ; plt.plot(VT, xnino[:,0], 'r--', linewidth=1.5)
-        xnino[:,0] = -0.4 ; plt.plot(VT, xnino[:,0], 'b--', linewidth=1.5)
-
-        plt.fill(VT, vsst_plus, b_red, VT, vsst_minus, b_blu, linewidth=0)
+        plt.fill(VT, vsst_plus, b_red, VT, vsst_mins, b_blu, linewidth=0)
         plt.plot(VT, xnino[:,3], 'k', linewidth=0.7)
-        xnino[:,3] = 0.0
-        plt.plot(VT, xnino[:,3], 'k', linewidth=0.7)
-        plt.axis([min(VT), max(VT), -2.5, 2.5])
+        plt.plot(VT,   0.*VT,    'k', linewidth=0.7)
 
         __nice_x_axis__(ax, plt, y1, y2, dt, cfont=font_xylb)
 
+        ax.set_xlim(-2.5,2.5)
         plt.yticks( nmp.arange(-2.5,2.501,0.5) )
-
-        #ax.grid(color='k', linestyle='-', linewidth=0.2)
         plt.ylabel(r'SST anomaly ($^{\circ}$C)', **font_xylb)
+        
         plt.title('SST anomaly on Nino region 3.4', **font_ttl)
-        cf_fig = cfignm+'.png'
-        plt.savefig(cf_fig, dpi=DPI_DEF, orientation='portrait', transparent=True) ; #enso
-
+        plt.savefig(cfignm+'.png', dpi=DPI_DEF, orientation='portrait', transparent=True) ; #enso
         plt.close(2)
 
-
         del xnino
-
         return
 
 

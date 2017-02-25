@@ -32,6 +32,7 @@ f_mm.close()
 (nj,ni) = nmp.shape(nav_lon)
 
 cf_bm = string.replace(os.path.basename(cf_mm), 'mesh_', 'basin_')
+cf_bm = string.replace(os.path.basename(cf_bm), '.nc4', '.nc')
 
 nb_bas = len(vbasins)
 

@@ -12,7 +12,7 @@ def least_sqr_line(ZX,ZY):
     Sxx = nmp.sum(ZX[:]*ZX[:]) ; Sxy = nmp.sum(ZX[:]*ZY[:])
     rA = ( Sx*Sy - Nx*Sxy ) / ( Sx*Sx - Nx*Sxx )
     rB = ( Sy - rA*Sx ) / Nx
-    return [ rA, rB ]
+    return ( rA, rB )
 
 
 def stat_serie(ZX,ZY):
