@@ -118,7 +118,7 @@ class plot :
         dxgap = nmp.amax(VX) - nmp.amin(VX)
         if dxgap > 140.: dx = 5.; i_x_sbsmp = 2
         if dxgap < 50.:  dx = 2.
-        if dxgap < 25.:  dx = 1.        
+        if dxgap < 25.:  dx = 1.
 
         # Masking where mask is zero!
         XF = nmp.ma.masked_where(XMSK == 0, XF)
@@ -155,7 +155,7 @@ class plot :
 
         # X-axis:
         if lzonal:
-            [vvx, ctck] = __name_longitude_ticks__(lon_min=xmin, lon_max=xmax, dlon=dx*i_x_sbsmp)            
+            [vvx, ctck] = __name_longitude_ticks__(lon_min=xmin, lon_max=xmax, dlon=dx*i_x_sbsmp)
         else:
             [vvx, ctck] =  __name_latitude_ticks__(lat_min=xmin, lat_max=xmax, dlat=dx*i_x_sbsmp)
         plt.xticks(vvx,ctck)
@@ -320,7 +320,7 @@ class plot :
                  cb_orient='vertical', lat_min=-77., lat_max=77., i_cb_subsamp=1,
                  lpix=False, l_continent_pixel=True, colorbar_fs=14,
                  col_min='k', col_max='k', vcont_spec = []):
-        
+
         import barakuda_tool   as bt
         import barakuda_colmap as bcm
 
@@ -987,7 +987,7 @@ class plot :
                      l_y_increase=False ):
         #
         # c_y_is : 'depth', 'latitude'
-        # lkcont : use contours rather than "pcolormesh" 
+        # lkcont : use contours rather than "pcolormesh"
         #
 
         import barakuda_colmap as bcm
@@ -1043,46 +1043,32 @@ class plot :
 
 
 
-    def __enso(self,VT, VSST, cfignm='fig', dt=5):
+    def __enso(self,VT, VSST, cfignm='fig', dt=5, cfig_type='png'):
 
         # Plot a ENSO-like graph from a SST time series VSST
         #     VSST contains montly data!
         import barakuda_stat as bs
-        
+
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
         Nt = len(VT)
         if len(VSST) != Nt: print 'ERROR: plot_enso.barakuda_plot => VT and VSST do not agree in size'; sys.exit(0)
-        xnino = nmp.zeros((Nt,4))
-        xnino[:,0] = VSST[:]
+        vtmp = nmp.zeros(Nt)
+        vtime = nmp.zeros(Nt-5)
+        xnino = nmp.zeros((Nt-5,4)) ; # Nt-5 because 5-month-running mean
 
-        # 5-month running mean:
-        #for jt in nmp.arange(2,Nt-2):
-        #    xnino[jt,1] = (xnino[jt-2,0] + xnino[jt-1,0] + xnino[jt,0] + xnino[jt+1,0] + xnino[jt+2,0]) / 5.
-        xnino[:,1] = bs.running_mean_5(xnino[:,0])
-        #xnino[0:2,1] = xnino[2,1] ; xnino[Nt-2:Nt,1] = xnino[Nt-3,1]
+        vtime[:] = VT[2:-3]
+        vtmp = bs.running_mean_5(VSST) ; # 5-month running mean
+        xnino[:,0] = VSST[2:-3]
+        xnino[:,1] = vtmp[2:-3]
 
-        # least-square curve for 5-month running mean:
-        #sumx  = nmp.sum(VT[:]) ; sumy  = nmp.sum(xnino[:,1])
-        #sumxx = nmp.sum(VT[:]*VT[:])
-        #sumxy = nmp.sum(VT[:]*xnino[:,1])
-        #a = ( sumx*sumy - Nt*sumxy ) / ( sumx*sumx - Nt*sumxx )
-        #b = ( sumy - a*sumx ) / Nt
-        #print 'a, b =', a, b
-        #
-        # Least-square linear trend:
-        (za,zb) = bs.least_sqr_line(VT[:], xnino[:,1])
-        xnino[:,2] = za*VT[:] + zb
-        #print 'mean value for least-square linear trend = ', nmp.sum(xnino[:,2])/Nt
+        (za,zb) = bs.least_sqr_line(vtime[:], xnino[:,1]) ; # Least-square linear trend
+        xnino[:,2] = za*vtime[:] + zb
 
-        # Anomaly
         xnino[:,3] = xnino[:,1] - xnino[:,2] ; # anomaly for 5-month running mean
-        #print 'mean value for anomaly = ', nmp.sum(xnino[:,3])/Nt
 
-        vsst_plus = nmp.zeros(Nt)
-        vsst_mins = nmp.zeros(Nt)
-        vsst_plus[:] = xnino[:,3]
-        vsst_mins[:] = xnino[:,3]
+        vsst_plus = nmp.zeros(Nt-5) ; vsst_mins = nmp.zeros(Nt-5)
+        vsst_plus[:] = xnino[:,3]   ; vsst_mins[:] = xnino[:,3]
         vsst_plus[nmp.where(xnino[:,3] < 0. )] = 0.
         vsst_mins[nmp.where(xnino[:,3] > 0. )] = 0.
         vsst_plus[0]  = 0. ; vsst_mins[0]  = 0.
@@ -1093,24 +1079,23 @@ class plot :
         fig = plt.figure(num = 2, figsize=FIG_SIZE_DEF, facecolor='w', edgecolor='k')
         ax  = plt.axes(AXES_DEF)
 
-        plt.plot(VT, 0.*VT+0.4, 'r--', linewidth=1.5)
-        plt.plot(VT, 0.*VT-0.4, 'b--', linewidth=1.5)
+        plt.plot(vtime, 0.*vtime+0.4, 'r--', linewidth=1.5)
+        plt.plot(vtime, 0.*vtime-0.4, 'b--', linewidth=1.5)
 
-        plt.fill(VT, vsst_plus, b_red, VT, vsst_mins, b_blu, linewidth=0)
-        plt.plot(VT, xnino[:,3], 'k', linewidth=0.7)
-        plt.plot(VT,   0.*VT,    'k', linewidth=0.7)
+        plt.fill(vtime, vsst_plus, b_red, vtime, vsst_mins, b_blu, linewidth=0)
+        plt.plot(vtime, xnino[:,3], 'k', linewidth=0.7)
+        plt.plot(vtime,   0.*vtime, 'k', linewidth=0.7)
 
         __nice_x_axis__(ax, plt, y1, y2, dt, cfont=font_xylb)
 
-        ax.set_xlim(-2.5,2.5)
-        plt.yticks( nmp.arange(-2.5,2.501,0.5) )
+        ax.set_ylim(-2.1,2.1)
+        plt.yticks( nmp.arange(-2.,2.5,0.5) )
         plt.ylabel(r'SST anomaly ($^{\circ}$C)', **font_xylb)
-        
-        plt.title('SST anomaly on Nino region 3.4', **font_ttl)
-        plt.savefig(cfignm+'.png', dpi=DPI_DEF, orientation='portrait', transparent=True) ; #enso
-        plt.close(2)
 
-        del xnino
+        plt.title('SST anomaly on Nino region 3.4', **font_ttl)
+        plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=True)
+        plt.close(2)
+        del xnino, vtmp, vtime
         return
 
 
@@ -1150,7 +1135,7 @@ class plot :
         if l_add_monthly:
             plt.plot(VTm, VDm, mnth_col, label=r'monthly', linewidth=1)
         plt.plot(VTy, VDy, b_red, label=r'annual', linewidth=2)
-        
+
         ax.get_yaxis().get_major_formatter().set_useOffset(False); # Prevents from using scientific notations in axess ticks numbering
 
         if l_add_monthly:
@@ -1244,7 +1229,7 @@ class plot :
                 plt.plot(vt[:], XD[jp,:], line_styles[jp],   label=vlabels[jp], linewidth=2)
             else:
                 plt.plot(vt[:], XD[jp,:], v_dflt_colors[jp], label=vlabels[jp], linewidth=2)
-                    
+
         ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
 
         if lzonal:
@@ -1285,7 +1270,7 @@ class plot :
             if l_legend_out:
                 # Shrink Y axis's height by % on the bottom
                 box = ax.get_position()
-                ax.set_position([box.x0, box.y0 + box.height*y_leg, box.width, box.height*(1.-y_leg)])                
+                ax.set_position([box.x0, box.y0 + box.height*y_leg, box.width, box.height*(1.-y_leg)])
                 plt.legend(bbox_to_anchor=(0.9, -0.05), ncol=nb_col, shadow=True, fancybox=True)
             else:
                 plt.legend(loc=loc_legend, ncol=nb_col, shadow=True, fancybox=True)
@@ -1326,7 +1311,7 @@ class plot :
         ax = plt.axes(AXES_DEF) ; #1d
 
         plt.plot(vt[:], VF[:], line_styles, linewidth=2)
-        
+
         ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
 
         if xmin == 0 and xmax == 0:
@@ -1889,7 +1874,7 @@ def __nb_col_row_legend__(nn):
     else:
         nbc = 4 ; nbr = nn/nbc + 1
     return nbc, nbr
-    
+
 def __time_axis_minor_ticks__(dt):
     dt_mnr=0
     if (dt>=2)  and (dt<10) and (dt%2 == 0) : dt_mnr=1

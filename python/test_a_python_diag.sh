@@ -8,8 +8,9 @@ iamoc=0
 icrosssect=0
 itempsal=0
 isflx=0
-imean2d=1
+imean2d=0
 imean3d=0
+ienso=1
 imov=0
 issh=0
 its=0
@@ -25,8 +26,7 @@ ihov=0
 #export RUN="LR1E" ; NC=nc4 ; jyear=1990
 
 #CONFIG="ORCA1_L42"
-##ARCH="ece22_triolith"
-#ARCH="lacroix"
+#ARCH="ece22_triolith"
 #export RUN="SPIN" ; NC=nc4 ; jyear=2540
 
 #CONFIG="ORCA2_L31"
@@ -42,13 +42,13 @@ ihov=0
 #ARCH="T511_ece32_triolith"
 #export RUN="HC71" ; NC=nc ; jyear=1990
 
-CONFIG="ORCA025_L75"
-ARCH="etienne"
-export RUN="a0ez" ; NC=nc ; jyear=1945
+#CONFIG="ORCA025_L75"
+#ARCH="etienne"
+#export RUN="a0ez" ; NC=nc ; jyear=1945
 
-#CONFIG="ORCA1_L75"
-#ARCH="T255_ece32_triolith"
-#export RUN="LB10" ; NC=nc4 ; jyear=1990
+CONFIG="ORCA1_L75"
+ARCH="T255_ece32_triolith"
+export RUN="LB10" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -110,6 +110,11 @@ echo ; echo " *** DIAG_D=${DIAG_D} !"; echo
 rm -f *.png
 
 # Time for diags:
+
+if [ ${ienso} -eq 1 ]; then
+    CMD="python exec/plot_enso.py ${DIAG_D}/Nino34_${CONFRUN}.nc"
+    echo ; echo " CMD = ${CMD} "; echo
+fi
 
 if [ ${imhst} -eq 1 ]; then
     CMD="python exec/plot_hovm_merid_trsp.py"

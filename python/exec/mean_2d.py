@@ -449,7 +449,7 @@ msk_natl = nmp.zeros((nj,ni))
 msk_natl[:,:] = mask[jb,:,:]
 msk_natl[nmp.where(xlat< 2.)] = 0
 msk_natl[nmp.where(xlat>68.)] = 0
-#debug: bnc.write_2d_mask('mask_AMO.nc', msk_natl)
+#debug:bnc.write_2d_mask('mask_AMO.nc', msk_natl)
 
 id_in = Dataset(cf_T_in)
 if vdic['NN_SST'] == 'thetao':
