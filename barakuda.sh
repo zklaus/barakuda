@@ -639,8 +639,8 @@ if [ ${ISTAGE} -eq 2 ]; then
     if [ ${i_do_mean} -eq 1 ]; then
 
          # 5-month-running mean SST anomaly on Nino region 3.4 graph:
-        echo " *** CALLING: plot_enso.py Nino34_${CONFRUN}.nc"
-        plot_enso.py Nino34_${CONFRUN}.nc
+        echo " *** CALLING: plot_enso.py Nino34_${CONFRUN}.nc ${NN_SST}"
+        plot_enso.py Nino34_${CONFRUN}.nc ${NN_SST}
         echo; echo
 
         # Hovmuller of temperature and salinity

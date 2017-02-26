@@ -1043,34 +1043,23 @@ class plot :
 
 
 
-    def __enso(self,VT, VSST, cfignm='fig', dt=5, cfig_type='png'):
+    def __oscillation_index(self, VT, VSST, ymax=2.5, dy=0.5, yplusminus=1.,
+                            cfignm='fig', dt=5, cfig_type='png', cyunit='', ctitle=''):
 
-        # Plot a ENSO-like graph from a SST time series VSST
-        #     VSST contains montly data!
-        import barakuda_stat as bs
+        #--------------------------------------------------------------------------------------
+        # Plot a ENSO / AMO / PDO -like graph from a SST time series VSST that
+        # has already been smoothed and detrended
+        #--------------------------------------------------------------------------------------
 
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
         Nt = len(VT)
-        if len(VSST) != Nt: print 'ERROR: plot_enso.barakuda_plot => VT and VSST do not agree in size'; sys.exit(0)
-        vtmp = nmp.zeros(Nt)
-        vtime = nmp.zeros(Nt-5)
-        xnino = nmp.zeros((Nt-5,4)) ; # Nt-5 because 5-month-running mean
+        if len(VSST) != Nt: print 'ERROR: oscillation_index.barakuda_plot => VT and VSST do not agree in size'; sys.exit(0)
 
-        vtime[:] = VT[2:-3]
-        vtmp = bs.running_mean_5(VSST) ; # 5-month running mean
-        xnino[:,0] = VSST[2:-3]
-        xnino[:,1] = vtmp[2:-3]
-
-        (za,zb) = bs.least_sqr_line(vtime[:], xnino[:,1]) ; # Least-square linear trend
-        xnino[:,2] = za*vtime[:] + zb
-
-        xnino[:,3] = xnino[:,1] - xnino[:,2] ; # anomaly for 5-month running mean
-
-        vsst_plus = nmp.zeros(Nt-5) ; vsst_mins = nmp.zeros(Nt-5)
-        vsst_plus[:] = xnino[:,3]   ; vsst_mins[:] = xnino[:,3]
-        vsst_plus[nmp.where(xnino[:,3] < 0. )] = 0.
-        vsst_mins[nmp.where(xnino[:,3] > 0. )] = 0.
+        vsst_plus = nmp.zeros(Nt) ; vsst_mins = nmp.zeros(Nt)
+        vsst_plus[:] = VSST[:]   ; vsst_mins[:] = VSST[:]
+        vsst_plus[nmp.where(VSST[:] < 0. )] = 0.
+        vsst_mins[nmp.where(VSST[:] > 0. )] = 0.
         vsst_plus[0]  = 0. ; vsst_mins[0]  = 0.
         vsst_plus[-1] = 0. ; vsst_mins[-1] = 0.
 
@@ -1079,23 +1068,23 @@ class plot :
         fig = plt.figure(num = 2, figsize=FIG_SIZE_DEF, facecolor='w', edgecolor='k')
         ax  = plt.axes(AXES_DEF)
 
-        plt.plot(vtime, 0.*vtime+0.4, 'r--', linewidth=1.5)
-        plt.plot(vtime, 0.*vtime-0.4, 'b--', linewidth=1.5)
+        plt.plot(VT, 0.*VT+yplusminus, 'r--', linewidth=1.5)
+        plt.plot(VT, 0.*VT-yplusminus, 'b--', linewidth=1.5)
 
-        plt.fill(vtime, vsst_plus, b_red, vtime, vsst_mins, b_blu, linewidth=0)
-        plt.plot(vtime, xnino[:,3], 'k', linewidth=0.7)
-        plt.plot(vtime,   0.*vtime, 'k', linewidth=0.7)
+        plt.fill(VT, vsst_plus, b_red, VT, vsst_mins, b_blu, linewidth=0)
+        plt.plot(VT, VSST[:], 'k', linewidth=0.7)
+        plt.plot(VT,   0.*VT, 'k', linewidth=0.7)
 
         __nice_x_axis__(ax, plt, y1, y2, dt, cfont=font_xylb)
 
-        ax.set_ylim(-2.1,2.1)
-        plt.yticks( nmp.arange(-2.,2.5,0.5) )
-        plt.ylabel(r'SST anomaly ($^{\circ}$C)', **font_xylb)
+        ax.set_ylim(-ymax,ymax)
+        plt.yticks( nmp.arange(-round(ymax,0), round(ymax,0)+dy, dy) )
+        plt.ylabel(cyunit, **font_xylb)
 
-        plt.title('SST anomaly on Nino region 3.4', **font_ttl)
+        plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=True)
         plt.close(2)
-        del xnino, vtmp, vtime
+        #lulu
         return
 
 

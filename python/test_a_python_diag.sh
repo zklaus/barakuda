@@ -112,7 +112,7 @@ rm -f *.png
 # Time for diags:
 
 if [ ${ienso} -eq 1 ]; then
-    CMD="python exec/plot_enso.py ${DIAG_D}/Nino34_${CONFRUN}.nc"
+    CMD="python exec/plot_enso.py ${DIAG_D}/Nino34_${CONFRUN}.nc ${NN_SST}"
     echo ; echo " CMD = ${CMD} "; echo
 fi
 
