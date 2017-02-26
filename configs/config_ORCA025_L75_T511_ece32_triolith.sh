@@ -8,7 +8,7 @@
 #
 #        Machine: TRIOLITH@NSC.LIU.SE
 #
-#        L. Brodeau, February 2017
+#        L. Brodeau, November 2016
 #
 #===========================================================
 
@@ -29,6 +29,7 @@ export DIAG_DIR="${STORE_DIR}/barakuda/${CONF}_ece32"
 
 export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
+export DIR_NCVIEW_CMAP="${BARAKUDA_ROOT}/src/ncview_colormaps"
 
 # Is it an ec-earth run?
 export ece_run=2 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run done from traditional NEMO setup
@@ -52,6 +53,10 @@ export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
 export NEMO_OUT_STRCT="${STORE_DIR}/run/<RUN>/output/nemo"
 
 export TSTAMP="1m"   ; # output time-frequency stamp as in NEMO output files...
+
+# In case 3D fields have been saved on an annual mean basis rather than montly:
+export ANNUAL_3D="" ;   # leave blanck "" if 3D fields are in monthly files...
+export NEMO_SAVED_FILES_3D="" ; #     ''
 
 # How does the nemo files prefix looks like
 # Everything before "<year_related_info>_grid_<X>" or "<year_related_info>_icemod"
@@ -142,7 +147,6 @@ export RUSER=donald             ; # username associated to remote host (for file
 export RWWWD=/data/www/barakuda/ec-earth_3.2b ; # directory of the local or remote host to send the diagnostic page to
 
 
-
 #########################
 # Diags to be performed #
 #########################
@@ -195,7 +199,6 @@ export i_do_sect=1
 export TS_SECTION_FILE="${BARAKUDA_ROOT}/data/TS_sections.dat"
 
 
-
 # BETA / TESTING / NERDY (at your own risks...):
 #
 export i_do_ssx_box=0 ; # zoom on given boxes (+spatially-averaged values) for surface properties
@@ -208,6 +211,4 @@ export i_do_zcrit=0
 #  => must compile cdficeflux.x but depends on more recent CDFTOOLS module...
 export i_do_icet=0 ; # treat sea-ice volume transport!
 export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_ARCTIC.dat"
-
-export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
 

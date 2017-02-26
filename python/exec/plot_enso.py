@@ -36,20 +36,22 @@ Nt = len(vsst)
 
 vtmp = nmp.zeros(Nt)
 vtime = nmp.zeros(Nt-5)
-xnino = nmp.zeros((Nt-5,4)) ; # Nt-5 because 5-month-running mean
+xplot = nmp.zeros((Nt-5,4)) ; # Nt-5 because 5-month-running mean
 
 vtime[:] = vt[2:-3]
 vtmp = bs.running_mean_5(vsst) ; # 5-month running mean
-xnino[:,0] = vsst[2:-3]
-xnino[:,1] = vtmp[2:-3]
+xplot[:,0] = vsst[2:-3]
+xplot[:,1] = vtmp[2:-3]
 
-(za,zb) = bs.least_sqr_line(vtime[:], xnino[:,1]) ; # Least-square linear trend
-xnino[:,2] = za*vtime[:] + zb
+(za,zb) = bs.least_sqr_line(vtime[:], xplot[:,1]) ; # Least-square linear trend
+xplot[:,2] = za*vtime[:] + zb
 
-xnino[:,3] = xnino[:,1] - xnino[:,2] ; # anomaly for 5-month running mean
+xplot[:,3] = xplot[:,1] - xplot[:,2] ; # anomaly for 5-month running mean
 
 ittic = bt.iaxe_tick(Nt/12)
 
-bp.plot("oscillation_index")( vtime, xnino[:,3], ymax=2.1, dy=0.5, yplusminus=0.4, cfignm=cname, dt=ittic,
-                              cfig_type=fig_form, cyunit=r'SST anomaly ($^{\circ}$C)',
+bp.plot("oscillation_index")( vtime, xplot[:,3], ymax=2.1, dy=0.5, yplusminus=0.4,
+                              tmin=vt[0], tmax=vt[-1], dt=ittic,
+                              cfignm=cname, cfig_type=fig_form,
+                              cyunit=r'SST anomaly ($^{\circ}$C)',
                               ctitle='ENSO (over Nino box 3.4)' )

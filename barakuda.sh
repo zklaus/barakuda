@@ -448,31 +448,6 @@ while ${lcontinue}; do
         # BETA STUFF !!
         #==============================
 
-        #~~~~~~~~~~~~~~~~~~~~~~~
-        #  AMO SST time series
-        #~~~~~~~~~~~~~~~~~~~~~~~
-        if [ ${i_do_amo} -eq 1 ]; then
-            diro=${DIAG_D}/amo ; mkdir -p ${diro}
-            echo; echo; echo "AMO SST time series "
-            echo; echo
-            echo " *** CALLING: amo.py ${cyear}"
-            amo.py ${cyear}
-            echo;echo;
-            mv -f  AMO_SST_Atl_${CONFRUN}_${cyear}.nc ${diro}/
-            echo
-        fi
-        # End AMO SST time series
-
-        
-        if [ ${i_do_zcrit} -gt 0 ]; then
-            if [ -z ${FILE_DEF_BOXES} ]; then
-                echo "Please specify a FILE_DEF_BOXES to use into the config file!" ; exit
-            fi
-            echo " *** CALLING: zcrit_conv.py ${cyear}"
-            zcrit_conv.py ${cyear}
-            echo;echo
-        fi
-
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Solid freshwater transport associated with sea-ice drift
@@ -559,7 +534,7 @@ if [ ${ISTAGE} -eq 2 ]; then
     
     y1=`cat ${DIAG_D}/first_year.info`
     y2=`cat ${DIAG_D}/last_year_done.info`
-    nby=$((${y2}-${y1}+1)) ; #lulu
+    nby=$((${y2}-${y1}+1))
 
     if [ ${IFREQ_SAV_YEARS} -gt 1 ]; then
         fnamelist=namelist.${cy1m}-${cy2m}
@@ -637,8 +612,8 @@ if [ ${ISTAGE} -eq 2 ]; then
     echo ; echo ; echo
 
     if [ ${i_do_mean} -eq 1 ]; then
-
-         # 5-month-running mean SST anomaly on Nino region 3.4 graph:
+        
+        # 5-month-running mean SST anomaly over Nino region 3.4 graph:
         echo " *** CALLING: plot_enso.py Nino34_${CONFRUN}.nc ${NN_SST}"
         plot_enso.py Nino34_${CONFRUN}.nc ${NN_SST}
         echo; echo
@@ -647,7 +622,13 @@ if [ ${ISTAGE} -eq 2 ]; then
         echo " *** CALLING: plot_hovm_tz.py"
         plot_hovm_tz.py
         echo; echo
-        #
+        
+        if [ ${nby} -le 70 ]; then
+            # AMO aka 11-year-running mean SST anomaly over North Atlantic (0-70N)
+            echo " *** CALLING: plot_amo.py mean_SST_NAtl_${CONFRUN}.nc ${NN_SST}"
+            plot_amo.py mean_SST_NAtl_${CONFRUN}.nc ${NN_SST}
+            echo; echo
+        fi        
     fi
 
 

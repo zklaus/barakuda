@@ -31,7 +31,7 @@ HGHT_DEF     = 3.6
 FIG_SIZE_DEF = ( WDTH_DEF , HGHT_DEF )
 RAT_XY       = WDTH_DEF/10.
 DPI_DEF      = 120
-AXES_DEF     = [0.1, 0.082, 0.87, 0.84]
+AXES_DEF     = [0.09, 0.082, 0.89, 0.84]
 
 # Colors for line:    (https://www.daftlogic.com/projects-hex-colour-tester.htm)
 b_blu = '#2C558A'
@@ -1043,55 +1043,49 @@ class plot :
 
 
 
-    def __oscillation_index(self, VT, VSST, ymax=2.5, dy=0.5, yplusminus=1.,
-                            cfignm='fig', dt=5, cfig_type='png', cyunit='', ctitle=''):
+    def __oscillation_index(self, VT, VF, ymax=2.5, dy=0.5, yplusminus=0.,
+                            tmin=0., tmax=0., dt=5,
+                            cfignm='fig', cfig_type='png', cyunit='', ctitle=''):
 
         #--------------------------------------------------------------------------------------
-        # Plot a ENSO / AMO / PDO -like graph from a SST time series VSST that
+        # Plot a ENSO / AMO / PDO -like graph from a time series VF that
         # has already been smoothed and detrended
         #--------------------------------------------------------------------------------------
 
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
         Nt = len(VT)
-        if len(VSST) != Nt: print 'ERROR: oscillation_index.barakuda_plot => VT and VSST do not agree in size'; sys.exit(0)
+        if len(VF) != Nt: print 'ERROR: oscillation_index.barakuda_plot => VT and VF do not agree in size'; sys.exit(0)
 
-        vsst_plus = nmp.zeros(Nt) ; vsst_mins = nmp.zeros(Nt)
-        vsst_plus[:] = VSST[:]   ; vsst_mins[:] = VSST[:]
-        vsst_plus[nmp.where(VSST[:] < 0. )] = 0.
-        vsst_mins[nmp.where(VSST[:] > 0. )] = 0.
-        vsst_plus[0]  = 0. ; vsst_mins[0]  = 0.
-        vsst_plus[-1] = 0. ; vsst_mins[-1] = 0.
+        vf_plus = nmp.zeros(Nt) ; vf_mins = nmp.zeros(Nt)
+        vf_plus[:] = VF[:]   ; vf_mins[:] = VF[:]
+        vf_plus[nmp.where(VF[:] < 0. )] = 0.
+        vf_mins[nmp.where(VF[:] > 0. )] = 0.
+        vf_plus[0]  = 0. ; vf_mins[0]  = 0.
+        vf_plus[-1] = 0. ; vf_mins[-1] = 0.
 
-        y1 = int(min(VT)) ; y2 = int(max(VT)+0.25)
+        y1 = tmin ; y2 = tmax
+        if tmin == 0.: y1 = int(min(VT))
+        if tmax == 0.: y2 = int(max(VT))
 
         fig = plt.figure(num = 2, figsize=FIG_SIZE_DEF, facecolor='w', edgecolor='k')
         ax  = plt.axes(AXES_DEF)
 
-        plt.plot(VT, 0.*VT+yplusminus, 'r--', linewidth=1.5)
-        plt.plot(VT, 0.*VT-yplusminus, 'b--', linewidth=1.5)
+        if yplusminus > 0.:
+            plt.plot(VT, 0.*VT+yplusminus, 'r--', linewidth=1.5)
+            plt.plot(VT, 0.*VT-yplusminus, 'b--', linewidth=1.5)
 
-        plt.fill(VT, vsst_plus, b_red, VT, vsst_mins, b_blu, linewidth=0)
-        plt.plot(VT, VSST[:], 'k', linewidth=0.7)
+        plt.fill(VT, vf_plus, b_red, VT, vf_mins, b_blu, linewidth=0)
+        plt.plot(VT, VF[:], 'k', linewidth=0.7)
         plt.plot(VT,   0.*VT, 'k', linewidth=0.7)
 
-        __nice_x_axis__(ax, plt, y1, y2, dt, cfont=font_xylb)
-
-        ax.set_ylim(-ymax,ymax)
-        plt.yticks( nmp.arange(-round(ymax,0), round(ymax,0)+dy, dy) )
-        plt.ylabel(cyunit, **font_xylb)
+        __nice_x_axis__(ax, plt,    y1,   y2, dt,               cfont=font_xylb)
+        __nice_y_axis__(ax, plt, -ymax, ymax, dy, cunit=cyunit, cfont=font_xylb)
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=True)
         plt.close(2)
-        #lulu
         return
-
-
-
-
-
-
 
 
 
@@ -1801,6 +1795,32 @@ def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_L, dx, i_sbsmp=1, cunit=None, cfon
         ax_hndl.grid(which='both')
         ax_hndl.grid(which='minor', color='k', linestyle='-', linewidth=0.1)
         ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
+
+
+
+def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_L, dy, i_sbsmp=1, cunit=None, cfont=None, dy_minor=5):
+    plt_hndl.yticks( nmp.arange(y_0, y_L+dy, dy) )
+    locs, labels = plt_hndl.yticks()
+    ax_hndl.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering...
+    if i_sbsmp > 1: __subsample_axis__( plt, 'y', i_sbsmp)
+    if (10.*y_0)%(10.*dy) != 0: __force_lowest_bound_axis__( plt, 'y', imult=dy) ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
+    ax_hndl.set_ylim(y_0,y_L)
+    if not cunit is None:
+        if cfont is None:
+            plt_hndl.ylabel(cunit)
+        else:
+            plt_hndl.ylabel(cunit, **cfont)
+    # Add minor y-ticks and corresponding grid:
+    if dy_minor > 0:
+        locs, labels = plt_hndl.yticks() ; # need new version of locs, because of __force_lowest_bound_axis__
+        ax_hndl.set_yticks( nmp.arange(locs[0], locs[len(locs)-1] , dy_minor) , minor=True)
+        ax_hndl.grid(which='both')
+        ax_hndl.grid(which='minor', color='k', linestyle='-', linewidth=0.1)
+        ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
+
+
+
+
 
 def __nice_z_axis__(ax_hndl, plt_hndl, z0, zK, dz, i_sbsmp=1, cunit=None, cfont=None):
     iia = 1

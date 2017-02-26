@@ -77,6 +77,10 @@ EOF
     ${img_l} 3d_thetao_basins_${cr}.${ff} ${img_r}
     ${img_l} Nino34_${cr}.${ff} ${img_r}
 EOF
+    # AMO figure if here:
+    famo="./mean_SST_NAtl_${cr}.${ff}"
+    if [ -f ${famo} ]; then echo "    ${img_l} ${famo} ${img_r}" >> index.html ; fi
+    
     list_hov_figs=`\ls -v ${HTML_DIR}/hov_temperature_${cr}*.${ff}`
     if [ ! "${list_hov_figs}" = "" ]; then
         echo "    ${ctl} Time-depth evolution of temperature${ctr}" >> index.html

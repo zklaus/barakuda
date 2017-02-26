@@ -6,7 +6,7 @@
 #
 # OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2 beta tunning on 75 levels
 #
-#            Machine: MareNostrum@BSC
+#        Machine: MareNostrum@BSC
 #
 #        L. Brodeau, November 2016
 #
@@ -100,12 +100,14 @@ export NN_ICET="sithic" ; # ice thickness or rather volume...
 #
 # Surface fluxes:
 export FILE_FLX_SUFFIX="grid_T" ; # in what file type extension to find surface fluxes
+# ++ Surface freswater fluxes:
 export NN_FWF="X"        ; # name of net freshwater flux (E-P-R) in "FILE_FLX_SUFFIX" file...
 export NN_EMP="X"        ; # name of E-P in "FILE_FLX_SUFFIX" file...
 export NN_P="X"          ; # name of total precipitation (solid+liquid) in "FILE_FLX_SUFFIX" file...
 export NN_RNF="X"        ; # name of continental runoffs in "FILE_FLX_SUFFIX" file...
 export NN_CLV="X"        ; # calving from icebergs in "FILE_FLX_SUFFIX" file...
 export NN_E="X"          ; # name of total evaporation in "FILE_FLX_SUFFIX" file...
+# ++ Surface heat fluxes:
 export NN_QNET="hfds"    ; # name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
 export NN_QSOL="rsntds"  ; # name of net surface solar flux in "FILE_FLX_SUFFIX" file...
 #
@@ -137,7 +139,7 @@ export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA025_y1050.da
 export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025_y1050.txt"
 export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025_y1050.txt"
 
-# In what format should figures be produced ('png' recommanded, 'svg' works):
+# In what format should figures be produced ('png' recommanded, but 'svg' supported!):
 export FIG_FORM="png"
 
 # About remote HOST to send/install HTML pages to:
@@ -210,8 +212,5 @@ export i_do_zcrit=0
 # Fresh-water transport associated to sea-ice transport
 #  => must compile cdficeflux.x but depends on more recent CDFTOOLS module...
 export i_do_icet=0 ; # treat sea-ice volume transport!
-export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1_ARCTIC.dat"
-
-export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
-
+export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_ARCTIC.dat"
 

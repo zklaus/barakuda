@@ -160,7 +160,6 @@ def running_mean_11(VV, l_fill_bounds=False):
                     + VV[jv+1] + VV[jv+2] + VV[jv+3] + VV[jv+4] + VV[jv+5] ) / 11.
 
     # About begining and end:
-
     Vrm[0:5] = nmp.nan ; Vrm[nv-5:nv] = nmp.nan
 
     if l_fill_bounds:
@@ -214,6 +213,9 @@ def running_mean_21(VV):
                     + VV[jv] \
                     + VV[jv+1] + VV[jv+2] + VV[jv+3] + VV[jv+4] + VV[jv+5] \
                     + VV[jv+6] + VV[jv+7] + VV[jv+8] + VV[jv+9] + VV[jv+10] ) / 21.
+
+    # About begining and end:
+    Vrm[0:10] = nmp.nan ; Vrm[nv-10:nv] = nmp.nan
 
     return Vrm[:]
 

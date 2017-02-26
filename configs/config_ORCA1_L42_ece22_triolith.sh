@@ -4,7 +4,7 @@
 #
 #         Configuration file for
 #
-# OCEAN MONITORING for NEMO v2.? and EC-Earth 2.3 (CMIP5)
+# OCEAN MONITORING for NEMO v2.? and EC-Earth 2.2 / 2.3 (CMIP5)
 #
 #            Machine: triolith
 #
@@ -12,7 +12,7 @@
 #
 #===========================================================
 
-export CONF=ORCA1.L42 ; # horizontal global configuration
+export CONF=ORCA1.L42 ; # horizontal global ORCA configuration
 export NBL=42         ; # number of levels
 
 export HOST=TRIOLITH ; # this has no importance at all, it will just become an "info" on the web-page!
@@ -38,7 +38,8 @@ export ece_run=0 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run
 #                  #      Both 1 and 2 imply that NEMO files are stored in something like
 #                  #       ${STORE_DIR}/<RUN>/output/nemo/<YYY>
 #                  #       where YYY starts from '001' to
-#                  #   If you select '2', make sure 'cdo' is available and working!!!
+#                  #      If you select '2', make sure 'cdo' is available and working!!!
+#                  # 10 => this run controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
 export Y_INI_EC=1990 ;    # initial year if ec-earth run...
 export TRES_IFS=159  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
@@ -97,12 +98,14 @@ export NN_ICET="iicethic" ; # ice thickness but 'sit' is only in icemod file !!!
 #
 # Surface fluxes:
 export FILE_FLX_SUFFIX="grid_T" ; # in what file type extension to find surface fluxes
+# ++ Surface freswater fluxes:
 export NN_FWF="sowaflup"        ; # name of net freshwater flux (E-P-R) in "FILE_FLX_SUFFIX" file...
 export NN_EMP="XXX"             ; # name of E-P in "FILE_FLX_SUFFIX" file...
 export NN_P="XXX"               ; # name of total precipitation (solid+liquid) in "FILE_FLX_SUFFIX" file...
 export NN_RNF="sorunoff"        ; # name of continental runoffs in "FILE_FLX_SUFFIX" file...
 export NN_CLV="XXX"             ; # calving from icebergs in "FILE_FLX_SUFFIX" file...
 export NN_E="XXX"               ; # name of total evaporation in "FILE_FLX_SUFFIX" file...
+# ++ Surface heat fluxes:
 export NN_QNET="sohefldo"       ; # name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
 export NN_QSOL="soshfldo"       ; # name of net surface solar flux in "FILE_FLX_SUFFIX" file...
 #
@@ -209,17 +212,4 @@ export i_do_zcrit=0
 #  => must compile cdficeflux.x but depends on more recent CDFTOOLS module...
 export i_do_icet=0 ; # treat sea-ice volume transport!
 export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1_ARCTIC.dat"
-
-export i_do_amo=0 ;  # buit a SST time serie usable to build Atlantic Multidecadal Oscilation index
-
-
-
-
-# Place for potential specific host-related survival tricks:
-
-#========================== Marenostrum @ BSC =========================================================
-### Shouldn't be needed elsewhere than MareNostrum, where it's a hello to have CDO working...
-## => Only if you specified ece_run=2 and i_do_ifs_flx
-#export MOD_CDO="gcc/4.7.2 intel/13.0.1 openmpi/1.8.1 NETCDF/4.1.3 HDF5/1.8.10 UDUNITS/2.1.24 CDO/1.7.0"
-#=======================================================================================================
 
