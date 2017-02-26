@@ -116,7 +116,7 @@ ittic = bt.iaxe_tick(nbm/12)
 bp.plot("1d_multi")(vtime_ann, v278, list_sections, cfignm='tr_sigma_gt278_'+CONFRUN,
                     dt=ittic, cyunit='Sv',
                     ctitle=r'Transport of volume for $\sigma_0$ > '+str(rsigdense0)+', '+CONFRUN,
-                    ymin=0., ymax=0.)
+                    ymin=0., ymax=0., loc_legend='out')
 
 
 print '\n trsp_sigma.py => done!\n\n'
