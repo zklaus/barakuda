@@ -623,7 +623,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         plot_hovm_tz.py
         echo; echo
         
-        if [ ${nby} -le 70 ]; then
+        if [ ${nby} -ge 70 ]; then
             # AMO aka 11-year-running mean SST anomaly over North Atlantic (0-70N)
             echo " *** CALLING: plot_amo.py mean_SST_NAtl_${CONFRUN}.nc ${NN_SST}"
             plot_amo.py mean_SST_NAtl_${CONFRUN}.nc ${NN_SST}

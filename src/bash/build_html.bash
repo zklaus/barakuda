@@ -78,8 +78,8 @@ EOF
     ${img_l} Nino34_${cr}.${ff} ${img_r}
 EOF
     # AMO figure if here:
-    famo="./mean_SST_NAtl_${cr}.${ff}"
-    if [ -f ${famo} ]; then echo "    ${img_l} ${famo} ${img_r}" >> index.html ; fi
+    famo="mean_SST_NAtl_${cr}.${ff}"
+    if [ -f ${HTML_DIR}/${famo} ]; then echo "    ${img_l} ${famo} ${img_r}" >> index.html ; fi
     
     list_hov_figs=`\ls -v ${HTML_DIR}/hov_temperature_${cr}*.${ff}`
     if [ ! "${list_hov_figs}" = "" ]; then

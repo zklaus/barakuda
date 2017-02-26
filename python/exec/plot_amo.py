@@ -46,8 +46,6 @@ Nt = len(vt)
 n1  = (n_run_mean-1)/2
 n2  = -n1 - 1
 
-print n1, n2
-
 vtmp = nmp.zeros(Nt)
 vtime = nmp.zeros(Nt-n_run_mean)
 xplot = nmp.zeros((Nt-n_run_mean,4)) ; # Nt-n_run_mean because X month-running mean
