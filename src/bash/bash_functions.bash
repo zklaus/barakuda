@@ -145,8 +145,8 @@ function barakuda_setup()
     export CONFRUN=${ORCA}-${RUN}
     export DIAG_D=${DIAG_DIR}/${CONFRUN}
     export CLIM_DIR=${DIAG_D}/clim
-
-    if [ ${ISTAGE} -eq 1 ]; then
+    
+    if [ ${ISTAGE} -eq 1 ] || [ ! -z "${SLURM_JOBID}" ]; then
         # We need a scratch/temporary directory to copy these files to and gunzip them:
         # Normal case, inside a batch job scheduler:
         if [ ! -z "${SLURM_JOBID}" ]; then
