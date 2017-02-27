@@ -1236,11 +1236,9 @@ class plot :
             plt.axis([y1, y2, ymin,     ymax])
 
         if lzonal:
-            __nice_x_axis__(ax, plt, y1, y2, 10., cfont=font_xylb)
+            __nice_x_axis__(ax, plt, y1, y2, 10., cfont=font_xylb, dx_minor=5.)
         else:
-            __nice_x_axis__(ax, plt, y1, y2, dt, i_sbsmp=i_t_jump, cfont=font_xylb)
-
-        #ax.grid(color='k', linestyle='-', linewidth=0.2)
+            __nice_x_axis__(ax, plt, y1, y2, dt, i_sbsmp=i_t_jump, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
 
         if lzonal: plt.xlabel(r'Latitude ($^{\circ}$N)', **font_xylb)
 

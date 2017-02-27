@@ -117,8 +117,9 @@ if i2dfl == 1:
                 jrun = jrun + 1
 
             bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
-                                cfignm=cdiag+'_comparison_'+cocean, dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
-                                cyunit=vunit[jvar], ctitle = vname[jvar]+', '+list_basin_lgnms[joce], ymin=0, ymax=0)
+                                cfignm=cdiag+'_comparison_'+cocean, dt=ittic,
+                                loc_legend=DEFAULT_LEGEND_LOC, cyunit=vunit[jvar],
+                                ctitle = vname[jvar]+', '+list_basin_lgnms[joce], ymin=0, ymax=0)
             joce = joce + 1
         jvar = jvar+1
 
