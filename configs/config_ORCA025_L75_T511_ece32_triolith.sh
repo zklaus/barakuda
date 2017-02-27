@@ -46,7 +46,7 @@ export TRES_IFS=511  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=25
 export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
 
-# List of suffixed of files that have been saved by NEMO and that are needed for the diags:
+# List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
 
 # Directory structure in which to find NEMO output file (use <ORCA> and <RUN>):
