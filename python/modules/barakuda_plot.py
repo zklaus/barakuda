@@ -905,10 +905,10 @@ class plot :
         __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cb_or='horizontal', cunit='Sv', cfont=font_clb, fontsize=10)
 
         # AXES:
-        y1 = int(min(VT))  ; y2 = int(max(VT))+1
-        plt.axis([y1, y2, vsigma_bounds[nbins], vsigma_bounds[0]])
+        x1 = int(min(VT))  ; x2 = int(max(VT))+1
+        plt.axis([x1, x2, vsigma_bounds[nbins], vsigma_bounds[0]])
 
-        __nice_x_axis__(ax, plt, y1, y2, dt, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
+        __nice_x_axis__(ax, plt, x1, x2, dt, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
 
         plt.yticks( nmp.flipud(vsigma_bounds) )
 
@@ -1064,9 +1064,9 @@ class plot :
         vf_plus[0]  = 0. ; vf_mins[0]  = 0.
         vf_plus[-1] = 0. ; vf_mins[-1] = 0.
 
-        y1 = tmin ; y2 = tmax
-        if tmin == 0.: y1 = int(min(VT))
-        if tmax == 0.: y2 = int(max(VT))
+        x1 = tmin ; x2 = tmax
+        if tmin == 0.: x1 = int(min(VT))
+        if tmax == 0.: x2 = int(max(VT))
 
         fig = plt.figure(num = 2, figsize=FIG_SIZE_DEF, facecolor='w', edgecolor='k')
         ax  = plt.axes(AXES_DEF)
@@ -1079,7 +1079,7 @@ class plot :
         plt.plot(VT, VF[:], 'k', linewidth=0.7)
         plt.plot(VT,   0.*VT, 'k', linewidth=0.7)
 
-        __nice_x_axis__(ax, plt,    y1,   y2, dt,               cfont=font_xylb)
+        __nice_x_axis__(ax, plt,    x1,   x2, dt,               cfont=font_xylb)
         __nice_y_axis__(ax, plt, -ymax, ymax, dy, cunit=cyunit, cfont=font_xylb)
 
         plt.title(ctitle, **font_ttl)
@@ -1127,8 +1127,8 @@ class plot :
             if plt_m03 or plt_m09: plt.legend(loc='lower center', shadow=True, fancybox=True)
 
         # Time bounds for t-axis:
-        y1 = int(min(VTy)-0.5)
-        y2 = int(max(VTy)+0.5)
+        x1 = int(min(VTy)-0.5)
+        x2 = int(max(VTy)+0.5)
 
         mean_val = nmp.mean(VDy)
         df = max( abs(min(VDm)-mean_val), abs(max(VDm)-mean_val) )
@@ -1138,17 +1138,17 @@ class plot :
         ax.yaxis.set_major_formatter(y_formatter)
 
         if ymin==0 and ymax==0:
-            plt.axis( [y1, y2, min(VDm)-0.2*df, max(VDm)+0.2*df] )
+            plt.axis( [x1, x2, min(VDm)-0.2*df, max(VDm)+0.2*df] )
 
         else:
-            plt.axis([y1, y2, ymin, ymax])
+            plt.axis([x1, x2, ymin, ymax])
 
             if dy != 0:
                 plt.yticks( nmp.arange(float(int(ymin+0.5)), float(int(ymax))+dy, dy) )
-                locs, labels = plt.yticks() #lolo?
+                locs, labels = plt.yticks()
                 if i_y_jump > 1: __subsample_axis__(plt, 'y', i_y_jump)
 
-        __nice_x_axis__(ax, plt, y1, y2, dt, cfont=font_xylb)
+        __nice_x_axis__(ax, plt, x1, x2, dt, cfont=font_xylb)
 
         #ax.grid(color='k', linestyle='-', linewidth=0.2)
 
@@ -1169,10 +1169,10 @@ class plot :
 
 
 
-    def __1d_multi(self,vt, XD, vlabels, cfignm='fig', dt=5, i_t_jump=1, cyunit='', ctitle='',
+    def __1d_multi(self,vt, XD, vlabels, cfignm='fig', dt=5, i_t_jump=1, cyunit=None, ctitle='',
                    cfig_type='png', ymin=0, ymax=0, lzonal=False, xmin=0, xmax=0,
                    loc_legend='lower center', line_styles=[], fig_size=FIG_SIZE_DEF,
-                   l_tranparent_bg=True, cxunit='', lmask=True):
+                   l_tranparent_bg=True, cxunit=None, lmask=True):
 
         # lzonal => zonally averaged curves...
         if lzonal:
@@ -1218,32 +1218,27 @@ class plot :
         if lzonal:
             dt = 15. ; # x-axis increment (latitude!)
             if xmin == 0 and xmax == 0:
-                y1 = -90. ; y2 = 90.
+                x1 = -90. ; x2 = 90.
             else:
-                y1 = xmin ;  y2 = xmax
+                x1 = xmin ;  x2 = xmax
         else:
             if xmin == 0 and xmax == 0:
-                y1 = int(vt[0])
-                y2 = int(round(vt[len(vt)-1]+0.4))
+                x1 = int(vt[0])
+                x2 = int(round(vt[len(vt)-1]+0.4))
             else:
-                y1 = xmin ; y2 = xmax
+                x1 = xmin ; x2 = xmax
 
         if ymin==0 and ymax==0:
-            mean_val = nmp.mean(XD[:,:])
-            df = max( abs(nmp.min(XD[:,:])-mean_val), abs(nmp.max(XD[:,:])-mean_val) )
-            plt.axis( [y1, y2, nmp.min(XD[:,:])-0.2*df, nmp.max(XD[:,:])+0.2*df] )
-        else:
-            plt.axis([y1, y2, ymin,     ymax])
+            ymin = nmp.min(XD[:,:])
+            ymax = nmp.max(XD[:,:])
+        ymin, ymax, dy = __suitable_axis_dx__(ymin, ymax, nb_val=10.)
 
         if lzonal:
-            __nice_x_axis__(ax, plt, y1, y2, 10., cfont=font_xylb, dx_minor=5.)
+            __nice_x_axis__(ax, plt, x1, x2, 10., cunit=r'Latitude ($^{\circ}$N)', cfont=font_xylb, dx_minor=5.)
         else:
-            __nice_x_axis__(ax, plt, y1, y2, dt, i_sbsmp=i_t_jump, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
+            __nice_x_axis__(ax, plt, x1, x2, dt, i_sbsmp=i_t_jump, cunit=cxunit, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
 
-        if lzonal: plt.xlabel(r'Latitude ($^{\circ}$N)', **font_xylb)
-
-        if cyunit != '': plt.ylabel('('+cyunit+')', **font_xylb)
-        if cxunit != '': plt.xlabel('('+cxunit+')', **font_xylb)
+        __nice_y_axis__(ax, plt, ymin, ymax, dy, i_sbsmp=1, cunit=cyunit, cfont=font_xylb, dy_minor=0)
 
         plt.title(ctitle, **font_ttl)
 
@@ -1296,21 +1291,21 @@ class plot :
         ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
 
         if xmin == 0 and xmax == 0:
-            y1 = int(vt[0])
-            y2 = int(round(vt[len(vt)-1]+0.4))
+            x1 = int(vt[0])
+            x2 = int(round(vt[len(vt)-1]+0.4))
         else:
-            y1 = xmin ; y2 = xmax
+            x1 = xmin ; x2 = xmax
 
         if ymin==0 and ymax==0:
             mean_val = nmp.mean(VF[:])
-            df = max( abs(nmp.min(VF[:])-mean_val), abs(nmp.max(VF[:])-mean_val) )
-            plt.axis( [y1, y2, nmp.min(VF[:])-0.2*df, nmp.max(VF[:])+0.2*df] )
+            dA = max( abs(nmp.min(VF[:])-mean_val), abs(nmp.max(VF[:])-mean_val) )
+            plt.axis( [x1, x2, nmp.min(VF[:])-0.2*dA, nmp.max(VF[:])+0.2*dA] )
         else:
-            plt.axis([y1, y2, ymin,     ymax])
+            plt.axis([x1, x2, ymin,     ymax])
 
-        print nmp.arange(y1, y2+dt, dt)
+        print nmp.arange(x1, x2+dt, dt)
 
-        __nice_x_axis__(ax, plt, y1, y2, dt, i_sbsmp=i_t_jump, cfont=font_xylb)
+        __nice_x_axis__(ax, plt, x1, x2, dt, i_sbsmp=i_t_jump, cfont=font_xylb)
 
         #ax.grid(color='k', linestyle='-', linewidth=0.2)
 
@@ -1792,8 +1787,9 @@ def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_L, dx, i_sbsmp=1, cunit=None, cfon
         ax_hndl.set_xticks( nmp.arange(locs[0], locs[len(locs)-1] , dx_minor) , minor=True)
         ax_hndl.grid(which='both')
         ax_hndl.grid(which='minor', color='k', linestyle='-', linewidth=0.1)
-        ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
+    ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
 
+        
 
 
 def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_L, dy, i_sbsmp=1, cunit=None, cfont=None, dy_minor=5):
@@ -1801,7 +1797,7 @@ def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_L, dy, i_sbsmp=1, cunit=None, cfon
     locs, labels = plt_hndl.yticks()
     ax_hndl.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering...
     if i_sbsmp > 1: __subsample_axis__( plt, 'y', i_sbsmp)
-    if (10.*y_0)%(10.*dy) != 0: __force_lowest_bound_axis__( plt, 'y', imult=dy) ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
+    #if (10.*y_0)%(10.*dy) != 0: __force_lowest_bound_axis__( plt, 'y', imult=dy) ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
     ax_hndl.set_ylim(y_0,y_L)
     if not cunit is None:
         if cfont is None:
@@ -1814,7 +1810,7 @@ def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_L, dy, i_sbsmp=1, cunit=None, cfon
         ax_hndl.set_yticks( nmp.arange(locs[0], locs[len(locs)-1] , dy_minor) , minor=True)
         ax_hndl.grid(which='both')
         ax_hndl.grid(which='minor', color='k', linestyle='-', linewidth=0.1)
-        ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
+    ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
 
 
 
@@ -1890,3 +1886,25 @@ def __time_axis_minor_ticks__(dt):
     return dt_mnr
 
 
+def __suitable_axis_dx__(hmin, hmax, nb_val=20):
+    dh = abs(hmax - hmin)/float(nb_val)
+    lfound = False
+    iexp = 20
+    while not lfound :
+        if dh%(10.**(iexp-1)) != dh: lfound = True
+        iexp = iexp - 1
+    if iexp < 1:
+        dh = round(dh, -iexp)
+    else:
+        dh = round(dh,0)
+        dh = round(dh/(10.**iexp),0)*10.**iexp
+
+    dhi = dh*10.**(-iexp)
+    if dhi == 3.:         dh = 2.5*10.**(iexp)
+    if dhi in [4.,6.,7.]: dh =  5.*10.**(iexp)
+    if dhi in [8.,9.]:    dh = 10.*10.**(iexp) ; iexp=iexp+1
+
+    hmin = float(int(hmin*10.**(-iexp)))*10.**iexp
+    hmax = float(int((hmax+dh)*10.**(-iexp)))*10.**iexp
+    
+    return hmin, hmax, dh
