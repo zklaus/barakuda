@@ -7,10 +7,10 @@ imhst=0
 iamoc=0
 icrosssect=0
 itempsal=0
-isflx=0
+ifsflx=1
 imean2d=0
 imean3d=0
-ienso=1
+ienso=0
 imov=0
 issh=0
 its=0
@@ -152,7 +152,8 @@ if [ ${its} -eq 1 ]; then
 fi
 
 
-if [ ${isflx} -eq 1 ]; then
+if [ ${ifsflx} -eq 1 ]; then
+    export DIAG_D="."
     CMD="${BARAKUDA_ROOT}/src/bash/extract_ifs_surf_fluxes.sh"
 fi
 

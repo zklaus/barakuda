@@ -123,6 +123,18 @@ ncecat   -h -O metrics.nc -o metrics.nc
 ncrename -h -d record,time metrics.nc
 
 
+# CONTROL SECTION FOR IFS:
+echo;
+srf_glob_ifs=`cdo --no_warnings output -fldsum -selvar,srf_glob metrics.nc 2>/dev/null`
+srf_ocean_ifs=`cdo --no_warnings output -fldsum -selvar,srf_ocean metrics.nc 2>/dev/null`
+srf_land_ifs=`cdo --no_warnings output -fldsum -selvar,srf_land metrics.nc 2>/dev/null`
+echo " *** DEBUG: extract_ifs_surf_fluxes.sh => In IFS data we have:"
+echo "            Surface of Earth      = ${srf_glob_ifs} 10^6 km^2" 
+echo "            Surface of Ocean      = ${srf_ocean_ifs} 10^6 km^2" 
+echo "            Surface of Continents = ${srf_land_ifs} 10^6 km^2" 
+echo
+
+
 wc=`which cdo`
 if [ "${wc}" = "" ]; then
     echo "=========================================================="

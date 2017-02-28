@@ -445,7 +445,7 @@ if idfig == 'fwf':
         Xplt = nmp.zeros((nbd,nbm))
         Xplt[0,:] = vrnf[:]                     ; vlab.append('R NEMO')
         Xplt[1,:] = -vemp_land_ifs[:]           ; vlab.append('-(E-P) over land IFS')
-        if l_clv: Xplt[2,:] = vrnf[:] + vclv[:] ; vlab.append('R + Calving NEMO')
+        if l_clv: Xplt[2,:] = vrnf[:] + vclv[:] ; vlab.append('R + Ice Calving NEMO')
         bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_rnf_NEMO_IFS_'+CONFRUN, dt=ittic,
                             cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Continental runoffs (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
@@ -457,6 +457,27 @@ if idfig == 'fwf':
         bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_rnf_NEMO_IFS_annual_'+CONFRUN, dt=ittic,
                             cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Continental runoffs (annual)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+
+
+    # Only runoff and calving in NEMO:
+    if l_clv and l_rnf:
+        vlab = [] ; nbd = 2
+        Xplt = nmp.zeros((nbd,nbm))
+        cttl = 'NEMO: '+CONFRUN+': Continental Runoffs and Ice Calving'
+        cfig = cdiag+'_rnf_clv_NEMO_'
+        Xplt[0,:] = vrnf[:] ; vlab.append('R NEMO ('+vdic_fwf['NN_RNF']+')')
+        Xplt[1,:] = vclv[:] ; vlab.append('Ice Calving NEMO ('+vdic_fwf['NN_CLV']+')')
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cfig+CONFRUN, dt=ittic,
+                            cyunit=cyu, ctitle = cttl+' (monthly)',
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+        # Same but annual:
+        Xplt = nmp.zeros((nbd,nby))        
+        VY, Xplt[0,:] = bt.monthly_2_annual(vtime[:], vrnf[:])
+        VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], vclv[:])
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cfig+'annual_'+CONFRUN, dt=ittic,
+                            cyunit=cyu, ctitle =  cttl+' (annual)',
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+
 
 
     # Only Precip (NEMO and IFS)
