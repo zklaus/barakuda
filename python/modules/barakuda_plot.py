@@ -1064,9 +1064,10 @@ class plot :
         vf_plus[0]  = 0. ; vf_mins[0]  = 0.
         vf_plus[-1] = 0. ; vf_mins[-1] = 0.
 
-        x1 = tmin ; x2 = tmax
-        if tmin == 0.: x1 = int(min(VT))
-        if tmax == 0.: x2 = int(max(VT))
+        t1 = tmin ; t2 = tmax
+        if tmin == 0. and tmax == 0.:
+            t1 = float(int(min(VT)))
+            t2 = float(int(round(max(VT),0)))
 
         fig = plt.figure(num = 2, figsize=FIG_SIZE_DEF, facecolor='w', edgecolor='k')
         ax  = plt.axes(AXES_DEF)
@@ -1077,9 +1078,9 @@ class plot :
 
         plt.fill(VT, vf_plus, b_red, VT, vf_mins, b_blu, linewidth=0)
         plt.plot(VT, VF[:], 'k', linewidth=0.7)
-        plt.plot(VT,   0.*VT, 'k', linewidth=0.7)
+        plt.plot(VT, 0.*VT, 'k', linewidth=0.7)
 
-        __nice_x_axis__(ax, plt,    x1,   x2, dt,               cfont=font_xylb)
+        __nice_x_axis__(ax, plt,    t1,   t2, dt,               cfont=font_xylb)
         __nice_y_axis__(ax, plt, -ymax, ymax, dy, cunit=cyunit, cfont=font_xylb)
 
         plt.title(ctitle, **font_ttl)
@@ -1772,12 +1773,11 @@ def __force_lowest_bound_axis__(plt_hndl, cax, imult=5):
 def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_H, dx, i_sbsmp=1, cunit=None, cfont=None, dx_minor=5):
     x_l = x_0
     if x_0%dx != 0.: x_l = float(int(x_0/dx))*dx
+    if x_H%dx != 0.: x_H = float(int(x_H/dx)+1)*dx
     plt_hndl.xticks( nmp.arange(x_l, x_H+dx, dx) )
     locs, labels = plt_hndl.xticks()
     ax_hndl.get_xaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering...
     if i_sbsmp > 1: __subsample_axis__( plt, 'x', i_sbsmp)
-    ###if x_0%dx != 0: __force_lowest_bound_axis__( plt, 'x', imult=dx) ; # Correcting ticks to print, ex: 2009,2014,2019 => 2010,2015,2020
-    ax_hndl.set_xlim(x_0,x_H+dx/1000.)
     if not cunit is None:
         if cfont is None:
             plt_hndl.xlabel(cunit)
@@ -1790,7 +1790,7 @@ def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_H, dx, i_sbsmp=1, cunit=None, cfon
         ax_hndl.grid(which='both')
         ax_hndl.grid(which='minor', color='k', linestyle='-', linewidth=0.1)
     ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
-
+    ax_hndl.set_xlim(x_l,x_H+dx/1000.)
         
 
 
@@ -1801,7 +1801,6 @@ def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_H, dy, i_sbsmp=1, cunit=None, cfon
     locs, labels = plt_hndl.yticks()
     ax_hndl.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering...
     if i_sbsmp > 1: __subsample_axis__( plt, 'y', i_sbsmp)
-    ax_hndl.set_ylim(y_0,y_H+dy/1000.)
     if not cunit is None:
         if cfont is None:
             plt_hndl.ylabel(cunit)
@@ -1814,6 +1813,7 @@ def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_H, dy, i_sbsmp=1, cunit=None, cfon
         ax_hndl.grid(which='both')
         ax_hndl.grid(which='minor', color='k', linestyle='-', linewidth=0.1)
     ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
+    ax_hndl.set_ylim(y_0,y_H+dy/1000.)
 
 def __nice_z_axis__(ax_hndl, plt_hndl, z0, zK, dz, i_sbsmp=1, cunit=None, cfont=None):
     iia = 1

@@ -50,8 +50,7 @@ xplot[:,3] = xplot[:,1] - xplot[:,2] ; # anomaly for 5-month running mean
 
 ittic = bt.iaxe_tick(Nt/12)
 
-bp.plot("oscillation_index")( vtime, xplot[:,3], ymax=2.1, dy=0.5, yplusminus=0.4,
-                              tmin=vt[0], tmax=vt[-1], dt=ittic,
+bp.plot("oscillation_index")( vtime, xplot[:,3], ymax=2.1, dy=0.5, yplusminus=0.4, dt=ittic,
                               cfignm=cname, cfig_type=fig_form,
                               cyunit=r'SST anomaly ($^{\circ}$C)',
                               ctitle='ENSO (over Nino box 3.4)' )
