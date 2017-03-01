@@ -16,7 +16,11 @@ export CONF=ORCA025.L75 ; # horizontal global ORCA configuration
 export NBL=75           ; # number of levels
 
 export HOST=TRIOLITH.nsc.liu.se ; # this has no importance at all, it will just become an "info" on the web-page!
+export MASTERMIND="Uwe and Klaus" ; # same here, who's the person who designed/ran this simulation?
+
+
 export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b)" ;   #  // same here ...
+
 
 # File system / path on which most netcdf data will be read:
 export STORE_DIR="/proj/bolinc/users/x_laubr"

@@ -77,9 +77,9 @@ II / Compile CDFTOOLS executables
 III / Create and configure your own "configs/config_<MY_CONF>.sh"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-IMPORTANT: Always refer to the 'configs/config_ORCA1_L75_TEMPLATE.sh' config file as a
-reference when creating/re-adjusting yours. It is a symbolic link pointing to
-the last officially supported and most up-to-date config file.  It should be
+IMPORTANT: Always refer to the most relevant 'configs/config_*_TEMPLATE.sh' file
+to design or re-adjust yours! These are symbolic links pointing to the last
+officially supported and most up-to-date config files.  It should be
 sufficiently well commented for you to be able to adjust your own config file.
 
 MY_CONF should always be of the form: "(e)ORCA<RES>_L<NLEV>_<blabla>.sh"

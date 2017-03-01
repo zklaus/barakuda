@@ -6,7 +6,7 @@
 #
 # OCEAN MONITORING for NEMO v2.? and EC-Earth 2.2 / 2.3 (CMIP5)
 #
-#            Machine: triolith
+#        Machine: MareNostrum@BSC
 #
 #        L. Brodeau, November 2016
 #
@@ -15,7 +15,9 @@
 export CONF=ORCA1.L42 ; # horizontal global ORCA configuration
 export NBL=42         ; # number of levels
 
-export HOST=TRIOLITH ; # this has no importance at all, it will just become an "info" on the web-page!
+export HOST=TRIOLITH.nsc.liu.se ; # this has no importance at all, it will just become an "info" on the web-page!
+export MASTERMIND="Laurent" ; # same here, who's the person who designed/ran this simulation?
+
 export EXTRA_CONF="LIM2, NEMO 2.X (EC-Earth 2_CMIP5)" ;   #  // same here ...
 
 # File system / path on which most netcdf data will be read:
