@@ -9,6 +9,7 @@ function parse_html()
     TITLE=`echo "${TITLE}"           | sed -e s'| |<SPC>|'g`
     cr=`echo "${cr}"                 | sed -e s'| |<SPC>|'g`
     HOST=`echo "${HOST}"             | sed -e s'| |<SPC>|'g`
+    EXTRA_CONF=`echo "${EXTRA_CONF}" | sed -e s'| |<SPC>|'g`
     MASTERMIND=`echo "${MASTERMIND}" | sed -e s'| |<SPC>|'g`
     RUNREF=`echo "${RUNREF}"         | sed -e s'| |<SPC>|'g`
     DATE=`date +%Y-%m-%d`
@@ -16,6 +17,7 @@ function parse_html()
     if [ -z ${TITLE} ];      then echo "${c1} 'TITLE' ${c2}";      exit; fi
     if [ -z ${CONFRUN} ];    then echo "${c1} 'CONFRUN' ${c2}";    exit; fi
     if [ -z ${HOST} ];       then echo "${c1} 'HOST' ${c2}";       exit; fi
+    if [ -z ${EXTRA_CONF} ]; then echo "${c1} 'EXTRA_CONF' ${c2}"; exit; fi
     if [ -z ${MASTERMIND} ]; then echo "${c1} 'MASTERMIND' ${c2}"; exit; fi
     if [ -z ${RUNREF} ];     then export RUNREF="Observations";          fi
 
@@ -23,6 +25,7 @@ function parse_html()
                    -e s|{CONFRUN}|${CONFRUN}|g \
                    -e s|{DATE}|${DATE}|g \
                    -e s|{HOST}|${HOST}|g \
+                   -e s|{EXTRA_CONF}|${EXTRA_CONF}|g \
                    -e s|{MASTERMIND}|${MASTERMIND}|g \
                    -e s|{COMP2D}|${RUNREF}|g"
 
@@ -47,9 +50,7 @@ function build_index_html()
 
     rm -f index.html
 
-    if [ "${EXTRA_CONF}" = "" ]; then echo "Problem, variable EXTRA_CONF is not set! => update your config file!" ; exit; fi
-
-    TITLE="Ocean diagnostics<br>Experiment: \"${RUN}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
+    TITLE="Ocean diagnostics for experiment \"${RUN}\""
     if [ ${ece_run} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
 
     # Starting to configure HTML index file:

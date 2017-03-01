@@ -19,8 +19,8 @@ export HOST=GUSTAFSON.bsc.es    ; # this has no importance at all, it will just 
 export MASTERMIND="Etienne" ; # same here, who's the person who designed/ran this simulation?
 
 export EXTRA_CONF="NEMO 3.6 + LIM 3 + IFS-T511 (EC-Earth 3.2b)<br>\
-10 years spinup with constant CMIP5 forcing from 1950 using EC-Earth 3.2.0,<br>\
-and from 1950 onwards CMIP6 forcing using EC-Earth 3.2.1 (primavera branch)" ;   #  // same here ...
+<i>10 years spinup with constant CMIP5 forcing from 1940 using EC-Earth 3.2.0,<br>\
+and from 1950 onwards CMIP6 forcing using EC-Earth 3.2.1 (primavera branch)</i>" ;   #  // same here ...
 
 # File system / path on which most netcdf data will be read:
 export STORE_DIR="/scratch/Earth/lbrodeau"
