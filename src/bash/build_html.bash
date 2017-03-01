@@ -1,5 +1,36 @@
 #!/usr/bin/env bash
 
+function parse_html()
+{
+    if [ "$2" = "" ]; then
+        echo "  USAGE: parse_html <file_to_be_parsed.html> <new_file.html>"
+        exit
+    fi
+    TITLE=`echo "${TITLE}"           | sed -e s'| |<SPC>|'g`
+    cr=`echo "${cr}"                 | sed -e s'| |<SPC>|'g`
+    HOST=`echo "${HOST}"             | sed -e s'| |<SPC>|'g`
+    MASTERMIND=`echo "${MASTERMIND}" | sed -e s'| |<SPC>|'g`
+    RUNREF=`echo "${RUNREF}"         | sed -e s'| |<SPC>|'g`
+    DATE=`date +%Y-%m-%d`
+    c1='ERROR: variable' ; c2='not set! => update your config file!'
+    if [ -z ${TITLE} ];      then echo "${c1} 'TITLE' ${c2}";      exit; fi
+    if [ -z ${CONFRUN} ];    then echo "${c1} 'CONFRUN' ${c2}";    exit; fi
+    if [ -z ${HOST} ];       then echo "${c1} 'HOST' ${c2}";       exit; fi
+    if [ -z ${MASTERMIND} ]; then echo "${c1} 'MASTERMIND' ${c2}"; exit; fi
+    if [ -z ${RUNREF} ];     then export RUNREF="Observations";          fi
+
+    PARSE_CMD="sed -e s|{TITLE}|${TITLE}|g \
+                   -e s|{CONFRUN}|${CONFRUN}|g \
+                   -e s|{DATE}|${DATE}|g \
+                   -e s|{HOST}|${HOST}|g \
+                   -e s|{MASTERMIND}|${MASTERMIND}|g \
+                   -e s|{COMP2D}|${RUNREF}|g"
+
+    ${PARSE_CMD} $1 > tmp.html
+    sed -e s'|<SPC>| |'g tmp.html > $2
+    rm -f tmp.html
+}
+
 function build_index_html()
 {
     echo; echo; echo
@@ -15,15 +46,14 @@ function build_index_html()
     cd ${DIAG_D}/
 
     rm -f index.html
-    
-    if [ "${EXTRA_CONF}" = "" ]; then echo "Problem, variable EXTRA_CONF is not set!" ; exit; fi
+
+    if [ "${EXTRA_CONF}" = "" ]; then echo "Problem, variable EXTRA_CONF is not set! => update your config file!" ; exit; fi
 
     TITLE="Ocean diagnostics<br>Experiment: \"${RUN}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
     if [ ${ece_run} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
 
     # Starting to configure HTML index file:
-    sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${CONFRUN}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" \
-        ${BARAKUDA_ROOT}/src/html/conf_start.html > index.html
+    parse_html ${BARAKUDA_ROOT}/src/html/conf_start.html index.html
 
     # Climato:
     if ${l_pclim}; then
@@ -80,7 +110,7 @@ EOF
     # AMO figure if here:
     famo="mean_SST_NAtl_${cr}.${ff}"
     if [ -f ${HTML_DIR}/${famo} ]; then echo "    ${img_l} ${famo} ${img_r}" >> index.html ; fi
-    
+
     list_hov_figs=`\ls -v ${HTML_DIR}/hov_temperature_${cr}*.${ff}`
     if [ ! "${list_hov_figs}" = "" ]; then
         echo "    ${ctl} Time-depth evolution of temperature${ctr}" >> index.html
@@ -89,7 +119,7 @@ EOF
             echo "    ${img_l} ${fgn} ${img_r}"  >> index.html
         done
     fi
-    
+
     # Salinity page
     cat >> index.html <<EOF
     ${ctl} Salinity time-series ${ctr}
@@ -106,7 +136,7 @@ EOF
             echo "    ${img_l} ${fgn} ${img_r}"  >> index.html
         done
     fi
-    
+
 
     # Surface heat flux diagnostics:
     if [ ! "${NN_QNET}" = "X" ]; then
@@ -124,7 +154,7 @@ EOF
             fi
         done
     fi
-    
+
     # Freshwater flux diagnostics:
     LIST_FW_FIG="zos fwf_fwf fwf_emp fwf_prc fwf_rnf fwf_clv fwf_rnf_clv \
         fwf_evp_NEMO_IFS fwf_evp_NEMO_IFS_annual \
@@ -212,7 +242,7 @@ EOF
 
     cat ${BARAKUDA_ROOT}/src/html/conf_end.html >> index.html
 
-    }
+}
 
 
 
@@ -221,36 +251,32 @@ function build_sub_html()
 {
     echo; echo; echo
     echo "Creating sub HTML files!"
-        
+
     ctl='<br><br><br><big><big>' ; ctr='</big></big><br><br>'
     spf='<br><br>'
     img_l='<img style="border: 0px solid" alt="" src="' ; img_r='"> <br><br>'
-    
+
     cr="${CONFRUN}" ; ff="${FIG_FORM}"
 
     cd ${DIAG_D}/
-    
-       # T, S, SSH and ice HTML page:
+
+    # T, S, SSH and ice HTML page:
     for cdiag in ${DIRS_2_EXP}; do
         cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
         cat ${BARAKUDA_ROOT}/src/html/${cdiag}/index_${cdiag}.html >> index.tmp
         cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
-        sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-            -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
-            index.tmp > ${cdiag}/index.html
+        parse_html index.tmp ${cdiag}/index.html
         rm -f index.tmp
         cd ${cdiag}/ ; ln -sf ../logo.*g . ; cd ../
     done
-    
+
     for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
         cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
         cat ${BARAKUDA_ROOT}/src/html/temp_sal/${var}.html         >> index.tmp
         cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
-        sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-            -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
-            index.tmp > temp_sal/${var}_CLIM.html
+        parse_html index.tmp temp_sal/${var}_CLIM.html
     done
-    
+
     # T&S sections:
     if [ ${i_do_sect} -eq 1 ]; then
         cat ${BARAKUDA_ROOT}/src/html/conf_start.html > index.tmp
@@ -271,21 +297,17 @@ function build_sub_html()
                 echo "    ${img_l} ${fgns_c} ${img_r} <br><br><br>" >> index.tmp
             done
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html          >> index.tmp
-            sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-                -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|CLIM|g" \
-                index.tmp > temp_sal/index_sections.html
+            parse_html index.tmp temp_sal/index_sections.html
             rm -f index.tmp
         fi
     fi
-    
+
     if ${lcomp_to_run}; then
         for cdiag in ${DIRS_2_EXP_RREF}; do
             cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
             cat ${BARAKUDA_ROOT}/src/html/${cdiag}/index_${cdiag}.html >> index.tmp
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
-            sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-                -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|${RUNREF}|g" \
-                index.tmp > ${cdiag}/index_${RUNREF}.html
+            parse_html index.tmp > ${cdiag}/index_${RUNREF}.html
             rm -f index.tmp
             cd ${cdiag}/ ; ln -sf ../logo.*g . ; cd ../
         done
@@ -293,12 +315,7 @@ function build_sub_html()
             cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
             cat ${BARAKUDA_ROOT}/src/html/temp_sal/${var}.html         >> index.tmp
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
-            sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${cr}|g" \
-                -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" -e "s|{COMP2D}|${RUNREF}|g" \
-                index.tmp > temp_sal/${var}_${RUNREF}.html
+            parse_html index.tmp temp_sal/${var}_${RUNREF}.html
         done
     fi
 }
-
-
-
