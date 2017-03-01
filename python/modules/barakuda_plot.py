@@ -157,15 +157,10 @@ class plot :
         if lzonal:
             [vvx, ctck] = __name_longitude_ticks__(lon_min=xmin, lon_max=xmax, dlon=dx*i_x_sbsmp)
         else:
-            [vvx, ctck] =  __name_latitude_ticks__(lat_min=xmin, lat_max=xmax, dlat=dx*i_x_sbsmp)
-        plt.xticks(vvx,ctck)
-        ax.set_xlim(xmin,xmax)
+            __nice_latitude_axis__(ax, plt, xmin, xmax, dx*i_x_sbsmp, axt='x')
 
-        # Z-axis:
-        plt.ylabel(czunit, **font_xylb)
-
-        # Fixing Z-axis ticks:
-        __fix_depth_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=l_z_increase)
+        # Depth-axis:
+        __nice_depth_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=l_z_increase, cunit=czunit, cfont=font_xylb)
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #vert_section
@@ -547,8 +542,8 @@ class plot :
         # X-axis
         __nice_x_axis__(ax, plt, xmin, xmax, 15., cunit=cxunit, cfont=font_xylb, dx_minor=0)
 
-        # Z-axis:
-        __nice_z_axis__(ax, plt, zmin, zmax, dz, i_sbsmp=i_z_jump, cunit=czunit, cfont=font_xylb)
+        # Y-axis:
+        __nice_y_axis__(ax, plt, zmin, zmax, dz, i_sbsmp=i_z_jump, cunit=czunit, cfont=font_xylb, dy_minor=0)
 
         plt.title(ctitle, **font_ttl)
 
@@ -959,15 +954,12 @@ class plot :
         # X-axis:
         __nice_x_axis__(ax, plt, xmin, xmax, dx, cunit=cxunit, cfont=font_xylb)
 
-        plt.ylabel(czunit, **font_xylb)
-
         plt.plot(VX,Vcurve, 'w', linewidth=2)
 
-        for zz in zVZ[:]:
-            plt.plot(VX,VX*0.+zz, 'k', linewidth=0.3)
+        for zz in zVZ[:]: plt.plot(VX,VX*0.+zz, 'k', linewidth=0.3)
 
-        # Fixing z ticks:
-        __fix_depth_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=False)
+        # Depth axis:
+        __nice_depth_axis__(ax, plt, zmin, zmax, l_log=l_zlog, l_z_inc=False, cunit=czunit, cfont=font_xylb)
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=100, orientation='portrait', transparent=True)
@@ -1025,12 +1017,9 @@ class plot :
 
         # Y-axis:
         if c_y_is == 'depth':
-            plt.ylabel(cyunit, **font_xylb)
-            __fix_depth_axis__(ax, plt, ymin, ymax, l_log=l_ylog, l_z_inc=l_y_increase)
+            __nice_depth_axis__(ax, plt, ymin, ymax, l_log=l_ylog, l_z_inc=l_y_increase, cunit=cyunit, cfont=font_xylb)
         elif c_y_is == 'latitude':
-            [vvy, ctck] =  __name_latitude_ticks__(lat_min=ymin, lat_max=ymax, dlat=dy)
-            plt.yticks(vvy,ctck)
-            ax.set_ylim(ymin,ymax)
+            __nice_latitude_axis__(ax, plt, ymin, ymax, dy, axt='y')
         else:
             print 'ERROR: plot_hoevmoller.barakuda_plot => axis "'+c_y_is+'" not supported!'; sys.exit(0)
 
@@ -1486,11 +1475,7 @@ class plot :
 # LOCAL functions
 # ===============
 
-
-
-
 def __message__(ccr):
-
     # Find the CONF from CONF-RUN and exit if CONF does not exist!
     i = 0 ; conf = ''
     while i < len(ccr) and ccr[i] != '-' : conf = conf+ccr[i]; i=i+1
@@ -1498,16 +1483,11 @@ def __message__(ccr):
     return conf
 
 
-
 def __get_mat__(cf):
-
-    f1 = open(cf, 'r') # for reading
+    f1 = open(cf, 'r')
     lines1=f1.readlines()
     f1.close()
-
-    zm   = []
-    jy   = 0
-
+    zm   = [] ; jy   = 0
     for l in lines1:
         if l[0] != '#':
             jy = jy + 1
@@ -1515,7 +1495,6 @@ def __get_mat__(cf):
             zm.append([])
             for c in ls:
                 zm[jy-1].append(float(c))
-
     zxm = array(zm)
     print 'Shape zxm = ',nmp.shape(zxm), '\n'
     return zxm
@@ -1523,18 +1502,10 @@ def __get_mat__(cf):
 
 
 def __vcontour__(zmin, zmax, zdc):
-    #
-    #
     lngt = zmax - zmin
-    #
     ncont = lngt/zdc
-    #
     vcont = nmp.arange(zmin, zmax + zdc, zdc)
-    #
-    #lat_min
     return vcont
-
-
 
 
 def __name_longitude_ticks__(lon_min=0., lon_max=360., dlon=30., lon_ext=0):
@@ -1572,8 +1543,8 @@ def __name_latitude_ticks__(lat_min=-90., lat_max=90., dlat=15.):
                 cn_lat.append(str(jlat)+r'$^{\circ}$')
             else:
                 cn_lat.append(str(jlat)+r'$^{\circ}$N')
-    #
     return VY, cn_lat
+
 
 def __name_coor_ticks__(lon_min=0., lon_max=360., dlon=30., lat_min=-90., lat_max=90., dlat=15., lon_ext=0):
     # Builds nice ticks for X and Y (lon, lat) axes!
@@ -1582,39 +1553,24 @@ def __name_coor_ticks__(lon_min=0., lon_max=360., dlon=30., lat_min=-90., lat_ma
     return VX, VY, cn_lon, cn_lat
 
 
-
-
 def __give_proj__(cname):
-    #
-    #
-    nb =nmp.shape(projection_def)[0] ; #print 'nb =', nb
-    #
-    # Initializing :
+
+    nb =nmp.shape(projection_def)[0]
+
     vproj = [ 'NC', 'NC', 0.,  0.,  0.,  0.,  0.,  0., 'NC' ]
-    #
-    #
     jb = 0
     while jb < nb :
         if projection_def[jb][0] == cname:
             break
         else :
             jb = jb + 1
-    #
     if jb == nb :
         print 'Zone "'+cname+'" does not exist!\n'
         print 'so far choice is :'
         for jb in range(nb): print projection_def[jb][0]
         sys.exit(0)
-        #
-        #
     vproj = projection_def[jb][:]
-    #
-    #print 'For ', projection_def[jb][0], ' we have vproj =', vproj, '\n'
-    #
     return vproj
-
-
-
 
 
 def __font_unity__(fig_dpi=100., size='normal'):
@@ -1753,22 +1709,6 @@ def __subsample_axis__(plt_hndl, cax, i_sbsmp, icpt=1):
     del ax_lab
 
 
-def __force_lowest_bound_axis__(plt_hndl, cax, imult=5):
-    # Corrects x or y ticks, ex: if 2009,2014,2019 => 2010,2015,2020
-    ax_lab = []
-    if   cax == 'x': locs, labels = plt_hndl.xticks()
-    elif cax == 'y': locs, labels = plt_hndl.yticks()
-    loc0 = int(imult * round(float(locs[0])/imult)) ;     # We want a multilple of imult
-    locs = locs + (loc0 - locs[0])    ; # new locs (adding the correct increment)
-    for rr in locs:
-        if rr%1.0 == 0.:
-            cr = str(int(rr))  # it's something like 22.0, we want 22 !!!
-        else:
-            cr = str(rr)
-        ax_lab.append(cr)
-    if cax == 'x': plt_hndl.xticks(locs,ax_lab)
-    if cax == 'y': plt_hndl.yticks(locs,ax_lab)
-    del ax_lab
 
 def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_H, dx, i_sbsmp=1, cunit=None, cfont=None, dx_minor=5):
     x_l = x_0
@@ -1785,14 +1725,12 @@ def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_H, dx, i_sbsmp=1, cunit=None, cfon
             plt_hndl.xlabel(cunit, **cfont)
     # Add minor x-ticks and corresponding grid:
     if dx_minor > 0:
-        locs, labels = plt_hndl.xticks() ; # need new version of locs, because of __force_lowest_bound_axis__
+        locs, labels = plt_hndl.xticks()
         ax_hndl.set_xticks( nmp.arange(locs[0], locs[len(locs)-1] , dx_minor) , minor=True)
         ax_hndl.grid(which='both')
         ax_hndl.grid(which='minor', color='k', linestyle='-', linewidth=0.1)
     ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
     ax_hndl.set_xlim(x_l,x_H+dx/1000.)
-        
-
 
 def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_H, dy, i_sbsmp=1, cunit=None, cfont=None, dy_minor=5):
     y_l = y_0
@@ -1808,39 +1746,14 @@ def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_H, dy, i_sbsmp=1, cunit=None, cfon
             plt_hndl.ylabel(cunit, **cfont)
     # Add minor y-ticks and corresponding grid:
     if dy_minor > 0:
-        locs, labels = plt_hndl.yticks() ; # need new version of locs, because of __force_lowest_bound_axis__
+        locs, labels = plt_hndl.yticks()
         ax_hndl.set_yticks( nmp.arange(locs[0], locs[len(locs)-1] , dy_minor) , minor=True)
         ax_hndl.grid(which='both')
         ax_hndl.grid(which='minor', color='k', linestyle='-', linewidth=0.1)
     ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
     ax_hndl.set_ylim(y_0,y_H+dy/1000.)
 
-def __nice_z_axis__(ax_hndl, plt_hndl, z0, zK, dz, i_sbsmp=1, cunit=None, cfont=None):
-    iia = 1
-    if zK <= 0. and z0 < 0.:
-        iia = 0
-    vv = nmp.arange(z0, zK+dz, dz)
-    plt_hndl.yticks(vv)
-    if i_sbsmp > 1: __subsample_axis__(plt, 'y', i_sbsmp, icpt=0)
-    ax_hndl.set_ylim(z0-dz/2., zK+dz/2.)
-    if not cunit is None:
-        if cfont is None:
-            plt_hndl.ylabel(cunit)
-        else:
-            plt_hndl.ylabel(cunit, **cfont)
-
-def __prepare_z_log_axis__(l_log, vz):
-    import math
-    nk  = len(vz)
-    zvz = nmp.zeros(nk)
-    if l_log:
-        for jk in range(nk):
-            zvz[jk] = math.log10(vz[jk])
-    else:
-        zvz= vz
-    return zvz
-
-def __fix_depth_axis__(ax_hndl, plt_hndl, z0, zK, l_log=False, l_z_inc=True):
+def __nice_depth_axis__(ax_hndl, plt_hndl, z0, zK, l_log=False, l_z_inc=True, cunit=None, cfont=None):
     ax_hndl.get_yaxis().get_major_formatter().set_useOffset(False)
     if l_log:
         y_log_ofs = 10.
@@ -1861,6 +1774,40 @@ def __fix_depth_axis__(ax_hndl, plt_hndl, z0, zK, l_log=False, l_z_inc=True):
     else:
         ax_hndl.set_ylim(zK+(zK-z0)/50. , z0)
     ax_hndl.grid(color='k', linestyle='-', linewidth=0.5)
+    if not cunit is None:
+        if cfont is None:
+            plt_hndl.ylabel(cunit)
+        else:
+            plt_hndl.ylabel(cunit, **cfont)
+
+def __nice_latitude_axis__(ax_hndl, plt_hndl, lmin, lmax, dl, axt='x'):
+    if axt == 'x':
+        ax_hndl.get_xaxis().get_major_formatter().set_useOffset(False)
+    elif axt == 'y':
+        ax_hndl.get_yaxis().get_major_formatter().set_useOffset(False)
+    else:
+        print 'ERROR barakuda_plot.__nice_latitude_axis__: only accept "x" or "y" for axt!'
+        sys.exit(0)
+    [vvl, ctck] =  __name_latitude_ticks__(lat_min=lmin, lat_max=lmax, dlat=dl)
+    if axt == 'x':
+        plt_hndl.xticks(vvl,ctck)
+        ax_hndl.set_xlim(lmin,lmax)
+    else:
+        plt_hndl.yticks(vvl,ctck)
+        ax_hndl.set_ylim(lmin,lmax)
+
+
+def __prepare_z_log_axis__(l_log, vz):
+    import math
+    nk  = len(vz)
+    zvz = nmp.zeros(nk)
+    if l_log:
+        for jk in range(nk):
+            zvz[jk] = math.log10(vz[jk])
+    else:
+        zvz= vz
+    return zvz
+
 
 def __nb_col_row_legend__(nn):
     if nn <= 3:
@@ -1905,5 +1852,5 @@ def __suitable_axis_dx__(hmin, hmax, nb_val=20):
 
     hmin = float(int(hmin*10.**(-iexp)))*10.**iexp
     hmax = float(int((hmax+dh)*10.**(-iexp)))*10.**iexp
-    
+
     return hmin, hmax, dh

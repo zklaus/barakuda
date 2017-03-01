@@ -12,7 +12,7 @@ function parse_html()
     EXTRA_CONF=`echo "${EXTRA_CONF}" | sed -e s'| |<SPC>|'g`
     MASTERMIND=`echo "${MASTERMIND}" | sed -e s'| |<SPC>|'g`
     RUNREF=`echo "${RUNREF}"         | sed -e s'| |<SPC>|'g`
-    DATE=`date +%Y-%m-%d`
+    DATE=`date +%Y-%m-%d\<SPC\>at\<SPC\>%H:%M:%S`
     c1='ERROR: variable' ; c2='not set! => update your config file!'
     if [ -z ${TITLE} ];      then echo "${c1} 'TITLE' ${c2}";      exit; fi
     if [ -z ${CONFRUN} ];    then echo "${c1} 'CONFRUN' ${c2}";    exit; fi
