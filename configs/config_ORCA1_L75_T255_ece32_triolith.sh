@@ -155,7 +155,7 @@ export RWWWD=/data/www/barakuda/ec-earth_3.2b ; # directory of the local or remo
 #########################
 
 # Movies of SST and SSS compared to OBS:
-export i_do_movi=0
+export i_do_movi=1
 
 # Basic 3D and surface averages:
 export i_do_mean=1
