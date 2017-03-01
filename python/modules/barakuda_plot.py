@@ -1710,7 +1710,7 @@ def __subsample_axis__(plt_hndl, cax, i_sbsmp, icpt=1):
 
 
 
-def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_H, dx, i_sbsmp=1, cunit=None, cfont=None, dx_minor=5):
+def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_H, dx, i_sbsmp=1, cunit=None, cfont=None, dx_minor=0):
     x_l = x_0
     if x_0%dx != 0.: x_l = float(int(x_0/dx))*dx
     if x_H%dx != 0.: x_H = float(int(x_H/dx)+1)*dx
@@ -1732,7 +1732,7 @@ def __nice_x_axis__(ax_hndl, plt_hndl, x_0, x_H, dx, i_sbsmp=1, cunit=None, cfon
     ax_hndl.grid(which='major', color='k', linestyle='-', linewidth=0.2)
     ax_hndl.set_xlim(x_l,x_H+dx/1000.)
 
-def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_H, dy, i_sbsmp=1, cunit=None, cfont=None, dy_minor=5):
+def __nice_y_axis__(ax_hndl, plt_hndl, y_0, y_H, dy, i_sbsmp=1, cunit=None, cfont=None, dy_minor=0):
     y_l = y_0
     if y_0%dy != 0.: y_l = float(int(y_0/dy))*dy
     plt_hndl.yticks( nmp.arange(y_l, y_H+dy, dy) )
