@@ -300,7 +300,7 @@ PROGRAM cdfsigtrp
         !PRINT *, 'Allocating for jt, jsec =', jt, jsec
         ALLOCATE ( zu(npts, npk), zt(npts,npk), zs(npts,npk) ,zsig(npts,0:npk) )
         ALLOCATE ( eu(npts), e3(npts,npk), gdepu(npts, 0:npk), zmask(npts,npk) )
-        ALLOCATE ( tmpm(1,npts,2), tmpz(npts,1,2) )
+        ALLOCATE ( tmpm(1,npts+1,2), tmpz(npts+1,1,2) )
         ALLOCATE ( zwtrp(npts, nbins+1) , hiso(npts,nbins+1), zwtrpbin(npts,nbins) )
 
         !END IF
@@ -316,7 +316,7 @@ PROGRAM cdfsigtrp
            !PRINT *, 'LOLO 2 =>', tmpm(:,:,1)
            !STOP
 
-           eu(:)=tmpm(1,:,1)  ! metrics varies only horizontally
+           eu(:)=tmpm(1,1:npts,1)  ! metrics varies only horizontally
            DO jk=1,npk
               ! initiliaze gdepu to gdept()
               gdepu(:,jk) = gdept(jk)
@@ -327,7 +327,7 @@ PROGRAM cdfsigtrp
               tmpm(1,:,1) = E3U_3D(imin,jmin+1:jmin+1+npts,jk)
               !PRINT *, 'LOLO2 =>', tmpm(:,:,1)
 
-              e3(:,jk)=tmpm(1,:,1)
+              e3(:,jk)=tmpm(1,1:npts,1)
 
               !tmpm(:,:,1)=getvar(cf_mm,'e3w_ps',jk,1,npts, kimin=imin, kjmin=jmin+1, ldiom=.TRUE.)
               !tmpm(:,:,2)=getvar(cf_mm,'e3w_ps',jk,1,npts, kimin=imin+1, kjmin=jmin+1, ldiom=.TRUE.)
@@ -344,16 +344,16 @@ PROGRAM cdfsigtrp
               ! Normal velocity
               tmpm(1,:,1) = U_3D(imin,jmin+1:jmin+1+npts,jk)
 
-              zu(:,jk)=tmpm(1,:,1)
+              zu(:,jk)=tmpm(1,1:npts,1)
 
               ! salinity and deduce umask for the section
               tmpm(1,:,1) = S_3D(imin,  jmin+1:jmin+1+npts,jk)
               tmpm(1,:,2) = S_3D(imin+1,jmin+1:jmin+1+npts,jk)
 
-              zmask(:,jk)=tmpm(1,:,1)*tmpm(1,:,2)
+              zmask(:,jk)=tmpm(1,1:npts,1)*tmpm(1,1:npts,2)
               WHERE ( zmask(:,jk) /= 0._8 ) zmask(:,jk)=1._8
               ! do not take special care for land value, as the corresponding velocity point is masked
-              zs(:,jk) = 0.5 * ( tmpm(1,:,1) + tmpm(1,:,2) )
+              zs(:,jk) = 0.5 * ( tmpm(1,1:npts,1) + tmpm(1,1:npts,2) )
 
               ! limitation to 'wet' points
               IF ( SUM(zs(:,jk))  == 0._8 ) THEN
@@ -365,7 +365,7 @@ PROGRAM cdfsigtrp
               tmpm(1,:,1) = T_3D(imin,  jmin+1:jmin+1+npts,jk)
               tmpm(1,:,2) = T_3D(imin+1,jmin+1:jmin+1+npts,jk)
 
-              zt(:,jk) = 0.5 * ( tmpm(1,:,1) + tmpm(1,:,2) )
+              zt(:,jk) = 0.5 * ( tmpm(1,1:npts,1) + tmpm(1,1:npts,2) )
 
            END DO
 
@@ -378,7 +378,7 @@ PROGRAM cdfsigtrp
            tmpz(:,1,1) = E1V_2D(imin:imin+npts,jmin)
            !PRINT *, 'LOLO2 tmpz =>', tmpz(:,:,1)
 
-           eu=tmpz(:,1,1)
+           eu=tmpz(1:npts,1,1)
            DO jk=1,npk
               ! initiliaze gdepu to gdept()
               gdepu(:,jk) = gdept(jk)
@@ -387,7 +387,7 @@ PROGRAM cdfsigtrp
               !tmpz(:,:,1)=getvar(cf_mm,'e3v_ps',jk, npts, 1, kimin=imin+1, kjmin=jmin, ldiom=.TRUE.)
               tmpz(:,1,1) = E3V_3D(imin+1:imin+1+npts,jmin,jk)
 
-              e3(:,jk)=tmpz(:,1,1)
+              e3(:,jk)=tmpz(1:npts,1,1)
               !tmpz(:,:,1)=getvar(cf_mm,'e3w_ps',jk,npts,1, kimin=imin+1, kjmin=jmin, ldiom=.TRUE.)
               !tmpz(:,:,2)=getvar(cf_mm,'e3w_ps',jk,npts,1, kimin=imin+1, kjmin=jmin+1, ldiom=.TRUE.)
               tmpz(:,1,1) = E3W_3D(imin+1:imin+1+npts,jmin,  jk)
@@ -401,16 +401,16 @@ PROGRAM cdfsigtrp
 
               ! Normal velocity
               tmpz(:,1,1) = V_3D(imin+1:imin+1+npts,jmin,  jk)
-              zu(:,jk)=tmpz(:,1,1)
+              zu(:,jk)=tmpz(1:npts,1,1)
 
               ! salinity and mask
               tmpz(:,1,1) = S_3D(imin+1:imin+1+npts,jmin,  jk)
               tmpz(:,1,2) = S_3D(imin+1:imin+1+npts,jmin+1,jk)
 
-              zmask(:,jk)=tmpz(:,1,1)*tmpz(:,1,2)
+              zmask(:,jk)=tmpz(1:npts,1,1)*tmpz(1:npts,1,2)
               WHERE ( zmask(:,jk) /= 0._8 ) zmask(:,jk)=1._8
               ! do not take special care for land value, as the corresponding velocity point is masked
-              zs(:,jk) = 0.5 * ( tmpz(:,1,1) + tmpz(:,1,2) )
+              zs(:,jk) = 0.5 * ( tmpz(1:npts,1,1) + tmpz(1:npts,1,2) )
 
               ! limitation to 'wet' points
               IF ( SUM(zs(:,jk))  == 0._8 ) THEN
@@ -422,13 +422,13 @@ PROGRAM cdfsigtrp
               tmpz(:,1,1) = T_3D(imin+1:imin+1+npts,jmin,  jk)
               tmpz(:,1,2) = T_3D(imin+1:imin+1+npts,jmin+1,jk)
 
-              zt(:,jk) = 0.5 * ( tmpz(:,1,1) + tmpz(:,1,2) )
+              zt(:,jk) = 0.5 * ( tmpz(1:npts,1,1) + tmpz(1:npts,1,2) )
            END DO
 
         ENDIF  !(l_merid)
 
         ! compute density only for wet points
-        zsig(:,1:nk)=sigma0( zt, zs, npts, nk)*zmask(:,:)
+        zsig(:,1:nk)=sigma0( zt, zs, npts, nk)*zmask(:,1:nk)
         zsig(:,0)=zsig(:,1)-1.e-4   ! dummy layer for easy interpolation
 
 

@@ -201,16 +201,15 @@ while ${lcontinue}; do
         # Computing time-series of spatially-averaged variables
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_mean} -eq 1 ]; then
-            echo; echo; echo "3D-averaging for time series"
+            echo; echo "3D-averaging for time series"
             echo " *** CALLING: mean_3d.py ${ft1m} ${jyear} T &"
             mean_3d.py ${ft1m} ${jyear} T &
             pid_mn3dt=$! ; echo
-            sleep 30
             echo " *** CALLING: mean_3d.py ${ft1m} ${jyear} S &"
             mean_3d.py ${ft1m} ${jyear} S &
             pid_mn3ds=$! ; echo
-            sleep 30
-            echo; echo; echo "2D-averaging for time series"
+            #
+            echo; echo "2D-averaging for time series"
             echo " *** CALLING: mean_2d.py ${ft1m} ${jyear} &"
             mean_2d.py ${ft1m} ${jyear} &
             pid_mn2d=$! ; echo
