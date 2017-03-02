@@ -138,23 +138,30 @@ for cocean in list_basin_names[:]:
 
     colnm = list_basin_lgnms[joce]
 
-    print '          ===> '+cvar+' in basin '+cocean+' ('+colnm+')'
+    print '   ===> '+cvar+' in basin '+cocean+' ('+colnm+')'
 
+    # Decrasing the domain size if possible:
+    (vjj , vji)  = nmp.where(mask[joce,0,:,:]>0.5)
+    j1 = max( nmp.min(vjj)-2 , 0    )
+    i1 = max( nmp.min(vji)-2 , 0    )
+    j2 = min( nmp.max(vjj)+2 , nj-1 ) + 1
+    i2 = min( nmp.max(vji)+2 , ni-1 ) + 1
+
+    if (i1,j1,i2,j2) != (0,0,ni,nj): print '       ===> zooming on i1,j1 -> i2,j2:', i1,j1,'->',i2,j2
+    
     # I) Montly mean for diffrent depth ranges
     # ========================================
     
-    Vts_tot      = bo.mean_3d(Xd_m[:,:,:,:],            mask[joce,:,:,:],            Xv[:,:,:]) ; # Top to bottom
-    Vts_0_100    = bo.mean_3d(Xd_m[:,:j100m,:,:],       mask[joce,:j100m,:,:],       Xv[:j100m,:,:])
-    Vts_100_1000 = bo.mean_3d(Xd_m[:,j100m:j1000m,:,:], mask[joce,j100m:j1000m,:,:], Xv[j100m:j1000m,:,:])
-    Vts_1000_bot = bo.mean_3d(Xd_m[:,j1000m:,:,:],      mask[joce,j1000m:,:,:],      Xv[j1000m:,:,:])
+    Vts_tot      = bo.mean_3d(Xd_m[:,:,j1:j2,i1:i2],            mask[joce,:,j1:j2,i1:i2],            Xv[:,j1:j2,i1:i2]) ; # Top to bottom
+    Vts_0_100    = bo.mean_3d(Xd_m[:,:j100m,j1:j2,i1:i2],       mask[joce,:j100m,j1:j2,i1:i2],       Xv[:j100m,j1:j2,i1:i2])
+    Vts_100_1000 = bo.mean_3d(Xd_m[:,j100m:j1000m,j1:j2,i1:i2], mask[joce,j100m:j1000m,j1:j2,i1:i2], Xv[j100m:j1000m,j1:j2,i1:i2])
+    Vts_1000_bot = bo.mean_3d(Xd_m[:,j1000m:,j1:j2,i1:i2],      mask[joce,j1000m:,j1:j2,i1:i2],      Xv[j1000m:,j1:j2,i1:i2])
 
     cf_out = vdic['DIAG_D']+'/3d_'+cvar+'_'+CONFRUN+'_'+cocean+'.nc'
     cv1 = cvar+'_0-bottom'
     cv2 = cvar+'_0-100'
     cv3 = cvar+'_100-1000'
     cv4 = cvar+'_1000-bottom'
-
-    # LOLO: wrt_appnd_1d_series is not the problem !
 
     bnc.wrt_appnd_1d_series(vtime, Vts_tot, cf_out, cv1,
                             cu_t='year', cu_d='Unknown', cln_d ='3D-average of '+cvar+': surface to bottom, '+colnm,
@@ -171,7 +178,7 @@ for cocean in list_basin_names[:]:
 
     for jk in range(nk):
 
-        [ rf ] = bo.mean_2d(Xd_y[:,jk,:,:], mask[joce,jk,:,:], Xa[:,:])
+        [ rf ] = bo.mean_2d(Xd_y[:,jk,j1:j2,i1:i2], mask[joce,jk,j1:j2,i1:i2], Xa[j1:j2,i1:i2])
 
         Vf[jk] = rf
 

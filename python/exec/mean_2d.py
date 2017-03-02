@@ -88,7 +88,7 @@ del xe1t, xe2t
 
 Xarea_t = nmp.zeros((nj, ni))
 Xarea_t[:,:] = Xa[:,:]*rmask[:,:]*1.E-6 ; # [10^6 m^2] !
-Socean = nmp.sum( Xarea_t[:,:] )
+Socean = nmp.sum( Xarea_t[:-2,:-2] ) ; # Mind the 2 point folding overlap, must not be included in sum!
 print '\n  *** Surface of the ocean = ', Socean* 1.E-6, '  [10^6 km^2]\n'
 
 
@@ -147,14 +147,14 @@ if l_htf:
     if l_qnt: vqnt = nmp.zeros(nt)
     if l_qsr: vqsr = nmp.zeros(nt)
     for jt in range(nt):
-        if l_qnt: vqnt[jt] = nmp.sum( QNT_m[jt,:,:]*Xarea_t ) * 1.E-9 ;  # to PW
-        if l_qsr: vqsr[jt] = nmp.sum( QSR_m[jt,:,:]*Xarea_t ) * 1.E-9 ;  # to PW
+        # Mind the 2 point folding overlap, must not be included in sum!
+        if l_qnt: vqnt[jt] = nmp.sum( QNT_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-9 ;  # to PW
+        if l_qsr: vqsr[jt] = nmp.sum( QSR_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-9 ;  # to PW
 
     cf_out   = vdic['DIAG_D']+'/mean_htf_'+CONFRUN+'_GLO.nc'
     bnc.wrt_appnd_1d_series(vtime, vqnt, cf_out, 'Qnet',
-                            cu_t='year', cu_d='PW',  cln_d ='Globally averaged net heat flux (nemo:'+cv_qnt+')',
-                            vd2=vqsr, cvar2='Qsol',  cln_d2='Globally averaged net solar heat flux (nemo:'+cv_qsr+')',
-                            )
+                            cu_t='year', cu_d='PW', cln_d ='Globally averaged net heat flux (nemo:'+cv_qnt+')',
+                            vd2=vqsr, cvar2='Qsol', cln_d2='Globally averaged net solar heat flux (nemo:'+cv_qsr+')')
     print ' +++ '+cnexec+' => Done with heat flux diags!\n'
 
 # Freshwater fluxes
@@ -240,13 +240,14 @@ if l_fwf:
 
 
     for jt in range(nt):
-        vfwf[jt]           = nmp.sum( FWF_m[jt,:,:]*Xarea_t ) * 1.E-3 ;  # to Sv
-        if l_emp: vemp[jt] = nmp.sum( EMP_m[jt,:,:]*Xarea_t ) * 1.E-3 ;  # to Sv
-        if l_rnf: vrnf[jt] = nmp.sum( RNF_m[jt,:,:]*Xarea_t ) * 1.E-3 ;  # to Sv
-        if l_prc: vprc[jt] = nmp.sum( PRC_m[jt,:,:]*Xarea_t ) * 1.E-3 ;  # to Sv
-        if l_clv: vclv[jt] = nmp.sum( CLV_m[jt,:,:]*Xarea_t ) * 1.E-3 ;  # to Sv
-        if l_evp: vevp[jt] = nmp.sum( EVP_m[jt,:,:]*Xarea_t ) * 1.E-3 ;  # to Sv
-        if l_evb: vevb[jt] = nmp.sum( EVB_m[jt,:,:]*Xarea_t ) * 1.E-3 ;  # to Sv
+        # Mind the 2 point folding overlap, must not be included in sum!
+        vfwf[jt]           = nmp.sum( FWF_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
+        if l_emp: vemp[jt] = nmp.sum( EMP_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
+        if l_rnf: vrnf[jt] = nmp.sum( RNF_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
+        if l_prc: vprc[jt] = nmp.sum( PRC_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
+        if l_clv: vclv[jt] = nmp.sum( CLV_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
+        if l_evp: vevp[jt] = nmp.sum( EVP_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
+        if l_evb: vevb[jt] = nmp.sum( EVB_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
 
     cf_out   = vdic['DIAG_D']+'/mean_fwf_'+CONFRUN+'_GLO.nc'
 
