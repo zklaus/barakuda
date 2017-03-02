@@ -178,7 +178,7 @@ z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
 export i_do_mht=1
 
 # Transport by sigma class
-export i_do_sigt=1 ; # cdfsigtrsp.x has a problem with Gfortran and crashes!
+export i_do_sigt=1
 
 # Sea-ice diags
 export i_do_ice=1  ; # Sea-ice diags
