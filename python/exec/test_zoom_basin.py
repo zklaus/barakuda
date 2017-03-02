@@ -9,9 +9,10 @@ import numpy as nmp
 from netCDF4 import Dataset
 
 narg = len(sys.argv)
-if narg != 2:
-    print 'Usage: '+sys.argv[0]+' <basin_mask>'; sys.exit(0)
+if narg != 3:
+    print 'Usage: '+sys.argv[0]+' <basin_mask> <basin_name>'; sys.exit(0)
 cf_bm = sys.argv[1]
+cname = sys.argv[2]
 
 
 
@@ -19,8 +20,7 @@ cf_bm = sys.argv[1]
 
 # Opening basin_mask:
 f_bm = Dataset(cf_bm)
-#mask  = f_bm.variables['tmaskatl'][:,:]
-mask  = f_bm.variables['tmaskwed'][:,:]
+mask  = f_bm.variables['tmask'+cname][:,:]
 f_bm.close()
 
 
