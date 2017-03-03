@@ -875,7 +875,7 @@ class plot :
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
         fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), dpi=None, facecolor='w', edgecolor='k') ; #trsp_sig_class
-        ax = plt.axes([0.07,  -0.025, 0.91, 0.98], axisbg = '0.5')
+        ax = plt.axes([0.07,  -0.025, 0.91, 0.98], axisbg = 'w')
 
         vc = __vcontour__(rmin, rmax, dc)
 
@@ -1832,7 +1832,7 @@ def __time_axis_minor_ticks__(dt):
     return dt_mnr
 
 
-def __suitable_axis_dx__(hmin, hmax, nb_val=20):
+def __suitable_axis_dx__(hmin, hmax, nb_val=20, lsym0=False):
     dh = abs(hmax - hmin)/float(nb_val)
     lfound = False
     iexp = 20
@@ -1852,5 +1852,11 @@ def __suitable_axis_dx__(hmin, hmax, nb_val=20):
 
     hmin = float(int(hmin*10.**(-iexp)))*10.**iexp
     hmax = float(int((hmax+dh)*10.**(-iexp)))*10.**iexp
+
+    if lsym0:
+        # Force symetry about 0 !
+        hmax = max(abs(hmax),abs(hmin))
+        if hmax%dh != 0.: hmax = float(int(hmax/dh))*dh
+        hmin = -hmax
 
     return hmin, hmax, dh

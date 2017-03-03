@@ -24,36 +24,14 @@ cv_evb = 'evap_ao_cea' ; # debug evap in ec-earth...
 
 DEFAULT_LEGEND_LOC = 'lower left'
 
-venv_needed = {'ORCA','RUN','NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD','LMOCLAT','TRANSPORT_SECTION_FILE','FIG_FORM','BM_FILE'}
+venv_needed = {'ORCA','RUN','NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD','LMOCLAT',
+               'TRANSPORT_SECTION_FILE','FIG_FORM','BM_FILE'}
 
 vdic = bt.check_env_var(csn, venv_needed)
 
 CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
 
 ff = vdic['FIG_FORM'] ; # format for figures (usually "png" or "svg")
-
-def __test_nb_years__(vt, cd):
-    nb_rec = len(vt)
-    # Monthly or Annual time-series?
-    idt = int( vt[1] - vt[0] )
-    if (idt == 0) and (nb_rec%12 == 0):
-        # Montly time-series
-        nb_m = nb_rec
-        nb_y = nb_rec/12
-    elif idt == 1:
-        # Annual time-series
-        nb_m = -1
-        nb_y = nb_rec
-    else:
-        print 'ERROR: '+csn+' for diag='+cd
-        print '       => the time vector seems to be neither monthly nor annual!'
-        print '       => Nb. rec. = '+str(nb_rec)
-        sys.exit(0)
-    ttick = bt.iaxe_tick(nb_y)
-    return (nb_y, nb_m, nb_rec, ttick)
-
-
-
 
 
 narg = len(sys.argv)
@@ -177,7 +155,7 @@ if idfig == 'simple':
     vtime = id_in.variables['time'][:]
     vvar  = id_in.variables[cvar][:]
     id_in.close()
-    (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
+    (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
 
     # Annual data
     VY, FY = bt.monthly_2_annual(vtime[:], vvar[:])
@@ -203,11 +181,10 @@ if idfig == 'ts3d':
 
     joce = 0
     for coce in list_basin_names[:]:
-        #lolo
         cf_in = '3d_'+cvar+'_'+CONFRUN+'_'+coce+'.nc' ;  bt.chck4f(cf_in, script_name=csn)
         id_in = Dataset(cf_in)
         vtime = id_in.variables['time'][:]
-        if joce == 0: (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
+        if joce == 0: (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
         jz = 0
         for czr in vzrange:
             if not joce and not jz:
@@ -269,7 +246,7 @@ if idfig == 'htf':
         vqsr  = id_in.variables[cvr2][:]
     id_in.close()
 
-    (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
+    (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
 
     # Checking if there a potential file for IFS:
     l_htf_ifs = False
@@ -375,7 +352,7 @@ if idfig == 'fwf':
         vevb  = id_in.variables[cvr7][:]
     id_in.close()
 
-    (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
+    (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
 
     # Checking if there a potential file for IFS:
     l_fwf_ifs = False
@@ -629,7 +606,7 @@ if idfig == 'amoc':
         id_in = Dataset(cf_in)
         if jl==0:
             vtime = id_in.variables['time'][:]
-            (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
+            (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
             vlabels = nmp.zeros(nblat, dtype = nmp.dtype('a8'))
             Xamoc   = nmp.zeros((nblat , nbr))
         vlabels[jl] = clat_info
@@ -688,7 +665,7 @@ if idfig == 'ice':
     varea_s  = id_in.variables['area_se'][:]
     id_in.close()
 
-    (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
+    (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
 
     cyua = r'10$^6$km$^2$'
     cyuv = r'10$^3$km$^3$'
@@ -738,7 +715,7 @@ if idfig == 'transport':
         id_in = Dataset(cf_in)
         if js == 0:
             vtime = id_in.variables['time'][:]
-            (nby, nbm, nbr, ittic) = __test_nb_years__(vtime, cdiag)
+            (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
         Xtrsp   = nmp.zeros((3 , nbr)) ; # time + 3 types of transport
         Xtrsp[0,:] = id_in.variables['trsp_volu'][:]
         Xtrsp[1,:] = id_in.variables['trsp_heat'][:]
@@ -778,7 +755,7 @@ if idfig == 'mld':
         if os.path.exists(cf_in_m):
             print ' Opening '+cf_in_m
             vt0, vd0 = bn.read_1d_series(cf_in_m, cvar, cv_t='time', l_return_time=True)
-            if jbox==0: (nby, nbm, nbr, ittic) = __test_nb_years__(vt0, cdiag)
+            if jbox==0: (nby, nbm, nbr, ittic) = bt.test_nb_years(vt0, cdiag)
             VY, FY = bt.monthly_2_annual(vt0, vd0)
 
             bp.plot("1d_mon_ann")(vt0, VY, vd0, FY, cfignm=cdiag+'_'+CONFRUN+'_'+cbox, dt=ittic, cyunit=cyu,

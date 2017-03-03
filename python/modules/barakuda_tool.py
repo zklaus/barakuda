@@ -624,3 +624,24 @@ def read_coor(cf, ctype='int', lTS_bounds=False):
         return vboxes, vi1, vj1, vi2, vj2,  vTs, vTl, vSs, vSl
     else:
         return vboxes, vi1, vj1, vi2, vj2
+
+
+def test_nb_years(vt, cd):
+    nb_rec = len(vt)
+    # Monthly or Annual time-series?
+    idt = int( vt[1] - vt[0] )
+    if (idt == 0) and (nb_rec%12 == 0):
+        # Montly time-series
+        nb_m = nb_rec
+        nb_y = nb_rec/12
+    elif idt == 1:
+        # Annual time-series
+        nb_m = -1
+        nb_y = nb_rec
+    else:
+        print 'ERROR: '+csn+' for diag='+cd
+        print '       => the time vector seems to be neither monthly nor annual!'
+        print '       => Nb. rec. = '+str(nb_rec)
+        sys.exit(0)
+    ttick = iaxe_tick(nb_y)
+    return (nb_y, nb_m, nb_rec, ttick)

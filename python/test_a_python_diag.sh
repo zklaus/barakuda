@@ -3,6 +3,7 @@
 #  B E T A  ! ! !
 
 # Diag to test:
+itrsig=1
 imhst=0
 iamoc=0
 icrosssect=0
@@ -13,7 +14,7 @@ imean3d=0
 ienso=0
 imov=0
 issh=0
-its=1
+its=0
 imld=0
 irnf=0
 iice=0
@@ -42,13 +43,13 @@ ihov=0
 #ARCH="T511_ece32_triolith"
 #export RUN="HC71" ; NC=nc ; jyear=1990
 
-#CONFIG="ORCA025_L75"
-#ARCH="etienne"
-#export RUN="a0ez" ; NC=nc ; jyear=1945
+CONFIG="ORCA025_L75"
+ARCH="etienne"
+export RUN="a0ez" ; NC=nc ; jyear=1945
 
-CONFIG="ORCA1_L75"
-ARCH="T255_ece32_triolith"
-export RUN="LB10" ; NC=nc4 ; jyear=1990
+#CONFIG="ORCA1_L75"
+#ARCH="T255_ece32_triolith"
+#export RUN="LB10" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -150,6 +151,11 @@ if [ ${its} -eq 1 ]; then
     ln -sf ${DIAG_D}/${diag}*.nc .
     CMD="python exec/plot_time_series.py ${diag}"
 fi
+
+if [ ${itrsig} -eq 1 ]; then
+    CMD="python exec/plot_trsp_sigma.py"
+fi
+
 
 
 if [ ${ifsflx} -eq 1 ]; then
