@@ -44,7 +44,8 @@ I / What do you need to be able to use BaraKuda ?
 
 
 II / Compile CDFTOOLS executables 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------------------
+
 
  * CDFTOOLS is a set of FORTRAN executables intended to perform a multitude of
    diagnostics on NEMO output file and is developed by Jean-Marc Molines at LGGE
@@ -63,6 +64,7 @@ II / Compile CDFTOOLS executables
 
 - if that was successful the 'barakuda/bin' directory should contain the 8
   following executables:
+~~~~~~~~~~~~~~~~~~~~~~~~~
  * cdficediags.x
  * cdfmaxmoc.x
  * cdfmhst.x
@@ -71,11 +73,12 @@ II / Compile CDFTOOLS executables
  * cdfsigtrp.x
  * cdftransportiz.x
  * cdfvT.x
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 III / Create and configure your own "configs/config_<MY_CONF>.sh"
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------------------------------------
 
 IMPORTANT: Always refer to the most relevant 'configs/config_*_TEMPLATE.sh' file
 to design or re-adjust yours! These are symbolic links pointing to the last
@@ -86,7 +89,9 @@ MY_CONF should always be of the form: "(e)ORCA<RES>_L<NLEV>_<blabla>.sh"
         ( with NLEV being the number of z levels )
 
 NEMO output files must be monthly averages and of the following form:
-==> <RUN NAME>_1m_<YEAR>0101_<YEAR>1231_<GRID_TYPE>.nc(.gz)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<RUN NAME>_1m_<YEAR>0101_<YEAR>1231_<GRID_TYPE>.nc(.gz)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
            (GRID_TYPE=grid_T/grid_U/grid_V/icemod) 
 
 Gzipped or not!
@@ -109,10 +114,12 @@ F_T_CLIM_3D_12, F_S_CLIM_3D_12, SST_CLIM_12
 
 
 IV) Create diagnostics
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
-Launch "barakuda.sh" 
+Launch "barakuda.sh"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ./barakuda.sh -C <MY_CONF> -R <RUN>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00)
 
 Use the -h switch to see available options
@@ -120,28 +127,31 @@ Use the -h switch to see available options
 
 
 V) Create figures and browsable HTML page
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------------
 
 A/ Once the previous job has finished to run, launch
 
    * To only generate time-series plots use the "-e" switch:
-
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    ./barakuda.sh -C <MY_CONF> -R <RUN> -e
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00 -e)
 
    * To generate time-series + 2D climatological plots use the "-E" switch,
      provided you have built a climatology out of your run with the
      "build_clim.sh" script (see point V/B):
-
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    ./barakuda.sh -C <MY_CONF> -R <RUN> -E
-
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 B/ To be able to create the "climatology" plots (maps, sections, etc, based on a
    monthly climatology of a few years) you will have to
 
   i) create the climatology with the "build_clim.sh" script:
    
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    ./build_clim.sh -C <MY_CONF> -R <RUN> -i <first_year> -e <last_year>
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
          (check ./build_clim.sh -h to see the other important options...)
 
     (ex: ./build_clim.sh -C ORCA1_L75_v36_triolith -R SL36C00 -f 10 -i 0090 -e 0099 -k 4)
@@ -153,6 +163,8 @@ B/ To be able to create the "climatology" plots (maps, sections, etc, based on a
 
 C/ To compare time-series between at least 2 (already diagnosed) runs:
    
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    ./compare_time-series.sh -C <MY_CONF> -R <RUN1>,<RUN2>,...,<RUNn>
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    (ex: ./compare_time-series.sh -C ORCA1_L75_v36_triolith -R SL36C00,SL36EIE )
 
