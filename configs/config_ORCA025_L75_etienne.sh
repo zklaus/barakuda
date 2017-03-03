@@ -8,28 +8,34 @@
 #
 #        Machine: MareNostrum@BSC
 #
-#        L. Brodeau, November 2016
+#        L. Brodeau, 2017
 #
 #===========================================================
 
 export CONF=ORCA025.L75 ; # horizontal global ORCA configuration
 export NBL=75           ; # number of levels
 
-export HOST=GUSTAFSON.bsc.es    ; # this has no importance at all, it will just become an "info" on the web-page!
+export HOST=`hostname`.bsc.es    ; # this has no importance at all, it will just become an "info" on the web-page!
 export MASTERMIND="Etienne" ; # same here, who's the person who designed/ran this simulation?
 
 export EXTRA_CONF="NEMO 3.6 + LIM 3 + IFS-T511 (EC-Earth 3.2b)<br>\
 <i>10 years spinup with constant CMIP5 forcing from 1940 using EC-Earth 3.2.0,<br>\
 and from 1950 onwards CMIP6 forcing using EC-Earth 3.2.1 (primavera branch)</i>" ;   #  // same here ...
 
-# File system / path on which most netcdf data will be read:
-export STORE_DIR="/scratch/Earth/lbrodeau"
+
+# Path / directory structure in which to find NEMO output file (you can use
+# <ORCA> and <RUN> as substitute to your ORCA grid and experiment (RUN) name):
+export NEMO_OUT_STRCT="/scratch/Earth/etourign/barakuda/<RUN>"
+
+# Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
+export DIAG_DIR="/scratch/Earth/${USER}/barakuda/${CONF}_ece3"
+#export DIAG_DIR="/esarchive/scratch/${USER}/barakuda/${CONF}_ece3"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
 export CONF_INI_DIR="/esnas/obs/barakuda/ORCA025.L75"
 
-# In what directory of the local machine to save the diagnostics:
-export DIAG_DIR="/scratch/Earth/${USER}/barakuda/${CONF}_ece3"
+# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
+export SCRATCH="/scratch/Earth/${USER}"
 
 export PYTHON_HOME="/home/Earth/lbrodeau/opt/Canopy/User" ; # HOME to python distribution with matplotlib and basemap !
 
@@ -40,7 +46,7 @@ export ece_run=0 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run
 #                  # 1 => it's an OCEAN-ONLY EC-Earth run done from a EC-Earth setup
 #                  # 2 => it's a  COUPLED  EC-Earth run
 #                  #      Both 1 and 2 imply that NEMO files are stored in something like
-#                  #       ${STORE_DIR}/<RUN>/output/nemo/<YYY>
+#                  #       ${SOMEWHERE}/<RUN>/output/nemo/<YYY>
 #                  #       where YYY starts from '001' to
 #                  #      If you select '2', make sure 'cdo' is available and working!!!
 #                  # 10 => this run controled by AutoSubmit (so NEMO files are tared somerwhere?)
@@ -53,9 +59,6 @@ export AGCM_INFO="IFS T${TRES_IFS}"
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T"
 
-# Directory structure in which to find NEMO output file (use <ORCA> and <RUN>):
-export NEMO_OUT_STRCT="/scratch/Earth/etourign/barakuda/<RUN>"
-
 export TSTAMP="1m"   ; # output time-frequency stamp as in NEMO output files...
 
 # In case 3D fields have been saved on an annual mean basis rather than montly:
@@ -67,9 +70,6 @@ export NEMO_SAVED_FILES_3D="grid_T grid_U grid_V" ; #     ''
 # use <ORCA>, <RUN> and <TSTAMP>=>  Ex: export NEMO_FILE_PREFIX="<ORCA>-<RUN>_<TSTAMP>_"
 export NEMO_FILE_PREFIX="<RUN>_<TSTAMP>_"
 # => should get rid of TSTAMP actually...
-
-# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
-export SCRATCH="/scratch/Earth/${USER}"
 
 
 ####### NEMO => what fields in what files ??? ############

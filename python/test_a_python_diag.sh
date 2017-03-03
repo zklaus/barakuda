@@ -273,29 +273,6 @@ fi
 
 
 
-if [ ${icmip5} -eq 1 ]; then
-    export RUN="SPIN"
-    export CPREF="ORCA1-${RUN}_MM_"
-    export ORCA=ORCA1.L42 ; # horizontal global configuration
-    export NBL=42         ; # number of levels
-    export STORE_DIR="/proj/bolinc/users/x_laubr"
-    export TSTAMP="MM"
-    export DIAG_D="."
-    export MM_FILE="${STORE_DIR}/${ORCA}/${ORCA}-I/mesh_mask_ORCA1_ecearth2_42l_NoCaspian.nc4"
-    export NN_SST="sosstsst"
-    export NN_SSS="sosaline"
-    export NN_SSH="sossheig"
-    export NN_T="votemper"
-    export NN_S="vosaline"
-
-    export NN_TAUX="sozotaux"
-    export NN_TAUY="sometauy"
-
-    export FILE_DEF_BOXES="/home/x_laubr/DEV/barakuda/data/def_boxes_convection_ORCA1.txt"
-
-    python /home/x_laubr/DEV/barakuda/python/exec/budget_rectangle_box.py 2250 100 uv
-
-fi
 
 
 
