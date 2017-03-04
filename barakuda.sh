@@ -10,8 +10,9 @@
 #
 #===============================================================
 
-cbfp=`realpath $0`
-export BARAKUDA_ROOT=`dirname ${cbfp}`
+#cbfp=`readlink -f $0`
+#export BARAKUDA_ROOT=`dirname ${cbfp}`
+export BARAKUDA_ROOT=`pwd`
 
 # Display available configs:
 list_conf=`\ls ${BARAKUDA_ROOT}/configs/config_*.sh | sed -e "s|${BARAKUDA_ROOT}/configs\/config_||g" -e s/'.sh'/''/g`
