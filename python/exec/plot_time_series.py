@@ -24,12 +24,12 @@ cv_evb = 'evap_ao_cea' ; # debug evap in ec-earth...
 
 DEFAULT_LEGEND_LOC = 'lower left'
 
-venv_needed = {'ORCA','RUN','NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD','LMOCLAT',
+venv_needed = {'ORCA','EXP','NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD','LMOCLAT',
                'TRANSPORT_SECTION_FILE','FIG_FORM','BM_FILE'}
 
 vdic = bt.check_env_var(csn, venv_needed)
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 ff = vdic['FIG_FORM'] ; # format for figures (usually "png" or "svg")
 
@@ -150,7 +150,7 @@ else:
 
 if idfig == 'simple':
 
-    cf_in = 'mean_'+cvar+'_'+CONFRUN+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
+    cf_in = 'mean_'+cvar+'_'+CONFEXP+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
     id_in = Dataset(cf_in)
     vtime = id_in.variables['time'][:]
     vvar  = id_in.variables[cvar][:]
@@ -161,8 +161,8 @@ if idfig == 'simple':
     VY, FY = bt.monthly_2_annual(vtime[:], vvar[:])
 
     # Time to plot
-    bp.plot("1d_mon_ann")(vtime, VY, vvar, FY, cfignm=cdiag+'_'+CONFRUN, dt=ittic,
-                          cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
+    bp.plot("1d_mon_ann")(vtime, VY, vvar, FY, cfignm=cdiag+'_'+CONFEXP, dt=ittic,
+                          cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
 
 
 
@@ -181,7 +181,7 @@ if idfig == 'ts3d':
 
     joce = 0
     for coce in list_basin_names[:]:
-        cf_in = '3d_'+cvar+'_'+CONFRUN+'_'+coce+'.nc' ;  bt.chck4f(cf_in, script_name=csn)
+        cf_in = '3d_'+cvar+'_'+CONFEXP+'_'+coce+'.nc' ;  bt.chck4f(cf_in, script_name=csn)
         id_in = Dataset(cf_in)
         vtime = id_in.variables['time'][:]
         if joce == 0: (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
@@ -211,18 +211,18 @@ if idfig == 'ts3d':
         joce = joce + 1
 
     # One plot only for global:
-    bp.plot("1d_mon_ann")(vtime, VY, FM[0,0,:], FY[0,0,:], cfignm=cdiag+'_'+CONFRUN, dt=ittic,
-                          cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
+    bp.plot("1d_mon_ann")(vtime, VY, FM[0,0,:], FY[0,0,:], cfignm=cdiag+'_'+CONFEXP, dt=ittic,
+                          cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
 
 
     # Global for different depth:
-    bp.plot("1d_multi")(vtime, FM[0,:,:], vlab[:], cfignm=cdiag+'_lev_'+CONFRUN, dt=ittic,
-                        loc_legend='out', cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
+    bp.plot("1d_multi")(vtime, FM[0,:,:], vlab[:], cfignm=cdiag+'_lev_'+CONFEXP, dt=ittic,
+                        loc_legend='out', cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
 
 
     # Show each ocean (All depth):
-    bp.plot("1d_multi")(vtime, FM[:,0,:], list_basin_lgnms, cfignm=cdiag+'_basins_'+CONFRUN, dt=ittic,
-                        loc_legend='out', cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
+    bp.plot("1d_multi")(vtime, FM[:,0,:], list_basin_lgnms, cfignm=cdiag+'_basins_'+CONFEXP, dt=ittic,
+                        loc_legend='out', cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
 
 
 
@@ -235,7 +235,7 @@ if idfig == 'ts3d':
 if idfig == 'htf':
 
     l_qsr = False
-    cf_in = cdiag+'_'+CONFRUN+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
+    cf_in = cdiag+'_'+CONFEXP+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
 
     id_in = Dataset(cf_in)
     list_var = id_in.variables.keys()
@@ -250,7 +250,7 @@ if idfig == 'htf':
 
     # Checking if there a potential file for IFS:
     l_htf_ifs = False
-    cf_IFS_in = cdiag+'_IFS_'+vdic['RUN']+'_GLO.nc'
+    cf_IFS_in = cdiag+'_IFS_'+vdic['EXP']+'_GLO.nc'
     print '  *** Checking for the existence of '+cf_IFS_in
     if os.path.exists(cf_IFS_in):
         print "  *** IFS HTF files found!"
@@ -269,12 +269,12 @@ if idfig == 'htf':
     # Annual data
     VY, FY = bt.monthly_2_annual(vtime, vqnt)
     # Time to plot
-    bp.plot("1d_mon_ann")(vtime, VY, vqnt, FY, cfignm=cdiag+'_qnt_'+CONFRUN, dt=ittic,
-                          cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
+    bp.plot("1d_mon_ann")(vtime, VY, vqnt, FY, cfignm=cdiag+'_qnt_'+CONFEXP, dt=ittic,
+                          cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
     if l_qsr:
         VY, FY = bt.monthly_2_annual(vtime, vqsr)
-        bp.plot("1d_mon_ann")(vtime, VY, vqsr, FY, cfignm=cdiag+'_qsr_'+CONFRUN, dt=ittic,
-                              cyunit=cyu, ctitle = CONFRUN+': '+cln2, ymin=ym, ymax=yp, cfig_type=ff)
+        bp.plot("1d_mon_ann")(vtime, VY, vqsr, FY, cfignm=cdiag+'_qsr_'+CONFEXP, dt=ittic,
+                              cyunit=cyu, ctitle = CONFEXP+': '+cln2, ymin=ym, ymax=yp, cfig_type=ff)
 
     # Only Qnet (NEMO and IFS)
     if l_htf_ifs:
@@ -282,15 +282,15 @@ if idfig == 'htf':
         Xplt = nmp.zeros((nbd,nbm))
         Xplt[0,:] = vqnt[:]           ; vlab.append('Qnet NEMO ('+vdic_htf['NN_QNET']+')')
         Xplt[1,:] = vqnt_ifs[:]       ; vlab.append('Qnet IFS (SSR+STR+SLHF+SSHF')
-        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_qnt_NEMO_IFS_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Surface net heat flux (monthly)',
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_qnt_NEMO_IFS_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Surface net heat flux (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
         # Same but annual:
         Xplt = nmp.zeros((nbd,nby))
         VY, Xplt[0,:] = bt.monthly_2_annual(vtime[:], vqnt[:])
         VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], vqnt_ifs[:])
-        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_qnt_NEMO_IFS_annual_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Surface net heat flux (annual)',
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_qnt_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Surface net heat flux (annual)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
 
     # Only Qsol (NEMO and IFS)
@@ -299,15 +299,15 @@ if idfig == 'htf':
         Xplt = nmp.zeros((nbd,nbm))
         Xplt[0,:] = vqsr[:]           ; vlab.append('Qsol NEMO ('+vdic_htf['NN_QSOL']+')')
         Xplt[1,:] = vqsr_ifs[:]       ; vlab.append('Qsol IFS (SSR)')
-        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_qsr_NEMO_IFS_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Surface net solar flux (monthly)',
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_qsr_NEMO_IFS_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Surface net solar flux (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
         # Same but annual:
         Xplt = nmp.zeros((nbd,nby))
         VY, Xplt[0,:] = bt.monthly_2_annual(vtime[:], vqsr[:])
         VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], vqsr_ifs[:])
-        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_qsr_NEMO_IFS_annual_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Surface net solar flux (annual)',
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_qsr_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Surface net solar flux (annual)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
 
 
@@ -324,7 +324,7 @@ if idfig == 'htf':
 if idfig == 'fwf':
 
     l_rnf = False ; l_emp = False ; l_prc = False ; l_clv = False ; l_evp = False ; l_evb = False
-    cf_in = cdiag+'_'+CONFRUN+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
+    cf_in = cdiag+'_'+CONFEXP+'_GLO.nc' ;  bt.chck4f(cf_in, script_name=csn)
 
     id_in = Dataset(cf_in)
     list_var = id_in.variables.keys()
@@ -356,7 +356,7 @@ if idfig == 'fwf':
 
     # Checking if there a potential file for IFS:
     l_fwf_ifs = False
-    cf_IFS_in = cdiag+'_IFS_'+vdic['RUN']+'_GLO.nc'
+    cf_IFS_in = cdiag+'_IFS_'+vdic['EXP']+'_GLO.nc'
     print '  *** Checking for the existence of '+cf_IFS_in
     if os.path.exists(cf_IFS_in):
         print "  *** IFS FWF files found!"
@@ -382,37 +382,37 @@ if idfig == 'fwf':
     # Annual data
     VY, FY = bt.monthly_2_annual(vtime, vfwf)
     # Time to plot
-    bp.plot("1d_mon_ann")(vtime, VY, vfwf, FY, cfignm=cdiag+'_fwf_'+CONFRUN, dt=ittic,
-                          cyunit=cyu, ctitle = CONFRUN+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
+    bp.plot("1d_mon_ann")(vtime, VY, vfwf, FY, cfignm=cdiag+'_fwf_'+CONFEXP, dt=ittic,
+                          cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
 
     if l_rnf:
         VY, FY = bt.monthly_2_annual(vtime, vrnf)
-        bp.plot("1d_mon_ann")(vtime, VY, vrnf, FY, cfignm=cdiag+'_rnf_'+CONFRUN, dt=ittic,
-                              cyunit=cyu, ctitle = CONFRUN+': '+cln2, ymin=ym, ymax=yp, cfig_type=ff)
+        bp.plot("1d_mon_ann")(vtime, VY, vrnf, FY, cfignm=cdiag+'_rnf_'+CONFEXP, dt=ittic,
+                              cyunit=cyu, ctitle = CONFEXP+': '+cln2, ymin=ym, ymax=yp, cfig_type=ff)
 
     if l_emp:
         VY, FY = bt.monthly_2_annual(vtime, vemp)
-        bp.plot("1d_mon_ann")(vtime, VY, vemp, FY, cfignm=cdiag+'_emp_'+CONFRUN, dt=ittic,
-                              cyunit=cyu, ctitle = CONFRUN+': '+cln3, ymin=ym, ymax=yp, cfig_type=ff)
+        bp.plot("1d_mon_ann")(vtime, VY, vemp, FY, cfignm=cdiag+'_emp_'+CONFEXP, dt=ittic,
+                              cyunit=cyu, ctitle = CONFEXP+': '+cln3, ymin=ym, ymax=yp, cfig_type=ff)
     if l_evp:
         VY, FY = bt.monthly_2_annual(vtime, vevp)
-        bp.plot("1d_mon_ann")(vtime, VY, vevp, FY, cfignm=cdiag+'_evp_'+CONFRUN, dt=ittic,
-                              cyunit=cyu, ctitle = CONFRUN+': '+cln6, ymin=ym, ymax=yp, cfig_type=ff)
+        bp.plot("1d_mon_ann")(vtime, VY, vevp, FY, cfignm=cdiag+'_evp_'+CONFEXP, dt=ittic,
+                              cyunit=cyu, ctitle = CONFEXP+': '+cln6, ymin=ym, ymax=yp, cfig_type=ff)
     if l_prc and l_prc_nemo_valid:
         VY, FY = bt.monthly_2_annual(vtime, vprc)
-        bp.plot("1d_mon_ann")(vtime, VY, vprc, FY, cfignm=cdiag+'_prc_'+CONFRUN, dt=ittic,
-                              cyunit=cyu, ctitle = CONFRUN+': '+cln4, ymin=ym, ymax=yp, cfig_type=ff)
+        bp.plot("1d_mon_ann")(vtime, VY, vprc, FY, cfignm=cdiag+'_prc_'+CONFEXP, dt=ittic,
+                              cyunit=cyu, ctitle = CONFEXP+': '+cln4, ymin=ym, ymax=yp, cfig_type=ff)
 
     if l_evp and l_prc and l_prc_nemo_valid:
         VY, FY = bt.monthly_2_annual(vtime, vevp-vprc)
-        bp.plot("1d_mon_ann")(vtime, VY, vevp-vprc, FY, cfignm=cdiag+'_prc_'+CONFRUN, dt=ittic,
-                              cyunit=cyu, ctitle = CONFRUN+': E-P as E-P !', ymin=ym, ymax=yp, cfig_type=ff)
+        bp.plot("1d_mon_ann")(vtime, VY, vevp-vprc, FY, cfignm=cdiag+'_prc_'+CONFEXP, dt=ittic,
+                              cyunit=cyu, ctitle = CONFEXP+': E-P as E-P !', ymin=ym, ymax=yp, cfig_type=ff)
 
 
     if l_clv:
         VY, FY = bt.monthly_2_annual(vtime, vclv)
-        bp.plot("1d_mon_ann")(vtime, VY, vclv, FY, cfignm=cdiag+'_clv_'+CONFRUN, dt=ittic,
-                              cyunit=cyu, ctitle = CONFRUN+': '+cln5, ymin=ym, ymax=yp, cfig_type=ff)
+        bp.plot("1d_mon_ann")(vtime, VY, vclv, FY, cfignm=cdiag+'_clv_'+CONFEXP, dt=ittic,
+                              cyunit=cyu, ctitle = CONFEXP+': '+cln5, ymin=ym, ymax=yp, cfig_type=ff)
 
 
     # Only runoffs (-(E-P) over land for IFS):
@@ -423,16 +423,16 @@ if idfig == 'fwf':
         Xplt[0,:] = vrnf[:]                     ; vlab.append('R NEMO')
         Xplt[1,:] = -vemp_land_ifs[:]           ; vlab.append('-(E-P) over land IFS')
         if l_clv: Xplt[2,:] = vrnf[:] + vclv[:] ; vlab.append('R + Ice Calving NEMO')
-        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_rnf_NEMO_IFS_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Continental runoffs (monthly)',
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_rnf_NEMO_IFS_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Continental runoffs (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
         # Same but annual:
         Xplt = nmp.zeros((nbd,nby))        
         VY, Xplt[0,:] = bt.monthly_2_annual(vtime[:], vrnf[:])
         VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], -vemp_land_ifs[:])
         if l_clv: VY, Xplt[2,:] = bt.monthly_2_annual(vtime[:], vrnf[:] + vclv[:])
-        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_rnf_NEMO_IFS_annual_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Continental runoffs (annual)',
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_rnf_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Continental runoffs (annual)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
 
 
@@ -440,18 +440,18 @@ if idfig == 'fwf':
     if l_clv and l_rnf:
         vlab = [] ; nbd = 2
         Xplt = nmp.zeros((nbd,nbm))
-        cttl = 'NEMO: '+CONFRUN+': Continental Runoffs and Ice Calving'
+        cttl = 'NEMO: '+CONFEXP+': Continental Runoffs and Ice Calving'
         cfig = cdiag+'_rnf_clv_NEMO_'
         Xplt[0,:] = vrnf[:] ; vlab.append('R NEMO ('+vdic_fwf['NN_RNF']+')')
         Xplt[1,:] = vclv[:] ; vlab.append('Ice Calving NEMO ('+vdic_fwf['NN_CLV']+')')
-        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cfig+CONFRUN, dt=ittic,
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cfig+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle = cttl+' (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
         # Same but annual:
         Xplt = nmp.zeros((nbd,nby))        
         VY, Xplt[0,:] = bt.monthly_2_annual(vtime[:], vrnf[:])
         VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], vclv[:])
-        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cfig+'annual_'+CONFRUN, dt=ittic,
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cfig+'annual_'+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle =  cttl+' (annual)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
 
@@ -463,15 +463,15 @@ if idfig == 'fwf':
         Xplt = nmp.zeros((nbd,nbm))
         Xplt[0,:] = vprc[:]           ; vlab.append('P NEMO')
         Xplt[1,:] = vp_ifs[:]         ; vlab.append('P IFS')
-        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_prc_NEMO_IFS_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Precip (monthly)',
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_prc_NEMO_IFS_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Precip (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
         # Same but annual:
         Xplt = nmp.zeros((nbd,nby))
         VY, Xplt[0,:] = bt.monthly_2_annual(vtime[:], vprc[:])
         VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], vp_ifs[:])
-        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_prc_NEMO_IFS_annual_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Precip (annual)',
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_prc_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Precip (annual)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
 
 
@@ -483,16 +483,16 @@ if idfig == 'fwf':
         Xplt[0,:] = vevp[:]           ; vlab.append('E NEMO ('+vdic_fwf['NN_E']+')')
         Xplt[1,:] = ve_ifs[:]         ; vlab.append('E IFS')
         if l_evb: Xplt[2,:] = vevb[:] ; vlab.append('E NEMO ('+cv_evb+')')
-        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_evp_NEMO_IFS_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Evaporation (monthly)',
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_evp_NEMO_IFS_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Evaporation (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
         # Same but annual:
         Xplt = nmp.zeros((nbd,nby))
         VY, Xplt[0,:] =       bt.monthly_2_annual(vtime[:], vevp[:])
         VY, Xplt[1,:] =       bt.monthly_2_annual(vtime[:], ve_ifs[:])
         if l_evb: Xplt[2,:] = bt.monthly_2_annual(vtime[:], vevb[:])
-        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_evp_NEMO_IFS_annual_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': Evaporation (annual)',
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_evp_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Evaporation (annual)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
 
 
@@ -502,15 +502,15 @@ if idfig == 'fwf':
         Xplt = nmp.zeros((nbd,nbm))
         Xplt[0,:] = vevp[:]   - vprc[:]   ; vlab.append('E-P NEMO')
         Xplt[1,:] = ve_ifs[:] - vp_ifs[:] ; vlab.append('E-P IFS')
-        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_EmP_NEMO_IFS_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': E-P (monthly)',
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_EmP_NEMO_IFS_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': E-P (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
         # Same but annual:
         Xplt = nmp.zeros((nbd,nby))
         VY, Xplt[0,:] =       bt.monthly_2_annual(vtime[:], vevp[:]   - vprc[:])
         VY, Xplt[1,:] =       bt.monthly_2_annual(vtime[:], ve_ifs[:] - vp_ifs[:])
-        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_EmP_NEMO_IFS_annual_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': E-P (annual)',
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_EmP_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': E-P (annual)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
 
 
@@ -523,8 +523,8 @@ if idfig == 'fwf':
         Xplt[1,:] = ve_ifs[:] - vp_ifs[:] + vemp_land_ifs[:] ; vlab.append('E-P-R IFS')
         Xplt[2,:] = vfwf[:]          ; vlab.append('NEMO: '+vdic_fwf['NN_FWF'])
         if l_clv: Xplt[3,:] = vfwf[:] + vclv[:] ; vlab.append('NEMO: '+vdic_fwf['NN_FWF']+'+'+vdic_fwf['NN_CLV'])
-        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_EmPmR_NEMO_IFS_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': E-P-R (monthly)',
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_EmPmR_NEMO_IFS_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': E-P-R (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
         # Same but annual:
         Xplt = nmp.zeros((nbd,nby))
@@ -532,8 +532,8 @@ if idfig == 'fwf':
         VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], ve_ifs[:] - vp_ifs[:] + vemp_land_ifs[:])
         VY, Xplt[2,:] = bt.monthly_2_annual(vtime[:], vfwf[:])
         if l_clv: Vy, Xplt[3,:] = bt.monthly_2_annual(vtime[:], vfwf[:] + vclv[:])
-        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_EmPmR_NEMO_IFS_annual_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFRUN+': E-P-R (annual)',
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_EmPmR_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': E-P-R (annual)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
 
 
@@ -556,8 +556,8 @@ if idfig == 'fwf':
             Xplt[3,:] = vrnf[:]    ; vlab.append('R NEMO')
         if l_rnf and l_clv:
             Xplt[4,:] = vclv[:]    ; vlab.append('Calving NEMO')
-        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_prc_IFS_'+CONFRUN, dt=ittic,
-                            cyunit=cyu, ctitle = CONFRUN+': Precip and NEMO runoffs (monthly)', ymin=ym, ymax=yp, cfig_type=ff,
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_prc_IFS_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = CONFEXP+': Precip and NEMO runoffs (monthly)', ymin=ym, ymax=yp, cfig_type=ff,
                             loc_legend='out')
 
 
@@ -575,9 +575,9 @@ if idfig == 'fwf':
         #if l_evp:     Xplt[8,:] = vevp[:]     ; vlab.append('E NEMO ('+vdic_fwf['NN_E']+')')
         #
         #bp.plot("1d_multi")(vtime, Xplt, vlab,
-        #                    cfignm=cdiag+'_emp_ALL_IFS_'+CONFRUN, dt=ittic,
+        #                    cfignm=cdiag+'_emp_ALL_IFS_'+CONFEXP, dt=ittic,
         #                    loc_legend='out', cyunit=cyu,
-        #                    ctitle = CONFRUN+': fresh-water budgets', ymin=ym, ymax=yp, cfig_type=ff)
+        #                    ctitle = CONFEXP+': fresh-water budgets', ymin=ym, ymax=yp, cfig_type=ff)
 
 
 
@@ -628,8 +628,8 @@ if idfig == 'amoc':
         FY[:] = Xamoc[i40,:]
 
     # Time to plot
-    bp.plot("1d_mon_ann")(vtime, VY, Xamoc[i40,:], FY, cfignm=cdiag+'_'+CONFRUN, dt=ittic,
-                          cyunit=cyu, ctitle = CONFRUN+': '+r'Max. of AMOC between '+vlabels[i40],
+    bp.plot("1d_mon_ann")(vtime, VY, Xamoc[i40,:], FY, cfignm=cdiag+'_'+CONFEXP, dt=ittic,
+                          cyunit=cyu, ctitle = CONFEXP+': '+r'Max. of AMOC between '+vlabels[i40],
                           ymin=ym, ymax=yp, dy=1., i_y_jump=2, cfig_type=ff)
 
 
@@ -642,8 +642,8 @@ if idfig == 'amoc':
         # the file contains annual data
         FY[:,:] = Xamoc[:,:]
 
-    bp.plot("1d_multi")(VY, FY, vlabels, cfignm=cdiag+'_'+CONFRUN+'_comp', dt=ittic,
-                        cyunit=cyu, ctitle = CONFRUN+': '+r'Max. of AMOC', ymin=0, ymax=0,
+    bp.plot("1d_multi")(VY, FY, vlabels, cfignm=cdiag+'_'+CONFEXP+'_comp', dt=ittic,
+                        cyunit=cyu, ctitle = CONFEXP+': '+r'Max. of AMOC', ymin=0, ymax=0,
                         loc_legend='out', cfig_type=ff)
 
 
@@ -678,27 +678,27 @@ if idfig == 'ice':
     # End local summer
     Xplt[0,:] = varea_n[8::12] ; # extent Arctic september
     Xplt[1,:] = varea_s[2::12] ; # extent Antarctic march
-    bp.plot("1d_multi")(vtime_y, Xplt, vlab_sum, cfignm='seaice_extent_summer_'+CONFRUN, dt=ittic,
-                        cyunit=cyua, ctitle = CONFRUN+': '+r'Sea-Ice extent, end of local summer',
+    bp.plot("1d_multi")(vtime_y, Xplt, vlab_sum, cfignm='seaice_extent_summer_'+CONFEXP, dt=ittic,
+                        cyunit=cyua, ctitle = CONFEXP+': '+r'Sea-Ice extent, end of local summer',
                         loc_legend='out', ymin=0., ymax=0., cfig_type=ff)
 
     Xplt[0,:] = vvolu_n[8::12] ; # volume Arctic september
     Xplt[1,:] = vvolu_s[2::12] ; # volume Antarctic march
-    bp.plot("1d_multi")(vtime_y, Xplt, vlab_sum, cfignm='seaice_volume_summer_'+CONFRUN, dt=ittic,
-                        cyunit=cyuv, ctitle = CONFRUN+': '+r'Sea-Ice volume, end of local summer',
+    bp.plot("1d_multi")(vtime_y, Xplt, vlab_sum, cfignm='seaice_volume_summer_'+CONFEXP, dt=ittic,
+                        cyunit=cyuv, ctitle = CONFEXP+': '+r'Sea-Ice volume, end of local summer',
                         loc_legend='out', ymin=0., ymax=0., cfig_type=ff)
 
     # End of local winter
     Xplt[0,:] = varea_n[2::12] ; # extent Arctic march
     Xplt[1,:] = varea_s[8::12] ; # extent Antarctic september
-    bp.plot("1d_multi")(vtime_y, Xplt, vlab_win, cfignm='seaice_extent_winter_'+CONFRUN, dt=ittic,
-                        cyunit=cyua, ctitle = CONFRUN+': '+r'Sea-Ice extent, end of local winter',
+    bp.plot("1d_multi")(vtime_y, Xplt, vlab_win, cfignm='seaice_extent_winter_'+CONFEXP, dt=ittic,
+                        cyunit=cyua, ctitle = CONFEXP+': '+r'Sea-Ice extent, end of local winter',
                         loc_legend='out', ymin=0., ymax=0., cfig_type=ff)
 
     Xplt[0,:] = vvolu_n[2::12] ; # volume Arctic march
     Xplt[1,:] = vvolu_s[8::12] ; # volume Antarctic september
-    bp.plot("1d_multi")(vtime_y, Xplt, vlab_win, cfignm='seaice_volume_winter_'+CONFRUN, dt=ittic,
-                        cyunit=cyuv, ctitle = CONFRUN+': '+r'Sea-Ice volume, end of local winter',
+    bp.plot("1d_multi")(vtime_y, Xplt, vlab_win, cfignm='seaice_volume_winter_'+CONFEXP, dt=ittic,
+                        cyunit=cyuv, ctitle = CONFEXP+': '+r'Sea-Ice volume, end of local winter',
                         loc_legend='out', ymin=0., ymax=0., cfig_type=ff)
 
 
@@ -733,13 +733,13 @@ if idfig == 'transport':
             FY[:,:] = Xtrsp[:,:]
 
         # Transport of volume:
-        bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[0,:], FY[0,:], cfignm='transport_vol_'+csec+'_'+CONFRUN,
-                              dt=ittic, cyunit='Sv', ctitle = CONFRUN+': transport of volume, '+csec,
+        bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[0,:], FY[0,:], cfignm='transport_vol_'+csec+'_'+CONFEXP,
+                              dt=ittic, cyunit='Sv', ctitle = CONFEXP+': transport of volume, '+csec,
                               ymin=0, ymax=0, cfig_type=ff)
 
         # Transport of heat:
-        bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[1,:], FY[1,:], cfignm='transport_heat_'+csec+'_'+CONFRUN,
-                              dt=ittic, cyunit='PW', ctitle = CONFRUN+': transport of heat, '+csec,
+        bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[1,:], FY[1,:], cfignm='transport_heat_'+csec+'_'+CONFEXP,
+                              dt=ittic, cyunit='PW', ctitle = CONFEXP+': transport of heat, '+csec,
                               ymin=0, ymax=0, mnth_col='g', cfig_type=ff)
 
 
@@ -751,15 +751,15 @@ if idfig == 'transport':
 if idfig == 'mld':
     jbox = 0
     for cbox in bo.cname_mld_boxes:
-        cf_in_m = 'mean_'+cvar+'_'+CONFRUN+'_'+cbox+'.nc'
+        cf_in_m = 'mean_'+cvar+'_'+CONFEXP+'_'+cbox+'.nc'
         if os.path.exists(cf_in_m):
             print ' Opening '+cf_in_m
             vt0, vd0 = bn.read_1d_series(cf_in_m, cvar, cv_t='time', l_return_time=True)
             if jbox==0: (nby, nbm, nbr, ittic) = bt.test_nb_years(vt0, cdiag)
             VY, FY = bt.monthly_2_annual(vt0, vd0)
 
-            bp.plot("1d_mon_ann")(vt0, VY, vd0, FY, cfignm=cdiag+'_'+CONFRUN+'_'+cbox, dt=ittic, cyunit=cyu,
-                                  ctitle = CONFRUN+': '+clnm+bo.clgnm_mld_boxes[jbox], ymin=ym, ymax=yp,
+            bp.plot("1d_mon_ann")(vt0, VY, vd0, FY, cfignm=cdiag+'_'+CONFEXP+'_'+cbox, dt=ittic, cyunit=cyu,
+                                  ctitle = CONFEXP+': '+clnm+bo.clgnm_mld_boxes[jbox], ymin=ym, ymax=yp,
                                   plt_m03=True, plt_m09=True, cfig_type=ff)
         else:
             print 'WARNING: '+csn+' => MLD diag => '+cf_in_m+' not found!'

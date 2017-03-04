@@ -16,7 +16,7 @@ import barakuda_orca as bo
 import barakuda_tool as bt
 import barakuda_ncio as bnc
 
-venv_needed = {'ORCA','RUN','DIAG_D','i_do_sect','TS_SECTION_FILE','MM_FILE','NN_T','NN_S'}
+venv_needed = {'ORCA','EXP','DIAG_D','i_do_sect','TS_SECTION_FILE','MM_FILE','NN_T','NN_S'}
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
 
@@ -26,13 +26,13 @@ if i_do_sect != 1: print 'ERROR: sys.argv[0] => why are we here when i_do_sect !
 
 f_sections = vdic['TS_SECTION_FILE']
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 cnexec = sys.argv[0]
 
 na = len(sys.argv)
 if na != 3:
-    print 'Usage : '+cnexec+' <RUN_grid_T.nc> <year>'
+    print 'Usage : '+cnexec+' <EXP_grid_T.nc> <year>'
     sys.exit(0)
 
 cf_in  = sys.argv[1]

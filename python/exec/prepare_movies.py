@@ -17,14 +17,14 @@ import barakuda_tool as bt
 import barakuda_plot as bp
 
 
-venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','NN_SST','NN_T','NN_SSS','NN_S','NN_MLD','FILE_ICE_SUFFIX','NN_ICEF',
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','NN_SST','NN_T','NN_SSS','NN_S','NN_MLD','FILE_ICE_SUFFIX','NN_ICEF',
                'F_T_CLIM_3D_12','F_S_CLIM_3D_12','SST_CLIM_12','NN_SST_CLIM','NN_T_CLIM','NN_S_CLIM'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
 print ' ORCA = ', vdic['ORCA'][:7]
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 tmin=-4.  ;  tmax=-tmin ;  dtemp = 0.25
 smin=-1.4 ;  smax=-smin ;  dsali = 0.1
@@ -176,7 +176,7 @@ for jt in range(nt):
                       corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r',
                       cfignm=path_fig+'/'+cv+'_'+cdate,
                       cbunit='K', cfig_type=fig_type, lat_min=-65., lat_max=75.,
-                      ctitle='SST (NEMO - obs), '+CONFRUN+' ('+cdatet+')',
+                      ctitle='SST (NEMO - obs), '+CONFEXP+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
 
     if cvar == 'sss':
@@ -185,7 +185,7 @@ for jt in range(nt):
                       corca=vdic['ORCA'], lkcont=False, cpal='PiYG_r',
                       cfignm=path_fig+'/'+cv+'_'+cdate,
                       cbunit='PSU', cfig_type=fig_type, lat_min=-65., lat_max=75.,
-                      ctitle='SSS (NEMO - obs), '+CONFRUN+' ('+cdatet+')',
+                      ctitle='SSS (NEMO - obs), '+CONFEXP+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
 
     if cvar == 'mld':
@@ -193,7 +193,7 @@ for jt in range(nt):
                       corca=vdic['ORCA'], lkcont=False, cpal='ncview_nrl',
                       cfignm=path_fig+'/'+cvar+'_'+cdate,
                       cbunit='m', cfig_type=fig_type, lat_min=-80., lat_max=75.,
-                      ctitle='Mixed-Layer depth, '+CONFRUN+' ('+cdatet+')',
+                      ctitle='Mixed-Layer depth, '+CONFEXP+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
     
     if cvar == 'ice':
@@ -203,13 +203,13 @@ for jt in range(nt):
         cv = "icen"
         bp.plot("nproj")('npol2', 0., 1., 0.1, xlon, xlat, Vnemo[jt,:,:],
                          cfignm=path_fig+'/'+cv+'_'+cdate, cpal='ice', cbunit='(frac.)',
-                         ctitle='Ice concentration, '+CONFRUN+' ('+cdatet+')',
+                         ctitle='Ice concentration, '+CONFEXP+' ('+cdatet+')',
                          lkcont=True, cfig_type=fig_type, lforce_lim=True)
 
         cv = "ices"
         bp.plot("nproj")('spstere', 0., 1., 0.1, xlon, xlat, Vnemo[jt,:,:],
                          cfignm=path_fig+'/'+cv+'_'+cdate, cpal='ice', cbunit='(frac.)',
-                         ctitle='Ice concentration, '+CONFRUN+' ('+cdatet+')',
+                         ctitle='Ice concentration, '+CONFEXP+' ('+cdatet+')',
                          lkcont=True, cfig_type=fig_type, lforce_lim=True)
 
 

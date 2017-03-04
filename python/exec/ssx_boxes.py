@@ -13,17 +13,17 @@ from netCDF4 import Dataset
 import barakuda_orca as bo
 import barakuda_tool as bt
 
-venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','NN_SST','NN_SSS','FILE_DEF_BOXES'}
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','NN_SST','NN_SSS','FILE_DEF_BOXES'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 cnexec = sys.argv[0]
 
 na = len(sys.argv)
 if na != 3 and na != 5 :
-    print 'Usage : '+cnexec+' <RUN_grid_T.nc> <year> (<name_sst> <name_sss>) '
+    print 'Usage : '+cnexec+' <EXP_grid_T.nc> <year> (<name_sst> <name_sss>) '
     sys.exit(0)
 
 cf_in  = sys.argv[1]
@@ -128,7 +128,7 @@ for jb in range(nbb):
 
     # Saving in netcdf file:
 
-    cf_out =  vdic['DIAG_D']+'/'+'SSX_'+cbox+'_'+CONFRUN+'.nc'
+    cf_out =  vdic['DIAG_D']+'/'+'SSX_'+cbox+'_'+CONFEXP+'.nc'
     l_nc_is_new = not os.path.exists(cf_out)
 
 

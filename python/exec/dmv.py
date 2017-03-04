@@ -24,7 +24,7 @@
 # List of environement variables that should be "known/set" when launching this script:
 #
 #  * ORCA   : global ORCA grid you use (ex: "ORCA1.L75")
-#  * RUN    : name of your NEMO experiment
+#  * EXP    : name of your NEMO experiment
 #  * DIAG_D : full path to the directory where the diagnostics (here a netcdf file) are saved
 #  * FILE_DMV_BOXES: full path to the ASCII file containing definition of convection boxes
 #                    => template: data/def_boxes_convection_ORCA1.txt
@@ -47,16 +47,16 @@ rdiv = 1000. ; # => result in 10^3 km^3   (DMV divided 4 times by rdiv)
 
 
 # Getting all required environment variables needed inside dictionary vdic:
-venv_needed = {'ORCA','RUN','DIAG_D','FILE_DMV_BOXES','MM_FILE','NN_MLD','MLD_CRIT'}
+venv_needed = {'ORCA','EXP','DIAG_D','FILE_DMV_BOXES','MM_FILE','NN_MLD','MLD_CRIT'}
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 cname_script = sys.argv[0]
 
 if len(sys.argv) != 3:
-    print 'Usage : '+cname_script+' <ORCA1_RUN_grid_T.nc> <year>'
+    print 'Usage : '+cname_script+' <ORCA1_EXP_grid_T.nc> <year>'
     sys.exit(0)
 cf_in  = sys.argv[1]
 cyear  = sys.argv[2] ; jyear = int(cyear); cyear = '%4.4i'%jyear
@@ -203,7 +203,7 @@ for z_crit in vMLD_crit:
 
         # Appending only 1 record for 1 year into the netcdf file!
         
-        cf_out =  vdic['DIAG_D']+'/DMV_'+czcrit+'_box_'+cbox+'_'+CONFRUN+'.nc'
+        cf_out =  vdic['DIAG_D']+'/DMV_'+czcrit+'_box_'+cbox+'_'+CONFEXP+'.nc'
 
         cv_dmv_m   = 'DMV_'+czcrit+'_'+ccold
         cv_dmv_jfm = 'DMV_'+czcrit+'_'+cvinter

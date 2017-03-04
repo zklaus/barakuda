@@ -6,14 +6,15 @@
 #
 #    An OCEAN MONITORING python environment for NEMO
 #
-#             L. Brodeau, 2009-2016
+#             L. Brodeau, 2009-2017
 #
 #===============================================================
 
-export BARAKUDA_ROOT=`pwd`
+cbfp=`realpath $0`
+export BARAKUDA_ROOT=`dirname ${cbfp}`
 
-# Checking available configs
-list_conf=`\ls configs/config_*.sh` ; list_conf=`echo ${list_conf} | sed -e s/'configs\/config_'/''/g -e s/'.sh'/''/g`
+# Display available configs:
+list_conf=`\ls ${BARAKUDA_ROOT}/configs/config_*.sh | sed -e "s|${BARAKUDA_ROOT}/configs\/config_||g" -e s/'.sh'/''/g`
 
 # Important bash functions:
 . ${BARAKUDA_ROOT}/src/bash/bash_functions.bash
@@ -23,10 +24,10 @@ barakuda_init
 while getopts C:R:f:y:c:FeEh option ; do
     case $option in
         C) export CONFIG=${OPTARG} ;;
-        R) export RUN=${OPTARG} ;;
+        R) export EXP=${OPTARG} ;;
         f) export IFREQ_SAV_YEARS=${OPTARG} ;;
         y) export YEAR0=${OPTARG} ; export LFORCE_YINI=true ;;
-        c) export RUNREF=${OPTARG} ;;
+        c) export EXPREF=${OPTARG} ;;
         F) export LFORCEDIAG=true ;;
         e) export ISTAGE=2 ;;
         E) export ISTAGE=2 ; export l_clim_diag=true ;;
@@ -47,11 +48,12 @@ else
     echo "PROBLEM: cannot find file ${fconfig} !"; exit
 fi
 
-# If from auto-submit run (ece_run=10) then overides a few functions with:
-if [ ${ece_run} -ge 10 ]; then
+# If auto-submit experiment (ece_exp=10) then overides a few functions with:
+if [ ${ece_exp} -ge 10 ]; then
     . ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash
 fi
 
+# If 3D fieds are annual averaged then overides a few functions with:
 if [ "${ANNUAL_3D}" = "1y" ]; then
     . ${BARAKUDA_ROOT}/src/bash/bash_functions_1y.bash
 fi
@@ -63,12 +65,12 @@ barakuda_setup
 
 echo
 echo " SETTINGS: "
+echo "   *** CONFIG     = ${CONFIG} "
 echo "   *** NEMO_OUT_D = ${NEMO_OUT_D} "
 echo "   *** CLIM_DIR   = ${CLIM_DIR} "
 echo "   *** TMP_DIR    = ${TMP_DIR} "
-echo "   *** CONFIG     = ${CONFIG} "
 echo "   *** GRID       = ${ORCA} "
-echo "   *** RUN        = ${RUN} "
+echo "   *** EXP        = ${EXP} "
 echo "   *** CPREF      = ${CPREF} "
 echo "   *** IFREQ_SAV_YEARS = ${IFREQ_SAV_YEARS} "
 echo
@@ -124,7 +126,7 @@ while ${lcontinue}; do
 
     export cyear=`printf "%04d" ${jyear}`
     cpf=""
-    if [ ${ISTAGE} -eq 1 ] && [ ${ece_run} -gt 0 ]; then
+    if [ ${ISTAGE} -eq 1 ] && [ ${ece_exp} -gt 0 ]; then
         iy=$((${jyear}-${YEAR_INI}+1+${YEAR_INI}-${YEAR_INI_F}))
         dir_ece=`printf "%03d" ${iy}`
         echo " *** ${cyear} => dir_ece = ${dir_ece}"
@@ -151,7 +153,7 @@ while ${lcontinue}; do
 
         echo; echo; echo; echo
         echo "*********************************************************************"
-        echo "  Run ${RUN}: Will generate diagnostics and data for year ${cyear}..."
+        echo "  Experiment ${EXP}: Will generate diagnostics and data for year ${cyear}..."
         echo "*********************************************************************"
         echo ; echo
 
@@ -189,7 +191,7 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # If coupled EC-Earth simu, attempting to compute ocean-averaged fluxes from IFS too (E, P, E-P)
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if [ ${ece_run} -eq 2 ] && [ ${NBL} -eq 75 ] && [ ${i_do_ifs_flx} -eq 1 ]; then
+        if [ ${ece_exp} -eq 2 ] && [ ${NBL} -eq 75 ] && [ ${i_do_ifs_flx} -eq 1 ]; then
             echo; echo; echo "Fluxes of freshwater at the surface from IFS..."
             echo " *** CALLING: ./src/bash/extract_ifs_surf_fluxes.sh &"
             ${BARAKUDA_ROOT}/src/bash/extract_ifs_surf_fluxes.sh &
@@ -297,7 +299,7 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_mht} -eq 1 ]; then
             echo; echo; echo "Meridional transport of heat and salt"
-            fo=${DIAG_D}/merid_transport_T_S_${CONFRUN}.nc
+            fo=${DIAG_D}/merid_transport_T_S_${CONFEXP}.nc
             if [ ! -f ${fvt} ]; then
                 echo "PROBLEM: file ${fvt} is not here, skipping meridional transports section"
             else
@@ -471,13 +473,13 @@ while ${lcontinue}; do
             list_ice=`cat transport_ice.dat | grep '-'`
 
             for sect in ${list_ice}; do
-                fo=${diro}/transport_solid_FW_${sect}_${CONFRUN}.dat
+                fo=${diro}/transport_solid_FW_${sect}_${CONFEXP}.dat
                 mv -f section_ice-trp_${sect}.dat  ${sect}.tmp
                 echo "# Time       VolTrans(Sv)     (${cyear})" >> ${fo}
                 cat ${sect}.tmp | grep -v '\#' | awk -v "Y=${jyear}" '{print Y+($1-0.5)*1./12.," ",$2}'>> ${fo}
                 cat ${sect}.tmp | grep -v '\#' | awk '{print $2}'> ${sect}_1.tmp
                 # Mean val for the current year:
-                fo=${diro}/transport_solid_FW_${sect}_${CONFRUN}_annual.dat
+                fo=${diro}/transport_solid_FW_${sect}_${CONFEXP}_annual.dat
                 mean_val1=`cat ${sect}_1.tmp | awk '{ SUM += $1} END { printf("%.15g\n", SUM/12) }'`
                 ymid=`echo ${jyear} | awk  '{print $1+0.5}'`
                 if [ ${jyear} -eq ${YEAR_INI} ]; then
@@ -529,7 +531,7 @@ l_pclim=false
 
 if [ ${ISTAGE} -eq 2 ]; then
 
-    rm -rf ${DIAG_D}/${RUN}
+    rm -rf ${DIAG_D}/${EXP}
     
     y1=`cat ${DIAG_D}/first_year.info`
     y2=`cat ${DIAG_D}/last_year_done.info`
@@ -560,7 +562,7 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     
 
-    echo; echo; echo "RUN ${RUN}: creating plots"; echo
+    echo; echo; echo "EXP ${EXP}: creating plots"; echo
 
     #cd ${BARAKUDA_ROOT}/
 
@@ -572,12 +574,12 @@ if [ ${ISTAGE} -eq 2 ]; then
         idelay=$((120-${nby}*8))
         if [ ${idelay} -lt 10 ]; then idelay=10; fi
         echo "Creating GIF movies out of the 2D maps of NEMO - OBS for SST and SSS (delay=${idelay})"
-        rm -f *_${CONFRUN}.gif
-        convert -delay ${idelay} -loop 0 movies/dsst_*.png dsst_${CONFRUN}.gif &
-        convert -delay ${idelay} -loop 0 movies/dsss_*.png dsss_${CONFRUN}.gif &
-        convert -delay ${idelay} -loop 0 movies/mld_*.png   mld_${CONFRUN}.gif &
-        convert -delay ${idelay} -loop 0 movies/icen_*.png icen_${CONFRUN}.gif &
-        convert -delay ${idelay} -loop 0 movies/ices_*.png ices_${CONFRUN}.gif &
+        rm -f *_${CONFEXP}.gif
+        convert -delay ${idelay} -loop 0 movies/dsst_*.png dsst_${CONFEXP}.gif &
+        convert -delay ${idelay} -loop 0 movies/dsss_*.png dsss_${CONFEXP}.gif &
+        convert -delay ${idelay} -loop 0 movies/mld_*.png   mld_${CONFEXP}.gif &
+        convert -delay ${idelay} -loop 0 movies/icen_*.png icen_${CONFEXP}.gif &
+        convert -delay ${idelay} -loop 0 movies/ices_*.png ices_${CONFEXP}.gif &
     fi
 
     # 1D plots to perform
@@ -613,8 +615,8 @@ if [ ${ISTAGE} -eq 2 ]; then
     if [ ${i_do_mean} -eq 1 ]; then
         
         # 5-month-running mean SST anomaly over Nino region 3.4 graph:
-        echo " *** CALLING: plot_enso.py Nino34_${CONFRUN}.nc ${NN_SST}"
-        plot_enso.py Nino34_${CONFRUN}.nc ${NN_SST}
+        echo " *** CALLING: plot_enso.py Nino34_${CONFEXP}.nc ${NN_SST}"
+        plot_enso.py Nino34_${CONFEXP}.nc ${NN_SST}
         echo; echo
 
         # Hovmuller of temperature and salinity
@@ -624,8 +626,8 @@ if [ ${ISTAGE} -eq 2 ]; then
         
         if [ ${nby} -ge 70 ]; then
             # AMO aka 11-year-running mean SST anomaly over North Atlantic (0-70N)
-            echo " *** CALLING: plot_amo.py mean_SST_NAtl_${CONFRUN}.nc ${NN_SST}"
-            plot_amo.py mean_SST_NAtl_${CONFRUN}.nc ${NN_SST}
+            echo " *** CALLING: plot_amo.py mean_SST_NAtl_${CONFEXP}.nc ${NN_SST}"
+            plot_amo.py mean_SST_NAtl_${CONFEXP}.nc ${NN_SST}
             echo; echo
         fi        
     fi
@@ -667,11 +669,11 @@ if [ ${ISTAGE} -eq 2 ]; then
         if [ -f ${DIAG_D}/clim/last_clim ]; then
             cat ${DIAG_D}/clim/last_clim
             export CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
-            ftcli=${DIAG_D}/clim/mclim_${CONFRUN}_${CLIM_PER}_grid_T.nc4
-            ficli=${DIAG_D}/clim/mclim_${CONFRUN}_${CLIM_PER}_${FILE_ICE_SUFFIX}.nc4
-            fclvt=${DIAG_D}/clim/aclim_${CONFRUN}_${CLIM_PER}_VT.nc4
-            fcmoc=${DIAG_D}/clim/aclim_${CONFRUN}_${CLIM_PER}_MOC.nc4
-            fcpsi=${DIAG_D}/clim/mclim_${CONFRUN}_${CLIM_PER}_PSI.nc4
+            ftcli=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_grid_T.nc4
+            ficli=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_${FILE_ICE_SUFFIX}.nc4
+            fclvt=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_VT.nc4
+            fcmoc=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_MOC.nc4
+            fcpsi=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_PSI.nc4
             iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
         else
             echo; echo "PROBLEM! => you set l_clim_diag to true but no file 'last_clim' was found in:"
@@ -690,15 +692,15 @@ if [ ${ISTAGE} -eq 2 ]; then
 
             list_comp_2d="CLIM"
             l_pclim=true
-            lcomp_to_run=false
+            lcomp_to_exp=false
 
-            if [ ! -z ${RUNREF} ]; then
-                lcomp_to_run=true
-                list_comp_2d="CLIM ${RUNREF}"
-                # Must check if climatology for run ${RUNREF} is there:
-                fclim_ref=`echo "${ftcli}" | sed -e "s|${RUN}|${RUNREF}|g"`
+            if [ ! -z ${EXPREF} ]; then
+                lcomp_to_exp=true
+                list_comp_2d="CLIM ${EXPREF}"
+                # Must check if climatology for exp ${EXPREF} is there:
+                fclim_ref=`echo "${ftcli}" | sed -e "s|${EXP}|${EXPREF}|g"`
                 check_if_file ${fclim_ref}
-                echo "Going to compare also against run ${fclim_ref}!"
+                echo "Going to compare also against exp ${fclim_ref}!"
                 echo
             fi
 
@@ -776,14 +778,14 @@ if [ ${ISTAGE} -eq 2 ]; then
             ##################################################
 
             cd ${DIAG_D}/
-            rm -rf temp_sal surf_fluxes
+            rm -rf temp_sal
 
             for COMP2D in ${list_comp_2d}; do
 
                 export COMP2D=${COMP2D}
                 echo; echo; echo "Clim. comparisons against ${COMP2D}"
                
-                if [ "${COMP2D}" = "${RUNREF}" ]; then
+                if [ "${COMP2D}" = "${EXPREF}" ]; then
                     export F_T_CLIM_3D_12=${fclim_ref}; check_if_file ${F_T_CLIM_3D_12} "name:F_T_CLIM_3D_12"
                     export F_S_CLIM_3D_12=${fclim_ref}; check_if_file ${F_S_CLIM_3D_12} "name:F_S_CLIM_3D_12"
                     export SST_CLIM_12=${fclim_ref}   ; check_if_file ${SST_CLIM_12}    "name:SST_CLIM_12"
@@ -810,7 +812,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         else
             echo; echo
             echo " NO CLIMATO FOUND ...";
-            echo "   => you can use 'build_clim.sh' to build a climato of your run"
+            echo "   => you can use 'build_clim.sh' to build a climato of your exp"
             echo; echo
         fi
 
@@ -822,7 +824,7 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     # Time for HTML stuff!
 
-    export HTML_DIR=${DIAG_D}/${RUN}
+    export HTML_DIR=${DIAG_D}/${EXP}
     mkdir -p ${HTML_DIR}
     
     cd ${DIAG_D}/
@@ -851,7 +853,7 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     cp ${BARAKUDA_ROOT}/src/html/conf_*.html ${HTML_DIR}/
     cp ${BARAKUDA_ROOT}/src/html/logo.*g    ${HTML_DIR}/
-    if [ ${ece_run} -gt 0 ]; then
+    if [ ${ece_exp} -gt 0 ]; then
         cp ${BARAKUDA_ROOT}/src/html/logo_ece.svg ${HTML_DIR}/logo.svg
         cp ${BARAKUDA_ROOT}/src/html/logo_ece.png ${HTML_DIR}/logo.png
     fi

@@ -11,23 +11,23 @@ function parse_html()
     HOST=`echo "${HOST}"             | sed -e s'| |<SPC>|'g`
     EXTRA_CONF=`echo "${EXTRA_CONF}" | sed -e s'| |<SPC>|'g`
     MASTERMIND=`echo "${MASTERMIND}" | sed -e s'| |<SPC>|'g`
-    RUNREF=`echo "${RUNREF}"         | sed -e s'| |<SPC>|'g`
+    EXPREF=`echo "${EXPREF}"         | sed -e s'| |<SPC>|'g`
     DATE=`date +%Y-%m-%d\<SPC\>at\<SPC\>%H:%M:%S`
     c1='ERROR: variable' ; c2='not set! => update your config file!'
     if [ -z ${TITLE} ];      then echo "${c1} 'TITLE' ${c2}";      exit; fi
-    if [ -z ${CONFRUN} ];    then echo "${c1} 'CONFRUN' ${c2}";    exit; fi
+    if [ -z ${CONFEXP} ];    then echo "${c1} 'CONFEXP' ${c2}";    exit; fi
     if [ -z ${HOST} ];       then echo "${c1} 'HOST' ${c2}";       exit; fi
     if [ -z ${EXTRA_CONF} ]; then echo "${c1} 'EXTRA_CONF' ${c2}"; exit; fi
     if [ -z ${MASTERMIND} ]; then echo "${c1} 'MASTERMIND' ${c2}"; exit; fi
-    if [ -z ${RUNREF} ];     then export RUNREF="Observations";          fi
+    if [ -z ${EXPREF} ];     then export EXPREF="Observations";          fi
 
     PARSE_CMD="sed -e s|{TITLE}|${TITLE}|g \
-                   -e s|{CONFRUN}|${CONFRUN}|g \
+                   -e s|{CONFEXP}|${CONFEXP}|g \
                    -e s|{DATE}|${DATE}|g \
                    -e s|{HOST}|${HOST}|g \
                    -e s|{EXTRA_CONF}|${EXTRA_CONF}|g \
                    -e s|{MASTERMIND}|${MASTERMIND}|g \
-                   -e s|{COMP2D}|${RUNREF}|g"
+                   -e s|{COMP2D}|${EXPREF}|g"
 
     ${PARSE_CMD} $1 > tmp.html
     sed -e s'|<SPC>| |'g tmp.html > $2
@@ -44,14 +44,14 @@ function build_index_html()
     spf='<br><br>'
     img_l='<img style="border: 0px solid" alt="" src="' ; img_r='"> <br><br>'
 
-    cr="${CONFRUN}" ; ff="${FIG_FORM}"
+    cr="${CONFEXP}" ; ff="${FIG_FORM}"
 
     cd ${DIAG_D}/
 
     rm -f index.html
 
-    TITLE="Ocean diagnostics for experiment \"${RUN}\""
-    if [ ${ece_run} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
+    TITLE="Ocean diagnostics for experiment \"${EXP}\""
+    if [ ${ece_exp} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
 
     # Starting to configure HTML index file:
     parse_html ${BARAKUDA_ROOT}/src/html/conf_start.html index.html
@@ -70,14 +70,14 @@ EOF
             echo "<big> <a href='./temp_sal/index_sections.html'> Zonal/Meridional sections of T & S vs CLIM</a> </big>    ${spf}" >> index.html
         fi
         #
-        if ${lcomp_to_run}; then
+        if ${lcomp_to_exp}; then
             cat >> index.html <<EOF
-            ${ctl} Comparison with run ${RUNREF}, climatology (2004-2007) ${ctr}
-            <big> <a href="./temp_sal/index_${RUNREF}.html"> Temperature and Salinity vs ${RUNREF}</a> </big>             ${spf}
-            <!--        <big> <a href="./ssh/index_${RUNREF}.html">  Sea Surface Height </a> </big>                       ${spf}
-            <big> <a href="./sea_ice/index_${RUNREF}.html">  Arctic and Antarctic sea-ice extent vs ${RUNREF} </a> </big> ${spf}
-            <big> <a href="./mld/index_${RUNREF}.html">  Mixed Layer depth in relevent regions </a> </big>                ${spf}
-            <big> <a href="./moc/index_${RUNREF}.html">  Meridional Overturning Circulation </a> </big>                   ${spf}
+            ${ctl} Comparison with experiment ${EXPREF}, climatology (2004-2007) ${ctr}
+            <big> <a href="./temp_sal/index_${EXPREF}.html"> Temperature and Salinity vs ${EXPREF}</a> </big>             ${spf}
+            <!--        <big> <a href="./ssh/index_${EXPREF}.html">  Sea Surface Height </a> </big>                       ${spf}
+            <big> <a href="./sea_ice/index_${EXPREF}.html">  Arctic and Antarctic sea-ice extent vs ${EXPREF} </a> </big> ${spf}
+            <big> <a href="./mld/index_${EXPREF}.html">  Mixed Layer depth in relevent regions </a> </big>                ${spf}
+            <big> <a href="./moc/index_${EXPREF}.html">  Meridional Overturning Circulation </a> </big>                   ${spf}
             -->
 EOF
         fi
@@ -257,7 +257,7 @@ function build_sub_html()
     spf='<br><br>'
     img_l='<img style="border: 0px solid" alt="" src="' ; img_r='"> <br><br>'
 
-    cr="${CONFRUN}" ; ff="${FIG_FORM}"
+    cr="${CONFEXP}" ; ff="${FIG_FORM}"
 
     cd ${DIAG_D}/
 
@@ -303,12 +303,12 @@ function build_sub_html()
         fi
     fi
 
-    if ${lcomp_to_run}; then
+    if ${lcomp_to_exp}; then
         for cdiag in ${DIRS_2_EXP_RREF}; do
             cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
             cat ${BARAKUDA_ROOT}/src/html/${cdiag}/index_${cdiag}.html >> index.tmp
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
-            parse_html index.tmp > ${cdiag}/index_${RUNREF}.html
+            parse_html index.tmp > ${cdiag}/index_${EXPREF}.html
             rm -f index.tmp
             cd ${cdiag}/ ; ln -sf ../logo.*g . ; cd ../
         done
@@ -316,7 +316,7 @@ function build_sub_html()
             cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
             cat ${BARAKUDA_ROOT}/src/html/temp_sal/${var}.html         >> index.tmp
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
-            parse_html index.tmp temp_sal/${var}_${RUNREF}.html
+            parse_html index.tmp temp_sal/${var}_${EXPREF}.html
         done
     fi
 }

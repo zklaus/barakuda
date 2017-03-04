@@ -19,15 +19,15 @@ import barakuda_orca as bo
 import barakuda_ncio as bnc
 
 
-venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','BM_FILE',
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','BM_FILE',
                'NEMO_SAVED_FILES','NN_T','NN_S','ANNUAL_3D','TSTAMP'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 if len(sys.argv) != 4:
-    print 'Usage : sys.argv[1] <ORCA1_RUN_grid_T.nc> <year> <T or S>'; sys.exit(0)
+    print 'Usage : sys.argv[1] <ORCA1_EXP_grid_T.nc> <year> <T or S>'; sys.exit(0)
 
 cnexec  = sys.argv[0]
 cf_T_in = sys.argv[1]
@@ -38,7 +38,7 @@ print 'Current year is '+cyear+' !\n'
 
 
 if not cv_todo in ['T','S']:
-    print 'Usage : sys.argv[1] <ORCA1_RUN_grid_T.nc> <year> <T or S>'; sys.exit(0)
+    print 'Usage : sys.argv[1] <ORCA1_EXP_grid_T.nc> <year> <T or S>'; sys.exit(0)
 if cv_todo == 'T': cvar = vdic['NN_T']
 if cv_todo == 'S': cvar = vdic['NN_S']
 
@@ -157,7 +157,7 @@ for cocean in list_basin_names[:]:
     Vts_100_1000 = bo.mean_3d(Xd_m[:,j100m:j1000m,j1:j2,i1:i2], mask[joce,j100m:j1000m,j1:j2,i1:i2], Xv[j100m:j1000m,j1:j2,i1:i2])
     Vts_1000_bot = bo.mean_3d(Xd_m[:,j1000m:,j1:j2,i1:i2],      mask[joce,j1000m:,j1:j2,i1:i2],      Xv[j1000m:,j1:j2,i1:i2])
 
-    cf_out = vdic['DIAG_D']+'/3d_'+cvar+'_'+CONFRUN+'_'+cocean+'.nc'
+    cf_out = vdic['DIAG_D']+'/3d_'+cvar+'_'+CONFEXP+'_'+cocean+'.nc'
     cv1 = cvar+'_0-bottom'
     cv2 = cvar+'_0-100'
     cv3 = cvar+'_100-1000'
@@ -185,7 +185,7 @@ for cocean in list_basin_names[:]:
 
 
     # NETCDF:
-    cf_out = vdic['DIAG_D']+'/'+cvar+'_mean_Vprofile_'+CONFRUN+'_'+cocean+'.nc'
+    cf_out = vdic['DIAG_D']+'/'+cvar+'_mean_Vprofile_'+CONFEXP+'_'+cocean+'.nc'
     l_nc_is_new = not os.path.exists(cf_out)
     #
     # Creating/Opening output Netcdf file:

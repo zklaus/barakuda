@@ -3,7 +3,7 @@
 function barakuda_usage()
 {
     echo
-    echo "USAGE: ${0} -C <config> -R <run>  (options)"
+    echo "USAGE: ${0} -C <config> -R <experiment>  (options)"
     echo
     echo "     Available configs are:"
     for cc in ${list_conf}; do
@@ -22,10 +22,10 @@ function barakuda_usage()
     echo "      -e        => create the HTML diagnostics page on local or remote server"
     echo
     echo "      -E        => same as '-e' but also create the 2D plots / observations"
-    echo "                   you need to have built a climatology of your run with 'build_clim.sh' first!"
+    echo "                   you need to have built a climatology of your experiment with 'build_clim.sh' first!"
     echo
-    echo "      -c <run>  => when '-E' specified, 2D comparison diagnostics are performed "
-    echo "                   against the climatology of another run <run> rather than observations"
+    echo "      -c <exp>  => when '-E' specified, 2D comparison diagnostics are performed "
+    echo "                   against the climatology of another experiment <exp> rather than observations"
     echo
     echo "      -h        => print this message"
     echo
@@ -40,7 +40,7 @@ function barakuda_init()
     # Some defaults:
     export LFORCE_YINI=false
     export LFORCE_YEND=false
-    export RUNREF=""
+    export EXPREF=""
     export ISTAGE=1 ; # 1 => generation of data diagnostic files
     #          # 2 => creation of figures and diagnostic HTML page
     export LFORCEDIAG=false
@@ -60,9 +60,9 @@ function barakuda_init()
 function barakuda_check()
 {
     script=`basename $0 | sed -e s/'.sh'/''/g`
-    if [ -z ${CONFIG} ] || [ -z ${RUN} ]; then ${script}_usage ; exit ; fi
+    if [ -z ${CONFIG} ] || [ -z ${EXP} ]; then ${script}_usage ; exit ; fi
 
-    if [ "${RUNREF}" != "" ] && [ ${ISTAGE} -eq 1 ]; then
+    if [ "${EXPREF}" != "" ] && [ ${ISTAGE} -eq 1 ]; then
         echo; echo " WARNING: option '-c' only makes sense when '-e' or '-E' are specified !"
         sleep 2; echo
     fi
@@ -141,9 +141,9 @@ function barakuda_setup()
     export LD_LIBRARY_PATH=${NCDF_DIR}/lib:${LD_LIBRARY_PATH}
 
     # Exporting some variables needed by the python scripts:
-    export RUN=${RUN}
-    export CONFRUN=${ORCA}-${RUN}
-    export DIAG_D=${DIAG_DIR}/${CONFRUN}
+    export EXP=${EXP}
+    export CONFEXP=${ORCA}-${EXP}
+    export DIAG_D=${DIAG_DIR}/${CONFEXP}
     export CLIM_DIR=${DIAG_D}/clim
     
     if [ ${ISTAGE} -eq 1 ] || [ ! -z "${SLURM_JOBID}" ]; then
@@ -152,30 +152,30 @@ function barakuda_setup()
         if [ ! -z "${SLURM_JOBID}" ]; then
             # NSC / Sweden ; Gustafson / BSC
             SCRATCH=`echo ${SCRATCH} | sed -e "s|<JOB_ID>|${SLURM_JOBID}|g"`
-            export TMP_DIR=${SCRATCH}/tmp_${RUN}_barakuda
+            export TMP_DIR=${SCRATCH}/tmp_${EXP}_barakuda
             #
         elif [ ! -z "${LSB_JOBID}" ]; then
             # MARENOSTRUM / BSC
             export TMP_DIR=${TMPDIR}
         else
             # Default:
-            export TMP_DIR=${SCRATCH}/tmp_${RUN}_barakuda
+            export TMP_DIR=${SCRATCH}/tmp_${EXP}_barakuda
         fi
     else
-        export TMP_DIR=${SCRATCH}/html_${RUN}_tmp
+        export TMP_DIR=${SCRATCH}/html_${EXP}_tmp
     fi
     echo " IMPORTANT the TMP_DIR work directory is set to:" ; echo " ${TMP_DIR}"; echo ; sleep 2
 
     rm -rf ${TMP_DIR}
     mkdir -p ${DIAG_D} ${TMP_DIR}
 
-    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<RUN>|${RUN}|g"`
+    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"`
     if [ ! -d ${NEMO_OUT_D} ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi
 
     echo; echo " * Config to be used: ${CONFIG} => ORCA grid is ${ORCA}"
-    echo " * Run is ${RUN} "; echo " * Files are stored into ${NEMO_OUT_D}"; echo; sleep 2
+    echo " * Experiment is ${EXP} "; echo " * Files are stored into ${NEMO_OUT_D}"; echo; sleep 2
 
-    export CPREF=`echo ${NEMO_FILE_PREFIX} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<RUN>|${RUN}|g" -e "s|<TSTAMP>|${TSTAMP}|g"`
+    export CPREF=`echo ${NEMO_FILE_PREFIX} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<TSTAMP>|${TSTAMP}|g"`
     echo " NEMO files prefix = ${CPREF} "
 
     # only neede for barakuda.sh :
@@ -212,10 +212,10 @@ function barakuda_setup()
 function barakuda_first_last_years()
 {
     cd ${NEMO_OUT_D}/
-    if [ ${ece_run} -gt 0 ]; then
+    if [ ${ece_exp} -gt 0 ]; then
         if [ ! -d 001 ]; then
             echo " *** Inside: `pwd` !"; \ls -l ; echo
-            echo "ERROR: since ece_run=${ece_run}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; echo; exit
+            echo "ERROR: since ece_exp=${ece_exp}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; echo; exit
         fi
         nby_ece=`ls -d ???/ |  grep "[^0-9]" | wc -l`
         echo " ${nby_ece} years have been completed..."
@@ -241,9 +241,9 @@ function barakuda_first_last_years()
 
     cd ${NEMO_OUT_D}/
 
-    if [ ${ece_run} -gt 0 ]; then
+    if [ ${ece_exp} -gt 0 ]; then
         dir_end=`printf "%03d" ${nby_ece}`
-        if [ ! -d ${dir_end} ]; then echo "ERROR: since ece_run=${ece_run}, there should be a directory ${dir_end} in:"; echo " ${NEMO_OUT_D}"; exit ; fi
+        if [ ! -d ${dir_end} ]; then echo "ERROR: since ece_exp=${ece_exp}, there should be a directory ${dir_end} in:"; echo " ${NEMO_OUT_D}"; exit ; fi
         export YEAR_END=$((${YEAR_INI}+${nby_ece}))
     else
         export YEAR_END=`\ls ${CPREF}*${ctest}* | sed -e s/"${CPREF}"/''/g | tail -1 | cut -c1-4`
@@ -444,7 +444,7 @@ function barakuda_import_files()
 function build_clim_usage()
 {
     echo
-    echo "USAGE: ${0} -C <config> -R <run> -i <first_year> -e <last_year> (options)"
+    echo "USAGE: ${0} -C <config> -R <experiment> -i <first_year> -e <last_year> (options)"
     echo
     echo "     Available configs are:"
     for cc in ${list_conf}; do
@@ -536,7 +536,7 @@ function lb_leap_day()
     # We were at a DTBR=
     # a regular year would make a 19900225_19900229 file
     #  (should be 19900225_19900301 actually but NEMO seems to keep the same month for a file name!)
-    # so when we restart a run for a leap year and the last dtg was "19900220_19900224", we force
+    # so when we restart an experiment for a leap year and the last dtg was "19900220_19900224", we force
     # DTBR=6 !
     #
     export i_leap_day=0

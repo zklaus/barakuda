@@ -14,11 +14,11 @@ import barakuda_tool as bt
 import barakuda_plot as bp
 import barakuda_physics as bphys
 
-venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','NN_SSH'}
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','NN_SSH'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 path_fig='./'
 fig_type='png'
@@ -45,7 +45,7 @@ id_mm.close()
 
 
 #  Getting NEMO mean monthly climatology of SSH coverage:
-cf_nemo_mnmc = vdic['DIAG_D']+'/clim/mclim_'+CONFRUN+'_'+cy1+'-'+cy2+'_grid_T.nc4'
+cf_nemo_mnmc = vdic['DIAG_D']+'/clim/mclim_'+CONFEXP+'_'+cy1+'-'+cy2+'_grid_T.nc4'
 
 bt.chck4f(cf_nemo_mnmc)
 id_nemo = Dataset(cf_nemo_mnmc)
@@ -71,8 +71,8 @@ ji_lat0 = nmp.argmax(xlat[nj-1,:])
 
 bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], ssh_plot[:,:], Xmask, -2., 2., 0.1,
               corca=vdic['ORCA'], lkcont=True, cpal='BrBG_r',
-              cfignm=path_fig+'ssh_mean_'+CONFRUN, cbunit=r'$(m)$',
-              ctitle='Mean SSH (corrected about z=0, removed '+cztot+'m), '+CONFRUN+' ('+cy1+'-'+cy2+')',
+              cfignm=path_fig+'ssh_mean_'+CONFEXP, cbunit=r'$(m)$',
+              ctitle='Mean SSH (corrected about z=0, removed '+cztot+'m), '+CONFEXP+' ('+cy1+'-'+cy2+')',
               lforce_lim=True, i_cb_subsamp=2,
               cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=False, vcont_spec = [ 0. ])
 

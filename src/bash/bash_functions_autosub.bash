@@ -4,7 +4,7 @@ function barakuda_first_last_years()
 {
     # Autosub !!!
     cd ${NEMO_OUT_D}/
-    cpr="MMO_${RUN}_${Y_INI_EC}0101_fc00_"
+    cpr="MMO_${EXP}_${Y_INI_EC}0101_fc00_"
     YEAR_INI=${Y_INI_EC}
     #
     if ${LFORCE_YINI}; then
@@ -32,9 +32,9 @@ function barakuda_import_files()
     # Autosub !!!
     echo
     echo "Inside barakuda_extract_autosub => year = ${cyear}"
-    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<RUN>|${RUN}|g"`
+    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"`
     cd ${NEMO_OUT_D}/
-    cpr="MMO_${RUN}_${Y_INI_EC}0101_fc00_"
+    cpr="MMO_${EXP}_${Y_INI_EC}0101_fc00_"
     #
     echo " *** Going to extract year ${cyear} into:"
     echo "   ${TMP_DIR}"
@@ -46,9 +46,9 @@ function barakuda_import_files()
     echo
     cd ${TMP_DIR}/
     tar -xvf ${list}
-    rm -f ${list} ${RUN}_1d_* ${RUN}_*_diaptr.nc.gz
+    rm -f ${list} ${EXP}_1d_* ${EXP}_*_diaptr.nc.gz
     ls -l
-    gunzip -f ${RUN}_${TSTAMP}_${cyear}*.nc.gz
+    gunzip -f ${EXP}_${TSTAMP}_${cyear}*.nc.gz
     ls -l
     echo
     #
@@ -72,8 +72,8 @@ function barakuda_check_year_is_complete()
     export TTAG=${cy1}0101_${cy2}1231 # calendar-related part of the file name
     #
     # Testing if the current year-group has been done
-    tdir=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<RUN>|${RUN}|g"`
-    cftar="${tdir}/MMO_${RUN}_${Y_INI_EC}0101_fc00_${cy1}0101-${cy1}1231.tar"
+    tdir=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"`
+    cftar="${tdir}/MMO_${EXP}_${Y_INI_EC}0101_fc00_${cy1}0101-${cy1}1231.tar"
     if ${lcontinue}; then
         if [ ! -f ${cftar} ]; then
             echo "Year ${cy1} is not completed yet:"; echo " => ${cftar} is missing"; echo

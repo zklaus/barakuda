@@ -24,32 +24,32 @@ ihov=0
 
 #CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_marenostrum"
-#export RUN="LR1E" ; NC=nc4 ; jyear=1990
+#export EXP="LR1E" ; NC=nc4 ; jyear=1990
 
 #CONFIG="ORCA1_L42"
 #ARCH="ece22_triolith"
-#export RUN="SPIN" ; NC=nc4 ; jyear=2540
+#export EXP="SPIN" ; NC=nc4 ; jyear=2540
 
 #CONFIG="ORCA2_L31"
 #ARCH="ece32_marenostrum"
-#export RUN="LR20" ; NC=nc4 ; jyear=2540
+#export EXP="LR20" ; NC=nc4 ; jyear=2540
 
 
 #CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_triolith"
-#export RUN="LB2E" ; NC=nc4 ; jyear=2010
+#export EXP="LB2E" ; NC=nc4 ; jyear=2010
 
 #CONFIG="ORCA025_L75"
 #ARCH="T511_ece32_triolith"
-#export RUN="HC71" ; NC=nc ; jyear=1990
+#export EXP="HC71" ; NC=nc ; jyear=1990
 
 CONFIG="ORCA025_L75"
 ARCH="etienne"
-export RUN="a0ez" ; NC=nc ; jyear=1945
+export EXP="a0ez" ; NC=nc ; jyear=1945
 
 #CONFIG="ORCA1_L75"
 #ARCH="T255_ece32_triolith"
-#export RUN="LB10" ; NC=nc4 ; jyear=1990
+#export EXP="LB10" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -64,8 +64,8 @@ for og in ${ORCA_LIST}; do
 done
 if [ "${ORCA}" = "" ]; then echo "ORCA grid of config ${CONFIG} not supported yet"; exit; fi
 
-export CONFRUN=${ORCA}-${RUN}
-export DIAG_D=${DIAG_DIR}/${CONFRUN} ; mkdir -p ${DIAG_D}
+export CONFEXP=${ORCA}-${EXP}
+export DIAG_D=${DIAG_DIR}/${CONFEXP} ; mkdir -p ${DIAG_D}
 
 echo ; echo " *** DIAG_D = ${DIAG_D} !"; echo
 
@@ -79,15 +79,15 @@ y2_clim=`cat ${finfoclim} | cut -d - -f2`
 export COMP2D="CLIM"
 
 # To know the name of NEMO output files:
-export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<RUN>|${RUN}|g"`
+export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"`
 if [ ! -d ${NEMO_OUT_D} ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi
 YEAR_INI=1990 ; YEAR_INI_F=1990
 export cyear=`printf "%04d" ${jyear}`
-if [ ${ece_run} -gt 0 ]; then
+if [ ${ece_exp} -gt 0 ]; then
     iy=$((${jyear}-${YEAR_INI}+1+${YEAR_INI}-${YEAR_INI_F}))
     dir_ece="`printf "%03d" ${iy}`/"
 fi
-CPREF=`echo ${NEMO_FILE_PREFIX} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<RUN>|${RUN}|g" -e "s|<TSTAMP>|${TSTAMP}|g"`
+CPREF=`echo ${NEMO_FILE_PREFIX} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<TSTAMP>|${TSTAMP}|g"`
 
 if [ ${icrosssect} -eq 1 ] || [ ${imean2d} -eq 1 ] || [ ${imov} -eq 1 ]; then
     ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
@@ -113,7 +113,7 @@ rm -f *.png
 # Time for diags:
 
 if [ ${ienso} -eq 1 ]; then
-    CMD="python exec/plot_enso.py ${DIAG_D}/Nino34_${CONFRUN}.nc ${NN_SST}"
+    CMD="python exec/plot_enso.py ${DIAG_D}/Nino34_${CONFEXP}.nc ${NN_SST}"
     echo ; echo " CMD = ${CMD} "; echo
 fi
 
@@ -216,9 +216,9 @@ exit
 
 
 if [ ${ihov} -eq 1 ]; then
-    export RUN=cp70
+    export EXP=cp70
     export ORCA=ORCA1.L75
-    export DIAG_D=/proj/bolinc/users/x_laubr/tmp/barakuda/ORCA1.L75_ece32b/ORCA1.L75-${RUN}
+    export DIAG_D=/proj/bolinc/users/x_laubr/tmp/barakuda/ORCA1.L75_ece32b/ORCA1.L75-${EXP}
     export MM_FILE=/proj/bolinc/users/x_laubr/klaus/mesh_mask.nc
     export BM_FILE=/proj/bolinc/users/x_laubr/klaus/basin_mask.nc
     export NN_T="thetao"
@@ -227,7 +227,7 @@ if [ ${ihov} -eq 1 ]; then
     cd ${DIAG_D}/
     python /home/x_laubr/DEV/barakuda/python/exec/plot_hovm_tz.py 1996 2000
 
-    mv -f hov_*_ORCA1.L75-${RUN}*.png ${HERE}/
+    mv -f hov_*_ORCA1.L75-${EXP}*.png ${HERE}/
     #
 fi
 
@@ -241,10 +241,10 @@ fi
 if [ ${iemp} -eq 1 ]; then
 
     export ORCA="ORCA1.L75"
-    #export RUN="32bI"
-    export RUN="cp00"
+    #export EXP="32bI"
+    export EXP="cp00"
     export TSTAMP="1m"
-    export DIAG_D="/proj/bolinc/users/x_laubr/tmp/barakuda/ORCA1.L75_ece32b/ORCA1.L75-${RUN}"
+    export DIAG_D="/proj/bolinc/users/x_laubr/tmp/barakuda/ORCA1.L75_ece32b/ORCA1.L75-${EXP}"
     #export NN_RNF="runoffs"
     export MM_FILE="/proj/bolinc/users/x_laubr/tmp/barakuda/test/mesh_mask.nc"
     export TRANSPORT_SECTION_FILE="boo"
@@ -282,8 +282,8 @@ fi
 if [ ${irnf} -eq 1 ]; then
 
     export ORCA="ORCA1.L75"
-    export RUN="LB03"
-    export DIAG_D="/proj/bolinc/users/x_laubr/tmp/barakuda/ORCA1.L75_ece32b/ORCA1.L75-${RUN}"
+    export EXP="LB03"
+    export DIAG_D="/proj/bolinc/users/x_laubr/tmp/barakuda/ORCA1.L75_ece32b/ORCA1.L75-${EXP}"
     export NN_RNF="runoffs"
     export MM_FILE="/proj/bolinc/users/x_laubr/tmp/barakuda/test/mesh_mask.nc"
 

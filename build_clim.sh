@@ -27,7 +27,7 @@ barakuda_init
 
 while getopts R:f:i:e:C:h option ; do
     case $option in
-        R) export RUN=${OPTARG};;
+        R) export EXP=${OPTARG};;
         f) export IFREQ_SAV_YEARS=${OPTARG} ;;
         i) export Y1=${OPTARG} ;;
         e) export Y2=${OPTARG} ;;
@@ -49,8 +49,8 @@ else
     echo "PROBLEM: cannot find file ${fconfig} !"; exit
 fi
 
-# If from auto-submit run (ece_run=10) then overides a few functions with:
-if [ ${ece_run} -ge 10 ]; then
+# If auto-submit experiment (ece_exp=10) then overides a few functions with:
+if [ ${ece_exp} -ge 10 ]; then
     . ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash
 fi
 
@@ -65,7 +65,7 @@ echo "   *** Y1       = ${Y1} "
 echo "   *** Y2       = ${Y2} "
 echo "   *** CONFIG   = ${CONFIG} "
 echo "   *** GRID     = ${ORCA} "
-echo "   *** RUN      = ${RUN} "
+echo "   *** EXP      = ${EXP} "
 echo "   *** CPREF    = ${CPREF} "
 echo "   *** IFREQ_SAV_YEARS = ${IFREQ_SAV_YEARS} "
 echo
@@ -159,8 +159,8 @@ fi
 
 
 
-if [ ${ece_run} -gt 0 ]; then
-    if [ ! -d ${NEMO_OUT_D}/001 ]; then echo "ERROR: since ece_run=${ece_run}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; fi
+if [ ${ece_exp} -gt 0 ]; then
+    if [ ! -d ${NEMO_OUT_D}/001 ]; then echo "ERROR: since ece_exp=${ece_exp}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; fi
 fi
 
 
@@ -175,7 +175,7 @@ while [ ${jyear} -le ${Y2} ]; do
     export cyear=`printf "%04d" ${jyear}` ; echo ; echo "Year = ${cyear}"
 
     cpf=""
-    if [ ${ece_run} -gt 0 ]; then
+    if [ ${ece_exp} -gt 0 ]; then
         iy=$((${jyear}-${Y1}+1+${Y1}-${YEAR_INI_F}))
         dir_ece=`printf "%03d" ${iy}`
         echo " *** ${cyear} => dir_ece = ${dir_ece}"
@@ -250,20 +250,20 @@ done
 
 
 if [ ${ivt} -eq 1 ]; then
-    fo=aclim_${CONFRUN}_${CY1}-${CY2}_VT.nc
+    fo=aclim_${CONFEXP}_${CY1}-${CY2}_VT.nc
     # Averaged VT file:
     ncra -O ${CPREF}*_VT.nc -o ${fo} &
 fi
 
 if [ ${iamoc} -eq 1 ]; then
-    fo=aclim_${CONFRUN}_${CY1}-${CY2}_MOC.nc
+    fo=aclim_${CONFEXP}_${CY1}-${CY2}_MOC.nc
     # Averaged MOC file:
     ncra -O ${CPREF}*_MOC.nc -o ${fo} &
 fi
 
 
 if [ ${ibpsi} -eq 1 ]; then
-    fo=aclim_${CONFRUN}_${CY1}-${CY2}_PSI.nc
+    fo=aclim_${CONFEXP}_${CY1}-${CY2}_PSI.nc
     # Averaged PSI file:
     ncra -O ${CPREF}*_PSI.nc -o ${fo} &
 fi
@@ -286,8 +286,8 @@ for suff in grid_T grid_U grid_V icemod SBC VT MOC PSI; do
 
         echo ; echo ; echo ; echo " Treating ${suff} files!"; echo
         
-        f2c=mclim_${CONFRUN}_${CY1}-${CY2}_${suff}.nc
-        f2c_reg=mclim_${CONFRUN}_${CY1}-${CY2}_${REGG}.nc
+        f2c=mclim_${CONFEXP}_${CY1}-${CY2}_${suff}.nc
+        f2c_reg=mclim_${CONFEXP}_${CY1}-${CY2}_${REGG}.nc
 
         rm -f ${CLIM_DIR}/${f2c}* ${CLIM_DIR}/${f2c_reg}*
 
@@ -338,7 +338,7 @@ wait
 rm -f ${CPREF}*_VT.nc
 
 
-list=`\ls [am]clim_${CONFRUN}*.nc`
+list=`\ls [am]clim_${CONFEXP}*.nc`
 for ff in ${list}; do
     fn=`echo ${ff} | sed -e s/'.nc'/'.nc4'/g`
     echo "${NCDF_DIR}/bin/nccopy -k 4 -d 9  ${ff} ${fn} &"
@@ -349,8 +349,8 @@ done
 wait
 
 for cl in aclim mclim; do
-    echo "mv -f ${cl}_${CONFRUN}*.nc4 ${CLIM_DIR}/"
-    mv -f ${cl}_${CONFRUN}*.nc4 ${CLIM_DIR}/
+    echo "mv -f ${cl}_${CONFEXP}*.nc4 ${CLIM_DIR}/"
+    mv -f ${cl}_${CONFEXP}*.nc4 ${CLIM_DIR}/
     echo
 done
 

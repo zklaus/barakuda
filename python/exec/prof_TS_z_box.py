@@ -12,33 +12,12 @@ import barakuda_tool as bt
 import barakuda_physics as bphy
 
 
-FILE_DEF_BOXES = os.getenv('FILE_DEF_BOXES')
-if FILE_DEF_BOXES == None: print 'The FILE_DEF_BOXES environement variable is no set'; sys.exit(0)
+venv_needed = {'ORCA','EXP','DIAG_D','FILE_DEF_BOXES','CPREF','MM_FILE',
+               'NN_T','NN_S'}
 
-CONF = os.getenv('CONF')
-if CONF == None: print 'The CONF environement variable is no set'; sys.exit(0)
+vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-RUN = os.getenv('RUN')
-if RUN == None: print 'The RUN environement variable is no set'; sys.exit(0)
-CONFRUN = CONF+'-'+RUN
-
-CPREF = os.getenv('CPREF')
-if CPREF == None: print 'The CPREF environement variable is no set'; sys.exit(0)
-
-MM_FILE = os.getenv('MM_FILE')
-if MM_FILE == None: print 'The MM_FILE environement variable is no set'; sys.exit(0)
-
-DIAG_D = os.getenv('DIAG_D')
-if DIAG_D == None: print 'The DIAG_D environement variable is no set'; sys.exit(0)
-
-
-# NEMO variable names:
-NN_T = os.getenv('NN_T')
-if NN_T == None: print 'The NN_T environement variable is no set'; sys.exit(0)
-
-NN_S = os.getenv('NN_S')
-if NN_S == None: print 'The NN_S environement variable is no set'; sys.exit(0)
-
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 
 cname_script = basename(sys.argv[0])
@@ -52,23 +31,9 @@ cy = sys.argv[1] ; jy=int(cy)
 
 
 
-
-
-print '\n '+cname_script+':'
-print ' CONF = '+CONF;
-print ' RUN = '+RUN;
-CONFRUN=CONF+'-'+RUN
-print ' CONFRUN = '+CONFRUN
-print ' CPREF = '+CPREF
-
-
-
-
-
-
 # First will read name and coordinates of rectangular boxes to treat into file FILE_DEF_BOXES
 ##############################################################################################
-vboxes, vi1, vj1, vi2, vj2 = bt.read_coor(FILE_DEF_BOXES)
+vboxes, vi1, vj1, vi2, vj2 = bt.read_coor(vdic['FILE_DEF_BOXES'])
 nbb = len(vboxes)
 print ''
 
@@ -77,22 +42,22 @@ print ''
 # Opening mesh-mask and T-grid file of NEMO:
 ############################################
 
-bt.chck4f(MM_FILE)
-id_mm = Dataset(MM_FILE)
+bt.chck4f(vdic['MM_FILE'])
+id_mm = Dataset(vdic['MM_FILE'])
 Xmask = id_mm.variables['tmask'][0,:,:,:]
 ze1t  = id_mm.variables['e1t']    [0,:,:]
 ze2t  = id_mm.variables['e2t']    [0,:,:]
 id_mm.close()
 
 
-cf_in = CPREF+cy+'0101_'+cy+'1231_grid_T.nc' ; bt.chck4f(cf_in)
+cf_in = vdic['CPREF']+cy+'0101_'+cy+'1231_grid_T.nc' ; bt.chck4f(cf_in)
 id_in = Dataset(cf_in)
 Vtime  = id_in.variables['time_counter'][:]
 Vdepth = id_in.variables['deptht'][:]
 Xlon   = id_in.variables['nav_lon'][:,:]
 Xlat   = id_in.variables['nav_lat'][:,:]
-Xtheta = id_in.variables[NN_T][:,:,:,:]
-Xsali  = id_in.variables[NN_S][:,:,:,:]
+Xtheta = id_in.variables[vdic['NN_T']][:,:,:,:]
+Xsali  = id_in.variables[vdic['NN_S']][:,:,:,:]
 print '(has ',Xtheta.shape[0],' time snapshots)\n'
 id_in.close()
 
@@ -181,7 +146,7 @@ for jb in range(nbb):
     # Writing in output file
     ########################
     
-    cf_out =  DIAG_D+'/TS_z_box_'+cbox+'_'+CONFRUN+'.nc'
+    cf_out =  vdic['DIAG_D']+'/TS_z_box_'+cbox+'_'+CONFEXP+'.nc'
 
     l_nc_is_new = not os.path.exists(cf_out)
     
@@ -225,7 +190,7 @@ for jb in range(nbb):
 
 
         f_out.box_coordinates = cbox+' => '+str(i1)+','+str(j1)+' -> '+str(i2-1)+','+str(j2-1)
-        f_out.box_file        = FILE_DEF_BOXES
+        f_out.box_file        = vdic['FILE_DEF_BOXES']
         f_out.Author          = 'L. Brodeau ('+cname_script+' of Barakuda)'
     
     else:

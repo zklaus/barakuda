@@ -29,16 +29,16 @@ lat2_nino = 5.
 
 cv_evb = 'evap_ao_cea' ; # debug evap in ec-earth...
 
-venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','BM_FILE','NEMO_SAVED_FILES','FILE_FLX_SUFFIX',
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','BM_FILE','NEMO_SAVED_FILES','FILE_FLX_SUFFIX',
                'NN_SST','NN_SSS','NN_SSH','NN_MLD','TSTAMP','NN_FWF','NN_EMP','NN_P','NN_RNF',
                'NN_CLV','NN_E','NN_QNET','NN_QSOL'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 if len(sys.argv) != 3:
-    print 'Usage : sys.argv[1] <ORCA1_RUN_grid_T.nc> <year>'
+    print 'Usage : sys.argv[1] <ORCA1_EXP_grid_T.nc> <year>'
     sys.exit(0)
 
 cnexec  = sys.argv[0]
@@ -151,7 +151,7 @@ if l_htf:
         if l_qnt: vqnt[jt] = nmp.sum( QNT_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-9 ;  # to PW
         if l_qsr: vqsr[jt] = nmp.sum( QSR_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-9 ;  # to PW
 
-    cf_out   = vdic['DIAG_D']+'/mean_htf_'+CONFRUN+'_GLO.nc'
+    cf_out   = vdic['DIAG_D']+'/mean_htf_'+CONFEXP+'_GLO.nc'
     bnc.wrt_appnd_1d_series(vtime, vqnt, cf_out, 'Qnet',
                             cu_t='year', cu_d='PW', cln_d ='Globally averaged net heat flux (nemo:'+cv_qnt+')',
                             vd2=vqsr, cvar2='Qsol', cln_d2='Globally averaged net solar heat flux (nemo:'+cv_qsr+')')
@@ -249,7 +249,7 @@ if l_fwf:
         if l_evp: vevp[jt] = nmp.sum( EVP_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
         if l_evb: vevb[jt] = nmp.sum( EVB_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
 
-    cf_out   = vdic['DIAG_D']+'/mean_fwf_'+CONFRUN+'_GLO.nc'
+    cf_out   = vdic['DIAG_D']+'/mean_fwf_'+CONFEXP+'_GLO.nc'
 
     bnc.wrt_appnd_1d_series(vtime, vfwf, cf_out, 'EmPmR',
                             cu_t='year', cu_d='Sv',  cln_d ='Globally averaged net freshwater flux (nemo:'+cv_fwf+')',
@@ -336,7 +336,7 @@ if l_mld:
         Vts = bo.mean_2d(MLD_m, mask2d[:,:], Xa[:,:])
 
         # NETCDF:
-        cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFRUN+'_'+cbox+'.nc' ;  cv1 = cvar
+        cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFEXP+'_'+cbox+'.nc' ;  cv1 = cvar
 
         bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
                                 cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on rectangular box '+cbox)
@@ -388,7 +388,7 @@ for cvar in [ vdic['NN_SST'], vdic['NN_SSS'], vdic['NN_SSH'] ]:
         Vts = bo.mean_2d(Xs_m, mask[joce,:,:], Xa[:,:])
 
         # NETCDF:
-        cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFRUN+'_'+cocean+'.nc' ;  cv1 = cvar
+        cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFEXP+'_'+cocean+'.nc' ;  cv1 = cvar
         bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
                                 cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on region '+list_basin_lgnms[joce])
 
@@ -426,7 +426,7 @@ Vts = bo.mean_2d(Xs_m[:,j1:j2+1,i1:i2+1], mask[0,j1:j2+1,i1:i2+1], Xa[j1:j2+1,i1
 cunit='deg.C'
 if Vts[0] > 100.: cunit='K'
 
-cf_out   = vdic['DIAG_D']+'/Nino34_'+CONFRUN+'.nc' ;  cv1 = vdic['NN_SST']
+cf_out   = vdic['DIAG_D']+'/Nino34_'+CONFEXP+'.nc' ;  cv1 = vdic['NN_SST']
 bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1, cu_t='year', cu_d=cunit,
                         cln_d='2D-average of SST over Nino box 3.4 for ENSO computation later')
 
@@ -464,7 +464,7 @@ Vts = bo.mean_2d(Xs_m, msk_natl, Xa)
 cunit='deg.C'
 if Vts[0] > 100.: cunit='K'
 
-cf_out   = vdic['DIAG_D']+'/mean_SST_NAtl_'+CONFRUN+'.nc' ;  cv1 = vdic['NN_SST']
+cf_out   = vdic['DIAG_D']+'/mean_SST_NAtl_'+CONFEXP+'.nc' ;  cv1 = vdic['NN_SST']
 bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1, cu_t='year', cu_d=cunit,
                         cln_d='2D-average of SST over North Atlantic to compute AMO later')
 del msk_natl, Vts

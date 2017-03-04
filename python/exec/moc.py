@@ -15,11 +15,11 @@ import barakuda_plot as bp
 
 ldebug = False
 
-venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','BM_FILE'}
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','BM_FILE'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 cv_moc = 'zomsfatl'
 path_fig='./'
@@ -58,7 +58,7 @@ for jk in range(nk): Xmask[jk,:,:] = Xmask[jk,:,:] * Xmask_atl[:,:]
 
 
 #  Getting NEMO mean monthly climatology of MLD coverage:
-cf_nemo_moc  = vdic['DIAG_D']+'/clim/aclim_'+CONFRUN+'_'+cy1+'-'+cy2+'_MOC.nc4'
+cf_nemo_moc  = vdic['DIAG_D']+'/clim/aclim_'+CONFEXP+'_'+cy1+'-'+cy2+'_MOC.nc4'
 
 
 bt.chck4f(cf_nemo_moc)
@@ -85,9 +85,9 @@ msk_vert[idxm] = 1.
 
 bp.plot("vert_section")( vlat[:], -vz[:], amoc[:,:], msk_vert[:,:], -2., 20., 1., \
                          lkcont=True, cpal='ncview_nrl', lzonal=False, xmin=0., xmax=70., dx=5.,
-                         cfignm='AMOC_annual_'+CONFRUN, cbunit='Sv',
+                         cfignm='AMOC_annual_'+CONFEXP, cbunit='Sv',
                          zmin=0., zmax=5000., l_zlog=False, cfig_type=fig_type,
-                         czunit='Depth (m)', ctitle='AMOC, '+CONFRUN+' ('+cy1+'-'+cy2+')' )
+                         czunit='Depth (m)', ctitle='AMOC, '+CONFEXP+' ('+cy1+'-'+cy2+')' )
 
 
 print '\n Bye!'

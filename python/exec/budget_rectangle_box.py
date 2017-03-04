@@ -32,14 +32,14 @@ l_plot_debug = False
 
 
 
-venv_needed = {'ORCA','RUN','CPREF','DIAG_D','MM_FILE','FILE_DEF_BOXES','NN_T','NN_S', \
+venv_needed = {'ORCA','EXP','CPREF','DIAG_D','MM_FILE','FILE_DEF_BOXES','NN_T','NN_S', \
                'NN_SST','NN_SSS','NN_SSH'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
 corca = vdic['ORCA']
 
-CONFRUN = corca+'-'+vdic['RUN']
+CONFEXP = corca+'-'+vdic['EXP']
 
 
 
@@ -406,7 +406,7 @@ for jb in range(nbb):
     for jm in range(Nt): Vtime[jm] = float(jy) + (float(jm)+0.5)/12.
     
     cc = 'Box-averaged '
-    cf_out = vdic['DIAG_D']+'/budget_'+CONFRUN+'_box_'+cbox+'.nc'
+    cf_out = vdic['DIAG_D']+'/budget_'+CONFEXP+'_box_'+cbox+'.nc'
     
     bnc.wrt_appnd_1d_series(Vtime, ssh_m, cf_out, 'ssh',  cu_t='year', cu_d='m', cln_d=cc+'sea surface height',
                             vd2=sst_m,    cvar2='sst',      cln_d2=cc+'sea surface temperature',      cun2='deg.C',
@@ -421,7 +421,7 @@ for jb in range(nbb):
                             )
     
 
-    cf_out = vdic['DIAG_D']+'/budget_srf_flx_'+CONFRUN+'_box_'+cbox+'.nc'
+    cf_out = vdic['DIAG_D']+'/budget_srf_flx_'+CONFEXP+'_box_'+cbox+'.nc'
     
     bnc.wrt_appnd_1d_series(Vtime, Qnet_m, cf_out, 'Qnet',  cu_t='year', cu_d='W/m^2', cln_d=cc+'net heat flux',
                             vd2=Qnet_x_S_m,    cvar2='Qnet_x_S',      cln_d2=cc+'net heat flux x Surface',      cun2='PW',

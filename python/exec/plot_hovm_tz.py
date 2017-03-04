@@ -18,11 +18,11 @@ import barakuda_orca as bo
 import barakuda_plot as bp
 
 
-venv_needed = {'ORCA','RUN','DIAG_D','NN_T','NN_S','BM_FILE'}
+venv_needed = {'ORCA','EXP','DIAG_D','NN_T','NN_S','BM_FILE'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 cname_temp = vdic['NN_T']
 cname_sali = vdic['NN_S']
@@ -50,8 +50,8 @@ list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
 jo = 0
 for coce in list_basin_names:
 
-    cf_temp = cname_temp+'_mean_Vprofile_'+CONFRUN+'_'+coce+'.nc' ; bt.chck4f(cf_temp)
-    cf_sali = cname_sali+'_mean_Vprofile_'+CONFRUN+'_'+coce+'.nc' ; bt.chck4f(cf_sali)
+    cf_temp = cname_temp+'_mean_Vprofile_'+CONFEXP+'_'+coce+'.nc' ; bt.chck4f(cf_temp)
+    cf_sali = cname_sali+'_mean_Vprofile_'+CONFEXP+'_'+coce+'.nc' ; bt.chck4f(cf_sali)
 
     id_temp = Dataset(cf_temp)
     if jo == 0:
@@ -101,9 +101,9 @@ for coce in list_basin_names:
     bp.plot("hovmoeller")(vyears[:], vdepth[:nz], XTe[:,:], XTe[:,:]*0.+1., rmin, rmax, rdf, c_y_is='depth', # 
                           cpal='RdBu_r', tmin=yr1, tmax=yr2+1., dt=ixtics, lkcont=True,
                           ymin = z0, ymax = zK, l_ylog=True,
-                          cfignm=path_fig+'hov_temperature_'+CONFRUN+'_'+coce, cbunit=r'$^{\circ}$C', ctunit='',
+                          cfignm=path_fig+'hov_temperature_'+CONFEXP+'_'+coce, cbunit=r'$^{\circ}$C', ctunit='',
                           cyunit='Depth (m)',
-                          ctitle=CONFRUN+': Temperature evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
+                          ctitle=CONFEXP+': Temperature evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
                           cfig_type=fig_type, i_cb_subsamp=2)
 
     XSe = 1000.*XSe
@@ -111,9 +111,9 @@ for coce in list_basin_names:
     bp.plot("hovmoeller")(vyears[:], vdepth[:nz], XSe[:,:], XSe[:,:]*0.+1., rmin, rmax, rdf, c_y_is='depth',
                           cpal='PiYG_r', tmin=yr1, tmax=yr2+1., dt=ixtics, lkcont=True,
                           ymin = z0, ymax = zK, l_ylog=True,
-                          cfignm=path_fig+'hov_salinity_'+CONFRUN+'_'+coce, cbunit=r'10$^{-3}$PSU', ctunit='',
+                          cfignm=path_fig+'hov_salinity_'+CONFEXP+'_'+coce, cbunit=r'10$^{-3}$PSU', ctunit='',
                           cyunit='Depth (m)',
-                          ctitle=CONFRUN+': Salinity evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
+                          ctitle=CONFEXP+': Salinity evolution, '+list_basin_lgnms[jo]+', ('+str(int(yr1))+'-'+str(int(yr2))+')',
                           cfig_type=fig_type, i_cb_subsamp=2)
 
 

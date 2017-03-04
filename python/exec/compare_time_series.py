@@ -2,7 +2,7 @@
 
 #       B a r a K u d a
 #
-#     Compare time-series between some runs!
+#     Compare time-series between some experiments!
 #
 #       L. Brodeau, 2013
 
@@ -28,7 +28,7 @@ itrsp  = 1
 ifwf   = 1  ; # freshwater fluxes at the surface
 
 
-venv_needed = {'LIST_RUNS','DIAG_DIR','CONF','FIG_FORMAT', 'BM_FILE', \
+venv_needed = {'LIST_EXPS','DIAG_DIR','CONF','FIG_FORMAT', 'BM_FILE', \
                'NN_SST','NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD', \
                'TRANSPORT_SECTION_FILE','LMOCLAT','i_do_ifs_flx'}
 
@@ -48,23 +48,23 @@ cy2 = sys.argv[2] ; y2 = int(cy2)
 nb_years = y2 - y1 + 1
 
 
-clist_runs = vdic['LIST_RUNS'].split()
-clist_confruns = []
+clist_exps = vdic['LIST_EXPS'].split()
+clist_confexps = []
 
-for crun in clist_runs:
-    clist_confruns.append(vdic['CONF']+'-'+crun)
+for cexp in clist_exps:
+    clist_confexps.append(vdic['CONF']+'-'+cexp)
 
-print sys.argv[0]+': will compare following runs: '; print clist_confruns
+print sys.argv[0]+': will compare following experiments: '; print clist_confexps
 print ' ... saved into '+cd_diag+'\n'
 
-nbrun = len(clist_confruns)
+nbexp = len(clist_confexps)
 
 
 
 ittic = bt.iaxe_tick(nb_years)
 
 Vt = nmp.zeros(        nb_years)
-Xf = nmp.zeros((nbrun, nb_years))
+Xf = nmp.zeros((nbexp, nb_years))
 
 
 def test_nb_mnth_rec(nbmn, nbyr, cnd):
@@ -104,19 +104,19 @@ if i2dfl == 1:
         
         joce = 0
         for cocean in list_basin_names :
-            Xf[:,:] = 0. ; jrun = 0
-            for confrun in clist_confruns:
+            Xf[:,:] = 0. ; jexp = 0
+            for confexp in clist_confexps:
 
-                cf_in = cd_diag+'/'+confrun+'/'+cdiag+'_'+confrun+'_'+cocean+'.nc'
+                cf_in = cd_diag+'/'+confexp+'/'+cdiag+'_'+confexp+'_'+cocean+'.nc'
                 vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
                 nbm = len(vt0)
                 test_nb_mnth_rec(nbm, nb_years, cdiag)
                 VY, FY = bt.monthly_2_annual(vt0, vd0)
                 Vt[:nbm/12]   = VY[:]
-                Xf[jrun,:nbm/12] = FY[:] ; Xf[jrun,nbm/12:] = -999.
-                jrun = jrun + 1
+                Xf[jexp,:nbm/12] = FY[:] ; Xf[jexp,nbm/12:] = -999.
+                jexp = jexp + 1
 
-            bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
+            bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
                                 cfignm=cdiag+'_comparison_'+cocean, dt=ittic,
                                 loc_legend=DEFAULT_LEGEND_LOC, cyunit=vunit[jvar],
                                 ctitle = vname[jvar]+', '+list_basin_lgnms[joce], ymin=0, ymax=0)
@@ -144,21 +144,21 @@ if imld == 1:
     Xf[:,:] = 0
     jbox = 0
     for cbox in bo.cname_mld_boxes:
-        jrun = 0
-        for confrun in clist_confruns:
-            cf_in = cd_diag+'/'+confrun+'/'+cdiag+'_'+confrun+'_'+cbox+'.nc'
+        jexp = 0
+        for confexp in clist_confexps:
+            cf_in = cd_diag+'/'+confexp+'/'+cdiag+'_'+confexp+'_'+cbox+'.nc'
             if os.path.exists(cf_in):
                 vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
                 nbm = len(vt0)
                 test_nb_mnth_rec(nbm, nb_years, cdiag)
                 VY, FY = bt.monthly_2_annual(vt0, vd0)
                 Vt[:nbm/12]   = VY[:]
-                Xf[jrun,:nbm/12] = FY[:] ; Xf[jrun,nbm/12:] = -999.
+                Xf[jexp,:nbm/12] = FY[:] ; Xf[jexp,nbm/12:] = -999.
                 lplot = lplot and lplot
-            jrun = jrun + 1
+            jexp = jexp + 1
 
         if lplot:
-            bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
+            bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
                                 cfignm=cdiag+'_'+cbox+'_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                 cyunit='m', ctitle = 'Mixed layer depth, '+bo.clgnm_mld_boxes[jbox], ymin=0, ymax=0)
         jbox = jbox+1
@@ -198,19 +198,19 @@ if i3dfl == 1:
             for cdepth in vdepth_range:
                 cdif = vdepth_infil[idepth]
                 Xf[:,:] = 0.
-                jrun = 0
-                for confrun in clist_confruns:
+                jexp = 0
+                for confexp in clist_confexps:
 
-                    cf_in = cd_diag+'/'+confrun+'/'+cdiag+'_'+confrun+'_'+cocean+'.nc'
+                    cf_in = cd_diag+'/'+confexp+'/'+cdiag+'_'+confexp+'_'+cocean+'.nc'
                     vt0, vd0 = bn.read_1d_series(cf_in, cvar+'_'+cdif, cv_t='time', l_return_time=True)
                     nbm = len(vt0)
                     test_nb_mnth_rec(nbm, nb_years, cdiag)
                     VY, FY = bt.monthly_2_annual(vt0, vd0)
                     Vt[:nbm/12]   = VY[:]
-                    Xf[jrun,:nbm/12] = FY[:]  ; Xf[jrun,nbm/12:] = -999.
-                    jrun = jrun + 1
+                    Xf[jexp,:nbm/12] = FY[:]  ; Xf[jexp,nbm/12:] = -999.
+                    jexp = jexp + 1
 
-                bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
+                bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
                                     cfignm=cdiag+'_comparison_'+cocean+'_'+cdepth, dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                     cyunit=vunit[jdiag], ctitle = vname[jdiag]+', '+list_basin_lgnms[joce]+', depth range = '+cdepth, ymin=0, ymax=0)
 
@@ -251,19 +251,19 @@ if iice == 1:
             ipole = 0
             for cpole in vpole:
                 Xf[:,:] = 0.
-                jrun = 0
-                for confrun in clist_confruns:
-                    cf_in = cd_diag+'/'+confrun+'/seaice_diags.nc'
+                jexp = 0
+                for confexp in clist_confexps:
+                    cf_in = cd_diag+'/'+confexp+'/seaice_diags.nc'
                     vt0, vd0 = bn.read_1d_series(cf_in, cvar+'_'+vlab[ipole], cv_t='time', l_return_time=True)
                     nbm = len(vt0)
                     test_nb_mnth_rec(nbm, nb_years, cdiag)
                     Vt[:nbm/12]   = vt0[vmnth[jdiag]::12]
-                    Xf[jrun,:nbm/12] = vd0[vmnth[jdiag]::12] ; Xf[jrun,nbm/12:] = -999.
-                    jrun = jrun + 1
+                    Xf[jexp,:nbm/12] = vd0[vmnth[jdiag]::12] ; Xf[jexp,nbm/12:] = -999.
+                    jexp = jexp + 1
 
                 cdiag = 'seaice_'+cvar
                 cmnth = '%2.2i'%(vmnth[jdiag]+1)
-                bp.plot("1d_multi")(Vt, Xf, clist_runs, cfig_type=cffig,
+                bp.plot("1d_multi")(Vt, Xf, clist_exps, cfig_type=cffig,
                                     cfignm=cdiag+'_m'+str(cmnth)+'_comparison_'+cpole, dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                     cyunit=vunit[jdiag], ctitle = vname[jdiag]+', '+cpole, ymin=0, ymax=0)
 
@@ -292,32 +292,32 @@ if itrsp == 1:
     vunit  = [ 'Sv'    , 'PW'   , 'kt/s' ]
 
 
-    jrun = 0
-    for confrun in clist_confruns:
+    jexp = 0
+    for confexp in clist_confexps:
 
         jsect=0
         for csect in list_sections:
             print '\n Treating transports through '+csect
 
-            cf_in = cd_diag+'/'+confrun+'/transport_sect_'+csect+'.nc' ; bt.chck4f(cf_in, script_name='compare_time_series.py')
+            cf_in = cd_diag+'/'+confexp+'/transport_sect_'+csect+'.nc' ; bt.chck4f(cf_in, script_name='compare_time_series.py')
             id_in = Dataset(cf_in)
             if jsect == 0:
-                if jrun == 0:
+                if jexp == 0:
                     vyear = nmp.zeros(nb_years)
-                    Xtrsp = nmp.zeros((nbrun,nbsect,3,nb_years))
+                    Xtrsp = nmp.zeros((nbexp,nbsect,3,nb_years))
 
                 Vt_t = id_in.variables['time'][:] ; nbm = len(Vt_t) ; nby = nbm/12
                 test_nb_mnth_rec(nbm, nb_years, cdiag)
 
-            Xtrsp[jrun,jsect,:,:] = -999.
-            vyear[:nby], Xtrsp[jrun,jsect,0,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_volu'][:nbm])
-            vyear[:nby], Xtrsp[jrun,jsect,1,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_heat'][:nbm])
-            vyear[:nby], Xtrsp[jrun,jsect,2,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_salt'][:nbm])
+            Xtrsp[jexp,jsect,:,:] = -999.
+            vyear[:nby], Xtrsp[jexp,jsect,0,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_volu'][:nbm])
+            vyear[:nby], Xtrsp[jexp,jsect,1,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_heat'][:nbm])
+            vyear[:nby], Xtrsp[jexp,jsect,2,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_salt'][:nbm])
 
             id_in.close()
 
             jsect = jsect + 1
-        jrun = jrun + 1
+        jexp = jexp + 1
 
     # All data read!
 
@@ -326,7 +326,7 @@ if itrsp == 1:
         jstuff = 0
         for cstuff in vstuff:
 
-            bp.plot("1d_multi")(vyear[:], Xtrsp[:,jsect,jstuff,:], clist_runs, cfig_type=cffig,
+            bp.plot("1d_multi")(vyear[:], Xtrsp[:,jsect,jstuff,:], clist_exps, cfig_type=cffig,
                                 cfignm='transport_'+cstuff+'_'+csect+'_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                 cyunit=vunit[jstuff], ctitle = 'Transport of '+cstuff+' through section '+csect,
                                 ymin=0, ymax=0)
@@ -347,34 +347,34 @@ if iamoc == 1:
     print '\n AMOC: '+str(nblat)+' latitude bands!'
 
     nbm_prev = 0
-    jrun = 0
-    for confrun in clist_confruns:
+    jexp = 0
+    for confexp in clist_confexps:
 
         jl = 0
         for clr in list_lat:
             [ c1, c2 ] = clr.split('-') ; clat_info = '+'+c1+'N+'+c2+'N'
-            cf_in = cd_diag+'/'+confrun+'/max_moc_atl_'+clat_info+'.nc' ; bt.chck4f(cf_in, script_name='compare_time_series.py')
+            cf_in = cd_diag+'/'+confexp+'/max_moc_atl_'+clat_info+'.nc' ; bt.chck4f(cf_in, script_name='compare_time_series.py')
 
             id_in = Dataset(cf_in)
             if jl == 0:
-                if jrun == 0:
+                if jexp == 0:
                     vyear = nmp.zeros(nb_years)
-                    Xamoc = nmp.zeros((nbrun, nblat, nb_years))
+                    Xamoc = nmp.zeros((nbexp, nblat, nb_years))
                 Vt_t = id_in.variables['time'][:] ; nbm = len(Vt_t) ; nby = nbm/12
                 test_nb_mnth_rec(nbm, nb_years, cdiag)
 
-            Xamoc[jrun,jl,:] = -999.
-            vyear[:nby], Xamoc[jrun,jl,:nby] = bt.monthly_2_annual(Vt_t[:nbm], id_in.variables['moc_atl'][:nbm])
+            Xamoc[jexp,jl,:] = -999.
+            vyear[:nby], Xamoc[jexp,jl,:nby] = bt.monthly_2_annual(Vt_t[:nbm], id_in.variables['moc_atl'][:nbm])
             id_in.close()
 
             jl = jl + 1
-        jrun = jrun + 1
+        jexp = jexp + 1
 
 
     jl = 0
     for clr in list_lat:
 
-        bp.plot("1d_multi")(vyear[:], Xamoc[:,jl,:], clist_runs, cfig_type=cffig,
+        bp.plot("1d_multi")(vyear[:], Xamoc[:,jl,:], clist_exps, cfig_type=cffig,
                             cfignm='AMOC_'+clr+'_comparison', loc_legend=DEFAULT_LEGEND_LOC,
                             dt=ittic, cyunit='Sv', ctitle = 'AMOC ('+clr+')', ymin=0, ymax=0)
 
@@ -397,10 +397,10 @@ if ifwf == 1:
         cdiag = cvar
         print '\n Treating FWF : '+cdiag
 
-        jrun=0
-        for confrun in clist_confruns:
+        jexp=0
+        for confexp in clist_confexps:
 
-            cf_in = cd_diag+'/'+confrun+'/mean_fwf_'+confrun+'_GLO.nc'
+            cf_in = cd_diag+'/'+confexp+'/mean_fwf_'+confexp+'_GLO.nc'
 
             vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
             nbm = len(vt0)
@@ -408,10 +408,10 @@ if ifwf == 1:
 
             VY, FY = bt.monthly_2_annual(vt0, vd0)
             Vt[:nbm/12]      = VY[:]
-            Xf[jrun,:nbm/12] = FY[:] ; Xf[jrun,nbm/12:] = -999.
-            jrun = jrun + 1
+            Xf[jexp,:nbm/12] = FY[:] ; Xf[jexp,nbm/12:] = -999.
+            jexp = jexp + 1
         
-        bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
+        bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
                             cfignm='FWF_'+cdiag+'_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                             cyunit=vunit[jdiag], ctitle = vname[jdiag]+' flux integrated over oceans (NEMO)', ymin=0, ymax=0)
         jdiag = jdiag+1
@@ -419,14 +419,14 @@ if ifwf == 1:
     if i_do_ifs_flx == 1:
 
         # Checking if there are filef for IFS:
-        l_fwf_ifs = True  ;  jrun=0
-        for confrun in clist_confruns:
-            cf_in = cd_diag+'/'+confrun+'/mean_fwf_IFS_'+clist_runs[jrun]+'_GLO.nc'
+        l_fwf_ifs = True  ;  jexp=0
+        for confexp in clist_confexps:
+            cf_in = cd_diag+'/'+confexp+'/mean_fwf_IFS_'+clist_exps[jexp]+'_GLO.nc'
             print '  *** Checking for the existence of '+cf_in
             if os.path.exists(cf_in):
                 print "  *** IFS FWF files found!"
                 l_fwf_ifs = True and l_fwf_ifs
-            jrun=jrun+1
+            jexp=jexp+1
     
     
         if l_fwf_ifs:
@@ -443,9 +443,9 @@ if ifwf == 1:
                 cdiag = cvar
                 print '\n Treating IFS FWF : '+cdiag
     
-                jrun=0
-                for confrun in clist_confruns:
-                    cf_in = cd_diag+'/'+confrun+'/mean_fwf_IFS_'+clist_runs[jrun]+'_GLO.nc'
+                jexp=0
+                for confexp in clist_confexps:
+                    cf_in = cd_diag+'/'+confexp+'/mean_fwf_IFS_'+clist_exps[jexp]+'_GLO.nc'
     
                     vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
                     nbm = len(vt0)
@@ -453,10 +453,10 @@ if ifwf == 1:
     
                     VY, FY = bt.monthly_2_annual(vt0, vd0)
                     Vt[:nbm/12]      = VY[:]
-                    Xf[jrun,:nbm/12] = FY[:]  ; Xf[jrun,nbm/12:] = -999.
-                    jrun = jrun + 1
+                    Xf[jexp,:nbm/12] = FY[:]  ; Xf[jexp,nbm/12:] = -999.
+                    jexp = jexp + 1
     
-                bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_runs, cfig_type=cffig,
+                bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
                                     cfignm='FWF_'+cdiag+'_IFS_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
                                     cyunit=vunit[jdiag], ctitle = vname[jdiag]+' flux integrated over'+vstit[jdiag], ymin=0, ymax=0)
     

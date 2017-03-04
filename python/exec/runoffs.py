@@ -15,7 +15,7 @@ ldebug = False
 rmult = 1.E3
 zmax_rnf_atl = 0.1 ; dz_rnf = 0.005
 
-venv_needed = {'ORCA','RUN','DIAG_D','NN_RNF','MM_FILE'}
+venv_needed = {'ORCA','EXP','DIAG_D','NN_RNF','MM_FILE'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
@@ -31,7 +31,7 @@ vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
 
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 
 path_fig='./'
@@ -65,7 +65,7 @@ nk = len(vlev)
 
 
 #  Getting NEMO mean monthly climatology of RNF coverage:
-cf_nemo_mnmc = vdic['DIAG_D']+'/clim/mclim_'+CONFRUN+'_'+cy1+'-'+cy2+'_SBC.nc4'
+cf_nemo_mnmc = vdic['DIAG_D']+'/clim/mclim_'+CONFEXP+'_'+cy1+'-'+cy2+'_SBC.nc4'
 
 bt.chck4f(cf_nemo_mnmc)
 id_nemo = Dataset(cf_nemo_mnmc)
@@ -87,15 +87,15 @@ rnf_plot[:,:] = nmp.mean(rnf[:,:,:],axis=0)
 # With lat-lon axis:
 #bp.plot_2d(xlon[0,:], xlat[:,ji_lat0], rnf_plot[:,:], Xmask[0,:,:], 0., zmax_rnf_atl, dz_rnf,
 #              corca=vdic['ORCA'], lkcont=False, cpal='sst',
-#              cfignm=path_fig+'runoffs_mean_'+CONFRUN, cbunit=r'10$^{-3}$mm/day',
-#              ctitle='Mean Runoffs, '+CONFRUN+' ('+cy1+'-'+cy2+')', lforce_lim=True, i_cb_subsamp=2,
+#              cfignm=path_fig+'runoffs_mean_'+CONFEXP, cbunit=r'10$^{-3}$mm/day',
+#              ctitle='Mean Runoffs, '+CONFEXP+' ('+cy1+'-'+cy2+')', lforce_lim=True, i_cb_subsamp=2,
 #              cfig_type=fig_type, lat_min=-79., lat_max=85., lpix=True)
 
 # Without:
 bp.plot("2d")([0], [0], rnf_plot[:,:], Xmask[0,:,:], 0., zmax_rnf_atl, dz_rnf,
            corca=vdic['ORCA'], lkcont=False, cpal='sst',
-           cfignm=path_fig+'runoffs_mean_'+CONFRUN, cbunit=r'10$^{-3}$mm/day',
-           ctitle='Mean Runoffs, '+CONFRUN+' ('+cy1+'-'+cy2+')', lforce_lim=True, i_cb_subsamp=2,
+           cfignm=path_fig+'runoffs_mean_'+CONFEXP, cbunit=r'10$^{-3}$mm/day',
+           ctitle='Mean Runoffs, '+CONFEXP+' ('+cy1+'-'+cy2+')', lforce_lim=True, i_cb_subsamp=2,
            cfig_type=fig_type, lpix=True)
 
 

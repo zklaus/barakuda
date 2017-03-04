@@ -288,7 +288,7 @@ def plot_nproj_extra(czone, rmin, rmax, dc, xlon, xlat, XF, XI,
 
 def __message__(ccr):
 
-    # Find the CONF from CONF-RUN and exit if CONF does not exist!
+    # Find the CONF from CONF-EXP and exit if CONF does not exist!
     i = 0 ; conf = ''
     while i < len(ccr) and ccr[i] != '-' : conf = conf+ccr[i]; i=i+1
     print 'conf =', conf, '\n'

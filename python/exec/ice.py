@@ -13,12 +13,12 @@ from netCDF4 import Dataset
 import barakuda_tool as bt
 import barakuda_plot as bp
 
-venv_needed = {'ORCA','RUN','DIAG_D','MM_FILE','COMP2D','ICE_CLIM_12','NN_ICEF_CLIM','NN_ICEF','NN_ICET','FILE_ICE_SUFFIX'}
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','COMP2D','ICE_CLIM_12','NN_ICEF_CLIM','NN_ICEF','NN_ICET','FILE_ICE_SUFFIX'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-crun = vdic['RUN']
-CONFRUN = vdic['ORCA']+'-'+crun
+cexp = vdic['EXP']
+CONFEXP = vdic['ORCA']+'-'+cexp
 
 path_fig='./'
 fig_type='png'
@@ -53,7 +53,7 @@ id_clim.close()
 
 
 #  Getting NEMO mean monthly climatology of sea-ice coverage:
-cf_nemo_mnmc = vdic['DIAG_D']+'/clim/mclim_'+CONFRUN+'_'+cy1+'-'+cy2+'_'+vdic['FILE_ICE_SUFFIX']+'.nc4'
+cf_nemo_mnmc = vdic['DIAG_D']+'/clim/mclim_'+CONFEXP+'_'+cy1+'-'+cy2+'_'+vdic['FILE_ICE_SUFFIX']+'.nc4'
 
 bt.chck4f(cf_nemo_mnmc)
 id_ice = Dataset(cf_nemo_mnmc)
@@ -151,8 +151,8 @@ else:
 
 # Nordic Seas:
 bp.plot("nproj")('npol2', 0., 1., 0.1, xlon, xlat, xnemo_frac_09[:,:],
-                 cfignm=path_fig+'sea-ice_NP_sept_'+CONFRUN, cpal='ice', cbunit='(frac.)',
-                 ctitle='Ice fraction, Sept., '+crun+' ('+cy1+'-'+cy2+')',
+                 cfignm=path_fig+'sea-ice_NP_sept_'+CONFEXP, cpal='ice', cbunit='(frac.)',
+                 ctitle='Ice fraction, Sept., '+cexp+' ('+cy1+'-'+cy2+')',
                  lkcont=True, cfig_type=fig_type, 
                  lforce_lim=True)
 
@@ -163,8 +163,8 @@ bp.plot("nproj")('npol2', 0., 1., 0.1, xlon, xlat, xclim09[:,:]/ratio,
                  lforce_lim=True)
     
 bp.plot("nproj")('npol2', 0., 10., 0.25, xlon, xlat, xnemo_thic_09[:,:],
-                 cfignm=path_fig+'sea-ice_thickness_NP_sept_'+CONFRUN, cpal='cubehelix_r', cbunit='(m)',
-                 ctitle='Ice thickness, Sept., '+crun+' ('+cy1+'-'+cy2+')',
+                 cfignm=path_fig+'sea-ice_thickness_NP_sept_'+CONFEXP, cpal='cubehelix_r', cbunit='(m)',
+                 ctitle='Ice thickness, Sept., '+cexp+' ('+cy1+'-'+cy2+')',
                  lkcont=True, cfig_type=fig_type, i_cb_subsamp=2,
                  lforce_lim=True)
 
@@ -173,8 +173,8 @@ bp.plot("nproj")('npol2', 0., 10., 0.25, xlon, xlat, xnemo_thic_09[:,:],
     
 # September, big South:
 bp.plot("nproj")('spstere', 0., 1., 0.1, xlon0, xlat0, xnemo_frac_090[:,:],
-                 cfignm=path_fig+'sea-ice_SP_sept_'+CONFRUN, cpal='ice', cbunit='(frac.)',
-                 ctitle='Ice fraction, Sept., '+crun+' ('+cy1+'-'+cy2+')',
+                 cfignm=path_fig+'sea-ice_SP_sept_'+CONFEXP, cpal='ice', cbunit='(frac.)',
+                 ctitle='Ice fraction, Sept., '+cexp+' ('+cy1+'-'+cy2+')',
                  lkcont=True, cfig_type=fig_type, 
                  lforce_lim=True)
 
@@ -186,8 +186,8 @@ bp.plot("nproj")('spstere', 0., 1., 0.1, xlon0, xlat0, xclim090[:,:]/ratio,
                  lforce_lim=True)
 
 bp.plot("nproj")('spstere', 0., 5., 0.1, xlon0, xlat0, xnemo_thic_090[:,:],
-                 cfignm=path_fig+'sea-ice_thickness_SP_sept_'+CONFRUN, cpal='cubehelix_r', cbunit='(m)',
-                 ctitle='Ice thickness, Sept., '+crun+' ('+cy1+'-'+cy2+')',
+                 cfignm=path_fig+'sea-ice_thickness_SP_sept_'+CONFEXP, cpal='cubehelix_r', cbunit='(m)',
+                 ctitle='Ice thickness, Sept., '+cexp+' ('+cy1+'-'+cy2+')',
                  lkcont=True, cfig_type=fig_type, i_cb_subsamp=2,
                  lforce_lim=True)
 
@@ -215,8 +215,8 @@ else:
 #print "  -- doing stereographic projection of sea-ice fraction / March / N.E."
 
 bp.plot("nproj")('npol2', 0., 1., 0.1, xlon, xlat, xnemo_frac_03[:,:],
-              cfignm=path_fig+'sea-ice_NP_march_'+CONFRUN, cpal='ice', cbunit='(frac.)',
-              ctitle='Ice fraction, March, '+crun+' ('+cy1+'-'+cy2+')',
+              cfignm=path_fig+'sea-ice_NP_march_'+CONFEXP, cpal='ice', cbunit='(frac.)',
+              ctitle='Ice fraction, March, '+cexp+' ('+cy1+'-'+cy2+')',
               lkcont=True, cfig_type=fig_type, 
               lforce_lim=True)
 
@@ -229,8 +229,8 @@ bp.plot("nproj")('npol2', 0., 1., 0.1, xlon, xlat, xclim03[:,:]/ratio,
 #print "  -- doing stereographic projection of sea-ice thickness / March / N.E."
 
 bp.plot("nproj")('npol2', 0., 10., 0.25, xlon, xlat, xnemo_thic_03[:,:],
-              cfignm=path_fig+'sea-ice_thickness_NP_march_'+CONFRUN, cpal='cubehelix_r', cbunit='(m)',
-              ctitle='Ice thickness, March, '+crun+' ('+cy1+'-'+cy2+')',
+              cfignm=path_fig+'sea-ice_thickness_NP_march_'+CONFEXP, cpal='cubehelix_r', cbunit='(m)',
+              ctitle='Ice thickness, March, '+cexp+' ('+cy1+'-'+cy2+')',
               lkcont=True, cfig_type=fig_type, i_cb_subsamp=2,
               lforce_lim=True)
 
@@ -240,8 +240,8 @@ bp.plot("nproj")('npol2', 0., 10., 0.25, xlon, xlat, xnemo_thic_03[:,:],
 # Big south:
 
 bp.plot("nproj")('spstere', 0., 1., 0.1, xlon0, xlat0, xnemo_frac_030[:,:],
-              cfignm=path_fig+'sea-ice_SP_march_'+CONFRUN, cpal='ice', cbunit='(frac.)',
-              ctitle='Ice fraction, March, '+crun+' ('+cy1+'-'+cy2+')',
+              cfignm=path_fig+'sea-ice_SP_march_'+CONFEXP, cpal='ice', cbunit='(frac.)',
+              ctitle='Ice fraction, March, '+cexp+' ('+cy1+'-'+cy2+')',
               lkcont=True, cfig_type=fig_type, 
               lforce_lim=True)
 
@@ -252,8 +252,8 @@ bp.plot("nproj")('spstere', 0., 1., 0.1, xlon0, xlat0, xclim030[:,:]/ratio,
                 lforce_lim=True)
 
 bp.plot("nproj")('spstere', 0., 5., 0.1, xlon0, xlat0, xnemo_thic_030[:,:],
-              cfignm=path_fig+'sea-ice_thickness_SP_march_'+CONFRUN, cpal='cubehelix_r', cbunit='(m)',
-              ctitle='Ice thickness, March, '+crun+' ('+cy1+'-'+cy2+')',
+              cfignm=path_fig+'sea-ice_thickness_SP_march_'+CONFEXP, cpal='cubehelix_r', cbunit='(m)',
+              ctitle='Ice thickness, March, '+cexp+' ('+cy1+'-'+cy2+')',
               lkcont=True, cfig_type=fig_type, i_cb_subsamp=2,
               lforce_lim=True)
 

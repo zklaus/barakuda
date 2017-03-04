@@ -45,7 +45,7 @@
 ##################################################################################
 
 cmsg="ERROR: $0 => global variable"
-if [ -z ${RUN} ]; then echo "${cmsg} RUN is unknown!"; exit ; fi
+if [ -z ${EXP} ]; then echo "${cmsg} EXP is unknown!"; exit ; fi
 if [ -z ${Y_INI_EC} ]; then echo "${cmsg} Y_INI_EC is unknown!"; exit ; fi
 if [ -z ${cyear} ]; then echo "${cmsg} cyear is unknown!"; exit ; fi
 if [ -z ${NEMO_OUT_D} ]; then echo "${cmsg} NEMO_OUT_D is unknown!"; exit ; fi
@@ -56,13 +56,13 @@ mkdir -p ${DIAG_D}
 echo " MOD_CDO => ${MOD_CDO} !!!"
 if [ ! "${MOD_CDO}" = "" ]; then module add ${MOD_CDO}; fi
 
-RUN_DIR=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo||g"`
+EXP_DIR=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo||g"`
 IFS_OUT_D=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo|/output/ifs|g"`
 
 FLX_EXTRACT="E,LSP,CP,SSR,STR,SLHF,SSHF"
 
 echo
-echo " RUN_DIR = ${RUN_DIR}"
+echo " EXP_DIR = ${EXP_DIR}"
 echo " IFS_OUT_D = ${IFS_OUT_D}"
 echo " Fields to extract from IFS GG files => ${FLX_EXTRACT}"
 echo
@@ -70,12 +70,12 @@ echo
 YDIR=$((${cyear}-${Y_INI_EC}+1))
 
 dir_ece=`printf "%03d" ${YDIR}`
-dir_ece=${RUN_DIR}/output/ifs/${dir_ece}
+dir_ece=${EXP_DIR}/output/ifs/${dir_ece}
 
 echo ${dir_ece}
 
-F_AREA=${RUN_DIR}/areas.nc
-F_MASK=${RUN_DIR}/masks.nc
+F_AREA=${EXP_DIR}/areas.nc
+F_MASK=${EXP_DIR}/masks.nc
 
 echo ${F_AREA} ; ls -l ${F_AREA}
 echo ${F_MASK} ; ls -l ${F_MASK}
@@ -163,7 +163,7 @@ for cm in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"; do
     echo
     echo " ${0} => ${cyear}/${cm}"
 
-    fgrb=${dir_ece}/ICMGG${RUN}+${cyear}${cm}
+    fgrb=${dir_ece}/ICMGG${EXP}+${cyear}${cm}
 
     if [ "${cm}" = "01" ]; then
         pptime=$(cdo showtime -seltimestep,1,2 ${fgrb} | tr -s ' ' ':' | awk -F: '{print ($5-$2)*3600+($6-$3)*60+($7-$4)}' )
@@ -173,7 +173,7 @@ for cm in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"; do
         echo " pptime = ${pptime} seconds !"
     fi
 
-    FALL=ALL_${RUN}_${cyear}${cm}.nc
+    FALL=ALL_${EXP}_${cyear}${cm}.nc
 
     # Extracting variables of interest and converting to netcdf at the same time (keep gaussian-reduced grid!!!)
     echo "cdo -t ecmwf -f nc -selvar,${FLX_EXTRACT} ${fgrb} ${FALL}"
@@ -189,7 +189,7 @@ for cm in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"; do
 
         VAR=`echo ${BVAR} | tr '[:upper:]' '[:lower:]'`
 
-        ftreat=${VAR}_${RUN}_${cyear}${cm}
+        ftreat=${VAR}_${EXP}_${cyear}${cm}
 
         #BVAR=`echo ${VAR}| tr '[:lower:]' '[:upper:]'`
 
@@ -286,7 +286,7 @@ rm -f metrics.nc final_htf_*.nc final_fwf_*.nc
 
 for ct in "htf" "fwf"; do
 
-    fout=${DIAG_D}/mean_${ct}_IFS_${RUN}_GLO.nc
+    fout=${DIAG_D}/mean_${ct}_IFS_${EXP}_GLO.nc
 
     if [ ! -f ${fout} ]; then
         mv final_${ct}.nc ${fout}

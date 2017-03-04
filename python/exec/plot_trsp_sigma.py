@@ -17,11 +17,11 @@ import barakuda_plot as bp
 import barakuda_physics as bphy
 
 
-venv_needed = {'ORCA','RUN','DIAG_D','DENSITY_SECTION_FILE'}
+venv_needed = {'ORCA','EXP','DIAG_D','DENSITY_SECTION_FILE'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 rsigdense0 = bphy.rsigma_dense
 
@@ -90,8 +90,8 @@ for csec in list_sections:
 
     bp.plot("trsp_sig_class")(vtime_ann, vsigma_bounds, Xst_ann, rmin, rmax, dc,
                               lkcont=False, cpal='ncview_jaisnb', dt=ittic,
-                              cfignm='transport_sigma_class_'+csec+'_'+CONFRUN,
-                              cfig_type='png', ctitle=r'Transport by $\sigma_0$ class, '+csec+', '+CONFRUN,
+                              cfignm='transport_sigma_class_'+csec+'_'+CONFEXP,
+                              cfig_type='png', ctitle=r'Transport by $\sigma_0$ class, '+csec+', '+CONFEXP,
                               vcont_spec1 = [], i_cb_subsamp=i_cbssmp)
     
 
@@ -113,9 +113,9 @@ for csec in list_sections:
 id_in.close()
 
 
-bp.plot("1d_multi")(vtime_ann, v278, list_sections, cfignm='tr_sigma_gt278_'+CONFRUN,
+bp.plot("1d_multi")(vtime_ann, v278, list_sections, cfignm='tr_sigma_gt278_'+CONFEXP,
                     dt=ittic, cyunit='Sv',
-                    ctitle=r'Transport of volume for $\sigma_0$ > '+str(rsigdense0)+', '+CONFRUN,
+                    ctitle=r'Transport of volume for $\sigma_0$ > '+str(rsigdense0)+', '+CONFEXP,
                     ymin=0., ymax=0., loc_legend='out')
 
 

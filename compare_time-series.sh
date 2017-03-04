@@ -31,7 +31,7 @@ list_conf=`\ls configs/config_*.sh` ; list_conf=`echo ${list_conf} | sed -e s/'c
 usage()
 {
     echo
-    echo "USAGE: ${0} -C <config> -R <run1,run2,...,runN>  (options)"
+    echo "USAGE: ${0} -C <config> -R <exp1,exp2,...,expN>  (options)"
     echo
     echo "     Available configs are:"
     for cc in ${list_conf}; do
@@ -41,7 +41,7 @@ usage()
     echo "   OPTIONS:"
     echo "      -y <YYYY> => force initial year to YYYY"
     echo
-#    echo "      -c <run>  => 2D comparison diagnostics are performed against run <run>"
+#    echo "      -c <exp>  => 2D comparison diagnostics are performed against exp <exp>"
 #    echo "                   instead of a climatology"
     echo
     echo "      -f        => forces creation of diagnostic page eventhough treatment of output files is not finished"
@@ -62,7 +62,7 @@ IFORCENEW=0
 while getopts C:R:y:feh option ; do
     case $option in
         C) CONFIG=${OPTARG};;
-        R) CRUNS=${OPTARG};;
+        R) CEXPS=${OPTARG};;
         y) YEAR0=${OPTARG} ; iforcey0=1 ;;
         f) IFORCENEW=1;;
         e) IPREPHTML=1;;
@@ -75,7 +75,7 @@ done
 
 
 
-if [ -z ${CONFIG} ] || [ -z ${CRUNS} ]; then usage ; exit ; fi
+if [ -z ${CONFIG} ] || [ -z ${CEXPS} ]; then usage ; exit ; fi
 
 for og in ${ORCA_LIST}; do
     ca=""; ca=`echo ${CONFIG} | grep ${og}` ; if [ "${ca}" != "" ]; then ORCA=${og}; fi
@@ -105,20 +105,20 @@ PYBRKD_EXEC_PATH=${BARAKUDA_ROOT}/python/exec         ; # PATH to python barakud
 #-------------------
 
 
-LRUNS=`echo ${CRUNS} | sed -e s/'\,'/'\ '/g -e s/'\, '/'\ '/g`
-echo; echo "Runs to be treated: ${LRUNS}"
-nbr=`echo ${LRUNS} | wc -w` ; echo "  => number of runs to compare = ${nbr}"
+LEXPS=`echo ${CEXPS} | sed -e s/'\,'/'\ '/g -e s/'\, '/'\ '/g`
+echo; echo "Experiments to be treated: ${LEXPS}"
+nbr=`echo ${LEXPS} | wc -w` ; echo "  => number of experiments to compare = ${nbr}"
 echo " NEMO grid = ${ORCA}";
 echo " reading config into: ${fconfig}"
 echo; echo
 
 export CONF=${CONF}
-export LIST_RUNS=${LRUNS}
+export LIST_EXPS=${LEXPS}
 
-NRUNS="${ORCA}-`echo ${LRUNS} | sed -e 's/\ /_/g'`"
-echo " Label to be used: ${NRUNS}" ; echo
+NEXPS="${ORCA}-`echo ${LEXPS} | sed -e 's/\ /_/g'`"
+echo " Label to be used: ${NEXPS}" ; echo
 
-BASE_NAME="comp_${NRUNS}"
+BASE_NAME="comp_${NEXPS}"
 
 DIAG_COMP_DIR=${DIAG_DIR}/comparisons/${BASE_NAME} ; rm -rf ${DIAG_COMP_DIR} ; mkdir -p ${DIAG_COMP_DIR}
 
@@ -126,30 +126,30 @@ YEAR_INI=4000
 YEAR_END=0
 
 # just that they become righ arrays...
-VRUNS=( ${LRUNS} ) ;  VCONFRUNS=( ${LRUNS} ) ; VDIAGS=( ${LRUNS} ) ;
+VEXPS=( ${LEXPS} ) ;  VCONFEXPS=( ${LEXPS} ) ; VDIAGS=( ${LEXPS} ) ;
 
 jr=0
 
-for run in ${LRUNS}; do
+for exp in ${LEXPS}; do
 
-    echo; echo " RUN ${run} "
-    RUN="${run}"
+    echo; echo " EXP ${exp} "
+    EXP="${exp}"
 
     echo "   => ORCA = ${ORCA}"
 
-    CONFRUN=${ORCA}-${RUN}
-    echo "   => CONFRUN = ${CONFRUN}"
-    VCONFRUNS[${jr}]=${CONFRUN}
+    CONFEXP=${ORCA}-${EXP}
+    echo "   => CONFEXP = ${CONFEXP}"
+    VCONFEXPS[${jr}]=${CONFEXP}
 
 
-    DIAG_D="${DIAG_DIR}/${CONFRUN}"
+    DIAG_D="${DIAG_DIR}/${CONFEXP}"
     VDIAGS[${jr}]=${DIAG_D}
     echo "   => DIAG_D = ${DIAG_D} "; echo ; echo
 
 
     if [ ! -d ${DIAG_D} ]; then
         echo "PROBLEM: ${DIAG_D} does not exist!"
-        echo "    =>  you must run barakuda for ${run} prior to comparison!"
+        echo "    =>  you must run barakuda for ${exp} prior to comparison!"
         exit
     fi
 
@@ -182,10 +182,10 @@ ${PYTH} ${PYBRKD_EXEC_PATH}/compare_time_series.py ${YEAR_INI} ${YEAR_END}
 
 # Starting to configure HTML index file:
 if [ "${EXTRA_CONF}" = "" ]; then echo "Problem, variable EXTRA_CONF is not set!" ; exit; fi
-TITLE="Ocean diagnostics<br>Comparison of experiments: \"${VRUNS[*]}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
-if [ ${ece_run} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
-CONFRUN="Comparison ${NRUNS}"
-sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFRUN}|${CONFRUN}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" \
+TITLE="Ocean diagnostics<br>Comparison of experiments: \"${VEXPS[*]}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
+if [ ${ece_exp} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
+CONFEXP="Comparison ${NEXPS}"
+sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFEXP}|${CONFEXP}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" \
     ${BARAKUDA_ROOT}/src/html/conf_start.html > index.html
 
 

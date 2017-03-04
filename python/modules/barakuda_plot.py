@@ -20,8 +20,6 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
-import barakuda_orca as bo
-
 
 # Some defaults:
 #WDTH_DEF     = 10.
@@ -182,6 +180,7 @@ class plot :
 
 
         import barakuda_tool   as bt
+        import barakuda_orca   as bo
         import barakuda_colmap as bcm
 
 
@@ -712,18 +711,19 @@ class plot :
 
 
 
-    def __sig_transport(self,cstck, ccr, cd_eps):
+    def __sig_transport(self,cstck, ccexp, cd_eps):
 
         #_____________________________________________________________
         #
         #  cstck  : root directory containing monitoring output
-        #  crr    : CONF-RUN  (ex: ORCA2-GXXX)
+        #  crr    : CONF-EXP  (ex: ORCA2-GXXX)
         #  cd_eps : directory to save eps output image
         #_____________________________________________________________
+        import barakuda_orca as bo
+        
+        ccnf = bo.conf_exp(ccexp)
 
-        ccnf = __message__(ccr)
-
-        cf = cstck+'/'+ccnf+'/'+ccr+'-'+'MONITOR/'+ccr+'_TRPSIG.mtl'
+        cf = cstck+'/'+ccnf+'/'+ccexp+'-'+'MONITOR/'+ccexp+'_TRPSIG.mtl'
         print 'File =', cf, '\n'
 
         xmat = __get_mat__(cf)
@@ -744,13 +744,13 @@ class plot :
         print 'Size of X_ds =',nmp.shape(X_ds)
         print 'Size of X_fb =',nmp.shape(X_fb)
 
-        cf_eps = cd_eps+'/tsc_DS_'+ccr+'.png'
+        cf_eps = cd_eps+'/tsc_DS_'+ccexp+'.png'
         xmt=transpose(X_ds)
 
         __LB_2D__(1, 0., 1.5, 30, 0.1, vyears, vsigma, xmt,
                   'Transport by sigma class, Denmark Straight', cf_eps, cbunit='(Sv)')
 
-        cf_eps = cd_eps+'/tsc_FB_'+ccr+'.eps'
+        cf_eps = cd_eps+'/tsc_FB_'+ccexp+'.eps'
 
         xmt=transpose(X_fb)
         __LB_2D__(1, 0., 1.5, 40, 0.1, vyears, vsigma, xmt,
@@ -1474,14 +1474,6 @@ class plot :
 
 # LOCAL functions
 # ===============
-
-def __message__(ccr):
-    # Find the CONF from CONF-RUN and exit if CONF does not exist!
-    i = 0 ; conf = ''
-    while i < len(ccr) and ccr[i] != '-' : conf = conf+ccr[i]; i=i+1
-    print 'conf =', conf, '\n'
-    return conf
-
 
 def __get_mat__(cf):
     f1 = open(cf, 'r')

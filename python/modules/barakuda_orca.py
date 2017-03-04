@@ -151,36 +151,14 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
 
 
 
-def conf_run(ccr):
+def conf_exp(ccexp):
     #
-    # Find the CONF from CONF-RUN and exit if CONF does not exist!
+    # Find the CONF from CONF-EXP and exit if CONF does not exist!
     #
     i = 0 ; conf = ''
-    while i < len(ccr) and ccr[i] != '-' : conf = conf+ccr[i]; i=i+1
+    while i < len(ccexp) and ccexp[i] != '-' : conf = conf+ccexp[i]; i=i+1
     #print 'conf =', conf, '\n'
     return conf
-
-
-def info_run(ccr):
-    #
-    i = 0 ; j = 0 ; conf = '' ; case = '' ; cfrq = '' ; cyyy = ''
-    #
-    while i < len(ccr) and ccr[i] != '-' : conf = conf+ccr[i]; i=i+1
-    i=i+1
-    while i < len(ccr) and ccr[i] != '_' : case = case+ccr[i]; i=i+1
-    i=i+1
-    while i < len(ccr) and ccr[i] != '_' : cfrq = cfrq+ccr[i]; i=i+1
-    i=i+1
-    while i < len(ccr) and j < 4 : cyyy = cyyy+ccr[i]; i=i+1; j=j+1
-    #
-    return [conf, case, cfrq, cyyy]
-
-
-
-
-
-
-
 
 
 

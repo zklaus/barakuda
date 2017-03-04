@@ -1,3 +1,4 @@
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Quick getting-started guide to BaraKuda
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,7 +91,7 @@ MY_CONF should always be of the form: "(e)ORCA<RES>_L<NLEV>_<blabla>.sh"
 
 NEMO output files must be monthly averages and of the following form:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<RUN NAME>_1m_<YEAR>0101_<YEAR>1231_<GRID_TYPE>.nc(.gz)
+<EXP NAME>_1m_<YEAR>0101_<YEAR>1231_<GRID_TYPE>.nc(.gz)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
            (GRID_TYPE=grid_T/grid_U/grid_V/icemod) 
 
@@ -101,8 +102,8 @@ NEMO_OUT_STRCT in the config file). Better if this directory only contains NEMO
 output files and nothing else!
 
 Alternatively NEMO files can be saved/organized in sub-directories a la
-EC-Earth: (ex: year 1995 of run started in 1990 is the 6th year so files for
-1995 are saved into sub-directory (of NEMO_OUT_STRCT) "006" (set 'ece_run' to 1
+EC-Earth: (ex: year 1995 of experiment started in 1990 is the 6th year so files for
+1995 are saved into sub-directory (of NEMO_OUT_STRCT) "006" (set 'ece_exp' to 1
 or 2 then).
 
 If you want to perform the "climatology" plots (see section IV) you will need
@@ -118,7 +119,7 @@ IV) Create diagnostics
 
 Launch "barakuda.sh"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./barakuda.sh -C <MY_CONF> -R <RUN>
+./barakuda.sh -C <MY_CONF> -R <EXP>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00)
 
@@ -133,15 +134,15 @@ A/ Once the previous job has finished to run, launch
 
    * To only generate time-series plots use the "-e" switch:
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ./barakuda.sh -C <MY_CONF> -R <RUN> -e
+   ./barakuda.sh -C <MY_CONF> -R <EXP> -e
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00 -e)
 
    * To generate time-series + 2D climatological plots use the "-E" switch,
-     provided you have built a climatology out of your run with the
+     provided you have built a climatology out of your experiment with the
      "build_clim.sh" script (see point V/B):
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ./barakuda.sh -C <MY_CONF> -R <RUN> -E
+   ./barakuda.sh -C <MY_CONF> -R <EXP> -E
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 B/ To be able to create the "climatology" plots (maps, sections, etc, based on a
@@ -150,7 +151,7 @@ B/ To be able to create the "climatology" plots (maps, sections, etc, based on a
   i) create the climatology with the "build_clim.sh" script:
    
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ./build_clim.sh -C <MY_CONF> -R <RUN> -i <first_year> -e <last_year>
+   ./build_clim.sh -C <MY_CONF> -R <EXP> -i <first_year> -e <last_year>
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
          (check ./build_clim.sh -h to see the other important options...)
 
@@ -161,10 +162,10 @@ B/ To be able to create the "climatology" plots (maps, sections, etc, based on a
        using the "-E" switch instead of "-e" (see point V/A)
 
 
-C/ To compare time-series between at least 2 (already diagnosed) runs:
+C/ To compare time-series between at least 2 (already diagnosed) experiments:
    
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ./compare_time-series.sh -C <MY_CONF> -R <RUN1>,<RUN2>,...,<RUNn>
+   ./compare_time-series.sh -C <MY_CONF> -R <EXP1>,<EXP2>,...,<EXPn>
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    (ex: ./compare_time-series.sh -C ORCA1_L75_v36_triolith -R SL36C00,SL36EIE )
 

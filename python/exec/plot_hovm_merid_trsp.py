@@ -15,18 +15,18 @@ import barakuda_tool as bt
 
 dy = 10. ; # latitude increment in figure...
 
-venv_needed = {'ORCA','RUN','DIAG_D','BM_FILE'}
+venv_needed = {'ORCA','EXP','DIAG_D','BM_FILE'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
-CONFRUN = vdic['ORCA']+'-'+vdic['RUN']
+CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
 
 path_fig=vdic['DIAG_D']+'/'
 
 fig_type='png'
 
-cf_in = vdic['DIAG_D']+'/merid_transport_T_S_'+CONFRUN+'.nc'
+cf_in = vdic['DIAG_D']+'/merid_transport_T_S_'+CONFEXP+'.nc'
 
 
 if not os.path.exists(cf_in):
@@ -113,9 +113,9 @@ for joce in range(nbasins):
                           rmin, rmax, rdf, c_y_is='latitude',
                           cpal='RdBu_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=True,
                           ymin = ymin, ymax = ymax, dy=dy,
-                          cfignm=path_fig+'MHT_'+CONFRUN+'_'+cbas, cbunit='PW', ctunit='',
+                          cfignm=path_fig+'MHT_'+CONFEXP+'_'+cbas, cbunit='PW', ctunit='',
                           cyunit=r'Latitude ($^{\circ}$N)',
-                          ctitle=CONFRUN+': Northward advective meridional heat transport, '+cbasin,
+                          ctitle=CONFEXP+': Northward advective meridional heat transport, '+cbasin,
                           cfig_type=fig_type, i_cb_subsamp=2, l_y_increase=True)
 
 
@@ -128,9 +128,9 @@ for joce in range(nbasins):
                           rmin, rmax, rdf, c_y_is='latitude',
                           cpal='PiYG_r', tmin=yr1, tmax=yr2+1., dt=ittic, lkcont=True,
                           ymin = ymin, ymax = ymax, dy=dy,
-                          cfignm=path_fig+'MST_'+CONFRUN+'_'+cbas, cbunit=r'10$^3$ tons/s', ctunit='',
+                          cfignm=path_fig+'MST_'+CONFEXP+'_'+cbas, cbunit=r'10$^3$ tons/s', ctunit='',
                           cyunit=r'Latitude ($^{\circ}$N)',
-                          ctitle=CONFRUN+': Northward advective meridional salt transport, '+cbasin,
+                          ctitle=CONFEXP+': Northward advective meridional salt transport, '+cbasin,
                           cfig_type=fig_type, i_cb_subsamp=2, l_y_increase=True)
     
 
