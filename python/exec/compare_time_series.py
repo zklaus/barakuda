@@ -87,7 +87,7 @@ def test_nb_mnth_rec(nbmn, nbyr, cnd):
 # Only one column to read:
 ##########################
 
-if i2dfl == 1 or i3dfl == 1 :
+if i2dfl == 1 or i3dfl == 1 or imld == 1 :
     list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
 
 if i2dfl == 1:
@@ -136,32 +136,35 @@ if i2dfl == 1:
 if imld == 1:
 
     cvar  = vdic['NN_MLD']
-    cdiag = 'mean_'+cvar
+    cdiag = 'mean_mld'
     vname = [ r'Mixed layer depth' ]
     lplot = True
 
     print '\n Treating '+cdiag
     Xf[:,:] = 0
-    jbox = 0
-    for cbox in bo.cname_mld_boxes:
+    
+    joce = 0
+    for coce in list_basin_names:
         jexp = 0
         for confexp in clist_confexps:
-            cf_in = cd_diag+'/'+confexp+'/'+cdiag+'_'+confexp+'_'+cbox+'.nc'
-            if os.path.exists(cf_in):
-                vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
-                nbm = len(vt0)
-                test_nb_mnth_rec(nbm, nb_years, cdiag)
-                VY, FY = bt.monthly_2_annual(vt0, vd0)
-                Vt[:nbm/12]   = VY[:]
-                Xf[jexp,:nbm/12] = FY[:] ; Xf[jexp,nbm/12:] = -999.
-                lplot = lplot and lplot
+            cf_in = cd_diag+'/'+confexp+'/mean_'+cvar+'_'+confexp+'_'+coce+'.nc'
+            bt.chck4f(cf_in, script_name='compare_time_series.py')
+            vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
+            nbm = len(vt0)
+            test_nb_mnth_rec(nbm, nb_years, cdiag)
+            VY, FY = bt.monthly_2_annual(vt0, vd0)
+            Vt[:nbm/12]   = VY[:]
+            Xf[jexp,:nbm/12] = FY[:] ; Xf[jexp,nbm/12:] = -999.
+            lplot = lplot and lplot
             jexp = jexp + 1
 
         if lplot:
             bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
-                                cfignm=cdiag+'_'+cbox+'_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
-                                cyunit='m', ctitle = 'Mixed layer depth, '+bo.clgnm_mld_boxes[jbox], ymin=0, ymax=0)
-        jbox = jbox+1
+                                cfignm=cdiag+'_'+coce+'_comparison', dt=ittic,
+                                loc_legend=DEFAULT_LEGEND_LOC, cyunit='m',
+                                ctitle = 'Mixed layer depth, '+list_basin_lgnms[joce],
+                                ymin=0, ymax=0)
+        joce = joce+1
 
 
 

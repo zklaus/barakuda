@@ -86,55 +86,55 @@ EOF
     if [ ${i_do_movi} -eq 1 ]; then
         cat >> index.html <<EOF
         ${ctl} Evolution of SST and SSS biases (w.r.t observations) ${ctr}
-        ${img_l} dsst_${cr}.gif ${img_r}
-        ${img_l} dsss_${cr}.gif ${img_r}
-        ${img_l}  mld_${cr}.gif ${img_r}
+        ${img_l}dsst_${cr}.gif${img_r}
+        ${img_l}dsss_${cr}.gif${img_r}
+        ${img_l}mld_${cr}.gif${img_r}
 EOF
     fi
 
     # AMOC page:
     cat >> index.html <<EOF
     ${ctl} Atlantic Meridional Overturning Circulation ${ctr}
-    ${img_l} amoc_${cr}.${ff} ${img_r}
-    ${img_l} amoc_${cr}_comp.${ff} ${img_r}
+    ${img_l}amoc_${cr}.${ff}${img_r}
+    ${img_l}amoc_${cr}_comp.${ff}${img_r}
 EOF
 
     # Temperature page
     cat >> index.html <<EOF
     ${ctl} Temperature time-series ${ctr}
-    ${img_l} 3d_thetao_${cr}.${ff} ${img_r}
-    ${img_l} mean_tos_${cr}.${ff} ${img_r}
-    ${img_l} 3d_thetao_lev_${cr}.${ff} ${img_r}
-    ${img_l} 3d_thetao_basins_${cr}.${ff} ${img_r}
-    ${img_l} Nino34_${cr}.${ff} ${img_r}
+    ${img_l}3d_thetao_${cr}.${ff}${img_r}
+    ${img_l}mean_tos_${cr}.${ff}${img_r}
+    ${img_l}3d_thetao_lev_${cr}.${ff}${img_r}
+    ${img_l}3d_thetao_basins_${cr}.${ff}${img_r}
+    ${img_l}Nino34_${cr}.${ff}${img_r}
 EOF
     # AMO figure if here:
     famo="mean_SST_NAtl_${cr}.${ff}"
-    if [ -f ${HTML_DIR}/${famo} ]; then echo "    ${img_l} ${famo} ${img_r}" >> index.html ; fi
+    if [ -f ${HTML_DIR}/${famo} ]; then echo "    ${img_l}${famo}${img_r}" >> index.html ; fi
 
     list_hov_figs=`\ls -v ${HTML_DIR}/hov_temperature_${cr}*.${ff}`
     if [ ! "${list_hov_figs}" = "" ]; then
         echo "    ${ctl} Time-depth evolution of temperature${ctr}" >> index.html
         for fhov in ${list_hov_figs}; do
             fgn=`basename ${fhov}`
-            echo "    ${img_l} ${fgn} ${img_r}"  >> index.html
+            echo "    ${img_l}${fgn}${img_r}"  >> index.html
         done
     fi
 
     # Salinity page
     cat >> index.html <<EOF
     ${ctl} Salinity time-series ${ctr}
-    ${img_l} 3d_so_${cr}.${ff} ${img_r}
-    ${img_l} mean_sos_${cr}.${ff} ${img_r}
-    ${img_l} 3d_so_lev_${cr}.${ff} ${img_r}
-    ${img_l} 3d_so_basins_${cr}.${ff} ${img_r}
+    ${img_l}3d_so_${cr}.${ff}${img_r}
+    ${img_l}mean_sos_${cr}.${ff}${img_r}
+    ${img_l}3d_so_lev_${cr}.${ff}${img_r}
+    ${img_l}3d_so_basins_${cr}.${ff}${img_r}
 EOF
     list_hov_figs=`\ls -v ${HTML_DIR}/hov_salinity_${cr}*.${ff}`
     if [ ! "${list_hov_figs}" = "" ]; then
         echo "    ${ctl} Time-depth evolution of salinity${ctr}" >> index.html
         for fhov in ${list_hov_figs}; do
             fgn=`basename ${fhov}`
-            echo "    ${img_l} ${fgn} ${img_r}"  >> index.html
+            echo "    ${img_l}${fgn}${img_r}"  >> index.html
         done
     fi
 
@@ -151,7 +151,7 @@ EOF
         for fd in ${LIST_HF_FIG}; do
             fgn="mean_${fd}_${cr}.${ff}"; fgf="${HTML_DIR}/${fgn}"
             if [ -f ${fgf} ]; then
-                echo "${img_l} ${fgn} ${img_r}" >> index.html
+                echo "${img_l}${fgn}${img_r}" >> index.html
             fi
         done
     fi
@@ -171,7 +171,7 @@ EOF
     for fd in ${LIST_FW_FIG}; do
         fgn="mean_${fd}_${cr}.${ff}"; fgf="${HTML_DIR}/${fgn}"
         if [ -f ${fgf} ]; then
-            echo "${img_l} ${fgn} ${img_r}" >> index.html
+            echo "${img_l}${fgn}${img_r}" >> index.html
         fi
     done
 
@@ -182,16 +182,16 @@ EOF
         if [ ${i_do_movi} -eq 1 ]; then
             cat >> index.html <<EOF
             ${ctl} Evolution of Arctic/Antarctic concentration ${ctr}
-            ${img_l} icen_${cr}.gif ${img_r}
-            ${img_l} ices_${cr}.gif ${img_r}
+            ${img_l}icen_${cr}.gif${img_r}
+            ${img_l}ices_${cr}.gif${img_r}
 EOF
         fi
         cat >> index.html <<EOF
         ${ctl} Arctic/Antarctic sea-ice time-series${ctr}
-        ${img_l} seaice_extent_winter_${cr}.${ff} ${img_r}
-        ${img_l} seaice_extent_summer_${cr}.${ff} ${img_r}
-        ${img_l} seaice_volume_winter_${cr}.${ff} ${img_r}
-        ${img_l} seaice_volume_summer_${cr}.${ff} ${img_r}
+        ${img_l}seaice_extent_winter_${cr}.${ff}${img_r}
+        ${img_l}seaice_extent_summer_${cr}.${ff}${img_r}
+        ${img_l}seaice_volume_winter_${cr}.${ff}${img_r}
+        ${img_l}seaice_volume_summer_${cr}.${ff}${img_r}
 EOF
     fi
 
@@ -201,20 +201,20 @@ EOF
         list_section=`cat ${TRANSPORT_SECTION_FILE} | grep -v '^#' | grep '-'`
         for cs in ${list_section}; do
             echo ${cs}
-            echo "    ${img_l} transport_vol_${cs}_${cr}.${ff} ${img_r}"  >> index.html
-            echo "    ${img_l} transport_heat_${cs}_${cr}.${ff} ${img_r}" >> index.html
+            echo "    ${img_l}transport_vol_${cs}_${cr}.${ff}${img_r}"  >> index.html
+            echo "    ${img_l}transport_heat_${cs}_${cr}.${ff}${img_r}" >> index.html
             echo "    <br>" >> index.html
         done
     fi
 
     # Checking if figures with time-series of MLD in specified boxes are here and adding them:
     if [ ${i_do_mean} -eq 1 ]; then
-        list_mld_figs=`\ls -v ${HTML_DIR}/mean_mldr10_1_${cr}*.${ff}`
+        list_mld_figs=`\ls -v ${HTML_DIR}/mean_mld_${cr}*.${ff}`
         if [ ! "${list_mld_figs}" = "" ]; then
             echo "    ${ctl} Horizontally-averaged Mixed-Layer Depth in different regions${ctr}" >> index.html
             for fmld in ${list_mld_figs}; do
                 fgn=`basename ${fmld}`
-                echo "    ${img_l} ${fgn} ${img_r}"  >> index.html
+                echo "    ${img_l}${fgn}${img_r}"  >> index.html
             done
         fi
     fi
@@ -225,9 +225,9 @@ EOF
         list_section=`cat ${DENSITY_SECTION_FILE} | grep -v '^#' | grep '_'`
         for cs in ${list_section}; do
             echo ${cs}
-            echo "    ${img_l} transport_sigma_class_${cs}_${cr}.${ff} ${img_r}"  >> index.html
+            echo "    ${img_l}transport_sigma_class_${cs}_${cr}.${ff}${img_r}"  >> index.html
         done
-        echo "    ${img_l} tr_sigma_gt278_${cr}.${ff} ${img_r}"  >> index.html
+        echo "    ${img_l}tr_sigma_gt278_${cr}.${ff}${img_r}"  >> index.html
         echo "    ${spf}" >> index.html
     fi
 
@@ -235,8 +235,8 @@ EOF
         # Adding meridional heat transport:
         echo "${ctl} Meridional transports${ctr}"  >> index.html
         for coce in "GLO" "atl" "pac" "ind"; do
-            echo "    ${img_l} MHT_${cr}_${coce}.${ff} ${img_r}"     >> index.html
-            echo "    ${img_l} MST_${cr}_${coce}.${ff} ${img_r}" >> index.html
+            echo "    ${img_l}MHT_${cr}_${coce}.${ff}${img_r}"     >> index.html
+            echo "    ${img_l}MST_${cr}_${coce}.${ff}${img_r}" >> index.html
         done
         echo "    ${spf}" >> index.html
     fi
@@ -292,10 +292,10 @@ function build_sub_html()
                 cnames=`echo ${fgnt_n} | sed -e s/"section_T_"/""/g -e s/"_${cr}.${ff}"/""/g` ; # Name of section
                 cnames=`echo ${cnames} | sed -e s/"_"/" "/g`
                 echo "    ${csl} Cross-section '${cnames}': ${csr}"  >> index.tmp
-                echo "    ${img_l} ${fgnt_n} ${img_r}"          >> index.tmp
-                echo "    ${img_l} ${fgnt_c} ${img_r}"          >> index.tmp
-                echo "    ${img_l} ${fgns_n} ${img_r}"          >> index.tmp
-                echo "    ${img_l} ${fgns_c} ${img_r} <br><br><br>" >> index.tmp
+                echo "    ${img_l}${fgnt_n}${img_r}"          >> index.tmp
+                echo "    ${img_l}${fgnt_c}${img_r}"          >> index.tmp
+                echo "    ${img_l}${fgns_n}${img_r}"          >> index.tmp
+                echo "    ${img_l}${fgns_c}${img_r} <br><br><br>" >> index.tmp
             done
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html          >> index.tmp
             parse_html index.tmp temp_sal/index_sections.html

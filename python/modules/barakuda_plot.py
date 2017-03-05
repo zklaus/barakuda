@@ -1097,6 +1097,12 @@ class plot :
 
         l_add_monthly = True
         if Nt1 == Nt2: l_add_monthly = False
+        
+        y_leg = 0.
+        if plt_m03 or plt_m09:
+            # We put the legend outside of the plot...
+            y_leg = 0.075*1.5 ; # Figure needs to be vertically extended in that case
+            fig_size = (fig_size[0],(1.+y_leg)*fig_size[1])
 
         fig = plt.figure(num = 1, figsize=fig_size, facecolor='w', edgecolor='k')
 
@@ -1114,7 +1120,10 @@ class plot :
         if l_add_monthly:
             if plt_m03: plt.plot(VTm[2:Nt1:12], VDm[2:Nt1:12], 'orange', label=r'March',     linewidth=2)
             if plt_m09: plt.plot(VTm[8:Nt1:12], VDm[8:Nt1:12], 'orange', label=r'September', linewidth=2)
-            if plt_m03 or plt_m09: plt.legend(loc='lower center', shadow=True, fancybox=True)
+            if plt_m03 or plt_m09:
+                box = ax.get_position()
+                ax.set_position([box.x0, box.y0 + box.height*y_leg, box.width, box.height*(1.-y_leg)])
+                plt.legend(bbox_to_anchor=(0.9, -0.05), ncol=2, shadow=True, fancybox=True)
 
         # Time bounds for t-axis:
         x1 = int(min(VTy)-0.5)

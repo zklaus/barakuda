@@ -383,7 +383,7 @@ for cvar in [ vdic['NN_SST'], vdic['NN_SSS'], vdic['NN_SSH'], vdic['NN_MLD'] ]:
 
             cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFEXP+'_'+cocean+'.nc' ;  cv1 = cvar
             bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
-                                    cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on region '+list_basin_lgnms[joce])
+                                    cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' over '+list_basin_lgnms[joce])
 
             joce = joce + 1
         jvar = jvar + 1

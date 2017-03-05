@@ -189,7 +189,7 @@ sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFEXP}|${CONFEXP}|g" -e "s|{DATE}|`date`|
     ${BARAKUDA_ROOT}/src/html/conf_start.html > index.html
 
 
-list_figs=`\ls *.${FIG_FORMAT}`
+list_figs=`\ls -v *.${FIG_FORMAT}`
 
 for ff in ${list_figs}; do
     echo "<br><br><big> `echo ${ff} | sed -e s/.${FIG_FORMAT}//g -e s/_comparison//g` </big><br>" >> index.html

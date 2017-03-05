@@ -121,7 +121,7 @@ elif cdiag == 'amoc':
     ym = 3.5
     yp = 24.5
 
-elif cdiag == 'mean_mldr10_1':
+elif cdiag == 'mean_mld':
     cvar  = vdic['NN_MLD']
     idfig = 'mld'
     clnm  = 'Mean mixed-layer depth, '
@@ -144,9 +144,9 @@ else:
 
 
 
-###########################################################################
-# Time series of 2D-averaged  2D fields such as SST, SSS, SSH, MLD, ect...
-###########################################################################
+############################################################# 
+# Time series of 2D-averaged  2D fields such as SST, SSS, SSH
+#############################################################
 
 if idfig == 'simple':
 
@@ -166,18 +166,17 @@ if idfig == 'simple':
 
 
 
-####################################################################################
-# Time series of 3D-averaged 3D fields such as SST, SSS, SSH, MLD, ect...
-####################################################################################
+############################################################
+# Time series of 3D-averaged 3D fields such as SST, SSS, SSH
+############################################################
 
 if idfig == 'ts3d':
 
-    list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
-    
-    nb_oce = len(list_basin_names)
-
     vzrange = [ '0-bottom', '0-100'  , '100-1000',   '1000-bottom'  ] ;  nbzrange = len(vzrange)
     vlab    = [ 'AllDepth', '0m-100m', '100m-1000m', '1000m-bottom' ]
+
+    list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])    
+    nb_oce = len(list_basin_names)
 
     joce = 0
     for coce in list_basin_names[:]:
@@ -744,24 +743,29 @@ if idfig == 'transport':
         js = js + 1
 
 
-
-
+#################################################
+# MLD in regions defined in the basin_mask file!
+#################################################
 if idfig == 'mld':
-    jbox = 0
-    for cbox in bo.cname_mld_boxes:
-        cf_in_m = 'mean_'+cvar+'_'+CONFEXP+'_'+cbox+'.nc'
+
+    list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])    
+    nb_oce = len(list_basin_names)
+    joce = 0
+    for coce in list_basin_names[:]:
+        cf_in_m = 'mean_'+cvar+'_'+CONFEXP+'_'+coce+'.nc'
         if os.path.exists(cf_in_m):
             print ' Opening '+cf_in_m
             vt0, vd0 = bn.read_1d_series(cf_in_m, cvar, cv_t='time', l_return_time=True)
-            if jbox==0: (nby, nbm, nbr, ittic) = bt.test_nb_years(vt0, cdiag)
+            if joce==0: (nby, nbm, nbr, ittic) = bt.test_nb_years(vt0, cdiag)
             VY, FY = bt.monthly_2_annual(vt0, vd0)
 
-            bp.plot("1d_mon_ann")(vt0, VY, vd0, FY, cfignm=cdiag+'_'+CONFEXP+'_'+cbox, dt=ittic, cyunit=cyu,
-                                  ctitle = CONFEXP+': '+clnm+bo.clgnm_mld_boxes[jbox], ymin=ym, ymax=yp,
+            bp.plot("1d_mon_ann")(vt0, VY, vd0, FY, cfignm=cdiag+'_'+CONFEXP+'_'+coce, dt=ittic,
+                                  cyunit=cyu, ctitle = CONFEXP+': '+clnm+list_basin_lgnms[joce],
+                                  ymin=ym, ymax=yp,
                                   plt_m03=True, plt_m09=True, cfig_type=ff)
         else:
             print 'WARNING: '+csn+' => MLD diag => '+cf_in_m+' not found!'
-        jbox = jbox+1
+        joce = joce+1
 
 
 print ''+csn+' done...\n'
