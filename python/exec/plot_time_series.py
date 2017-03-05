@@ -617,7 +617,6 @@ if idfig == 'amoc':
 
 
     # Plot annual+montly for AMOC at 40
-    #lolo    VY, FY = bt.monthly_2_annual(vtime, Xamoc[i40,:])
     VY = nmp.zeros(nby)
     FY = nmp.zeros(nby)
     if nbm >= 12:
@@ -705,7 +704,6 @@ if idfig == 'ice':
 
 
 if idfig == 'transport':
-    #lolo
     js = 0
     for csec in list_sections:
 

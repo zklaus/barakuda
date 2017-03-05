@@ -185,7 +185,7 @@ if i3dfl == 1:
     vdepth_infil = [ '0-bottom', '0-100', '100-1000', '1000-bottom' ] ; # for 3d_thetao and 3d_so
     vdepth_range = [ 'All', '0m-100m', '100-1000m', '1000m-bottom' ] ; # for 3d_thetao and 3d_so
 
-    jdiag=0
+    jvar=0
     for cvar in vvar:
         cdiag = '3d_'+cvar
         print '\n Treating '+cdiag
@@ -212,13 +212,13 @@ if i3dfl == 1:
 
                 bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
                                     cfignm=cdiag+'_comparison_'+cocean+'_'+cdepth, dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
-                                    cyunit=vunit[jdiag], ctitle = vname[jdiag]+', '+list_basin_lgnms[joce]+', depth range = '+cdepth, ymin=0, ymax=0)
+                                    cyunit=vunit[jvar], ctitle = vname[jvar]+', '+list_basin_lgnms[joce]+', depth range = '+cdepth, ymin=0, ymax=0)
 
                 idepth = idepth + 1
                 
             joce = joce + 1
 
-        jdiag = jdiag+1
+        jvar = jvar+1
 
 
 
@@ -388,33 +388,41 @@ if iamoc == 1:
 # Freshwater Fluxes
 if ifwf == 1:
 
-    vvar  = [ 'EmPmR', 'EmP',    'R'   ,    'P'   ]
-    vname = [ 'E-P-R', 'E-P', 'Runoffs', 'Precip' ]
-    vunit = [ r'Sv'  ,  r'Sv',  r'Sv'  ,  r'Sv' ]
+    vvar  = [ 'EmPmR', 'E',           'R'      ,   'P'   , 'ICalv'  ]
+    vname = [ 'E-P-R', 'Evaporation', 'Runoffs', 'Precip', 'Calving']
+    vunit = [ r'Sv'  , r'Sv',        r'Sv'     ,  r'Sv'  ,  r'Sv'   ]
 
-    jdiag=0
+    jvar=0
     for cvar in vvar:
         cdiag = cvar
         print '\n Treating FWF : '+cdiag
 
-        jexp=0
-        for confexp in clist_confexps:
-
-            cf_in = cd_diag+'/'+confexp+'/mean_fwf_'+confexp+'_GLO.nc'
-
-            vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
-            nbm = len(vt0)
-            test_nb_mnth_rec(nbm, nb_years, cdiag)
-
-            VY, FY = bt.monthly_2_annual(vt0, vd0)
-            Vt[:nbm/12]      = VY[:]
-            Xf[jexp,:nbm/12] = FY[:] ; Xf[jexp,nbm/12:] = -999.
-            jexp = jexp + 1
+        # Testing only on the first experiment if cvar has been written:
+        id_test = Dataset(cd_diag+'/'+clist_confexps[0]+'/mean_fwf_'+clist_confexps[0]+'_GLO.nc')
+        list_variables = id_test.variables.keys()
         
-        bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
-                            cfignm='FWF_'+cdiag+'_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
-                            cyunit=vunit[jdiag], ctitle = vname[jdiag]+' flux integrated over oceans (NEMO)', ymin=0, ymax=0)
-        jdiag = jdiag+1
+        if cvar in list_variables:
+            jexp=0
+            for confexp in clist_confexps:
+    
+                cf_in = cd_diag+'/'+confexp+'/mean_fwf_'+confexp+'_GLO.nc'
+    
+                vt0, vd0 = bn.read_1d_series(cf_in, cvar, cv_t='time', l_return_time=True)
+                nbm = len(vt0)
+                test_nb_mnth_rec(nbm, nb_years, cdiag)
+    
+                VY, FY = bt.monthly_2_annual(vt0, vd0)
+                Vt[:nbm/12]      = VY[:]
+                Xf[jexp,:nbm/12] = FY[:] ; Xf[jexp,nbm/12:] = -999.
+                jexp = jexp + 1
+    
+            bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
+                                cfignm='FWF_'+cdiag+'_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
+                                cyunit=vunit[jvar], ctitle = vname[jvar]+' flux integrated over oceans (NEMO)',
+                                ymin=0, ymax=0)
+        jvar = jvar+1
+
+
 
     if i_do_ifs_flx == 1:
 
@@ -438,7 +446,7 @@ if ifwf == 1:
             vunit = [ r'Sv'     ,  r'Sv'      ,  r'Sv'      , r'Sv'          ,  r'Sv'           ,  r'Sv'            ]
             vstit = [ co, co, co, cl, cl, cl ]
     
-            jdiag=0
+            jvar=0
             for cvar in vvar:
                 cdiag = cvar
                 print '\n Treating IFS FWF : '+cdiag
@@ -458,9 +466,9 @@ if ifwf == 1:
     
                 bp.plot("1d_multi")(Vt[:], Xf[:,:], clist_exps, cfig_type=cffig,
                                     cfignm='FWF_'+cdiag+'_IFS_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
-                                    cyunit=vunit[jdiag], ctitle = vname[jdiag]+' flux integrated over'+vstit[jdiag], ymin=0, ymax=0)
+                                    cyunit=vunit[jvar], ctitle = vname[jvar]+' flux integrated over'+vstit[jvar], ymin=0, ymax=0)
     
-                jdiag = jdiag+1
+                jvar = jvar+1
 
 
 
