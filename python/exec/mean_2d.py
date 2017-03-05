@@ -93,7 +93,7 @@ print '\n  *** Surface of the ocean = ', Socean* 1.E-6, '  [10^6 km^2]\n'
 
 
 
-print 'Opening different basin masks in file '+vdic['BM_FILE']
+print 'Reading all basin masks in file '+vdic['BM_FILE']
 
 list_basin_names, list_basin_lgnms = bo.get_basin_info(vdic['BM_FILE'])
 nb_basins = len(list_basin_names)
@@ -272,130 +272,126 @@ if l_fwf:
 # MLD time serie in different boxes:
 ####################################
 
-print '\n\n +++ '+cnexec+' => Starting MLD diags!'
-l_mld = False
-print '\nSpatially-averaged MLD in different boxes'
+#print '\n\n +++ '+cnexec+' => Starting MLD diags!'
+#l_mld = False
+#print '\nSpatially-averaged MLD in different boxes'
+#
+#cvar = vdic['NN_MLD']
+#id_in = Dataset(cf_T_in)
+#list_variables = id_in.variables.keys()
+#if cvar in list_variables[:]: # check if MLD variable is present!
+#    MLD_m = id_in.variables[cvar][:,:,:]
+#    print '   *** MLD ('+cvar+') found and read!'
+#    l_mld = True
+#else:
+#    print '   *** OOPS! MLD ('+cvar+') not found, skipping MLD time series diag...'
+#id_in.close()
 
-cvar = vdic['NN_MLD']
-id_in = Dataset(cf_T_in)
-list_variables = id_in.variables.keys()
-if cvar in list_variables[:]: # check if MLD variable is present!
-    MLD_m = id_in.variables[cvar][:,:,:]
-    print '   *** MLD ('+cvar+') found and read!'
-    l_mld = True
-else:
-    print '   *** OOPS! MLD ('+cvar+') not found, skipping MLD time series diag...'
-id_in.close()
-
-if l_mld:
-
-    [ nt, nj0, ni0 ] = MLD_m.shape
-
-    if nt != 12: print 'ERROR: '+cnexec+' => only treating monthly data so far...'; sys.exit(0)
-
-    if [ nj0, ni0 ] != [ nj, ni ]: print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'; sys.exit(0)
-
-    vtime = nmp.zeros(nt)
-    for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./12.
-
-    mask2d = nmp.zeros((nj,ni))
-
-
-    # Reading boxes definitions into barakuda_orca.py:
-    cname_b = bo.cname_mld_boxes
-    nb_boxes = len(cname_b)
-
-    for ib in range(nb_boxes):
-
-        cbox = cname_b[ib] ; print '    *** treating '+cvar+' for '+cbox+', ('+bo.clgnm_mld_boxes[ib]+')'
-
-        i1 = nmp.argmax(xlat[nj-1,:])
-        j1 = 0 ; i2 = ni-1 ; j2 = nj-1
-
-        rx1 = bo.r_lon_p1_mld[ib] ; rx2 = bo.r_lon_p2_mld[ib] ; ry1 = bo.r_lat_p1_mld[ib] ; ry2 = bo.r_lat_p2_mld[ib]
-
-        # Need to itterate because ORCA grid distorded in the North...
-        vold = [ -999, -999, -999, -999 ] ;  itt = 0
-        while [ i1, i2, j1, j2 ] != vold and itt < 10 :
-            itt = itt+1
-            #print ' .... itt =', itt
-            vold = [ i1, i2, j1, j2 ]
-            #print 'seraching for rx1, rx2, ry1, ry2 = ', rx1, rx2, ry1, ry2
-            if ry1 > -900.: j1 = bt.find_index_from_value( ry1, xlat[:,i1] )
-            if rx1 > -900.: i1 = bt.find_index_from_value( rx1, xlon[j1,:] )
-            if rx2 > -900.: i2 = bt.find_index_from_value( rx2, xlon[j2,:] )
-            if ry1 > -900.: j1 = bt.find_index_from_value( ry1, xlat[:,i1] )
-            if ry2 > -900.: j2 = bt.find_index_from_value( ry2, xlat[:,i2] )
-            #print '   => i1, i2, j1, j2 =>', i1, i2, j1, j2, '\n'
-
-
-
-        mask2d[:,:] = 0.
-        mask2d[j1:j2,i1:i2] = mask[0,j1:j2,i1:i2]
-
-        Vts = bo.mean_2d(MLD_m, mask2d[:,:], Xa[:,:])
-
-        # NETCDF:
-        cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFEXP+'_'+cbox+'.nc' ;  cv1 = cvar
-
-        bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
-                                cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on rectangular box '+cbox)
-
-print ' +++ '+cnexec+' => Done with MLD diags!\n'
-
-        
+#if l_mld:
+#
+#    [ nt, nj0, ni0 ] = MLD_m.shape
+#
+#    if nt != 12: print 'ERROR: '+cnexec+' => only treating monthly data so far...'; sys.exit(0)
+#
+#    if [ nj0, ni0 ] != [ nj, ni ]: print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'; sys.exit(0)
+#
+#    vtime = nmp.zeros(nt)
+#    for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./12.
+#
+#    mask2d = nmp.zeros((nj,ni))
+#
+#    # Reading boxes definitions into barakuda_orca.py:
+#    cname_b = bo.cname_mld_boxes
+#    nb_boxes = len(cname_b)
+#
+#    for ib in range(nb_boxes):
+#
+#        cbox = cname_b[ib] ; print '    *** treating '+cvar+' for '+cbox+', ('+bo.clgnm_mld_boxes[ib]+')'
+#
+#        i1 = nmp.argmax(xlat[nj-1,:])
+#        j1 = 0 ; i2 = ni-1 ; j2 = nj-1
+#
+#        rx1 = bo.r_lon_p1_mld[ib] ; rx2 = bo.r_lon_p2_mld[ib] ; ry1 = bo.r_lat_p1_mld[ib] ; ry2 = bo.r_lat_p2_mld[ib]
+#
+#        # Need to itterate because ORCA grid distorded in the North...
+#        vold = [ -999, -999, -999, -999 ] ;  itt = 0
+#        while [ i1, i2, j1, j2 ] != vold and itt < 10 :
+#            itt = itt+1
+#            #print ' .... itt =', itt
+#            vold = [ i1, i2, j1, j2 ]
+#            #print 'seraching for rx1, rx2, ry1, ry2 = ', rx1, rx2, ry1, ry2
+#            if ry1 > -900.: j1 = bt.find_index_from_value( ry1, xlat[:,i1] )
+#            if rx1 > -900.: i1 = bt.find_index_from_value( rx1, xlon[j1,:] )
+#            if rx2 > -900.: i2 = bt.find_index_from_value( rx2, xlon[j2,:] )
+#            if ry1 > -900.: j1 = bt.find_index_from_value( ry1, xlat[:,i1] )
+#            if ry2 > -900.: j2 = bt.find_index_from_value( ry2, xlat[:,i2] )
+#            #print '   => i1, i2, j1, j2 =>', i1, i2, j1, j2, '\n'
+#
+#
+#
+#        mask2d[:,:] = 0.
+#        mask2d[j1:j2,i1:i2] = mask[0,j1:j2,i1:i2]
+#
+#        Vts = bo.mean_2d(MLD_m, mask2d[:,:], Xa[:,:])
+#
+#        # NETCDF:
+#        cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFEXP+'_'+cbox+'.nc' ;  cv1 = cvar
+#
+#        bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
+#                                cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on rectangular box '+cbox)
+#
+#print ' +++ '+cnexec+' => Done with MLD diags!\n'
 
 
-
-#############################################
-# 2D (surface) averaging for temperature and salinity #
-#############################################
+###############################################
+# 2D (surface) averaging for T,S, SSH and MLD #
+###############################################
 
 print '\n\n +++ '+cnexec+' => Starting 2D surface averaging diags!'
 
+id_in = Dataset(cf_T_in)
+list_variables = id_in.variables.keys()
 jvar = 0
+for cvar in [ vdic['NN_SST'], vdic['NN_SSS'], vdic['NN_SSH'], vdic['NN_MLD'] ]:
+    
+    if cvar in list_variables:
+        
+        print '  *** reading '+cvar+' into '+cf_T_in
+        if cvar in ['thetao','so','votemper','vosaline']:
+            Xs_m = id_in.variables[cvar][:,0,:,:]
+        else:
+            Xs_m = id_in.variables[cvar][:,:,:]
+        print '  ...read!'
 
-for cvar in [ vdic['NN_SST'], vdic['NN_SSS'], vdic['NN_SSH'] ]:
+        ( nt, nj0, ni0 ) = Xs_m.shape
 
-    # DATA:
-    print '  *** reading '+cvar+' into '+cf_T_in
-    id_in = Dataset(cf_T_in)
-    if cvar == 'thetao' or cvar == 'so':
-        Xs_m = id_in.variables[cvar][:,0,:,:]
+        if nt != 12: print 'ERROR: '+cnexec+' => only treating monthly data so far...'; sys.exit(0)
+
+        if ( nj0, ni0 ) != ( nj, ni ): print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'; sys.exit(0)
+
+        if jvar == 0:
+            vtime = nmp.zeros(nt)
+            for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./12.
+            print ' * Montly calendar: ', vtime[:]
+
+        joce = 0
+        for cocean in list_basin_names[:]:
+
+            print 'Treating '+cvar+' for '+cocean
+
+            Vts = bo.mean_2d(Xs_m, mask[joce,:,:], Xa[:,:])
+
+            cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFEXP+'_'+cocean+'.nc' ;  cv1 = cvar
+            bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
+                                    cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on region '+list_basin_lgnms[joce])
+
+            joce = joce + 1
+        jvar = jvar + 1
+        
     else:
-        Xs_m = id_in.variables[cvar][:,:,:]
-    id_in.close()
-    print '  ...read!'
+        print 'WARNING: '+cnexec+' => '+cvar+' was not found in '+cf_T_in
 
-
-    [ nt, nj0, ni0 ] = Xs_m.shape
-
-    if nt != 12: print 'ERROR: '+cnexec+' => only treating monthly data so far...'; sys.exit(0)
-
-    if [ nj0, ni0 ] != [ nj, ni ]: print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'; sys.exit(0)
-
-    if jvar == 0:
-        vtime = nmp.zeros(nt)
-        for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./12.
-        print ' * Montly calendar: ', vtime[:]
-
-
-    joce = 0
-    for cocean in list_basin_names[:]:
-
-        print 'Treating '+cvar+' for '+cocean
-
-        Vts = bo.mean_2d(Xs_m, mask[joce,:,:], Xa[:,:])
-
-        # NETCDF:
-        cf_out   = vdic['DIAG_D']+'/mean_'+cvar+'_'+CONFEXP+'_'+cocean+'.nc' ;  cv1 = cvar
-        bnc.wrt_appnd_1d_series(vtime, Vts, cf_out, cv1,
-                                cu_t='year', cu_d='m', cln_d='2D-average of '+cvar+' on region '+list_basin_lgnms[joce])
-
-        joce = joce + 1
-
-    jvar = jvar + 1
-
+id_in.close()
 print ' +++ '+cnexec+' => Done with 2D surface averaging diags!\n'
 
 
