@@ -6,9 +6,9 @@
 #
 # OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2 beta tunning on 75 levels
 #
-#        Machine: MareNostrum@BSC
+#        Machine: triolith.nsc.liu.se
 #
-#        L. Brodeau, November 2016
+#        L. Brodeau, 2017
 #
 #===========================================================
 
@@ -20,14 +20,18 @@ export MASTERMIND="Laurent" ; # same here, who's the person who designed/ran thi
 
 export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
 
-# File system / path on which most netcdf data will be read:
-export STORE_DIR="/proj/bolinc/users/x_laubr"
+# Path / directory structure in which to find NEMO output file (you can use
+# <ORCA> and <EXP> as substitute to your ORCA grid and experiment (EXP) name):
+export NEMO_OUT_STRCT="/proj/bolinc/users/x_laubr/run/<EXP>/output/nemo"
+
+# Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
+export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/${CONF}_ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="${STORE_DIR}/ORCA1/ORCA1-I/barakuda_clim"
+export CONF_INI_DIR="/proj/bolinc/users/x_laubr/ORCA1/ORCA1-I/barakuda_clim"
 
-# In what directory of the local machine to save the diagnostics:
-export DIAG_DIR="${STORE_DIR}/barakuda/${CONF}_ece32"
+# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
+export SCRATCH="/scratch/local/<JOB_ID>"
 
 export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
@@ -38,7 +42,7 @@ export ece_exp=2 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  # 1 => it's an OCEAN-ONLY EC-Earth experiment done from a EC-Earth setup
 #                  # 2 => it's a  COUPLED  EC-Earth experiment
 #                  #      Both 1 and 2 imply that NEMO files are stored in something like
-#                  #       ${STORE_DIR}/<EXP>/output/nemo/<YYY>
+#                  #       ${SOMEWHERE}/<EXP>/output/nemo/<YYY>
 #                  #       where YYY starts from '001' to
 #                  #      If you select '2', make sure 'cdo' is available and working!!!
 #                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
@@ -51,9 +55,6 @@ export AGCM_INFO="IFS T${TRES_IFS}"
 # List of suffix of files that have been saved by NEMO and that are needed for the diags:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod SBC"
 
-# Directory structure in which to find NEMO output file (use <ORCA> and <EXP>):
-export NEMO_OUT_STRCT="${STORE_DIR}/run/<EXP>/output/nemo"
-
 export TSTAMP="1m"   ; # output time-frequency stamp as in NEMO output files...
 
 # In case 3D fields have been saved on an annual mean basis rather than montly:
@@ -65,9 +66,6 @@ export NEMO_SAVED_FILES_3D="" ; #     ''
 # use <ORCA>, <EXP> and <TSTAMP>=>  Ex: export NEMO_FILE_PREFIX="<ORCA>-<EXP>_<TSTAMP>_"
 export NEMO_FILE_PREFIX="<EXP>_<TSTAMP>_"
 # => should get rid of TSTAMP actually...
-
-# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
-export SCRATCH="/scratch/local/<JOB_ID>"
 
 
 ####### NEMO => what fields in what files ??? ############
@@ -114,7 +112,7 @@ export NN_QSOL="qsr"         ; # name of net surface solar flux in "FILE_FLX_SUF
 ################################################################################################
 
 # Land-sea mask and basins files:
-export MM_FILE=${STORE_DIR}/ORCA1/ec-earth3.2/mesh_mask.nc4
+export MM_FILE=/proj/bolinc/users/x_laubr/ORCA1/ec-earth3.2/mesh_mask.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
@@ -147,7 +145,6 @@ export ihttp=0                  ; # do we export on a remote http server (1) or 
 export RHOST=whitehouse.gov.org ; # remote host to send diagnostic page to///
 export RUSER=donald             ; # username associated to remote host (for file export)
 export RWWWD=/data/www/barakuda/ec-earth_3.2b ; # directory of the local or remote host to send the diagnostic page to
-
 
 
 #########################

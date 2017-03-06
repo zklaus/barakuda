@@ -22,7 +22,6 @@ export EXTRA_CONF="NEMO 3.6 + LIM 3 + IFS-T511 (EC-Earth 3.2b)<br>\
 <i>10 years spinup with constant CMIP5 forcing from 1940 using EC-Earth 3.2.0,<br>\
 and from 1950 onwards CMIP6 forcing using EC-Earth 3.2.1 (primavera branch)</i>" ;   #  // same here ...
 
-
 # Path / directory structure in which to find NEMO output file (you can use
 # <ORCA> and <EXP> as substitute to your ORCA grid and experiment (EXP) name):
 export NEMO_OUT_STRCT="/scratch/Earth/etourign/barakuda/<EXP>"
@@ -76,7 +75,7 @@ export NEMO_FILE_PREFIX="<EXP>_<TSTAMP>_"
 #       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   => depends on the XIOS *.xml setup you used...
 #   => always specify a string for the NN_* variables
-#      USE "X" if the field is not present your NEMO output file
+#      USE "X" if the field is not present in your NEMO output
 #
 # State variables and others in grid_T files:
 export NN_SST="tos"
