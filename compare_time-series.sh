@@ -196,7 +196,7 @@ list_figs=`\ls -v *.${FIG_FORMAT}`
 
 for ff in ${list_figs}; do
     echo "<br><br><big> `echo ${ff} | sed -e s/.${FIG_FORMAT}//g -e s/_comparison//g` </big><br>" >> index.html
-    echo "  <img style=\"border: 0px solid\" alt=\"\" src=\"${ff}\"> <br><br><br>" >> index.html
+    echo "  <img style=\"border: 0px solid\" alt=\"\" src=\"${ff}\"> <br>" >> index.html
 
 done
 
