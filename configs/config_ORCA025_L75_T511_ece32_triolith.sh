@@ -6,9 +6,9 @@
 #
 # OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2 beta tunning on 75 levels
 #
-#        Machine: TRIOLITH@NSC.LIU.SE
+#        Machine: triolith.nsc.liu.se
 #
-#        L. Brodeau, November 2016
+#        L. Brodeau, 2017
 #
 #===========================================================
 
@@ -16,20 +16,22 @@ export CONF=ORCA025.L75 ; # horizontal global ORCA configuration
 export NBL=75           ; # number of levels
 
 export HOST=TRIOLITH.nsc.liu.se ; # this has no importance at all, it will just become an "info" on the web-page!
-export MASTERMIND="Uwe and Klaus" ; # same here, who's the person who designed/ran this simulation?
-
+export MASTERMIND="SMHI / Uwe and Klaus" ; # same here, who's the person who designed/ran this simulation?
 
 export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b)" ;   #  // same here ...
 
+# Path / directory structure in which to find NEMO output file (you can use
+# <ORCA> and <EXP> as substitute to your ORCA grid and experiment (EXP) name):
+export NEMO_OUT_STRCT="/proj/bolinc/users/x_laubr/run/<EXP>/output/nemo"
 
-# File system / path on which most netcdf data will be read:
-export STORE_DIR="/proj/bolinc/users/x_laubr"
+# Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
+export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/${CONF}_ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="${STORE_DIR}/ORCA025.L75/ORCA025.L75-I"
+export CONF_INI_DIR="/proj/bolinc/users/x_laubr/ORCA025.L75/ORCA025.L75-I"
 
-# In what directory of the local machine to save the diagnostics:
-export DIAG_DIR="${STORE_DIR}/barakuda/${CONF}_ece32"
+# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
+export SCRATCH="/scratch/local/<JOB_ID>"
 
 export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
@@ -40,7 +42,7 @@ export ece_exp=2 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  # 1 => it's an OCEAN-ONLY EC-Earth experiment done from a EC-Earth setup
 #                  # 2 => it's a  COUPLED  EC-Earth experiment
 #                  #      Both 1 and 2 imply that NEMO files are stored in something like
-#                  #       ${STORE_DIR}/<EXP>/output/nemo/<YYY>
+#                  #       ${SOMEWHERE}/<EXP>/output/nemo/<YYY>
 #                  #       where YYY starts from '001' to
 #                  #      If you select '2', make sure 'cdo' is available and working!!!
 #                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
@@ -52,9 +54,6 @@ export AGCM_INFO="IFS T${TRES_IFS}"
 
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
-
-# Directory structure in which to find NEMO output file (use <ORCA> and <EXP>):
-export NEMO_OUT_STRCT="${STORE_DIR}/run/<EXP>/output/nemo"
 
 export TSTAMP="1m"   ; # output time-frequency stamp as in NEMO output files...
 
@@ -68,15 +67,12 @@ export NEMO_SAVED_FILES_3D="" ; #     ''
 export NEMO_FILE_PREFIX="<EXP>_<TSTAMP>_"
 # => should get rid of TSTAMP actually...
 
-# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
-export SCRATCH="/scratch/local/<JOB_ID>"
-
 
 ####### NEMO => what fields in what files ??? ############
 #       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   => depends on the XIOS *.xml setup you used...
 #   => always specify a string for the NN_* variables
-#      USE "X" if the field is not present your NEMO output file
+#      USE "X" if the field is not present in your NEMO output
 #
 # State variables and others in grid_T files:
 export NN_SST="tos"

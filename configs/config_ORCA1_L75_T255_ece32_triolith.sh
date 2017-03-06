@@ -16,7 +16,7 @@ export CONF=ORCA1.L75 ; # horizontal global ORCA configuration
 export NBL=75         ; # number of levels
 
 export HOST=TRIOLITH.nsc.liu.se ; # this has no importance at all, it will just become an "info" on the web-page!
-export MASTERMIND="Laurent" ; # same here, who's the person who designed/ran this simulation?
+export MASTERMIND="BSC/ Laurent" ; # same here, who's the person who designed/ran this simulation?
 
 export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
 
@@ -47,12 +47,12 @@ export ece_exp=2 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  #      If you select '2', make sure 'cdo' is available and working!!!
 #                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
-export Y_INI_EC=1990 ;    # initial year if ec-earth experiment...
+export Y_INI_EC=1990 ;    # initial year if ece_exp /= 0 !!!
 export TRES_IFS=255  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
 export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
 
-# List of suffix of files that have been saved by NEMO and that are needed for the diags:
+# List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod SBC"
 
 export TSTAMP="1m"   ; # output time-frequency stamp as in NEMO output files...
