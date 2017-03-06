@@ -246,7 +246,7 @@ PROGRAM cdfvT
      !! Printing record jt:
      CALL P3D_T_4v(idf_vt, idv_vt, idv_vs, idv_ut, idv_us, nt, jt, xlon, xlat, vdepth, REAL(vtime,8), &
           &        REAL(zcumulvt,4), REAL(zcumulvs,4), REAL(zcumulut,4), REAL(zcumulus,4),  &
-          &        cf_out, 'nav_lon', 'nav_lat', trim(cv_depth), 'time', &
+          &        cf_out, 'nav_lon', 'nav_lat', trim(cv_depth), 'time_counter', &
           &        'vomevt', 'vomevs', 'vozout', 'vozous', &
           &        0., 'time', 'm')
      
