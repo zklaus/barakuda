@@ -19,7 +19,7 @@ function parse_html()
     if [ -z ${HOST} ];       then echo "${c1} 'HOST' ${c2}";       exit; fi
     if [ -z ${EXTRA_CONF} ]; then echo "${c1} 'EXTRA_CONF' ${c2}"; exit; fi
     if [ -z ${MASTERMIND} ]; then echo "${c1} 'MASTERMIND' ${c2}"; exit; fi
-    if [ -z ${EXPREF} ];     then export EXPREF="Observations";          fi
+    if [ -z ${EXPREF} ];     then export EXPREF="CLIM";          fi
 
     PARSE_CMD="sed -e s|{TITLE}|${TITLE}|g \
                    -e s|{CONFEXP}|${CONFEXP}|g \

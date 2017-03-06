@@ -16,7 +16,7 @@ export CONF=ORCA025.L75 ; # horizontal global ORCA configuration
 export NBL=75           ; # number of levels
 
 export HOST=`hostname`.bsc.es    ; # this has no importance at all, it will just become an "info" on the web-page!
-export MASTERMIND="Etienne" ; # same here, who's the person who designed/ran this simulation?
+export MASTERMIND="BSC / Etienne" ; # same here, who's the person who designed/ran this simulation?
 
 export EXTRA_CONF="NEMO 3.6 + LIM 3 + IFS-T511 (EC-Earth 3.2b)<br>\
 <i>10 years spinup with constant CMIP5 forcing from 1940 using EC-Earth 3.2.0,<br>\
