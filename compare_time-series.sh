@@ -184,9 +184,12 @@ ${PYTH} ${PYBRKD_EXEC_PATH}/compare_time_series.py ${YEAR_INI} ${YEAR_END}
 if [ "${EXTRA_CONF}" = "" ]; then echo "Problem, variable EXTRA_CONF is not set!" ; exit; fi
 TITLE="Ocean diagnostics<br>Comparison of experiments: \"${VEXPS[*]}\"<br>Configuration: ${ORCA}_${EXTRA_CONF}"
 if [ ${ece_exp} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
-CONFEXP="Comparison ${NEXPS}"
-sed -e "s|{TITLE}|${TITLE}|g" -e "s|{CONFEXP}|${CONFEXP}|g" -e "s|{DATE}|`date`|g" -e "s|{HOST}|${HOST}|g" \
-    ${BARAKUDA_ROOT}/src/html/conf_start.html > index.html
+
+export CONFEXP="Comparison"
+
+. ${BARAKUDA_ROOT}/src/bash/build_html.bash
+
+parse_html ${BARAKUDA_ROOT}/src/html/conf_start.html index.html
 
 
 list_figs=`\ls -v *.${FIG_FORMAT}`
