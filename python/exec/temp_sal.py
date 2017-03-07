@@ -204,8 +204,8 @@ if l_do_3d:
     Snemo_JFM[:,:,:] = nmp.mean(Snemo[:3,:,:,:], axis=0)
     Tclim_JFM = nmp.zeros((nk,nj,ni))
     Tclim_JFM[:,:,:] = nmp.mean(Tclim[:3,:,:,:], axis=0)
-    Sclim_JFM = nmp.zeros((nk,nj,ni))
-    Sclim_JFM[:,:,:] = nmp.mean(Sclim[:3,:,:,:], axis=0)
+Sclim_JFM = nmp.zeros((nk0,nj,ni))
+Sclim_JFM[:,:,:] = nmp.mean(Sclim[:3,:,:,:], axis=0)
 
 SSTnemo_JFM = nmp.zeros((nj,ni))
 SSTnemo_JFM[:,:] = nmp.mean(SSTnemo[:3,:,:], axis=0)
@@ -222,8 +222,8 @@ if l_do_3d:
     Snemo_JAS[:,:,:] = nmp.mean(Snemo[6:9,:,:,:], axis=0)
     Tclim_JAS = nmp.zeros((nk,nj,ni))
     Tclim_JAS[:,:,:] = nmp.mean(Tclim[6:9,:,:,:], axis=0)
-    Sclim_JAS = nmp.zeros((nk,nj,ni))
-    Sclim_JAS[:,:,:] = nmp.mean(Sclim[6:9,:,:,:], axis=0)
+Sclim_JAS = nmp.zeros((nk0,nj,ni))
+Sclim_JAS[:,:,:] = nmp.mean(Sclim[6:9,:,:,:], axis=0)
 
 SSTnemo_JAS = nmp.zeros((nj,ni))
 SSTnemo_JAS[:,:] = nmp.mean(SSTnemo[6:9,:,:], axis=0)
@@ -366,7 +366,7 @@ if lfig1:
     # Salinity 100m, 1000m... / climatology
     if l_do_3d:
         for jd in range(nmp.size(tdj)):
-            jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]    
+            jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]
             print '\n Treating depth '+str(vdepth[jdepth])+' !!!'
     
             if jd < 1:
