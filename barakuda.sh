@@ -675,7 +675,7 @@ if [ ${ISTAGE} -eq 2 ]; then
             ficli=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_${FILE_ICE_SUFFIX}.nc4
             fclvt=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_VT.nc4
             fcmoc=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_MOC.nc4
-            fcpsi=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_PSI.nc4
+            fcpsi=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_PSI.nc4
             iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
         else
             echo; echo "PROBLEM! => you set l_clim_diag to true but no file 'last_clim' was found in:"
