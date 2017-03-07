@@ -420,8 +420,8 @@ function barakuda_import_files()
         fi
         # In case the job crashed testing only on ${cgrid_test} file:
         if [ ${IFREQ_SAV_YEARS} -gt 1 ]; then
-            if [ ! -f ./${CRT1}_${cgrid_test}.nc ]; then
-                echo "${CRT1}_${cgrid_test}.nc is missing !!!"
+            if [ ! -f ./${CRT1M}_${cgrid_test}.nc ]; then
+                echo "${CRT1M}_${cgrid_test}.nc is missing !!!"
                 jy1=$((${jyear}-${jyear}%${IFREQ_SAV_YEARS})) ; jy2=$((${jy1}+${IFREQ_SAV_YEARS}-1))
                 cy1=`printf "%04d" ${jy1}` ; cy2=`printf "%04d" ${jy2}`; TTAG=${cy1}0101_${cy2}1231
                 CRTM=${CPREF}${TTAG}
@@ -435,7 +435,7 @@ function barakuda_import_files()
     #
     # Testing if ALL required files are present now:
     for gt in ${NEMO_SAVED_FILES}; do
-        ftt="./${CRT1}_${gt}.nc" ;  check_if_file ${ftt}
+        ftt="./${CRT1M}_${gt}.nc" ;  check_if_file ${ftt}
     done
     echo; echo "All required files are in `pwd` for year ${cyear} !"; echo
 }

@@ -133,8 +133,6 @@ PROGRAM cdfvT
   PRINT *, 'npjglo=', npjglo
   PRINT *, 'npk   =', npk
 
-
-  !! LOLO BIG:
   ALLOCATE( vtime(nt), vdepth(npk), xlon(npiglo,npjglo), xlat(npiglo,npjglo) )
 
   ALLOCATE( T_3D(npiglo,npjglo,npk), S_3D(npiglo,npjglo,npk), U_3D(npiglo,npjglo,npk), V_3D(npiglo,npjglo,npk) )
@@ -157,12 +155,6 @@ PROGRAM cdfvT
   xlat(:,:) = getvar(cf_mm, 'nav_lat', 1,npiglo,npjglo)
   
   CALL GETMASK_3D(cf_mm, 'tmask', mask_3d)
-  !CALL GETVAR_2D(idf_0, idv_0, cf_t, 'nav_lon', 0, 0, 0, xlon)
-  !idf_0=0 ;  idv_0=0
-  !CALL GETVAR_2D(idf_0, idv_0, cf_t, 'nav_lat', 0, 0, 0, xlat)
-
-
-
 
   WRITE(cf_t,'(a,"_grid_T.nc")') trim(conf_tag)
   INQUIRE(FILE=cf_t,EXIST=lexist)
@@ -210,7 +202,7 @@ PROGRAM cdfvT
      CALL GETVAR_3D(idf_t, idv_t, cf_t, cv_t, nt, jt, T_3D)
      CALL GETVAR_3D(idf_s, idv_s, cf_t, cv_s, nt, jt, S_3D)
      CALL GETVAR_3D(idf_u, idv_u, cf_u, cv_u, nt, jt, U_3D)
-     CALL GETVAR_3D(idf_v, idv_v, cf_v, cv_v, nt, jt, V_3D)
+     CALL GETVAR_3D(idf_v, idv_v, cf_v, cv_v, nt, jt, V_3D)     
      
      IF ( leiv ) THEN
         CALL GETVAR_3D(idf_ueiv, idv_ueiv, cf_u, cv_ueiv, nt, jt, UEIV_3D)
@@ -248,7 +240,7 @@ PROGRAM cdfvT
           &        REAL(zcumulvt,4), REAL(zcumulvs,4), REAL(zcumulut,4), REAL(zcumulus,4),  &
           &        cf_out, 'nav_lon', 'nav_lat', trim(cv_depth), 'time_counter', &
           &        'vomevt', 'vomevs', 'vozout', 'vozous', &
-          &        0., 'time', 'm')
+          &        0., 'seconds', 'm')
      
 
   END DO ! jt

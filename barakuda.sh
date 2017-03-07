@@ -55,7 +55,7 @@ if [ ${ece_exp} -ge 10 ]; then
 fi
 
 # If 3D fieds are annual averaged then overides a few functions with:
-if [ "${ANNUAL_3D}" = "1y" ]; then
+if [ ! "${ANNUAL_3D}" = "" ]; then
     . ${BARAKUDA_ROOT}/src/bash/bash_functions_1y.bash
 fi
 
@@ -142,7 +142,7 @@ while ${lcontinue}; do
     fi
 
     CRTM=${CPREF}${TTAG}
-    CRT1=${CPREF}${TTAG_ann}
+    CRT1M=${CPREF}${TTAG_ann}
 
     if ${lcontinue}; then
 
@@ -161,18 +161,18 @@ while ${lcontinue}; do
         barakuda_import_files
 
         # Monthly files to work with for current year:
-        ft1m=${CRT1}_grid_T.nc
-        fu1m=${CRT1}_grid_U.nc
-        fv1m=${CRT1}_grid_V.nc
-        fj1m=${CRT1}_${FILE_ICE_SUFFIX}.nc ; # can be icemod or grid_T ....
+        ft1m=${CRT1M}_grid_T.nc
+        fu1m=${CRT1M}_grid_U.nc
+        fv1m=${CRT1M}_grid_V.nc
+        fj1m=${CRT1M}_${FILE_ICE_SUFFIX}.nc ; # can be icemod or grid_T ....
         #
         # Annual files to work with for current year:
-        CRT1Y=`echo ${CRT1} | sed -e s/"_${TSTAMP}_"/"_${ANNUAL_3D}_"/g`
+        CRT1Y=`echo ${CRT1M} | sed -e s/"_${TSTAMP}_"/"_${ANNUAL_3D}_"/g`
         ft1y=${CRT1Y}_grid_T.nc
         fu1y=${CRT1Y}_grid_U.nc
         fv1y=${CRT1Y}_grid_V.nc
         fj1y=${CRT1Y}_${FILE_ICE_SUFFIX}.nc ; # can be icemod or grid_T ....
-        CFG3D=${CRT1}
+        CFG3D=${CRT1M}
         #
         # Files that contain the 3D fields (might be monthly or annaual sometimes (when "${ANNUAL_3D}" = "1y")        
         ft3d=${ft1m}
@@ -500,7 +500,7 @@ while ${lcontinue}; do
         echo "  Done waiting for year ${cyear} !"
         if [ ${i_do_movi} -eq 1 ]; then rsync -avP movies ${DIAG_D}/ ; fi
         rm -f *.tmp broken_line_* tmp_ice.nc
-        rm -f ${CRT1}_*.nc ${CRT1Y}_*.nc ; #debug
+        rm -f ${CRT1M}_*.nc ${CRT1Y}_*.nc ; #debug
         echo
 
         echo " ---- DIAGS ARE DONE FOR YEAR ${cyear} ! ---"

@@ -534,8 +534,11 @@ CONTAINS
       END IF
 
       CALL DIMS(cf_in, cv_in, nx, ny, nk, nt)
-
-      IF ( (nx /= lx).OR.(ny /= ly) ) CALL print_err(crtn, 'data and mask file dont have same horizontal dimensions')
+      
+      IF ( (nx /= lx).OR.(ny /= ly) ) THEN
+         PRINT *, ' field: nx,ny / mask lx,ly =>', nx,ny, '/', lx,ly
+         CALL print_err(crtn, 'data and mask file dont have same horizontal dimensions')
+      END IF
 
 
 
@@ -623,7 +626,6 @@ CONTAINS
       ly = size(IX,2)
       lz = size(IX,3)
 
-
       CALL DIMS(cf_in, cv_in, nx, ny, nk, nt)
 
       IF ( nk < 1 ) THEN
@@ -632,9 +634,11 @@ CONTAINS
          CALL print_err(crtn, 'mask is not 3D')
       END IF
 
-      IF ( (nx /= lx).OR.(ny /= ly).OR.(nk /= lz) ) &
-         &   CALL print_err(crtn, 'data and mask file dont have same dimensions')
-
+      IF ( (nx /= lx).OR.(ny /= ly).OR.(nk /= lz) ) THEN
+         PRINT *, ' field: nx,ny,nk / mask lx,ly,lz =>', nx,ny,nk,'/',lx,ly,lz
+         CALL print_err(crtn, 'data and mask file dont have the same shape')
+      END IF
+      
       !!    Opening MASK netcdf file
       CALL sherr( NF90_OPEN(cf_in, NF90_NOWRITE, id_f),     crtn,cf_in,cv_in)
       CALL sherr( NF90_INQ_VARID(id_f, trim(cv_in), id_v),  crtn,cf_in,cv_in)

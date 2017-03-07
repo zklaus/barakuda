@@ -53,6 +53,8 @@ PROGRAM cdfpsi
 
   TYPE(variable), DIMENSION(1)  :: typvar         !: structure for attributes
 
+  CHARACTER(LEN=64) :: cv_u, cv_v
+  
   INTEGER    :: istatus
 
   INTEGER :: idf_0=0, idv_0=0
@@ -62,7 +64,7 @@ PROGRAM cdfpsi
   !!  Read command line and output usage message if not compliant.
   narg= iargc()
   IF ( narg == 0 ) THEN
-     PRINT *,' Usage : cdfpsi  Ufile Vfile <V> (optional argument)'
+     PRINT *,' Usage : cdfpsi  Ufile Vfile nameU nameV <V> (optional argument)'
      PRINT *,' Computes the barotropic stream function as the integral of the transport'
      PRINT *,' PARTIAL CELLS VERSION'
      PRINT *,' Files mesh_hgr.nc, mesh_zgr.nc ,mask.nc must be in te current directory'
@@ -73,7 +75,9 @@ PROGRAM cdfpsi
 
   CALL getarg (1, cfileu  )
   CALL getarg (2, cfilev  )
-  CALL getarg (3, coption )
+  CALL getarg (3, cv_u)
+  CALL getarg (4, cv_v)
+  CALL getarg (5, coption )
 
   npiglo= getdim (cfileu,'x')
   npjglo= getdim (cfileu,'y')
@@ -147,12 +151,12 @@ PROGRAM cdfpsi
      DO jk = 1,npk
         PRINT *,'level ',jk
         IF ( coption == 'V' ) THEN
-           zv(:,:)= getvar(cfilev, 'vomecrty',  jk ,npiglo,npjglo,  ktime=jt) !LB
+           zv(:,:)= getvar(cfilev, cv_v,  jk ,npiglo,npjglo,  ktime=jt) !LB
            !loloe3v(:,:) = getvar(cf_mm, 'e3v_ps', jk,npiglo,npjglo, ldiom=.true.)
            ztrpv(:,:) = ztrpv(:,:) + zv(:,:)*e1v(:,:)*E3V_3D(:,:,jk)  ! meridional transport of each grid cell
         ELSE
            ! Get zonal velocity  at jk
-           zu(:,:)= getvar(cfileu, 'vozocrtx',  jk ,npiglo,npjglo,  ktime=jt) !LB
+           zu(:,:)= getvar(cfileu, cv_u,  jk ,npiglo,npjglo,  ktime=jt) !LB
            ! get e3v at level jk
            !loloe3u(:,:) = getvar(cf_mm, 'e3u_ps', jk,npiglo,npjglo, ldiom=.true.)
            ! integrates vertically 
