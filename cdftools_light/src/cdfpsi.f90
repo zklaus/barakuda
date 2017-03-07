@@ -149,7 +149,7 @@ PROGRAM cdfpsi
      ztrpv(:,:)= 0.d0
      
      DO jk = 1,npk
-        PRINT *,'level ',jk
+        !PRINT *,'level ',jk
         IF ( coption == 'V' ) THEN
            zv(:,:)= getvar(cfilev, cv_v,  jk ,npiglo,npjglo,  ktime=jt) !LB
            !loloe3v(:,:) = getvar(cf_mm, 'e3v_ps', jk,npiglo,npjglo, ldiom=.true.)
