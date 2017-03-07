@@ -186,8 +186,8 @@ if l_do_3d:
     Snemo_annual[:,:,:] = nmp.mean(Snemo[:,:,:,:], axis=0)
     Tclim_annual = nmp.zeros((nk,nj,ni))
     Tclim_annual[:,:,:] = nmp.mean(Tclim[:,:,:,:], axis=0)
-    Sclim_annual = nmp.zeros((nk,nj,ni))
-    Sclim_annual[:,:,:] = nmp.mean(Sclim[:,:,:,:], axis=0)
+Sclim_annual = nmp.zeros((nk0,nj,ni))
+Sclim_annual[:,:,:] = nmp.mean(Sclim[:,:,:,:], axis=0)
 
 SSTnemo_annual = nmp.zeros((nj,ni))
 SSTnemo_annual[:,:] = nmp.mean(SSTnemo[:,:,:], axis=0)
@@ -305,10 +305,8 @@ if lfig1:
     # Temperature 100m, 1000m... / climatology
     if l_do_3d:
         for jd in range(nmp.size(tdj)):
-            jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]
-    
+            jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]    
             print '\n Treating depth '+str(vdepth[jdepth])+' !!!'
-    
     
             if jd < 1:
                 # JFM
@@ -364,10 +362,12 @@ if lfig1:
 
 
 
-    #                   Salinity 100m / climatology
+
+    # Salinity 100m, 1000m... / climatology
     if l_do_3d:
         for jd in range(nmp.size(tdj)):
-            jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]
+            jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]    
+            print '\n Treating depth '+str(vdepth[jdepth])+' !!!'
     
             if jd < 1:
                 # JFM
@@ -378,7 +378,7 @@ if lfig1:
                               ctitle='Salinity diff. to '+CC+' at '+cdepth_true+', JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')',
                               lforce_lim=True)
                 # JAS
-                bp.plot("2d")(vlon, vlat, Snemo_JAS[jdepth,:,:] - Tclim_JAS[jdepth,:,:],
+                bp.plot("2d")(vlon, vlat, Snemo_JAS[jdepth,:,:] - Sclim_JAS[jdepth,:,:],
                               imask[jdepth,:,:], smin, smax, dsali, cpal='PiYG_r',
                               corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dS_JAS_'+cdepth+'_'+CONFEXP+'_-_'+CC,
                               cbunit='PSU', cfig_type=fig_type,
@@ -386,7 +386,7 @@ if lfig1:
                               lforce_lim=True)
     
             # Annual
-            bp.plot("2d")(vlon, vlat, Snemo_annual[jdepth,:,:] - Tclim_annual[jdepth,:,:],
+            bp.plot("2d")(vlon, vlat, Snemo_annual[jdepth,:,:] - Sclim_annual[jdepth,:,:],
                           imask[jdepth,:,:], smin, smax, dsali, cpal='PiYG_r',
                           corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dS_annual_'+cdepth+'_'+CONFEXP+'_-_'+CC,
                           cbunit='PSU', cfig_type=fig_type,
