@@ -12,7 +12,7 @@
 
 ivt=1   ; # Create a climatology for VT
 iamoc=1 ; # Create a climatology for 2D lat-depth AMOC?
-ibpsi=1 ; # Create a climatology for barotropic stream function
+ibpsi=0 ; # Create a climatology for barotropic stream function
 
 export BARAKUDA_ROOT=`pwd`
 
