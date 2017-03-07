@@ -160,10 +160,17 @@ id_nemo_mnmc.close()
 
 if l_do_3d:
     [ nt, nk, nj, ni ] = Tnemo.shape
-    if nk != nk0 or nj != nj0 or ni != ni0:
+    if (nk,nj,ni) != (nk0,nj0,ni0):
         print 'ERROR: 3D clim and NEMO file do no agree in shape!'
         print '       clim => '+str(ni0)+', '+str(nj0)+', '+str(nk0),' ('+vdic['F_T_CLIM_3D_12']+')'
         print '       NEMO => '+str(ni)+', '+str(nj)+', '+str(nk)
+        sys.exit(0)
+else:
+    [ nt, nj, ni ] = SSTnemo.shape
+    if (nj,ni) != (nj0,ni0):
+        print 'ERROR: 3D clim and NEMO file do no agree in shape!'
+        print '       clim => '+str(ni0)+', '+str(nj0),' ('+vdic['F_T_CLIM_3D_12']+')'
+        print '       NEMO => '+str(ni)+', '+str(nj)
         sys.exit(0)
 
 
