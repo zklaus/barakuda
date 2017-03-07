@@ -82,13 +82,11 @@ msk_vert[:,:] = nmp.sum(Xmask[:,:,:],axis=2)
 idxm = nmp.where(msk_vert[:,:] > 0.);
 msk_vert[idxm] = 1.
 
-
-bp.plot("vert_section")( vlat[:], -vz[:], amoc[:,:], msk_vert[:,:], -2., 20., 1., \
-                         lkcont=True, cpal='ncview_nrl', lzonal=False, xmin=0., xmax=70., dx=5.,
+bp.plot("vert_section")( vlat[:], -vz[:], amoc[:,:], msk_vert[:,:], -4., 20., 1., \
+                         lkcont=True, cpal='ncview_nrl', lzonal=False, xmin=10., xmax=70., dx=5.,
                          cfignm='AMOC_annual_'+CONFEXP, cbunit='Sv',
                          zmin=0., zmax=5000., l_zlog=False, cfig_type=fig_type,
                          czunit='Depth (m)', ctitle='AMOC, '+CONFEXP+' ('+cy1+'-'+cy2+')' )
-
 
 print '\n Bye!'
 

@@ -3,11 +3,11 @@
 #  B E T A  ! ! !
 
 # Diag to test:
-itrsig=1
+itrsig=0
 imhst=0
 iamoc=0
 icrosssect=0
-itempsal=0
+itempsal=1
 ifsflx=0
 imean2d=0
 imean3d=0

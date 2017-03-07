@@ -117,12 +117,11 @@ class plot :
         if dxgap > 140.: dx = 5.; i_x_sbsmp = 2
         if dxgap < 50.:  dx = 2.
         if dxgap < 25.:  dx = 1.
-
-        # Masking where mask is zero!
-        XF = nmp.ma.masked_where(XMSK == 0, XF)
+        
+        #XF = nmp.ma.masked_where(XMSK == 0, XF) ; # Masking where mask is zero!
 
         fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*5.), dpi=None, facecolor='w', edgecolor='k')
-        ax  = plt.axes([0.07, 0.06, 0.98, 0.88], axisbg='k')
+        ax  = plt.axes([0.07, 0.06, 0.98, 0.88], axisbg='w')
         vc  = __vcontour__(rmin, rmax, dc)
 
         # Colormap:
@@ -135,21 +134,21 @@ class plot :
             Xtmp = nmp.zeros(nmp.shape(XF))
             Xtmp[:,:] = XF[:,:]
             drown(Xtmp, XMSK, k_ew=2, nb_max_inc=5, nb_smooth=5)
-            cf = plt.contourf(VX, zVZ, Xtmp, vc, cmap=colmap, norm=pal_norm)
-            plt.contour(      VX, zVZ, Xtmp, vc, colors='k', linewidths=0.2)
+            cf = plt.contourf(VX, zVZ, Xtmp, vc, cmap=colmap, norm=pal_norm, zorder=0.1)
+            plt.contour(      VX, zVZ, Xtmp, vc, colors='k', linewidths=0.2, zorder=0.5)
             del Xtmp
         else:
             cf = plt.pcolormesh(VX, zVZ, XF, cmap=colmap, norm=pal_norm)
 
         # Colorbar:
-        __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cunit=cbunit, cfont=font_clb, fontsize=10)
+        __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, lkc=lkcont, cunit=cbunit, cfont=font_clb, fontsize=10)
 
         # Masking "rock":
         if lkcont:
-            pal_lsm = bcm.chose_colmap('blk')
+            pal_lsm = bcm.chose_colmap('mask')
             norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
             prock = nmp.ma.masked_where(XMSK > 0.5, XMSK)
-            cm = plt.pcolor(VX, zVZ, prock, cmap=pal_lsm, norm=norm_lsm)
+            cm = plt.pcolormesh(VX, zVZ, prock, cmap=pal_lsm, norm=norm_lsm, zorder=1)
 
         # X-axis:
         if lzonal:
@@ -932,7 +931,7 @@ class plot :
         XF = nmp.ma.masked_where(XMSK == 0, XF)
 
         if lforce_lim: __force_min_and_max__(rmin, rmax, XF)
-
+        # 
         font_ttl, font_xylb, font_clb = __font_unity__()
 
 
@@ -1149,8 +1148,6 @@ class plot :
 
         __nice_x_axis__(ax, plt, x1, x2, dt, cfont=font_xylb)
 
-        #ax.grid(color='k', linestyle='-', linewidth=0.2)
-
         plt.ylabel('('+cyunit+')', **font_xylb)
 
         plt.title(ctitle, **font_ttl)
@@ -1305,8 +1302,6 @@ class plot :
         print nmp.arange(x1, x2+dt, dt)
 
         __nice_x_axis__(ax, plt, x1, x2, dt, i_sbsmp=i_t_jump, cfont=font_xylb)
-
-        #ax.grid(color='k', linestyle='-', linewidth=0.2)
 
         if cyunit != '': plt.ylabel('('+cyunit+')', **font_xylb)
         if cxunit != '': plt.xlabel('('+cxunit+')', **font_xylb)
@@ -1645,14 +1640,18 @@ def __nice_colorbar__(fig_hndl, plt_hndl, vcc,
 
     if cb_or == 'horizontal':
         if cax_other is not None:
-            clb = plt_hndl.colorbar(fig_hndl, cax=cax_other, ticks=vcc, drawedges=lkc, orientation='horizontal', pad=0.07, shrink=1., aspect=40, extend='both')
+            clb = plt_hndl.colorbar(fig_hndl, cax=cax_other, ticks=vcc, drawedges=lkc, orientation='horizontal',
+                                    pad=0.07, shrink=1., aspect=40, extend='both')
         else:
-            clb = plt_hndl.colorbar(fig_hndl,                ticks=vcc, drawedges=lkc, orientation='horizontal', pad=0.07, shrink=1., aspect=40, extend='both')
+            clb = plt_hndl.colorbar(fig_hndl,                ticks=vcc, drawedges=lkc, orientation='horizontal',
+                                    pad=0.07, shrink=1., aspect=40, extend='both')
     else:
         if cax_other is not None:
-            clb = plt_hndl.colorbar(fig_hndl, cax=cax_other, ticks=vcc, drawedges=lkc, pad=0.03, extend='both')
+            clb = plt_hndl.colorbar(fig_hndl, cax=cax_other, ticks=vcc, drawedges=lkc,
+                                    pad=0.03, extend='both')
         else:
-            clb = plt_hndl.colorbar(fig_hndl,                ticks=vcc, drawedges=lkc, pad=0.03, extend='both')
+            clb = plt_hndl.colorbar(fig_hndl,                ticks=vcc, drawedges=lkc,
+                                    pad=0.03, extend='both')
 
     if i_sbsmp > 1: __subsample_colorbar__(i_sbsmp, vcc, clb, cb_or=cb_or)
 
