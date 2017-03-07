@@ -6,9 +6,9 @@
 #
 # OCEAN MONITORING for NEMO v2.? and EC-Earth 2.2 / 2.3 (CMIP5)
 #
-#        Machine: MareNostrum@BSC
+#        Machine: triolith.nsc.liu.se
 #
-#        L. Brodeau, November 2016
+#        L. Brodeau, 2017
 #
 #===========================================================
 
@@ -16,18 +16,22 @@ export CONF=ORCA1.L42 ; # horizontal global ORCA configuration
 export NBL=42         ; # number of levels
 
 export HOST=TRIOLITH.nsc.liu.se ; # this has no importance at all, it will just become an "info" on the web-page!
-export MASTERMIND="Laurent" ; # same here, who's the person who designed/ran this simulation?
+export MASTERMIND="MISU / Laurent" ; # same here, who's the person who designed/ran this simulation?
 
 export EXTRA_CONF="LIM2, NEMO 2.X (EC-Earth 2_CMIP5)" ;   #  // same here ...
 
-# File system / path on which most netcdf data will be read:
-export STORE_DIR="/proj/bolinc/users/x_laubr"
+# Path / directory structure in which to find NEMO output file (you can use
+# <ORCA> and <EXP> as substitute to your ORCA grid and experiment (EXP) name):
+export NEMO_OUT_STRCT="/proj/bolinc/users/x_laubr/CMIP5/<EXP>-SAVED/NEMO"
+
+# Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
+export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/cmip5"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="${STORE_DIR}/${CONF}/${CONF}-I"
+export CONF_INI_DIR="/proj/bolinc/users/x_laubr/${CONF}/${CONF}-I"
 
-# In what directory of the local machine to save the diagnostics:
-export DIAG_DIR="${STORE_DIR}/barakuda/cmip5"
+# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
+export SCRATCH="/scratch/local/<JOB_ID>"
 
 export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
 
@@ -38,7 +42,7 @@ export ece_exp=0 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  # 1 => it's an OCEAN-ONLY EC-Earth experiment done from a EC-Earth setup
 #                  # 2 => it's a  COUPLED  EC-Earth experiment
 #                  #      Both 1 and 2 imply that NEMO files are stored in something like
-#                  #       ${STORE_DIR}/<EXP>/output/nemo/<YYY>
+#                  #       ${SOMEWHERE}/<EXP>/output/nemo/<YYY>
 #                  #       where YYY starts from '001' to
 #                  #      If you select '2', make sure 'cdo' is available and working!!!
 #                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
@@ -50,9 +54,6 @@ export AGCM_INFO="IFS T${TRES_IFS}"
 
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
-
-# Directory structure in which to find NEMO output file (use <ORCA> and <EXP>):
-export NEMO_OUT_STRCT="${STORE_DIR}/CMIP5/<EXP>-SAVED/NEMO"
 
 export TSTAMP="MM"   ; # output time-frequency stamp as in NEMO output files...
 
@@ -66,15 +67,12 @@ export NEMO_SAVED_FILES_3D="" ; #     ''
 export NEMO_FILE_PREFIX="ORCA1-<EXP>_<TSTAMP>_"
 # => should get rid of TSTAMP actually...
 
-# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
-export SCRATCH="/scratch/local/<JOB_ID>"
-
 
 ####### NEMO => what fields in what files ??? ############
 #       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   => depends on the XIOS *.xml setup you used...
 #   => always specify a string for the NN_* variables
-#      USE "X" if the field is not present your NEMO output file
+#      USE "X" if the field is not present in your NEMO output
 #
 # State variables and others in grid_T files:
 export NN_SST="sosstsst"
@@ -120,12 +118,12 @@ export BM_FILE="${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece2.2_cmip5.nc4"
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
 export F_T_CLIM_3D_12="${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly.nc4"
 export F_S_CLIM_3D_12="${CONF_INI_DIR}/so_1degx1deg-ORCA1.L75_WOA2009_monthly.nc4"
-export SST_CLIM_12="${STORE_DIR}/ORCA1.L75/ORCA1.L75-I/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc"
+export SST_CLIM_12="/proj/bolinc/users/x_laubr/ORCA1.L75/ORCA1.L75-I/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc"
 export NN_T_CLIM="thetao"
 export NN_S_CLIM="so"
 export NN_SST_CLIM="tos"
 
-export ICE_CLIM_12="${STORE_DIR}/ORCA1.L75/ORCA1.L75-I/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4"
+export ICE_CLIM_12="/proj/bolinc/users/x_laubr/ORCA1.L75/ORCA1.L75-I/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4"
 export NN_ICEF_CLIM="ice_cover"
 
 
