@@ -24,7 +24,7 @@ lfig1 = True
 #lfig1 = False
 lfig2 = True
 
-venv_needed = {'ORCA','EXP','DIAG_D','COMP2D','i_do_sect','MM_FILE','NN_SST','NN_T','NN_S',
+venv_needed = {'ORCA','EXP','DIAG_D','COMP2D','i_do_sect','MM_FILE','NN_SST','NN_T','NN_SSS','NN_S',
                'F_T_CLIM_3D_12','F_S_CLIM_3D_12','SST_CLIM_12','NN_SST_CLIM','NN_T_CLIM','NN_S_CLIM'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
@@ -117,27 +117,54 @@ id_mask.close()
 # Getting NEMO mean monthly climatology of temperature and salinity:
 # ------------------------------------------------------------------
 
+cvT3d=vdic['NN_T']
+cvS3d=vdic['NN_S']
 cf_nemo_mnmc = vdic['DIAG_D']+'/clim/mclim_'+CONFEXP+'_'+cy1+'-'+cy2+'_grid_T.nc4'
 
-bt.chck4f(cf_nemo_mnmc) ; id_nemo_mnmc = Dataset(cf_nemo_mnmc)
+bt.chck4f(cf_nemo_mnmc)
 
-if vdic['NN_SST'] == 'thetao':
-    SSTnemo = id_nemo_mnmc.variables[vdic['NN_SST']][:,0,:,:]
+id_nemo_mnmc = Dataset(cf_nemo_mnmc)
+
+list_var = id_nemo_mnmc.variables.keys()
+if vdic['NN_SST'] == cvT3d:
+    SSTnemo = id_nemo_mnmc.variables[cvT3d][:,0,:,:]
 else:
     SSTnemo = id_nemo_mnmc.variables[vdic['NN_SST']][:,:,:]
 
-Tnemo  = id_nemo_mnmc.variables[vdic['NN_T']][:,:,:,:]
-print '(has ',Tnemo.shape[0],' time snapshots)\n'
-Snemo  = id_nemo_mnmc.variables[vdic['NN_S']][:,:,:,:]
-vdepth = id_nemo_mnmc.variables['deptht'][:]
+if vdic['NN_SSS'] == cvS3d:
+    SSSnemo = id_nemo_mnmc.variables[cvS3d][:,0,:,:]
+else:
+    SSSnemo = id_nemo_mnmc.variables[vdic['NN_SSS']][:,:,:]
+
+l_do_3d=True
+if 'deptht' in list_var:
+    vdepth = id_nemo_mnmc.variables['deptht'][:]
+else:
+    print 'WARNING: depth vector "deptht" not present in '+cf_nemo_mnmc+'!\n'
+    l_do_3d=False
+
+if cvT3d in list_var:
+    Tnemo  = id_nemo_mnmc.variables[cvT3d][:,:,:,:]
+    print '(has ',Tnemo.shape[0],' time snapshots)\n'
+else:
+    print 'WARNING: 3D NEMO T '+cvT3d+' not present in '+cf_nemo_mnmc+'!\n'
+    l_do_3d=False
+
+if cvS3d in list_var:
+    Snemo  = id_nemo_mnmc.variables[cvS3d][:,:,:,:]
+else:
+    print 'WARNING: 3D NEMO S '+cvS3d+' not present in '+cf_nemo_mnmc+'!\n'
+    l_do_3d=False
+
 id_nemo_mnmc.close()
 
-[ nt, nk, nj, ni ] = Tnemo.shape
-if nk != nk0 or nj != nj0 or ni != ni0:
-    print 'ERROR: 3D clim and NEMO file do no agree in shape!'
-    print '       clim => '+str(ni0)+', '+str(nj0)+', '+str(nk0),' ('+vdic['F_T_CLIM_3D_12']+')'
-    print '       NEMO => '+str(ni)+', '+str(nj)+', '+str(nk)
-    sys.exit(0)
+if l_do_3d:
+    [ nt, nk, nj, ni ] = Tnemo.shape
+    if nk != nk0 or nj != nj0 or ni != ni0:
+        print 'ERROR: 3D clim and NEMO file do no agree in shape!'
+        print '       clim => '+str(ni0)+', '+str(nj0)+', '+str(nk0),' ('+vdic['F_T_CLIM_3D_12']+')'
+        print '       NEMO => '+str(ni)+', '+str(nj)+', '+str(nk)
+        sys.exit(0)
 
 
 
@@ -145,62 +172,67 @@ if nk != nk0 or nj != nj0 or ni != ni0:
 # Saving some array to avoid to call 'nmp.mean' all the time:
 
 #Annual:
-Tnemo_annual = nmp.zeros((nk,nj,ni))
-Tnemo_annual[:,:,:] = nmp.mean(Tnemo[:,:,:,:], axis=0)
-Snemo_annual = nmp.zeros((nk,nj,ni))
-Snemo_annual[:,:,:] = nmp.mean(Snemo[:,:,:,:], axis=0)
+if l_do_3d:
+    Tnemo_annual = nmp.zeros((nk,nj,ni))
+    Tnemo_annual[:,:,:] = nmp.mean(Tnemo[:,:,:,:], axis=0)
+    Snemo_annual = nmp.zeros((nk,nj,ni))
+    Snemo_annual[:,:,:] = nmp.mean(Snemo[:,:,:,:], axis=0)
+    Tclim_annual = nmp.zeros((nk,nj,ni))
+    Tclim_annual[:,:,:] = nmp.mean(Tclim[:,:,:,:], axis=0)
+    Sclim_annual = nmp.zeros((nk,nj,ni))
+    Sclim_annual[:,:,:] = nmp.mean(Sclim[:,:,:,:], axis=0)
+
 SSTnemo_annual = nmp.zeros((nj,ni))
 SSTnemo_annual[:,:] = nmp.mean(SSTnemo[:,:,:], axis=0)
-
-Tclim_annual = nmp.zeros((nk,nj,ni))
-Tclim_annual[:,:,:] = nmp.mean(Tclim[:,:,:,:], axis=0)
-Sclim_annual = nmp.zeros((nk,nj,ni))
-Sclim_annual[:,:,:] = nmp.mean(Sclim[:,:,:,:], axis=0)
+SSSnemo_annual = nmp.zeros((nj,ni))
+SSSnemo_annual[:,:] = nmp.mean(SSSnemo[:,:,:], axis=0)
 SSTclim_annual = nmp.zeros((nj,ni))
 SSTclim_annual[:,:] = nmp.mean(SSTclim[:,:,:], axis=0)
 
 #JFM:
-Tnemo_JFM = nmp.zeros((nk,nj,ni))
-Tnemo_JFM[:,:,:] = nmp.mean(Tnemo[:3,:,:,:], axis=0)
-Snemo_JFM = nmp.zeros((nk,nj,ni))
-Snemo_JFM[:,:,:] = nmp.mean(Snemo[:3,:,:,:], axis=0)
+if l_do_3d:
+    Tnemo_JFM = nmp.zeros((nk,nj,ni))
+    Tnemo_JFM[:,:,:] = nmp.mean(Tnemo[:3,:,:,:], axis=0)
+    Snemo_JFM = nmp.zeros((nk,nj,ni))
+    Snemo_JFM[:,:,:] = nmp.mean(Snemo[:3,:,:,:], axis=0)
+    Tclim_JFM = nmp.zeros((nk,nj,ni))
+    Tclim_JFM[:,:,:] = nmp.mean(Tclim[:3,:,:,:], axis=0)
+    Sclim_JFM = nmp.zeros((nk,nj,ni))
+    Sclim_JFM[:,:,:] = nmp.mean(Sclim[:3,:,:,:], axis=0)
+
 SSTnemo_JFM = nmp.zeros((nj,ni))
 SSTnemo_JFM[:,:] = nmp.mean(SSTnemo[:3,:,:], axis=0)
-
-Tclim_JFM = nmp.zeros((nk,nj,ni))
-Tclim_JFM[:,:,:] = nmp.mean(Tclim[:3,:,:,:], axis=0)
-Sclim_JFM = nmp.zeros((nk,nj,ni))
-Sclim_JFM[:,:,:] = nmp.mean(Sclim[:3,:,:,:], axis=0)
+SSSnemo_JFM = nmp.zeros((nj,ni))
+SSSnemo_JFM[:,:] = nmp.mean(SSSnemo[:3,:,:], axis=0)
 SSTclim_JFM = nmp.zeros((nj,ni))
 SSTclim_JFM[:,:] = nmp.mean(SSTclim[:3,:,:], axis=0)
 
 #JAS:
-Tnemo_JAS = nmp.zeros((nk,nj,ni))
-Tnemo_JAS[:,:,:] = nmp.mean(Tnemo[6:9,:,:,:], axis=0)
-Snemo_JAS = nmp.zeros((nk,nj,ni))
-Snemo_JAS[:,:,:] = nmp.mean(Snemo[6:9,:,:,:], axis=0)
+if l_do_3d:
+    Tnemo_JAS = nmp.zeros((nk,nj,ni))
+    Tnemo_JAS[:,:,:] = nmp.mean(Tnemo[6:9,:,:,:], axis=0)
+    Snemo_JAS = nmp.zeros((nk,nj,ni))
+    Snemo_JAS[:,:,:] = nmp.mean(Snemo[6:9,:,:,:], axis=0)
+    Tclim_JAS = nmp.zeros((nk,nj,ni))
+    Tclim_JAS[:,:,:] = nmp.mean(Tclim[6:9,:,:,:], axis=0)
+    Sclim_JAS = nmp.zeros((nk,nj,ni))
+    Sclim_JAS[:,:,:] = nmp.mean(Sclim[6:9,:,:,:], axis=0)
+
 SSTnemo_JAS = nmp.zeros((nj,ni))
 SSTnemo_JAS[:,:] = nmp.mean(SSTnemo[6:9,:,:], axis=0)
-
-Tclim_JAS = nmp.zeros((nk,nj,ni))
-Tclim_JAS[:,:,:] = nmp.mean(Tclim[6:9,:,:,:], axis=0)
-Sclim_JAS = nmp.zeros((nk,nj,ni))
-Sclim_JAS[:,:,:] = nmp.mean(Sclim[6:9,:,:,:], axis=0)
+SSSnemo_JAS = nmp.zeros((nj,ni))
+SSSnemo_JAS[:,:] = nmp.mean(SSSnemo[6:9,:,:], axis=0)
 SSTclim_JAS = nmp.zeros((nj,ni))
 SSTclim_JAS[:,:] = nmp.mean(SSTclim[6:9,:,:], axis=0)
 
-
-
-jk100  = bt.find_index_from_value(100.  , vdepth) ; print 'jk100  = ', jk100,  '=> ', vdepth[jk100]
-jk1000 = bt.find_index_from_value(1000. , vdepth) ; print 'jk1000 = ', jk1000, '=> ', vdepth[jk1000]
-jk3000 = bt.find_index_from_value(3000. , vdepth) ; print 'jk3000 = ', jk3000, '=> ', vdepth[jk3000]
-
-tdj = [ jk100,   jk1000, jk3000  ]
-
-tdd_true = [ str(int(round(vdepth[jk100])))+'m' , str(int(round(vdepth[jk1000])))+'m' , str(int(round(vdepth[jk3000])))+'m' ]
-tdd      = [ '100m', '1000m', '3000m' ]
-
-print '\n', tdd_true[:], '\n'
+if l_do_3d:
+    jk100  = bt.find_index_from_value(100.  , vdepth) ; print 'jk100  = ', jk100,  '=> ', vdepth[jk100]
+    jk1000 = bt.find_index_from_value(1000. , vdepth) ; print 'jk1000 = ', jk1000, '=> ', vdepth[jk1000]
+    jk3000 = bt.find_index_from_value(3000. , vdepth) ; print 'jk3000 = ', jk3000, '=> ', vdepth[jk3000]
+    tdj = [ jk100,   jk1000, jk3000  ]
+    tdd_true = [ str(int(round(vdepth[jk100])))+'m' , str(int(round(vdepth[jk1000])))+'m' , str(int(round(vdepth[jk3000])))+'m' ]
+    tdd      = [ '100m', '1000m', '3000m' ]
+    print '\n', tdd_true[:], '\n'
 
 # Creating 1D long. and lat.:
 vlon = nmp.zeros(ni) ; vlon[:] = xlon[0,:]
@@ -229,7 +261,7 @@ if lfig0:
     else:
         ctt = CONFEXP+': Mean Annual Zonal Anomaly of SSS / '+CC+', ('+cy1+'-'+cy2+')'
 
-    vzc[:] = bt.mk_zonal(Snemo_annual[0,:,:] - Sclim_annual[0,:,:], imask[0,:,:])
+    vzc[:] = bt.mk_zonal(SSSnemo_annual[:,:] - Sclim_annual[0,:,:], imask[0,:,:])
     # Only at the end of all the experiments we do 2d plotting:
     bp.plot("zonal")(vlat, vzc, cfignm=path_fig+'1d_zonal_sali_anom_vs_'+CC , zmin=-2.5, zmax=2.5, dz=0.5,
                      xmin=-75., xmax=65., czunit='PSU', cfig_type=fig_type,
@@ -263,41 +295,37 @@ if lfig1:
                   ctitle='SST difference to '+CC+', '+CONFEXP+' ('+cy1+'-'+cy2+')',
                   lforce_lim=True)
 
-
-
-
-
     # Temperature 100m, 1000m... / climatology
-
-    for jd in range(nmp.size(tdj)):
-        jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]
-
-        print '\n Treating depth '+str(vdepth[jdepth])+' !!!'
-
-
-        if jd < 1:
-            # JFM
-            bp.plot("2d")(vlon, vlat, Tnemo_JFM[jdepth,:,:] - Tclim_JFM[jdepth,:,:],
+    if l_do_3d:
+        for jd in range(nmp.size(tdj)):
+            jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]
+    
+            print '\n Treating depth '+str(vdepth[jdepth])+' !!!'
+    
+    
+            if jd < 1:
+                # JFM
+                bp.plot("2d")(vlon, vlat, Tnemo_JFM[jdepth,:,:] - Tclim_JFM[jdepth,:,:],
+                              imask[jdepth,:,:], tmin, tmax, dtemp,
+                              corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r', cfignm=path_fig+'dT_JFM_'+cdepth+'_'+CONFEXP+'_-_'+CC,
+                              cbunit='K', cfig_type=fig_type,
+                              ctitle='Temperature diff. to '+CC+' at '+cdepth_true+', JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')',
+                              lforce_lim=True)
+                # JAS
+                bp.plot("2d")(vlon, vlat, Tnemo_JAS[jdepth,:,:] - Tclim_JAS[jdepth,:,:],
+                              imask[jdepth,:,:], tmin, tmax, dtemp,
+                              corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r', cfignm=path_fig+'dT_JAS_'+cdepth+'_'+CONFEXP+'_-_'+CC,
+                              cbunit='K', cfig_type=fig_type,
+                              ctitle='Temperature diff. to '+CC+' at '+cdepth_true+', JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')',
+                              lforce_lim=True)
+    
+            # Annual
+            bp.plot("2d")(vlon, vlat, Tnemo_annual[jdepth,:,:] - Tclim_annual[jdepth,:,:],
                           imask[jdepth,:,:], tmin, tmax, dtemp,
-                          corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r', cfignm=path_fig+'dT_JFM_'+cdepth+'_'+CONFEXP+'_-_'+CC,
+                          corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r', cfignm=path_fig+'dT_annual_'+cdepth+'_'+CONFEXP+'_-_'+CC,
                           cbunit='K', cfig_type=fig_type,
-                          ctitle='Temperature diff. to '+CC+' at '+cdepth_true+', JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')',
+                          ctitle='Temperature diff. to '+CC+' at '+cdepth_true+', '+CONFEXP+' ('+cy1+'-'+cy2+')',
                           lforce_lim=True)
-            # JAS
-            bp.plot("2d")(vlon, vlat, Tnemo_JAS[jdepth,:,:] - Tclim_JAS[jdepth,:,:],
-                          imask[jdepth,:,:], tmin, tmax, dtemp,
-                          corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r', cfignm=path_fig+'dT_JAS_'+cdepth+'_'+CONFEXP+'_-_'+CC,
-                          cbunit='K', cfig_type=fig_type,
-                          ctitle='Temperature diff. to '+CC+' at '+cdepth_true+', JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')',
-                          lforce_lim=True)
-
-        # Annual
-        bp.plot("2d")(vlon, vlat, Tnemo_annual[jdepth,:,:] - Tclim_annual[jdepth,:,:],
-                      imask[jdepth,:,:], tmin, tmax, dtemp,
-                      corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r', cfignm=path_fig+'dT_annual_'+cdepth+'_'+CONFEXP+'_-_'+CC,
-                      cbunit='K', cfig_type=fig_type,
-                      ctitle='Temperature diff. to '+CC+' at '+cdepth_true+', '+CONFEXP+' ('+cy1+'-'+cy2+')',
-                      lforce_lim=True)
 
 
 
@@ -306,21 +334,21 @@ if lfig1:
 
     #                   S S S
     # JFM
-    bp.plot("2d")(vlon, vlat, Snemo_JFM[0,:,:] - Sclim_JFM[0,:,:],
+    bp.plot("2d")(vlon, vlat, SSSnemo_JFM[:,:] - Sclim_JFM[0,:,:],
                   imask[0,:,:], smin, smax, dsali, cpal='PiYG_r',
                   corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dsss_JFM_'+CONFEXP+'_-_'+CC,
                   cbunit='PSU', cfig_type=fig_type,
                   ctitle='SSS difference to '+CC+', JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')',
                   lforce_lim=True)
     # JAS
-    bp.plot("2d")(vlon, vlat, Snemo_JAS[0,:,:] - Sclim_JAS[0,:,:],
+    bp.plot("2d")(vlon, vlat, SSSnemo_JAS[:,:] - Sclim_JAS[0,:,:],
                   imask[0,:,:], smin, smax, dsali, cpal='PiYG_r',
                   corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dsss_JAS_'+CONFEXP+'_-_'+CC,
                   cbunit='PSU', cfig_type=fig_type,
                   ctitle='SSS difference to '+CC+', JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')',
                   lforce_lim=True)
     # Annual
-    bp.plot("2d")(vlon, vlat, Snemo_annual[0,:,:] - Sclim_annual[0,:,:],
+    bp.plot("2d")(vlon, vlat, SSSnemo_annual[:,:] - Sclim_annual[0,:,:],
                   imask[0,:,:], smin, smax, dsali, cpal='PiYG_r',
                   corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dsss_annual_'+CONFEXP+'_-_'+CC,
                   cbunit='PSU', cfig_type=fig_type,
@@ -329,40 +357,38 @@ if lfig1:
 
 
 
-
-
-
     #                   Salinity 100m / climatology
-    for jd in range(nmp.size(tdj)):
-        jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]
-
-        if jd < 1:
-            # JFM
-            bp.plot("2d")(vlon, vlat, Snemo_JFM[jdepth,:,:] - Sclim_JFM[jdepth,:,:],
+    if l_do_3d:
+        for jd in range(nmp.size(tdj)):
+            jdepth = tdj[jd] ; cdepth = tdd[jd] ; cdepth_true = tdd_true[jd]
+    
+            if jd < 1:
+                # JFM
+                bp.plot("2d")(vlon, vlat, Snemo_JFM[jdepth,:,:] - Sclim_JFM[jdepth,:,:],
+                              imask[jdepth,:,:], smin, smax, dsali, cpal='PiYG_r',
+                              corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dS_JFM_'+cdepth+'_'+CONFEXP+'_-_'+CC,
+                              cbunit='PSU', cfig_type=fig_type,
+                              ctitle='Salinity diff. to '+CC+' at '+cdepth_true+', JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')',
+                              lforce_lim=True)
+                # JAS
+                bp.plot("2d")(vlon, vlat, Snemo_JAS[jdepth,:,:] - Tclim_JAS[jdepth,:,:],
+                              imask[jdepth,:,:], smin, smax, dsali, cpal='PiYG_r',
+                              corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dS_JAS_'+cdepth+'_'+CONFEXP+'_-_'+CC,
+                              cbunit='PSU', cfig_type=fig_type,
+                              ctitle='Salinity diff. to '+CC+' at '+cdepth_true+', JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')',
+                              lforce_lim=True)
+    
+            # Annual
+            bp.plot("2d")(vlon, vlat, Snemo_annual[jdepth,:,:] - Tclim_annual[jdepth,:,:],
                           imask[jdepth,:,:], smin, smax, dsali, cpal='PiYG_r',
-                          corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dS_JFM_'+cdepth+'_'+CONFEXP+'_-_'+CC,
+                          corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dS_annual_'+cdepth+'_'+CONFEXP+'_-_'+CC,
                           cbunit='PSU', cfig_type=fig_type,
-                          ctitle='Salinity diff. to '+CC+' at '+cdepth_true+', JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')',
+                          ctitle='Salinity diff. to '+CC+' at '+cdepth_true+', '+CONFEXP+' ('+cy1+'-'+cy2+')',
                           lforce_lim=True)
-            # JAS
-            bp.plot("2d")(vlon, vlat, Tnemo_JAS[jdepth,:,:] - Tclim_JAS[jdepth,:,:],
-                          imask[jdepth,:,:], smin, smax, dsali, cpal='PiYG_r',
-                          corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dS_JAS_'+cdepth+'_'+CONFEXP+'_-_'+CC,
-                          cbunit='PSU', cfig_type=fig_type,
-                          ctitle='Salinity diff. to '+CC+' at '+cdepth_true+', JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')',
-                          lforce_lim=True)
-
-        # Annual
-        bp.plot("2d")(vlon, vlat, Tnemo_annual[jdepth,:,:] - Tclim_annual[jdepth,:,:],
-                      imask[jdepth,:,:], smin, smax, dsali, cpal='PiYG_r',
-                      corca=vdic['ORCA'], lkcont=False, cfignm=path_fig+'dS_annual_'+cdepth+'_'+CONFEXP+'_-_'+CC,
-                      cbunit='PSU', cfig_type=fig_type,
-                      ctitle='Salinity diff. to '+CC+' at '+cdepth_true+', '+CONFEXP+' ('+cy1+'-'+cy2+')',
-                      lforce_lim=True)
-
-
-
-if lfig2 and i_do_sect==1 : # Temperature and salinity for vertical sections
+    
+    
+    
+if lfig2 and i_do_sect==1 and l_do_3d : # Temperature and salinity for vertical sections
 
     vdico = bt.check_env_var(sys.argv[0], {'TS_SECTION_FILE'})
 
