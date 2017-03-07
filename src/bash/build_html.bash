@@ -268,7 +268,7 @@ function build_sub_html()
         cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
         parse_html index.tmp ${cdiag}/index.html
         rm -f index.tmp
-        cd ${cdiag}/ ; ln -sf ../logo.*g . ; cd ../
+        cd ${cdiag}/ ; ln -sf ../logo.svg . ; cd ../
     done
 
     for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
@@ -310,7 +310,7 @@ function build_sub_html()
             cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
             parse_html index.tmp > ${cdiag}/index_${EXPREF}.html
             rm -f index.tmp
-            cd ${cdiag}/ ; ln -sf ../logo.*g . ; cd ../
+            cd ${cdiag}/ ; ln -sf ../logo.svg . ; cd ../
         done
         for var in "sst" "sss" "ts_100m" "ts_1000m" "ts_3000m"; do
             cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp

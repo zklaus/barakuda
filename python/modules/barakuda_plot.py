@@ -117,11 +117,14 @@ class plot :
         if dxgap > 140.: dx = 5.; i_x_sbsmp = 2
         if dxgap < 50.:  dx = 2.
         if dxgap < 25.:  dx = 1.
-        
-        #XF = nmp.ma.masked_where(XMSK == 0, XF) ; # Masking where mask is zero!
+
+        cbgcol='w'
+        if not lkcont:
+            cbgcol='k'
+            XF = nmp.ma.masked_where(XMSK == 0, XF) ; # Masking where mask is zero!
 
         fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*5.), dpi=None, facecolor='w', edgecolor='k')
-        ax  = plt.axes([0.07, 0.06, 0.98, 0.88], axisbg='w')
+        ax  = plt.axes([0.07, 0.06, 0.98, 0.88], axisbg=cbgcol)
         vc  = __vcontour__(rmin, rmax, dc)
 
         # Colormap:
