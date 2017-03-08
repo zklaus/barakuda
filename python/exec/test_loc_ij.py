@@ -36,7 +36,13 @@ f_mm.close()
 
 (ji, jj) = bo.ij_from_xy(rlon, rlat, nav_lon, nav_lat)
 
+print '\nSolution:'
+print '  ORCA => ji, jj =', ji,jj
 
-print 'RESULT => ji, jj =', ji,jj
-print '  lon, lat =', nav_lon[jj,ji], nav_lat[jj,ji], '\n'
+rlon = nav_lon[jj,ji]
+if rlon > 180. : rlon = rlon - 360.
+
+rlat = nav_lat[jj,ji]
+
+print '  ORCA => lon, lat =', rlon, rlat, '\n'
 

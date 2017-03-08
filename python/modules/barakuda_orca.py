@@ -217,14 +217,14 @@ def ij_from_xy(xx, yy, xlon, xlat):
     #       xlon  : 2D array of longitudes of the ORCA grid
     #       xlat  : 2D array of latitudes  of the ORCA grid
     # Output:
-    #       [ ji, jj ] i and j indices corresponding
+    #       ( ji, jj ) : coresponding i and j indices on the ORCA grid    
     #=============================================================    
     #
     ji=0 ; jj=0
     #
     if xx < 0.: xx = xx + 360.
     #
-    [nj , ni] = xlon.shape
+    (nj , ni) = xlon.shape
     iwa = nmp.where(xlon < 0.) ; xlon[iwa] = xlon[iwa] + 360. # Want only positive values in longitude:
     #
     # Southernmost latitude of the ORCA domain:
@@ -232,44 +232,14 @@ def ij_from_xy(xx, yy, xlon, xlat):
     lat_min = xlat[0,ji0]
     ji = ji0
     yy = max( yy, lat_min )
-    #print ' lat_min is ', lat_min
-    #print ' yy set to ', yy
+    #
     # Northernmost latitude of the ORCA domain:    
     ji0 = nmp.argmax(xlat[nj-1,:])
     lat_max = xlat[nj-1,ji0]
     yy = min( yy, lat_max )
-    #print " highest latitude:", lat_max
-    #
-    #im1 = -1000    
-    #jm1 = -1000
-    #im2 = -1000    
-    #jm2 = -1000
-    #lfound = False    
-    #ji = ji0 ; # Starting with a ji that reaches the northernmost latitude:
-    #while not lfound:
-    #    #        
-    #    # 1/ Finding jj from latitude position and updated ji
-    #    jj = nmp.argmin( nmp.abs( xlat[:-2,ji]-yy )) ; # 2 points implied in northfold...
-    #    print ' jj =', jj
-    #    #
-    #    # 2/ Finding ji from longitude position and updated jj:
-    #    ji = nmp.argmin( nmp.abs( xlon[jj,:-2]-xx ))
-    #    print ' ji =', ji
-    #
-    #    if (jj-jm1 == 0) and (ji-im1 == 0) : lfound = True
-    #    # Prevent infinite loop (oscilating between 2 sets of points):
-    #    if (jj-jm2 == 0) and (ji-im2 == 0) : lfound = True
-    #    #
-    #    im2 = im1
-    #    jm2 = jm1
-    #    im1 = ji
-    #    jm1 = jj
     #
     A = nmp.abs( xlat[:-2,:-2]-yy ) + nmp.abs( xlon[:-2,:-2]-xx )
     (jj,ji) = nmp.unravel_index(A.argmin(), A.shape)
-    #
-    #print ' Other method: ji, jj =>', ji0, jj0
-    #print '  lon, lat =', xlon[jj0,ji0], xlat[jj0,ji0], '\n'
     #
     return ( ji, jj )
 
@@ -277,7 +247,16 @@ def ij_from_xy(xx, yy, xlon, xlat):
 
 def transect_zon_or_med(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
     #
-    # LOLO: test and replace transect_zon_or_med...
+    #=============================================================
+    # Input:
+    #       x1,x2 : longitudes of point P1 and P2 defining the section (zonal OR meridional)
+    #       y1,y2 : latitudes of point P1 and P2 defining the section (zonal OR meridional)
+    #            => so yes! either x1==x2 or y1==y2 !
+    #       xlon  : 2D array of longitudes of the ORCA grid
+    #       xlat  : 2D array of latitudes  of the ORCA grid
+    # Output:
+    #       ( ji1, ji2, jj1, jj2 ) : coresponding i and j indices on the ORCA grid
+    #=============================================================    
     #
     ji1=0 ; ji2=0 ; jj1=0 ; jj2=0
     lhori = False ; lvert = False
@@ -285,7 +264,9 @@ def transect_zon_or_med(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
     if y1 == y2: lhori = True
     if x1 == x2: lvert = True
     #
-    if not (lhori or lvert) : print 'transect_zon_or_med only supports horizontal or vertical sections!'; sys.exit(0)
+    if not (lhori or lvert) :
+        print 'transect_zon_or_med only supports horizontal or vertical sections!'
+        sys.exit(0)
     #
     (ji1,jj1) = ij_from_xy(x1, y1, xlon, xlat)
     (ji2,jj2) = ij_from_xy(x2, y2, xlon, xlat)
