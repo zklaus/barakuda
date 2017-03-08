@@ -155,7 +155,7 @@ class plot :
 
         # X-axis:
         if lzonal:
-            [vvx, ctck] = __name_longitude_ticks__(lon_min=xmin, lon_max=xmax, dlon=dx*i_x_sbsmp)
+            __nice_longitude_axis__(ax, plt, xmin, xmax, dx*i_x_sbsmp, axt='x')
         else:
             __nice_latitude_axis__(ax, plt, xmin, xmax, dx*i_x_sbsmp, axt='x')
 
@@ -179,7 +179,6 @@ class plot :
         # Plot nicely a field given on ORCA coordinates on 2D world map without using any projection
         #
         # if VX = [0] and VY = [0] => ignoring lon and lat...
-
 
         import barakuda_tool   as bt
         import barakuda_orca   as bo
@@ -1798,6 +1797,24 @@ def __nice_latitude_axis__(ax_hndl, plt_hndl, lmin, lmax, dl, axt='x'):
     else:
         plt_hndl.yticks(vvl,ctck)
         ax_hndl.set_ylim(lmin,lmax)
+
+
+def __nice_longitude_axis__(ax_hndl, plt_hndl, lmin, lmax, dl, axt='x'):
+    if axt == 'x':
+        ax_hndl.get_xaxis().get_major_formatter().set_useOffset(False)
+    elif axt == 'y':
+        ax_hndl.get_yaxis().get_major_formatter().set_useOffset(False)
+    else:
+        print 'ERROR barakuda_plot.__nice_longitude_axis__: only accept "x" or "y" for axt!'
+        sys.exit(0)
+    [vvl, ctck] =  __name_longitude_ticks__(lon_min=lmin, lon_max=lmax, dlon=dl)
+    if axt == 'x':
+        plt_hndl.xticks(vvl,ctck)
+        ax_hndl.set_xlim(lmin,lmax)
+    else:
+        plt_hndl.yticks(vvl,ctck)
+        ax_hndl.set_ylim(lmin,lmax)
+
 
 
 def __prepare_z_log_axis__(l_log, vz):
