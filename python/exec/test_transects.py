@@ -24,12 +24,12 @@ cf_mm = sys.argv[2]
 
 # Opening mesh_mask:
 f_mm = Dataset(cf_mm)
-nav_lon = f_mm.variables['nav_lon'][:,:]
-nav_lat = f_mm.variables['nav_lat'][:,:]
+Xlon = f_mm.variables['glamt'][0,:,:]
+Xlat = f_mm.variables['gphit'][0,:,:]
 mask    = f_mm.variables['tmask'][0,0,:,:]
 f_mm.close()
 
-(nj,ni) = nmp.shape(nav_lon)
+(nj,ni) = nmp.shape(Xlon)
 
 nmask = nmp.zeros((nj,ni))
 
@@ -50,12 +50,32 @@ for csname in vboxes:
 
     nmask[:,:] = mask[:,:]
 
-    ( i1, i2, j1, j2 ) = bo.transect_zon_or_med(vlon1[js], vlon2[js], vlat1[js], vlat2[js], nav_lon, nav_lat)
+    ( i1, i2, j1, j2 ) = bo.transect_zon_or_med(vlon1[js], vlon2[js], vlat1[js], vlat2[js], Xlon, Xlat)
 
 
     print csname+' :'
     print   '(lon1, lon2, lat1, lat2) =', vlon1[js], vlon2[js], vlat1[js], vlat2[js]
     print   ' => i1, i2, j1, j2 =', i1, i2, j1, j2
+
+    # Just for info:
+    lat1_o = Xlat[j1,i1]
+    lat2_o = Xlat[j2,i2]
+    
+    lon1_o = Xlon[j1,i1]
+    lon2_o = Xlon[j2,i2]
+
+    # Mid point:
+    im = (i1+i2)/2
+    jm = (j1+j2)/2
+    lat_m = Xlat[jm,im]
+    lon_m = Xlon[jm,im]
+
+    if lon1_o > 180.: lon1_o = lon1_o - 360.
+    if lon2_o > 180.: lon2_o = lon2_o - 360.
+    if lon_m  > 180.: lon_m  = lon_m  - 360.
+
+    print   ' => ORCA p1 , p2   =>' , lon1_o, lon2_o, lat1_o, lat2_o
+    print   ' => ORCA mid point =>' , lon_m, lat_m
     print ''
     
     if i1 > i2: print 'ERROR: cross_sections.py => i1 > i2 !'; sys.exit(0)
@@ -73,7 +93,7 @@ for csname in vboxes:
 
     nmask[j1:j2+jp,i1:i2+ip] = -1
     
-    #bn.write_2d_mask('mask_'+csname+'.nc', nmask, xlon=nav_lon, xlat=nav_lat)
+    #bn.write_2d_mask('mask_'+csname+'.nc', nmask, xlon=Xlon, xlat=Xlat)
     bn.write_2d_mask('mask_'+csname+'.nc', nmask)
         
 
