@@ -198,7 +198,7 @@ if idfig == 'ts3d':
             VY = nmp.zeros(nby)
             FY = nmp.zeros((nb_oce, 4, nby))
         if nbm >= 12:
-            # the file contains monthly data (nbm=-1 otherwize)            
+            # the file contains monthly data (nbm=-1 otherwize)
             VY[:], FY[joce,:,:] = bt.monthly_2_annual(vtime[:], FM[joce,:,:])
         else:
             # the file contains annual data
@@ -213,16 +213,13 @@ if idfig == 'ts3d':
     bp.plot("1d_mon_ann")(vtime, VY, FM[0,0,:], FY[0,0,:], cfignm=cdiag+'_'+CONFEXP, dt=ittic,
                           cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
 
-
     # Global for different depth:
     bp.plot("1d_multi")(vtime, FM[0,:,:], vlab[:], cfignm=cdiag+'_lev_'+CONFEXP, dt=ittic,
                         loc_legend='out', cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
 
-
     # Show each ocean (All depth):
     bp.plot("1d_multi")(vtime, FM[:,0,:], list_basin_lgnms, cfignm=cdiag+'_basins_'+CONFEXP, dt=ittic,
                         loc_legend='out', cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym0, ymax=yp0, cfig_type=ff)
-
 
 
 

@@ -38,7 +38,9 @@ b_gre = '#3A783E' ; # b_gre = '#42BD82'
 b_prp = '#8C008C'
 b_org = '#ED7C4C'
 
-v_dflt_colors = [b_blu, b_red, b_gre, b_org, b_prp, 'pink', '0.5', 'b', 'g', 'brown', 'orange' ]  ; # extend if more...
+v_dflt_colors = [b_blu, b_red, b_gre, b_org, b_prp, 'pink', '0.5', 'b', 'g', 'brown', 'orange',
+                 '0.25','0.75','k' ]
+nmax_colors = len(v_dflt_colors)
 
 # Some projections to use with BaseMap:
 #
@@ -1204,6 +1206,11 @@ class plot :
             ax = plt.axes(AXES_DEF) ; #1d_multi
 
         if lzonal: plt.plot(vt[:], XD[0,:]*0., 'k', linewidth=1)
+
+        
+        if n0 <= 0 and nb_plt > nmax_colors:
+            print 'ERROR: plot_1d_multi.barakuda_plot => not enough colors defined in "v_dflt_colors", extend it!!!'
+            sys.exit(0)
 
         for jp in range(nb_plt):
             if n0 > 0:

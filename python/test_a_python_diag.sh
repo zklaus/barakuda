@@ -26,9 +26,9 @@ ihov=0
 #ARCH="T159_ece32_marenostrum"
 #export EXP="LR1E" ; NC=nc4 ; jyear=1990
 
-#CONFIG="ORCA1_L42"
-#ARCH="ece22_triolith"
-#export EXP="SPIN" ; NC=nc4 ; jyear=2540
+CONFIG="ORCA1_L42"
+ARCH="ece22_triolith"
+export EXP="SPIN" ; NC=nc4 ; jyear=2540
 
 #CONFIG="ORCA2_L31"
 #ARCH="ece32_marenostrum"
@@ -43,9 +43,9 @@ ihov=0
 #ARCH="T511_ece32_triolith"
 #export EXP="HC71" ; NC=nc ; jyear=1990
 
-CONFIG="ORCA025_L75"
-ARCH="etienne"
-export EXP="a0ez" ; NC=nc ; jyear=1945
+#CONFIG="ORCA025_L75"
+#ARCH="etienne"
+#export EXP="a0ez" ; NC=nc ; jyear=1945
 
 #CONFIG="ORCA1_L75"
 #ARCH="T255_ece32_triolith"
@@ -145,10 +145,10 @@ if [ ${itempsal} -eq 1 ]; then
 fi
 
 if [ ${its} -eq 1 ]; then
-    #diag=3d_thetao
-    diag=mean_fwf
+    diag=3d_thetao ; ln -sf ${DIAG_D}/3d_${NN_T}*.nc .
+    #diag=mean_fwf
     #diag=mean_htf
-    ln -sf ${DIAG_D}/${diag}*.nc .
+    #ln -sf ${DIAG_D}/${diag}*.nc .
     CMD="python exec/plot_time_series.py ${diag}"
 fi
 

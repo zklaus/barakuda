@@ -20,8 +20,6 @@ import barakuda_plot as bp
 
 lfig0 = True
 lfig1 = True
-#lfig0 = False
-#lfig1 = False
 lfig2 = True
 
 venv_needed = {'ORCA','EXP','DIAG_D','COMP2D','i_do_sect','MM_FILE','ANNUAL_3D',
@@ -41,12 +39,12 @@ if len(vdic['ANNUAL_3D']) != 0:
     l_3df_are_annual = True ; # 3D fields (T & S) are in annual 'grid_T' aclim file
 
 # Bounds and increment for comparison maps:
-    if CC == 'CLIM':
-        tmin=-5.  ;  tmax=5.  ; dtemp = 0.5
-        smin=-2.5 ;  smax=2.5 ; dsali = 0.25
-    else:
-        tmin=-1.  ;  tmax=1. ;  dtemp = 0.05
-        smin=-0.5 ;  smax=.5 ;  dsali = 0.025
+if CC == 'CLIM':
+    tmin=-5.  ;  tmax=5.  ; dtemp = 0.5
+    smin=-2.5 ;  smax=2.5 ; dsali = 0.25
+else:
+    tmin=-1.  ;  tmax=1. ;  dtemp = 0.05
+    smin=-0.5 ;  smax=.5 ;  dsali = 0.025
 
 
 path_fig='./'
