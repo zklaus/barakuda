@@ -7,12 +7,12 @@ itrsig=0
 imhst=0
 iamoc=0
 icrosssect=0
-itempsal=1
+itempsal=0
 ifsflx=0
 imean2d=0
 imean3d=0
 ienso=0
-imov=0
+imov=1
 issh=0
 its=0
 imld=0
@@ -26,14 +26,13 @@ ihov=0
 #ARCH="T159_ece32_marenostrum"
 #export EXP="LR1E" ; NC=nc4 ; jyear=1990
 
-CONFIG="ORCA1_L42"
-ARCH="ece22_triolith"
-export EXP="SPIN" ; NC=nc4 ; jyear=2540
+#CONFIG="ORCA1_L42"
+#ARCH="ece22_triolith"
+#export EXP="SPIN" ; NC=nc4 ; jyear=2540
 
 #CONFIG="ORCA2_L31"
 #ARCH="ece32_marenostrum"
 #export EXP="LR20" ; NC=nc4 ; jyear=2540
-
 
 #CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_triolith"
@@ -43,9 +42,9 @@ export EXP="SPIN" ; NC=nc4 ; jyear=2540
 #ARCH="T511_ece32_triolith"
 #export EXP="HC71" ; NC=nc ; jyear=1990
 
-#CONFIG="ORCA025_L75"
-#ARCH="etienne"
-#export EXP="a0ez" ; NC=nc ; jyear=1945
+CONFIG="ORCA025_L75"
+ARCH="etienne"
+export EXP="a0ez" ; NC=nc ; jyear=1945
 
 #CONFIG="ORCA1_L75"
 #ARCH="T255_ece32_triolith"
@@ -175,7 +174,7 @@ fi
 
 
 if [ ${imov} -eq 1 ]; then
-    for cv in ice sst sss; do
+    for cv in sst mld sss; do
         python exec/prepare_movies.py ${ft} ${jyear} ${cv}
     done
     exit

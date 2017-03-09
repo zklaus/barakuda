@@ -222,9 +222,9 @@ class plot :
 
         if i_lat_lon == 1:
             vert_rat = (lat_max - lat_min)/(75. + 75.)
-            fig_size = (WDTH_DEF , RAT_XY*4.8*vert_rat)    ; #2d
+            fig_size = (WDTH_DEF , RAT_XY*4.76*vert_rat) ; #lolo 4.76 => 1080x520 when on 77S->75N
         else:
-            fig_size = (WDTH_DEF , RAT_XY*float(nx)/float(ny)*5.) ; #2d
+            fig_size = (WDTH_DEF , RAT_XY*float(nx)/float(ny)*5.)
 
 
         # FIGURE
@@ -232,7 +232,7 @@ class plot :
         fig = plt.figure(num = 1, figsize=fig_size, dpi=None, facecolor='w', edgecolor='k')
         ax  = plt.axes([0.05, 0.06, 1., 0.86], axisbg = '0.5')
 
-        vc = __vcontour__(rmin, rmax, dc); #print vc, '\n'
+        vc = __vcontour__(rmin, rmax, dc)
 
         # Colmap:
         colmap = bcm.chose_colmap(cpal)

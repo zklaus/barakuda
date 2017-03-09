@@ -169,13 +169,12 @@ for jt in range(nt):
     cdate  = cy+cm
     cdatet = cy+'/'+cm
 
-
     if cvar == 'sst':
         bp.plot("2d")(vlon, vlat, Vnemo[jt,:,:] - Vclim[jt,:,:],
                       imask[:,:],  tmin, tmax, dtemp,
                       corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r',
                       cfignm=path_fig+'/'+cv+'_'+cdate,
-                      cbunit='K', cfig_type=fig_type, lat_min=-65., lat_max=75.,
+                      cbunit='K', cfig_type=fig_type, lat_min=-77., lat_max=75.,
                       ctitle='SST (NEMO - obs), '+CONFEXP+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
 
@@ -184,7 +183,7 @@ for jt in range(nt):
                       imask[:,:],  smin, smax, dsali,
                       corca=vdic['ORCA'], lkcont=False, cpal='PiYG_r',
                       cfignm=path_fig+'/'+cv+'_'+cdate,
-                      cbunit='PSU', cfig_type=fig_type, lat_min=-65., lat_max=75.,
+                      cbunit='PSU', cfig_type=fig_type, lat_min=-77., lat_max=75.,
                       ctitle='SSS (NEMO - obs), '+CONFEXP+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
 
@@ -192,7 +191,7 @@ for jt in range(nt):
         bp.plot("2d")(vlon, vlat, Vnemo[jt,:,:], imask[:,:],  mmin, mmax, dmld,
                       corca=vdic['ORCA'], lkcont=False, cpal='ncview_nrl',
                       cfignm=path_fig+'/'+cvar+'_'+cdate,
-                      cbunit='m', cfig_type=fig_type, lat_min=-80., lat_max=75.,
+                      cbunit='m', cfig_type=fig_type, lat_min=-77., lat_max=75.,
                       ctitle='Mixed-Layer depth, '+CONFEXP+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
     
