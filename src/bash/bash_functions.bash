@@ -59,7 +59,7 @@ function barakuda_init()
 
 function barakuda_check()
 {
-    script=`basename $0 | sed -e s/'.sh'/''/g`
+    #script=`basename $0 | sed -e s/'.sh'/''/g` ; # Job managers screw this!!!
     if [ -z ${CONFIG} ] || [ -z ${EXP} ]; then ${script}_usage ; exit ; fi
 
     if [ "${EXPREF}" != "" ] && [ ${ISTAGE} -eq 1 ]; then
@@ -90,7 +90,7 @@ function barakuda_check()
 
 function barakuda_setup()
 {
-    script=`basename $0 | sed -e s/'.sh'/''/g`
+    #script=`basename $0 | sed -e s/'.sh'/''/g` ; # Job managers screw this!!!
     echo
     if [ ! "${ORCA}" = "${CONF}" ]; then echo "ERROR: ORCA and CONF disagree! => ${ORCA} ${CONF}"; exit; fi
     export ORCA=${CONF}
@@ -152,14 +152,14 @@ function barakuda_setup()
         if [ ! -z "${SLURM_JOBID}" ]; then
             # NSC / Sweden ; Gustafson / BSC
             SCRATCH=`echo ${SCRATCH} | sed -e "s|<JOB_ID>|${SLURM_JOBID}|g"`
-            export TMP_DIR=${SCRATCH}/tmp_${EXP}_barakuda${cscrpt}
+            export TMP_DIR=${SCRATCH}/tmp_${EXP}_${script}
             #
         elif [ ! -z "${LSB_JOBID}" ]; then
             # MARENOSTRUM / BSC
             export TMP_DIR=${TMPDIR}
         else
             # Default:
-            export TMP_DIR=${SCRATCH}/tmp_${EXP}_barakuda${cscrpt}
+            export TMP_DIR=${SCRATCH}/tmp_${EXP}_${script}
         fi
     else
         export TMP_DIR=${SCRATCH}/html_${EXP}_tmp
@@ -298,7 +298,7 @@ function barakuda_init_plot()
 
 function barakuda_import_mesh_mask()
 {
-    script=`basename $0 | sed -e s/'.sh'/''/g`
+    #script=`basename $0 | sed -e s/'.sh'/''/g` ; # Job managers screw this!!!
     cd ${TMP_DIR}/
     # Importing mesh_mask files:
     check_if_file ${MM_FILE}

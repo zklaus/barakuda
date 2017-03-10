@@ -10,6 +10,7 @@
 #
 #===============================================================
 
+export script=barakuda
 #cbfp=`readlink -f $0`
 #export BARAKUDA_ROOT=`dirname ${cbfp}`
 export BARAKUDA_ROOT=`pwd`
