@@ -91,7 +91,7 @@ cyear_end=`printf "%04d" ${YEAR_END}`
 
 
 # The right python executable and barakuda must be found:
-export PATH=${PYBRKD_EXEC_PATH}:${PYTHON_HOME}/bin:${PATH}
+export PATH=${PYBRKD_EXEC_PATH}:${BARAKUDA_ROOT}/src/bash:${PYTHON_HOME}/bin:${PATH}
 
 # setup over...
 ###########################################################################################
@@ -194,8 +194,8 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${ece_exp} -eq 2 ] && [ ${NBL} -eq 75 ] && [ ${i_do_ifs_flx} -eq 1 ]; then
             echo; echo; echo "Fluxes of freshwater at the surface from IFS..."
-            echo " *** CALLING: ./src/bash/extract_ifs_surf_fluxes.sh &"
-            ${BARAKUDA_ROOT}/src/bash/extract_ifs_surf_fluxes.sh &
+            echo " *** CALLING: extract_ifs_surf_fluxes.sh &"
+            extract_ifs_surf_fluxes.sh &
             pid_flxl=$! ; echo
         fi
 
@@ -572,16 +572,26 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     if [ ${i_do_movi} -eq 1 ]; then
         echo
-        idelay=$((120-${nby}*8))
-        if [ ${idelay} -lt 10 ]; then idelay=10; fi
-        echo "Creating GIF movies out of the 2D maps of NEMO - OBS for SST and SSS (delay=${idelay})"
-        rm -f *_${CONFEXP}.gif
-        convert -delay ${idelay} -loop 0 movies/dsst_*.png dsst_${CONFEXP}.gif &
-        convert -delay ${idelay} -loop 0 movies/dsss_*.png dsss_${CONFEXP}.gif &
-        convert -delay ${idelay} -loop 0 movies/mld_*.png   mld_${CONFEXP}.gif &
-        convert -delay ${idelay} -loop 0 movies/icen_*.png icen_${CONFEXP}.gif &
-        convert -delay ${idelay} -loop 0 movies/ices_*.png ices_${CONFEXP}.gif &
+        if [ "${iffmpeg_x264}" = "1" ]; then
+            # FFMPEG compiled with x264 mp4 support is available on host:
+            for cc in dsst dsss mld icen ices; do
+                echo " *** CALLING: images2mp4.sh sst ${FIG_FORM} 520 6 &"
+                images2mp4.sh ${cc} ${FIG_FORM} 520 6 &
+                echo
+            done
+        else
+            # Faling back on GIF, with 'convert' of imageMagick:
+            idelay=$((120-${nby}*8))
+            if [ ${idelay} -lt 10 ]; then idelay=10; fi
+            rm -f *_${CONFEXP}.gif
+            for cc in dsst dsss mld icen ices; do
+                echo " *** CALLING: convert -delay ${idelay} -loop 0 movies/${cc}_*.png ${cc}_${CONFEXP}.gif &"
+                convert -delay ${idelay} -loop 0 movies/${cc}_*.png ${cc}_${CONFEXP}.gif &
+                echo
+            done
+        fi
     fi
+    
 
     # 1D plots to perform
     # ~~~~~~~~~~~~~~~~~~~

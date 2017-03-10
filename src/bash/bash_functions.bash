@@ -152,21 +152,26 @@ function barakuda_setup()
         if [ ! -z "${SLURM_JOBID}" ]; then
             # NSC / Sweden ; Gustafson / BSC
             SCRATCH=`echo ${SCRATCH} | sed -e "s|<JOB_ID>|${SLURM_JOBID}|g"`
-            export TMP_DIR=${SCRATCH}/tmp_${EXP}_barakuda
+            export TMP_DIR=${SCRATCH}/tmp_${EXP}_barakuda${cscrpt}
             #
         elif [ ! -z "${LSB_JOBID}" ]; then
             # MARENOSTRUM / BSC
             export TMP_DIR=${TMPDIR}
         else
             # Default:
-            export TMP_DIR=${SCRATCH}/tmp_${EXP}_barakuda
+            export TMP_DIR=${SCRATCH}/tmp_${EXP}_barakuda${cscrpt}
         fi
     else
         export TMP_DIR=${SCRATCH}/html_${EXP}_tmp
     fi
     echo " IMPORTANT the TMP_DIR work directory is set to:" ; echo " ${TMP_DIR}"; echo ; sleep 2
-
-    rm -rf ${TMP_DIR}
+    
+    if [ -d ${TMP_DIR} ] && $(ls ${TMP_DIR}/* >& /dev/null); then
+        echo "ERROR! TMP_DIR already exists and is not empty!"
+        echo "    => ${TMP_DIR}"
+        exit
+    fi
+    
     mkdir -p ${DIAG_D} ${TMP_DIR}
 
     export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"`

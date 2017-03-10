@@ -83,15 +83,31 @@ EOF
         fi
     fi
 
+
+
+    # Movies at begining *_* :
+
     if [ ${i_do_movi} -eq 1 ]; then
-        cat >> index.html <<EOF
-        ${ctl} Evolution of SST and SSS biases (w.r.t observations) ${ctr}
-        ${img_l}dsst_${cr}.gif${img_r}
-        ${img_l}dsss_${cr}.gif${img_r}
-        ${img_l}mld_${cr}.gif${img_r}
+        echo "        ${ctl} Evolution of SST and SSS biases (w.r.t observations) and MLD ${ctr}" >> index.html
+        for cc in dsst dsss mld; do
+            if [ "${iffmpeg_x264}" = "1" ]; then
+                # :) mp4 x264 video for HTML5 compatible browser
+                cat >> index.html <<EOF
+        <video width="1080" height="520" controls>
+          <source src="movie_${cc}_x264_520px.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        ${spf}
 EOF
+            else
+                # :( GIF video
+                echo "        ${img_l}${cc}_${cr}.gif${img_r}" >> index.html
+            fi
+        done
     fi
 
+
+    
     # AMOC page:
     cat >> index.html <<EOF
     ${ctl} Atlantic Meridional Overturning Circulation ${ctr}

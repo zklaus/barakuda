@@ -4,8 +4,6 @@ PRESET="veryslow"
 #PRESET="slow"
 #PRESET="ultrafast"
 
-FPS=8
-
 CRF=20
 #CRF=0
 
@@ -38,13 +36,9 @@ else
     echo "Boo!" ; exit
 fi
 
-
-
-fo="movie_${1}_${info}_${FPS}fps_crf${CRF}.${TYPE}"
+fo="movie_${1}_${info}.${TYPE}"
 
 rm -f ${fo}
-
-
 
 ffmpeg -f image2 -framerate ${FPS} \
        -pattern_type glob -i "${1}*.${2}" \
@@ -53,21 +47,6 @@ ffmpeg -f image2 -framerate ${FPS} \
        -pix_fmt yuv420p \
        ${fo}
 
+echo ; echo ; echo
+exit 0
 
-echo
-echo " *** Check ${fo} !!!"
-echo
-
-
-
-#ffmpeg -f image2 -r 30 -i %09d.jpg -vcodec libx264 -profile:v high444 -refs 16 -crf 0 -preset ultrafast a.mp4
-
-#Explanation of options:
-
-#    -f image2 - tells ffmpeg to select a group of images
-#    -r 30 - tells ffmpeg to encode at 30 frames (or images) per second (change this to your desired framerate)
-#    -vcodec libx264 - tells ffmpeg to output to a H.264 compliant file
-#    -profile:v high444 - tells libx264 to use the High 4:4:4 Predictive Lossless profile, allowing lossless encoding
-#    -refs 16 - tells libx264 to have 16 images stored in a buffer, so that they may be referenced by other images in the video
-#    -crf 0 - tells libx264 to perform a lossless encode
-#    -preset ultrafast - tells libx264 to prioritise encoding speed over output file size

@@ -15,6 +15,7 @@ iamoc=1 ; # Create a climatology for 2D lat-depth AMOC?
 ibpsi=0 ; # Create a climatology for barotropic stream function
 
 export BARAKUDA_ROOT=`pwd`
+export cscrpt="_build_clim"
 
 # Checking available configs
 list_conf=`\ls configs/config_*.sh` ; list_conf=`echo ${list_conf} | sed -e s/'configs\/config_'/''/g -e s/'.sh'/''/g`
@@ -234,7 +235,7 @@ while [ ${jyear} -le ${Y2} ]; do
 
     if [ ${ivt} -eq 1 ]; then
         # Creating VT files:
-        echo " *** CALLING: cdfvT.x ${CFG3D} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV}"
+        echo " *** CALLING: cdfvT.x ${CFG3D} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} &"
         cdfvT.x ${CFG3D} ${NN_T} ${NN_S} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} &
         echo
     fi
@@ -243,14 +244,14 @@ while [ ${jyear} -le ${Y2} ]; do
 
     if [ ${iamoc} -eq 1 ]; then
         rm -f moc.nc
-        echo " *** CALLING: cdfmoc.x ${fv3d} ${NN_V} ${NN_V_EIV}"
+        echo " *** CALLING: cdfmoc.x ${fv3d} ${NN_V} ${NN_V_EIV} &"
         cdfmoc.x ${fv3d} ${NN_V} ${NN_V_EIV} &
         echo
     fi
 
     if [ ${ibpsi} -eq 1 ]; then
         rm -f psi.nc
-        echo " *** CALLING: cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} V"
+        echo " *** CALLING: cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} V &"
         cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} V &
         echo
     fi
