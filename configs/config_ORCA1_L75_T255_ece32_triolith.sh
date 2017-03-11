@@ -141,9 +141,9 @@ export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 export FIG_FORM="png"
 
 # About remote HOST to send/install HTML pages to:
-export ihttp=0                  ; # do we export on a remote http server (1) or keep on the local machine (0)
-export RHOST=whitehouse.gov.org ; # remote host to send diagnostic page to///
-export RUSER=donald             ; # username associated to remote host (for file export)
+export ihttp=1                  ; # do we export on a remote http server (1) or keep on the local machine (0)
+export RHOST=misu228.misu.su.se ; # remote host to send diagnostic page to///
+export RUSER=laurent            ; # username associated to remote host (for file export)
 export RWWWD=/data/www/barakuda/ec-earth_3.2b ; # directory of the local or remote host to send the diagnostic page to
 
 
