@@ -18,7 +18,7 @@ import barakuda_plot as bp
 
 
 venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','NN_SST','NN_T','NN_SSS','NN_S','NN_MLD','FILE_ICE_SUFFIX','NN_ICEF',
-               'F_T_CLIM_3D_12','F_S_CLIM_3D_12','SST_CLIM_12','NN_SST_CLIM','NN_T_CLIM','NN_S_CLIM'}
+               'F_T_OBS_3D_12','F_S_OBS_3D_12','F_SST_OBS_12','NN_SST_OBS','NN_T_OBS','NN_S_OBS'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
@@ -66,16 +66,16 @@ os.system("mkdir -p "+path_fig)
 
 # Salinity
 if cvar == 'sss':
-    bt.chck4f(vdic['F_S_CLIM_3D_12'])
-    id_clim = Dataset(vdic['F_S_CLIM_3D_12'])
-    Vclim  = id_clim.variables[vdic['NN_S_CLIM']][:,0,:,:]; print '(has ',Vclim.shape[0],' time snapshots)\n'
+    bt.chck4f(vdic['F_S_OBS_3D_12'])
+    id_clim = Dataset(vdic['F_S_OBS_3D_12'])
+    Vclim  = id_clim.variables[vdic['NN_S_OBS']][:,0,:,:]; print '(has ',Vclim.shape[0],' time snapshots)\n'
     id_clim.close()
 
 # 2D SST obs :
 if cvar == 'sst':
-    bt.chck4f(vdic['SST_CLIM_12'])
-    id_clim_sst = Dataset(vdic['SST_CLIM_12'])
-    Vclim  = id_clim_sst.variables[vdic['NN_SST_CLIM']][:,:,:]; print '(has ',Vclim.shape[0],' time snapshots)\n'
+    bt.chck4f(vdic['F_SST_OBS_12'])
+    id_clim_sst = Dataset(vdic['F_SST_OBS_12'])
+    Vclim  = id_clim_sst.variables[vdic['NN_SST_OBS']][:,:,:]; print '(has ',Vclim.shape[0],' time snapshots)\n'
     id_clim_sst.close()
 
 # Sea-ice concentration :
@@ -142,7 +142,7 @@ if nt != 12:
     
 if (cvar in ['sss','sst']) and (nj != nj0 or ni != ni0):
     print 'ERROR (prepare_movies.py): NEMO file and clim do no agree in shape for '+cvar+'!'
-    print '       clim => '+str(ni0)+', '+str(nj0)+', ('+vdic['F_T_CLIM_3D_12']+')'
+    print '       clim => '+str(ni0)+', '+str(nj0)+', ('+vdic['F_T_OBS_3D_12']+')'
     print '       NEMO => '+str(ni)+', '+str(nj)
     sys.exit(0)
 

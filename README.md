@@ -1,6 +1,4 @@
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   Quick getting-started guide to BaraKuda
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Quick getting-started guide to BaraKuda
 
 I / What do you need to be able to use BaraKuda ?
 -------------------------------------------------
@@ -44,7 +42,7 @@ I / What do you need to be able to use BaraKuda ?
 
 
 II / Compile CDFTOOLS executables 
--------------------------------------------------
+---------------------------------
 
 
  * CDFTOOLS is a set of FORTRAN executables intended to perform a multitude of
@@ -106,10 +104,11 @@ EC-Earth: (ex: year 1995 of experiment started in 1990 is the 6th year so files 
 or 2 then).
 
 If you want to perform the "climatology" plots (see section IV) you will need
-some 2D and 3D climatologies of T and S interpolated on the relevant ORCA
-grid. Usually you should already have them since they are needed for your
-simulation. These are the following files in your BaraKuda config file:
-F_T_CLIM_3D_12, F_S_CLIM_3D_12, SST_CLIM_12
+monthly "observed" 2D and 3D of T and S (and sea-ice fraction) data interpolated
+on the ORCA grid you are using. Usually you should already have them since they
+are needed to initialize your simulation (initial state for T & S). These are
+the following files in your BaraKuda config file: F_T_OBS_3D_12, F_S_OBS_3D_12,
+F_SST_OBS_12, F_ICE_OBS_12.
 
 
 
@@ -137,18 +136,18 @@ A/ Once the previous job has finished to run, launch
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00 -e)
 
-   * To generate time-series + 2D climatological plots use the "-E" switch,
-     provided you have built a climatology out of your experiment with the
-     "build_clim.sh" script (see point V/B):
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ./barakuda.sh -C <MY_CONF> -R <EXP> -E
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * To generate time-series + 2D climatology plots use the "-E" switch,
+     provided you have built the monthly/annual climatology (based on N years of
+     your simulation) out of your experiment with the "build_clim.sh" script
+     (see point V/B):     
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     ./barakuda.sh -C <MY_CONF> -R <EXP> -E
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 B/ To be able to create the "climatology" plots (maps, sections, etc, based on a
    monthly climatology of a few years) you will have to
 
-  i) create the climatology with the "build_clim.sh" script:
-   
+  i) create the climatology with the "build_clim.sh" script:  
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    ./build_clim.sh -C <MY_CONF> -R <EXP> -i <first_year> -e <last_year>
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

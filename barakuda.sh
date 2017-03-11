@@ -113,7 +113,6 @@ if [ ${ISTAGE} -eq 1 ]; then
     for ex in ${L_EXEC}; do rsync -avP ${BARAKUDA_ROOT}/cdftools_light/bin/${ex} . ; done
 fi
 
-sgz=""
 
 
 
@@ -698,19 +697,19 @@ if [ ${ISTAGE} -eq 2 ]; then
         echo; echo; echo "Checking for presence of ${ftcli}..."
         if [ -f ${ftcli} ]; then
             echo; echo;
-            echo "~~~~~~~~~~~~~~~~~~~~~"
-            echo "*   CLIMATO FOUND !!!"
-            echo "~~~~~~~~~~~~~~~~~~~~~"
+            echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+            echo "*   Climatologies found !!!"
+            echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
             echo
             echo "  => for years ${CLIM_PER}" ; echo "  => using ${ftcli}"
 
-            list_comp_2d="CLIM"
+            list_comp_2d="OBS"
             l_pclim=true
             lcomp_to_exp=false
 
             if [ ! -z ${EXPREF} ]; then
                 lcomp_to_exp=true
-                list_comp_2d="CLIM ${EXPREF}"
+                list_comp_2d="OBS ${EXPREF}"
                 # Must check if climatology for exp ${EXPREF} is there:
                 fclim_ref=`echo "${ftcli}" | sed -e "s|${EXP}|${EXPREF}|g"`
                 check_if_file ${fclim_ref}
@@ -719,8 +718,8 @@ if [ ${ISTAGE} -eq 2 ]; then
             fi
 
             echo; echo
-            for ff in ${F_T_CLIM_3D_12} ${F_S_CLIM_3D_12} ${SST_CLIM_12}; do check_if_file ${ff} "name:${ff}"; done
-            if [ ${i_do_ice} -gt 0 ]; then check_if_file ${ICE_CLIM_12}    "name:${ICE_CLIM_12}" ; fi
+            for ff in ${F_T_OBS_3D_12} ${F_S_OBS_3D_12} ${F_SST_OBS_12}; do check_if_file ${ff} "name:${ff}"; done
+            if [ ${i_do_ice} -gt 0 ]; then check_if_file ${F_ICE_OBS_12}    "name:${F_ICE_OBS_12}" ; fi
             echo; echo
 
 
@@ -728,7 +727,7 @@ if [ ${ISTAGE} -eq 2 ]; then
             # Diags that don't imply a comparison #
             #######################################
 
-            export COMP2D="CLIM"
+            export COMP2D="OBS"
             
             # Lat-Depth AMOC
             # ~~~~~~~~~~~~~~
@@ -800,10 +799,10 @@ if [ ${ISTAGE} -eq 2 ]; then
                 echo; echo; echo "Clim. comparisons against ${COMP2D}"
                
                 if [ "${COMP2D}" = "${EXPREF}" ]; then
-                    export F_T_CLIM_3D_12=${fclim_ref}; check_if_file ${F_T_CLIM_3D_12} "name:F_T_CLIM_3D_12"
-                    export F_S_CLIM_3D_12=${fclim_ref}; check_if_file ${F_S_CLIM_3D_12} "name:F_S_CLIM_3D_12"
-                    export SST_CLIM_12=${fclim_ref}   ; check_if_file ${SST_CLIM_12}    "name:SST_CLIM_12"
-                    if [ ${i_do_ice}  -gt 0 ]; then export ICE_CLIM_12=${fclim_ref}   ; check_if_file ${ICE_CLIM_12}    "name:ICE_CLIM_12"; fi
+                    export F_T_OBS_3D_12=${fclim_ref}; check_if_file ${F_T_OBS_3D_12} "name:F_T_OBS_3D_12"
+                    export F_S_OBS_3D_12=${fclim_ref}; check_if_file ${F_S_OBS_3D_12} "name:F_S_OBS_3D_12"
+                    export F_SST_OBS_12=${fclim_ref} ; check_if_file ${F_SST_OBS_12}  "name:F_SST_OBS_12"
+                    if [ ${i_do_ice}  -gt 0 ]; then export F_ICE_OBS_12=${fclim_ref}   ; check_if_file ${F_ICE_OBS_12}    "name:F_ICE_OBS_12"; fi
                 fi
                 
                 # Temperature and Salinity
@@ -825,8 +824,8 @@ if [ ${ISTAGE} -eq 2 ]; then
             
         else
             echo; echo
-            echo " NO CLIMATO FOUND ...";
-            echo "   => you can use 'build_clim.sh' to build a climato of your exp"
+            echo " No Climatologies found ...";
+            echo "   => you can use 'build_clim.sh' to build a climato of your experiment"
             echo; echo
         fi
 

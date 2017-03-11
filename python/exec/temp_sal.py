@@ -23,8 +23,8 @@ lfig1 = True
 lfig2 = True
 
 venv_needed = {'ORCA','EXP','DIAG_D','COMP2D','i_do_sect','MM_FILE','ANNUAL_3D',
-               'NN_SST','NN_T','NN_SSS','NN_S','F_T_CLIM_3D_12','F_S_CLIM_3D_12',
-               'SST_CLIM_12','NN_SST_CLIM','NN_T_CLIM','NN_S_CLIM'}
+               'NN_SST','NN_T','NN_SSS','NN_S','F_T_OBS_3D_12','F_S_OBS_3D_12',
+               'F_SST_OBS_12','NN_SST_OBS','NN_T_OBS','NN_S_OBS'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
@@ -39,7 +39,7 @@ if len(vdic['ANNUAL_3D']) != 0:
     l_3df_are_annual = True ; # 3D fields (T & S) are in annual 'grid_T' aclim file
 
 # Bounds and increment for comparison maps:
-if CC == 'CLIM':
+if CC == 'OBS':
     tmin=-5.  ;  tmax=5.  ; dtemp = 0.5
     smin=-2.5 ;  smax=2.5 ; dsali = 0.25
 else:
@@ -75,26 +75,26 @@ print ' => mean on the clim : ', jy1_clim, jy2_clim, '\n'
 # ------------
 
 # Temperature
-bt.chck4f(vdic['F_T_CLIM_3D_12'])
-id_obs = Dataset(vdic['F_T_CLIM_3D_12'])
-Tobs  = id_obs.variables[vdic['NN_T_CLIM']][:,:,:,:]; print '(has ',Tobs.shape[0],' time snapshots)\n'
+bt.chck4f(vdic['F_T_OBS_3D_12'])
+id_obs = Dataset(vdic['F_T_OBS_3D_12'])
+Tobs  = id_obs.variables[vdic['NN_T_OBS']][:,:,:,:]; print '(has ',Tobs.shape[0],' time snapshots)\n'
 id_obs.close()
 [ nmn , nk0 , nj0 , ni0 ] = Tobs.shape
 
 # Salinity
-bt.chck4f(vdic['F_S_CLIM_3D_12'])
-id_obs = Dataset(vdic['F_S_CLIM_3D_12'])
-Sobs  = id_obs.variables[vdic['NN_S_CLIM']][:,:,:,:]; print '(has ',Sobs.shape[0],' time snapshots)\n'
+bt.chck4f(vdic['F_S_OBS_3D_12'])
+id_obs = Dataset(vdic['F_S_OBS_3D_12'])
+Sobs  = id_obs.variables[vdic['NN_S_OBS']][:,:,:,:]; print '(has ',Sobs.shape[0],' time snapshots)\n'
 id_obs.close()
 
 
 
 
 # 2D SST obs :
-print 'We use the following SST climatology:'; print vdic['SST_CLIM_12']
-bt.chck4f(vdic['SST_CLIM_12'])
-id_obs_sst = Dataset(vdic['SST_CLIM_12'])
-SSTobs  = id_obs_sst.variables[vdic['NN_SST_CLIM']][:,:,:]; print '(has ',SSTobs.shape[0],' time snapshots)\n'
+print 'We use the following SST climatology:'; print vdic['F_SST_OBS_12']
+bt.chck4f(vdic['F_SST_OBS_12'])
+id_obs_sst = Dataset(vdic['F_SST_OBS_12'])
+SSTobs  = id_obs_sst.variables[vdic['NN_SST_OBS']][:,:,:]; print '(has ',SSTobs.shape[0],' time snapshots)\n'
 id_obs_sst.close()
 
 
@@ -194,14 +194,14 @@ if l_do_monthly_3d or l_3df_are_annual:
     ( nt, nk, nj, ni ) = Tnemo.shape
     if (nk,nj,ni) != (nk0,nj0,ni0):
         print 'ERROR (temp_sal.py): 3D clim and NEMO file do no agree in shape!'
-        print '       clim => '+str(ni0)+', '+str(nj0)+', '+str(nk0),' ('+vdic['F_T_CLIM_3D_12']+')'
+        print '       clim => '+str(ni0)+', '+str(nj0)+', '+str(nk0),' ('+vdic['F_T_OBS_3D_12']+')'
         print '       NEMO => '+str(ni)+', '+str(nj)+', '+str(nk)
         sys.exit(0)    
 else:
     ( nt, nj, ni ) = SSTnemo.shape
     if (nj,ni) != (nj0,ni0):
         print 'ERROR (temp_sal.py): 3D clim and NEMO file do no agree in shape!'
-        print '       clim => '+str(ni0)+', '+str(nj0),' ('+vdic['F_T_CLIM_3D_12']+')'
+        print '       clim => '+str(ni0)+', '+str(nj0),' ('+vdic['F_T_OBS_3D_12']+')'
         print '       NEMO => '+str(ni)+', '+str(nj)
         sys.exit(0)
 
@@ -323,7 +323,7 @@ vlat = nmp.zeros(nj) ; vlat[:] = xlat[:,ji_lat0]
 
 if lfig0:
 
-    if CC == 'CLIM':
+    if CC == 'OBS':
         ctt = CONFEXP+': Mean Annual Zonal Anomaly of SST / Reynolds, ('+cy1+'-'+cy2+')'
     else:
         ctt = CONFEXP+': Mean Annual Zonal Anomaly of SST / '+CC+', ('+cy1+'-'+cy2+')'
@@ -334,7 +334,7 @@ if lfig0:
                      xmin=-75., xmax=65., czunit=r'$^{\circ}$C', cfig_type=fig_type,
                      ctitle=ctt)
 
-    if CC == 'CLIM':
+    if CC == 'OBS':
         ctt = CONFEXP+': Mean Annual Zonal Anomaly of SSS / WOA2009, ('+cy1+'-'+cy2+')'
     else:
         ctt = CONFEXP+': Mean Annual Zonal Anomaly of SSS / '+CC+', ('+cy1+'-'+cy2+')'

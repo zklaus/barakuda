@@ -75,7 +75,7 @@ finfoclim=${DIAG_D}/clim/last_clim
 y1_clim=`cat ${finfoclim} | cut -d - -f1`
 y2_clim=`cat ${finfoclim} | cut -d - -f2`
 
-export COMP2D="CLIM"
+export COMP2D="OBS"
 
 # To know the name of NEMO output files:
 export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"`

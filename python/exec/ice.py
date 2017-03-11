@@ -13,7 +13,7 @@ from netCDF4 import Dataset
 import barakuda_tool as bt
 import barakuda_plot as bp
 
-venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','COMP2D','ICE_CLIM_12','NN_ICEF_CLIM','NN_ICEF','NN_ICET','FILE_ICE_SUFFIX'}
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','COMP2D','F_ICE_OBS_12','NN_ICEF_OBS','NN_ICEF','NN_ICET','FILE_ICE_SUFFIX'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
@@ -45,10 +45,10 @@ id_mm.close()
 
 
 # Getting obs:
-bt.chck4f(vdic['ICE_CLIM_12'])
-id_clim = Dataset(vdic['ICE_CLIM_12'])
-xclim03 = id_clim.variables[vdic['NN_ICEF_CLIM']][2,:,:]
-xclim09 = id_clim.variables[vdic['NN_ICEF_CLIM']][8,:,:]
+bt.chck4f(vdic['F_ICE_OBS_12'])
+id_clim = Dataset(vdic['F_ICE_OBS_12'])
+xclim03 = id_clim.variables[vdic['NN_ICEF_OBS']][2,:,:]
+xclim09 = id_clim.variables[vdic['NN_ICEF_OBS']][8,:,:]
 id_clim.close()
 
 
@@ -116,7 +116,7 @@ xclim090[js_ext:nje,:] = xclim09[:,:]
 
 ratio = 1.
 
-#if vdic['COMP2D'] == 'CLIM': ratio = 100.
+#if vdic['COMP2D'] == 'OBS': ratio = 100.
 if xclim03.max()>90.:
     ratio = 100.
 
@@ -142,7 +142,7 @@ if False:
 
 # September
 # ~~~~~~~~~
-if vdic['COMP2D'] == 'CLIM':
+if vdic['COMP2D'] == 'OBS':
     ctit_clim = 'Ice fraction, Sept., obs.'
 else:
     ctit_clim = 'Ice fraction, Sept., '+vdic['COMP2D']
@@ -203,7 +203,7 @@ bp.plot("nproj")('spstere', 0., 5., 0.1, xlon0, xlat0, xnemo_thic_090[:,:],
 # March:
 # ~~~~~~
 
-if vdic['COMP2D'] == 'CLIM':
+if vdic['COMP2D'] == 'OBS':
     ctit_clim = 'Ice fraction, March, obs.'
 else:
     ctit_clim = 'Ice fraction, March, '+vdic['COMP2D']

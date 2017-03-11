@@ -19,7 +19,7 @@ function parse_html()
     if [ -z ${HOST} ];       then echo "${c1} 'HOST' ${c2}";       exit; fi
     if [ -z ${EXTRA_CONF} ]; then echo "${c1} 'EXTRA_CONF' ${c2}"; exit; fi
     if [ -z ${MASTERMIND} ]; then echo "${c1} 'MASTERMIND' ${c2}"; exit; fi
-    if [ -z ${EXPREF} ];     then export EXPREF="CLIM";          fi
+    if [ -z ${EXPREF} ];     then export EXPREF="OBS";          fi
 
     PARSE_CMD="sed -e s|{TITLE}|${TITLE}|g \
                    -e s|{CONFEXP}|${CONFEXP}|g \
@@ -60,14 +60,14 @@ function build_index_html()
     if ${l_pclim}; then
         cat >> index.html <<EOF
     ${ctl} Diags from climatology (${CLIM_PER}) ${ctr}
-    <big> <a href="./temp_sal/index.html"> Temperature and Salinity vs CLIM</a> </big>             ${spf}
+    <big> <a href="./temp_sal/index.html"> Temperature and Salinity vs OBS</a> </big>             ${spf}
         <big> <a href="./ssh/index.html">  Sea Surface Height </a> </big>                              ${spf}
-        <big> <a href="./sea_ice/index.html">  Arctic and Antarctic sea-ice extent vs CLIM </a> </big> ${spf}
+        <big> <a href="./sea_ice/index.html">  Arctic and Antarctic sea-ice extent vs OBS </a> </big> ${spf}
         <big> <a href="./mld/index.html">  Mixed Layer depth in relevent regions </a> </big>           ${spf}
         <big> <a href="./moc/index.html">  Meridional Overturning Circulation </a> </big>              ${spf}
 EOF
         if [ ${i_do_sect} -eq 1 ]; then
-            echo "<big> <a href='./temp_sal/index_sections.html'> Zonal/Meridional sections of T & S vs CLIM</a> </big>    ${spf}" >> index.html
+            echo "<big> <a href='./temp_sal/index_sections.html'> Zonal/Meridional sections of T & S vs OBS</a> </big>    ${spf}" >> index.html
         fi
         #
         if ${lcomp_to_exp}; then
@@ -291,7 +291,7 @@ function build_sub_html()
         cat ${BARAKUDA_ROOT}/src/html/conf_start.html               > index.tmp
         cat ${BARAKUDA_ROOT}/src/html/temp_sal/${var}.html         >> index.tmp
         cat ${BARAKUDA_ROOT}/src/html/conf_end.html                >> index.tmp
-        parse_html index.tmp temp_sal/${var}_CLIM.html
+        parse_html index.tmp temp_sal/${var}_OBS.html
     done
 
     # T&S sections:
@@ -302,9 +302,9 @@ function build_sub_html()
             echo "    ${ctl} Meridional and zonal cross-sections of T & S (specified in data/TS_sections.dat) ${ctr}" >> index.tmp
             for fsct in ${list_sec_figs}; do
                 fgnt_n=`basename ${fsct}`                                      ; #figure for T NEMO
-                fgnt_c=`echo ${fgnt_n} | sed -e s/"${cr}"/"CLIM"/g`            ; #figure for T CLIM
+                fgnt_c=`echo ${fgnt_n} | sed -e s/"${cr}"/"OBS"/g`            ; #figure for T OBS
                 fgns_n=`echo ${fgnt_n} | sed -e s/"section_T_"/"section_S_"/g` ; #figure for S NEMO
-                fgns_c=`echo ${fgnt_c} | sed -e s/"section_T_"/"section_S_"/g` ; #figure for S CLIM
+                fgns_c=`echo ${fgnt_c} | sed -e s/"section_T_"/"section_S_"/g` ; #figure for S OBS
                 cnames=`echo ${fgnt_n} | sed -e s/"section_T_"/""/g -e s/"_${cr}.${ff}"/""/g` ; # Name of section
                 cnames=`echo ${cnames} | sed -e s/"_"/" "/g`
                 echo "    ${csl} Cross-section '${cnames}': ${csr}"  >> index.tmp

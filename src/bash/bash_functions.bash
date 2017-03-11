@@ -107,12 +107,12 @@ function barakuda_setup()
     if ${l_clim_diag} ; then
         echo
         echo " Files containing climatologies to be used:"
-        echo " T 3D => ${F_T_CLIM_3D_12} => ${NN_T_CLIM}"
-        echo " S 3D => ${F_S_CLIM_3D_12} => ${NN_S_CLIM}"
-        echo " SST  => ${SST_CLIM_12} => ${NN_SST_CLIM}"
+        echo " T 3D => ${F_T_OBS_3D_12} => ${NN_T_OBS}"
+        echo " S 3D => ${F_S_OBS_3D_12} => ${NN_S_OBS}"
+        echo " SST  => ${F_SST_OBS_12} => ${NN_SST_OBS}"
         echo
-        for ff in ${F_T_CLIM_3D_12} ${F_S_CLIM_3D_12} ${SST_CLIM_12}; do
-            if [ ! -f ${F_T_CLIM_3D_12} ]; then echo "ERROR: ${ff} is missing!"; exit; fi
+        for ff in ${F_T_OBS_3D_12} ${F_S_OBS_3D_12} ${F_SST_OBS_12}; do
+            if [ ! -f ${F_T_OBS_3D_12} ]; then echo "ERROR: ${ff} is missing!"; exit; fi
         done
     fi
 

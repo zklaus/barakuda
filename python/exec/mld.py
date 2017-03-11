@@ -14,7 +14,7 @@ import barakuda_tool as bt
 import barakuda_plot as bp
 import barakuda_physics as bphys
 
-venv_needed = {'ORCA','EXP','DIAG_D','COMP2D','MM_FILE','NN_MLD','NN_S_CLIM','NN_T_CLIM','F_T_CLIM_3D_12','F_S_CLIM_3D_12'}
+venv_needed = {'ORCA','EXP','DIAG_D','COMP2D','MM_FILE','NN_MLD','NN_S_OBS','NN_T_OBS','F_T_OBS_3D_12','F_S_OBS_3D_12'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
@@ -32,7 +32,7 @@ zmax_mld_atl = 1600. ; dz_mld = 100.
 
 
 l_obs_mld = False
-if (not vdic['F_T_CLIM_3D_12'] == None) and (not vdic['F_T_CLIM_3D_12'] == None):
+if (not vdic['F_T_OBS_3D_12'] == None) and (not vdic['F_T_OBS_3D_12'] == None):
     l_obs_mld = True ; print 'Since obs Temp and Sali here will compute observed MLD!'
 
 
@@ -83,20 +83,20 @@ if l_obs_mld:
     # --------------------------------------------
 
     # Temperature
-    bt.chck4f(vdic['F_T_CLIM_3D_12']) ; id_clim = Dataset(vdic['F_T_CLIM_3D_12'])
-    Tclim  = id_clim.variables[vdic['NN_T_CLIM']][:,:,:,:]; print '(has ',Tclim.shape[0],' time snapshots)\n'
+    bt.chck4f(vdic['F_T_OBS_3D_12']) ; id_clim = Dataset(vdic['F_T_OBS_3D_12'])
+    Tclim  = id_clim.variables[vdic['NN_T_OBS']][:,:,:,:]; print '(has ',Tclim.shape[0],' time snapshots)\n'
     id_clim.close()
 
     # Salinity
-    bt.chck4f(vdic['F_S_CLIM_3D_12']) ; id_clim = Dataset(vdic['F_S_CLIM_3D_12'])
-    Sclim  = id_clim.variables[vdic['NN_S_CLIM']][:,:,:,:]; print '(has ',Sclim.shape[0],' time snapshots)\n'
+    bt.chck4f(vdic['F_S_OBS_3D_12']) ; id_clim = Dataset(vdic['F_S_OBS_3D_12'])
+    Sclim  = id_clim.variables[vdic['NN_S_OBS']][:,:,:,:]; print '(has ',Sclim.shape[0],' time snapshots)\n'
     id_clim.close()
 
     [ nmn , nk0, nj0 , ni0 ] = Tclim.shape
 
     if nj != nj0 or ni != ni0 or nk != nk0:
         print 'ERROR: 3D clim and NEMO file do no agree in shape!'
-        print '       clim => '+str(ni0)+', '+str(nj0)+', '+str(nk0)+' ('+vdic['F_T_CLIM_3D_12']+')'
+        print '       clim => '+str(ni0)+', '+str(nj0)+', '+str(nk0)+' ('+vdic['F_T_OBS_3D_12']+')'
         print '       NEMO => '+str(ni)+', '+str(nj)+', '+str(nk)
         sys.exit(0)
 
