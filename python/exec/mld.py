@@ -165,7 +165,7 @@ bp.plot("nproj")('spstere', 50., 200., 10., xlon, xlat, mldr10[imnth,:,:],
                  lkcont=True, cfig_type=fig_type,
                  lforce_lim=True)
 
-bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], mldr10[imnth,:,:], Xmask[0,:,:], 0., 600., 20.,
+bp.plot("2d")(xlon[nj/3,:], xlat[:,ji_lat0], mldr10[imnth,:,:], Xmask[0,:,:], 0., 600., 20.,
               corca=corca, lkcont=True, cpal='ncview_nrl',
               cfignm=path_fig+'mld_Global_march_'+CONFEXP, cbunit='(m)',
               ctitle='MLD, March, '+CONFEXP+' ('+cy1+'-'+cy2+')', lforce_lim=True, i_cb_subsamp=2,
@@ -177,7 +177,7 @@ if l_obs_mld:
                      ctitle='MLD, March (Levitus 1980-1999)',
                      lkcont=True, cfig_type=fig_type, lforce_lim=True)
 
-    bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xmld_obs[:,:], Xmask[0,:,:], 0., 600., 20.,
+    bp.plot("2d")(xlon[nj/3,:], xlat[:,ji_lat0], Xmld_obs[:,:], Xmask[0,:,:], 0., 600., 20.,
                   corca=corca, lkcont=True, cpal='ncview_nrl',
                   cfignm=path_fig+'mld_obs_001_Global_march_'+CONFEXP, cbunit='(m)',
                   ctitle='MLD, March (Levitus 1980-1999)', lforce_lim=True, i_cb_subsamp=2,
@@ -215,7 +215,7 @@ bp.plot("nproj")('spstere', 100., 2000., dz_mld, xlon, xlat, mldr10[imnth,:,:],
                  lkcont=True, cfig_type=fig_type,
                  lforce_lim=True)
 
-bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], mldr10[imnth,:,:], Xmask[0,:,:], 0., 600., 20.,
+bp.plot("2d")(xlon[nj/3,:], xlat[:,ji_lat0], mldr10[imnth,:,:], Xmask[0,:,:], 0., 600., 20.,
               corca=corca, lkcont=True, cpal='ncview_nrl',
               cfignm=path_fig+'mld_Global_september_'+CONFEXP, cbunit='(m)',
               ctitle='MLD, September, '+CONFEXP+' ('+cy1+'-'+cy2+')', lforce_lim=True, i_cb_subsamp=2,
@@ -223,7 +223,7 @@ bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], mldr10[imnth,:,:], Xmask[0,:,:], 0., 6
 
 
 if l_obs_mld:
-    bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xmld_obs[:,:], Xmask[0,:,:], 0., 600., 20.,
+    bp.plot("2d")(xlon[nj/3,:], xlat[:,ji_lat0], Xmld_obs[:,:], Xmask[0,:,:], 0., 600., 20.,
                   corca=corca, lkcont=True, cpal='ncview_nrl',
                   cfignm=path_fig+'mld_obs_001_Global_september_'+CONFEXP, cbunit='(m)',
                   ctitle='MLD, March (Levitus 1980-1999)', lforce_lim=True, i_cb_subsamp=2,

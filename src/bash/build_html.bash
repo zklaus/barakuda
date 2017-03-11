@@ -95,7 +95,7 @@ EOF
                 cat >> index.html <<EOF
         <video width="1080" height="520" controls>
           <source src="movie_${cc}_x264_520px.mp4" type="video/mp4">
-            Your browser does not support the video tag.
+            Time to install a recent version of Firefox my friend...
         </video>
         ${spf}
 EOF

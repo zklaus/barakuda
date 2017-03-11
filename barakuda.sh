@@ -570,16 +570,17 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     cd ${DIAG_D}/
 
-
+    echo
     if [ ${i_do_movi} -eq 1 ]; then
-        echo
         if [ "${iffmpeg_x264}" = "1" ]; then
             # FFMPEG compiled with x264 mp4 support is available on host:
+            cd movies/
             for cc in dsst dsss mld icen ices; do
-                echo " *** CALLING: images2mp4.sh sst ${FIG_FORM} 520 6 &"
-                images2mp4.sh ${cc} ${FIG_FORM} 520 6 &
+                echo " *** CALLING: images2mp4.sh ${cc} ${FIG_FORM} 520 8 &"
+                images2mp4.sh ${cc} ${FIG_FORM} 520 8 &
                 echo
             done
+            cd ${DIAG_D}/
         else
             # Faling back on GIF, with 'convert' of imageMagick:
             idelay=$((120-${nby}*8))
@@ -835,6 +836,7 @@ if [ ${ISTAGE} -eq 2 ]; then
     
     wait
 
+
     # Time for HTML stuff!
 
     export HTML_DIR=${DIAG_D}/${EXP}
@@ -843,10 +845,12 @@ if [ ${ISTAGE} -eq 2 ]; then
     cd ${DIAG_D}/
 
     # Moving all figures to HTML_DIR:
-    for fp in ${FIG_FORM} svg gif; do mv -f *.${fp} ${HTML_DIR}/ >/dev/null 2>/dev/null ; done
+    for fp in ${FIG_FORM} svg mp4 gif; do mv -f *.${fp} ${HTML_DIR}/ >/dev/null 2>/dev/null ; done
     mv -f ./merid_transport/*.${FIG_FORM} ${HTML_DIR}/ >/dev/null 2>/dev/null
+    mv -f ${DIAG_D}/movies/movie_*.mp4    ${HTML_DIR}/ >/dev/null 2>/dev/null
     
     . ${BARAKUDA_ROOT}/src/bash/build_html.bash
+
     
     wait
     # Building main index.html 
