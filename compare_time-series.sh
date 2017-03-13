@@ -10,12 +10,10 @@
 #
 #===============================================================
 
-export BARAKUDA_ROOT=`pwd`
+#export BARAKUDA_ROOT=`pwd`
+[ -z ${BARAKUDA_ROOT+x} ] && export BARAKUDA_ROOT=${PWD}
+
 export FIG_FORMAT='png'
-
-
-
-
 #export FIG_FORMAT='svg'
 
 

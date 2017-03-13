@@ -1084,7 +1084,7 @@ class plot :
 
     def __1d_mon_ann(self,VTm, VTy, VDm, VDy, cfignm='fig', dt=5, cyunit='', ctitle='',
                      ymin=0, ymax=0, dy=0, i_y_jump=1, mnth_col='b', plt_m03=False, plt_m09=False,
-                     cfig_type='png', l_tranparent_bg=True, fig_size=FIG_SIZE_DEF):
+                     cfig_type='png', l_tranparent_bg=True, fig_size=FIG_SIZE_DEF, l_add_y0=False):
 
         # if you specify ymin and ymax you can also specify y increment (for y grid) as dy
         #
@@ -1114,6 +1114,8 @@ class plot :
         if mnth_col == 'g': mnth_col = b_gre
         if mnth_col == 'b': mnth_col = b_blu
 
+        if l_add_y0:
+            plt.plot(VTm, VTm*0., 'k', label=None, linewidth=1.2)
         if l_add_monthly:
             plt.plot(VTm, VDm, mnth_col, label=r'monthly', linewidth=1)
         plt.plot(VTy, VDy, b_red, label=r'annual', linewidth=2)
@@ -1129,30 +1131,27 @@ class plot :
                 plt.legend(bbox_to_anchor=(0.9, -0.05), ncol=2, shadow=True, fancybox=True)
 
         # Time bounds for t-axis:
-        x1 = int(min(VTy)-0.5)
-        x2 = int(max(VTy)+0.5)
+        dcorr = 0.
+        x1 = float(int(min(VTy)))
+        #x2 = float(int(max(VTy)))
+        x2 = round(max(VTy),0)
+        #if min(VTy)-x1==0.5:
+        #x1 = int(min(VTy)-dcorr)
+        #x2 = int(max(VTy)+dcorr)
 
         mean_val = nmp.mean(VDy)
         df = max( abs(min(VDm)-mean_val), abs(max(VDm)-mean_val) )
-
-
-        y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-        ax.yaxis.set_major_formatter(y_formatter)
-
+        
         if ymin==0 and ymax==0:
-            plt.axis( [x1, x2, min(VDm)-0.2*df, max(VDm)+0.2*df] )
-
+            y1, y2, dy = __suitable_axis_dx__(min(VDm)-0.2*df, max(VDm)+0.2*df, nb_val=10.)
+        elif dy == 0:
+            y1, y2, dy = __suitable_axis_dx__(ymin,            ymax,            nb_val=10.)
         else:
-            plt.axis([x1, x2, ymin, ymax])
+            y1=ymin ; y2=ymax
 
-            if dy != 0:
-                plt.yticks( nmp.arange(float(int(ymin+0.5)), float(int(ymax))+dy, dy) )
-                locs, labels = plt.yticks()
-                if i_y_jump > 1: __subsample_axis__(plt, 'y', i_y_jump)
+        __nice_y_axis__(ax, plt, y1, y2, dy, i_sbsmp=i_y_jump, cunit=cyunit, cfont=font_xylb, dy_minor=0)
 
-        __nice_x_axis__(ax, plt, x1, x2, dt, cfont=font_xylb)
-
-        plt.ylabel('('+cyunit+')', **font_xylb)
+        __nice_x_axis__(ax, plt, x1, x2, dt, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
 
         plt.title(ctitle, **font_ttl)
 

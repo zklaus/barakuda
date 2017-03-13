@@ -173,7 +173,7 @@ EOF
     fi
 
     # Freshwater flux diagnostics:
-    LIST_FW_FIG="zos fwf_fwf fwf_emp fwf_prc fwf_rnf fwf_clv fwf_rnf_clv \
+    LIST_FW_FIG="zos zos-imb fwf_fwf fwf_emp fwf_prc fwf_rnf fwf_clv fwf_rnf_clv \
         fwf_evp_NEMO_IFS fwf_evp_NEMO_IFS_annual \
         fwf_prc_NEMO_IFS fwf_prc_NEMO_IFS_annual \
         fwf_EmP_NEMO_IFS fwf_EmP_NEMO_IFS_annual \

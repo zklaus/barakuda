@@ -13,7 +13,9 @@
 export script=barakuda
 #cbfp=`readlink -f $0`
 #export BARAKUDA_ROOT=`dirname ${cbfp}`
-export BARAKUDA_ROOT=`pwd`
+#export BARAKUDA_ROOT=`pwd`
+[ -z ${BARAKUDA_ROOT+x} ] && export BARAKUDA_ROOT=${PWD}
+
 
 # Display available configs:
 list_conf=`\ls ${BARAKUDA_ROOT}/configs/config_*.sh | sed -e "s|${BARAKUDA_ROOT}/configs\/config_||g" -e s/'.sh'/''/g`
@@ -91,11 +93,11 @@ cyear_ini=`printf "%04d" ${YEAR_INI}`
 cyear_end=`printf "%04d" ${YEAR_END}`
 
 
-# The right python executable and barakuda must be found:
+# For proper python executables and scripts to be found:
 export PATH=${PYBRKD_EXEC_PATH}:${BARAKUDA_ROOT}/src/bash:${PYTHON_HOME}/bin:${PATH}
 
-# setup over...
-###########################################################################################
+#                                   setup over
+######################################################################################
 
 
 

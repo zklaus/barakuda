@@ -12,9 +12,9 @@ ifsflx=0
 imean2d=0
 imean3d=0
 ienso=0
-imov=1
+imov=0
 issh=0
-its=0
+its=1
 imld=0
 irnf=0
 iice=0
@@ -42,13 +42,13 @@ ihov=0
 #ARCH="T511_ece32_triolith"
 #export EXP="HC71" ; NC=nc ; jyear=1990
 
-CONFIG="ORCA025_L75"
-ARCH="etienne"
-export EXP="a0ez" ; NC=nc ; jyear=1945
+#CONFIG="ORCA025_L75"
+#ARCH="etienne"
+#export EXP="a0ez" ; NC=nc ; jyear=1945
 
-#CONFIG="ORCA1_L75"
-#ARCH="T255_ece32_triolith"
-#export EXP="LB10" ; NC=nc4 ; jyear=1990
+CONFIG="ORCA1_L75"
+ARCH="T159_ece32_triolith"
+export EXP="LB20" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -145,6 +145,7 @@ fi
 
 if [ ${its} -eq 1 ]; then
     diag=3d_thetao ; ln -sf ${DIAG_D}/3d_${NN_T}*.nc .
+    #diag=mean_zos  ; ln -sf ${DIAG_D}/mean_${NN_SSH}*.nc .
     #diag=mean_fwf
     #diag=mean_htf
     #ln -sf ${DIAG_D}/${diag}*.nc .

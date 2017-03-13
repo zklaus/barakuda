@@ -18,6 +18,10 @@ import barakuda_ncio as bn
 import barakuda_orca as bo
 import barakuda_plot as bp
 
+
+Socean = 363.           ; # Surface of the ocean in 10^6 km^2
+Lt_1y  = 365.*24.*3600.*1E-6 ; # Length of 1 year in 10^6 seconds (=31.536)
+
 csn = sys.argv[0]
 
 cv_evb = 'evap_ao_cea' ; # debug evap in ec-earth...
@@ -163,6 +167,16 @@ if idfig == 'simple':
     # Time to plot
     bp.plot("1d_mon_ann")(vtime, VY, vvar, FY, cfignm=cdiag+'_'+CONFEXP, dt=ittic,
                           cyunit=cyu, ctitle = CONFEXP+': '+clnm, ymin=ym, ymax=yp, cfig_type=ff)
+
+    if cvar == vdic['NN_SSH']:
+        clnm = 'Global freshwater imbalance based on annual SSH drift'
+        Fimb = nmp.zeros(nby)
+        for jy in range(1,nby):
+            Fimb[jy] = (FY[jy] - FY[jy-1])*Socean/Lt_1y
+        Fimb[0] = nmp.nan
+        bp.plot("1d_mon_ann")(VY, VY, Fimb, Fimb, cfignm=cdiag+'-imb_'+CONFEXP, dt=ittic,
+                              cyunit='Sv', ctitle = CONFEXP+': '+clnm,
+                              ymin=-0.8, ymax=0.8, dy=0.1, cfig_type=ff, l_add_y0=True)
 
 
 

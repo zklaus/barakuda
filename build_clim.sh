@@ -15,7 +15,8 @@ iamoc=1 ; # Create a climatology for 2D lat-depth AMOC?
 ibpsi=0 ; # Create a climatology for barotropic stream function
 
 export script=build_clim
-export BARAKUDA_ROOT=`pwd`
+#export BARAKUDA_ROOT=`pwd`
+[ -z ${BARAKUDA_ROOT+x} ] && export BARAKUDA_ROOT=${PWD}
 
 # Checking available configs
 list_conf=`\ls configs/config_*.sh` ; list_conf=`echo ${list_conf} | sed -e s/'configs\/config_'/''/g -e s/'.sh'/''/g`
