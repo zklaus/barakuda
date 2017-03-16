@@ -5,7 +5,7 @@ function barakuda_import_files()
 
     echo " SPECIFIC 1y 3D !!! into `pwd` !"
 
-    CROUT=${CPRMN}${TTAG}
+    CROUT=${CPREF}${TTAG}
     echo " CROUT => ${CROUT}"
 
     CRTY=`echo ${CROUT} | sed -e s/"_1m_"/"_${ANNUAL_3D}_"/g`

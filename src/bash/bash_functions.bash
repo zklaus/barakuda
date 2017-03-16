@@ -366,7 +366,7 @@ function barakuda_import_files()
     CIMP="rsync -L"
     if [ "${CONF}" = "ORCA025.L75" ]; then CIMP="ln -sf" ; fi
 
-    CROUT=${CPRMN}${TTAG}
+    CROUT=${CPREF}${TTAG}
     
     # On what file type to test file presence:
     cgrid_test=`echo ${NEMO_SAVED_FILES} | cut -d ' ' -f2`
