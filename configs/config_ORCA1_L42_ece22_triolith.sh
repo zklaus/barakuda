@@ -154,6 +154,7 @@ export RWWWD=/data/www/barakuda/CMIP5 ; # directory of the local or remote host 
 
 # Movies of SST and SSS compared to OBS:
 export i_do_movi=0
+export iffmpeg_x264=0 ; # is, by chance, ffmpeg with support for x264 encoding available on your stystem?
 
 # Basic 3D and surface averages:
 export i_do_mean=1

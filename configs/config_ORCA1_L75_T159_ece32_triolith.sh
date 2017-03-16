@@ -153,6 +153,7 @@ export RWWWD=/data/www/barakuda/ec-earth_3.2b ; # directory of the local or remo
 
 # Movies of SST and SSS compared to OBS:
 export i_do_movi=1
+export iffmpeg_x264=1 ; # is, by chance, ffmpeg with support for x264 encoding available on your stystem?
 
 # Basic 3D and surface averages:
 export i_do_mean=1
