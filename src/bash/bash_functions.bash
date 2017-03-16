@@ -366,6 +366,8 @@ function barakuda_import_files()
     CIMP="rsync -L"
     if [ "${CONF}" = "ORCA025.L75" ]; then CIMP="ln -sf" ; fi
 
+    CROUT=${CPRMN}${TTAG}
+    
     # On what file type to test file presence:
     cgrid_test=`echo ${NEMO_SAVED_FILES} | cut -d ' ' -f2`
     echo " *** testing on files \"${cgrid_test}\" !"; echo
@@ -374,10 +376,10 @@ function barakuda_import_files()
         if [ ${IFREQ_SAV_YEARS} -eq 1 ]; then l_happy=true; fi
         rm -f *.tmp
         if [ ${i_get_file} -eq 1 ]; then
-            echo " => gonna get ${CRTM}_* files..."
+            echo " => gonna get ${CROUT}_* files..."
             # Importing required files to tmp dir and unzipping:
             for gt in ${NEMO_SAVED_FILES}; do
-                f2i=${CRTM}_${gt}.nc ;   sgz=""
+                f2i=${CROUT}_${gt}.nc ;   sgz=""
                 for ca in ".gz" "4"; do
                     if [ -f ${NEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
                 done
@@ -400,7 +402,7 @@ function barakuda_import_files()
             # Need to create annual files if more than 1 year in 1 one NEMO file
             if [ ${IFREQ_SAV_YEARS} -gt 1 ]; then
                 for gt in ${NEMO_SAVED_FILES}; do
-                    ftd=./${CRTM}_${gt}.nc ; # file to divide!
+                    ftd=./${CROUT}_${gt}.nc ; # file to divide!
                     if [ -f ${ftd} ]; then
                         jy=0
                         while [ ${jy} -lt ${IFREQ_SAV_YEARS} ]; do
@@ -428,8 +430,8 @@ function barakuda_import_files()
                 echo "${CRT1M}_${cgrid_test}.nc is missing !!!"
                 jy1=$((${jyear}-${jyear}%${IFREQ_SAV_YEARS})) ; jy2=$((${jy1}+${IFREQ_SAV_YEARS}-1))
                 cy1=`printf "%04d" ${jy1}` ; cy2=`printf "%04d" ${jy2}`; TTAG=${cy1}0101_${cy2}1231
-                CRTM=${CPREF}${TTAG}
-                echo "Should re-import files ${CRTM}* cause something went wrong...."; echo
+                CROUT=${CPREF}${TTAG}
+                echo "Should re-import files ${CROUT}* cause something went wrong...."; echo
                 i_get_file=1
             else
                 l_happy=true

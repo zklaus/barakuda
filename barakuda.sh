@@ -136,15 +136,12 @@ while ${lcontinue}; do
         cpf="${dir_ece}/"
     fi
 
-    TTAG_ann=${cyear}0101_${cyear}1231
-
     i_get_file=0
     if [ $((${jyear}%${IFREQ_SAV_YEARS})) -eq 0 ]; then
         barakuda_check_year_is_complete  ; # lcontinue might be updated to false!
     fi
 
-    CRTM=${CPREF}${TTAG}
-    CRT1M=${CPREF}${TTAG_ann}
+    CRT1M=${CPREF}${cyear}0101_${cyear}1231
 
     if ${lcontinue}; then
 
@@ -161,7 +158,7 @@ while ${lcontinue}; do
         echo ; echo
 
         barakuda_import_files
-
+        
         # Monthly files to work with for current year:
         ft1m=${CRT1M}_grid_T.nc
         fu1m=${CRT1M}_grid_U.nc

@@ -195,15 +195,12 @@ while [ ${jyear} -le ${Y2} ]; do
         cpf="${dir_ece}/"
     fi
 
-    TTAG_ann=${cyear}0101_${cyear}1231
-
     i_get_file=0
     if [ $((${jyear}%${IFREQ_SAV_YEARS})) -eq 0 ]; then
         barakuda_check_year_is_complete  ; # lcontinue might be updated to false!
     fi
 
-    CRTM=${CPRMN}${TTAG}
-    CRT1M=${CPRMN}${TTAG_ann}
+    CRT1M=${CPRMN}${cyear}0101_${cyear}1231
 
     barakuda_import_files
 

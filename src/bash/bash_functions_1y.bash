@@ -5,9 +5,10 @@ function barakuda_import_files()
 
     echo " SPECIFIC 1y 3D !!! into `pwd` !"
 
-    echo " CRTM => ${CRTM}"
+    CROUT=${CPRMN}${TTAG}
+    echo " CROUT => ${CROUT}"
 
-    CRTY=`echo ${CRTM} | sed -e s/"_1m_"/"_${ANNUAL_3D}_"/g`
+    CRTY=`echo ${CROUT} | sed -e s/"_1m_"/"_${ANNUAL_3D}_"/g`
 
     echo " CRTY => ${CRTY}"
 
@@ -27,12 +28,12 @@ function barakuda_import_files()
         if [ ${IFREQ_SAV_YEARS} -eq 1 ]; then l_happy=true; fi
         rm -f *.tmp
         if [ ${i_get_file} -eq 1 ]; then
-            echo " => gonna get ${CRTM}_* files..."
+            echo " => gonna get ${CROUT}_* files..."
 
 
             # Importing required "1m" files to tmp dir and unzipping:
             for gt in ${NEMO_SAVED_FILES}; do
-                f2i=${CRTM}_${gt}.nc ;   sgz=""
+                f2i=${CROUT}_${gt}.nc ;   sgz=""
                 for ca in ".gz" "4"; do
                     if [ -f ${NEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
                 done
@@ -84,7 +85,7 @@ function barakuda_import_files()
 
     # Testing if ALL required files are present now:
     for gt in ${NEMO_SAVED_FILES}; do
-        ftt="./${CRTM}_${gt}.nc" ;  check_if_file ${ftt}
+        ftt="./${CROUT}_${gt}.nc" ;  check_if_file ${ftt}
     done
     for gt in ${NEMO_SAVED_FILES_3D}; do
         ftt="./${CRTY}_${gt}.nc" ;  check_if_file ${ftt}
