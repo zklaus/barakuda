@@ -130,8 +130,7 @@ PROGRAM cdfmxl
 
   DO jt = 1, nt !LB
 
-     
-     PRINT *, ' *** jt =', jt
+     PRINT *, ' * [cdfmxl] jt = ', jt
 
      !! 1- Get surface properties
      !!

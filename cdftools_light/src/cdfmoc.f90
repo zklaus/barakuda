@@ -233,7 +233,7 @@ PROGRAM cdfmoc
 
    DO jt = 1, nt !LB
 
-      PRINT *, '  * jt =', jt
+      PRINT *, ' * [cdfmoc] jt = ', jt
 
       CALL GETVAR_3D(idf_v, idv_v,  cf_v, trim(cv_v), nt, jt, V_3D)
 

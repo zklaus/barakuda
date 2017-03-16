@@ -129,12 +129,8 @@ PROGRAM cdfmaxmoc
 
    DO jt = 1, nt !LB
 
+      !PRINT *, ' * [cdfmaxmoc] jt = ', jt
       CALL GETVAR_3D(idf_moc, idv_moc,  cfile, cvar, nt, jt, zomoc)
-
-
-      !DO jk=1,npk
-      !   zomoc (:,:,jk) = getvar(cfile, cvar, jk, 1, npjglo, ktime=jt)
-      !END DO
 
       ! look for max/min overturning
       ovtmax(jt) = MAXVAL(zomoc(1,jmin:jmax,kmin:kmax))
@@ -146,13 +142,6 @@ PROGRAM cdfmaxmoc
       ! results from minloc/maxloc is relative to the sub -array given as arguments
       jlatmax(jt) = imaxloc(2)+jmin -1
       kdmax(jt)   = imaxloc(3)+kmin -1
-      !jlatmin= iminloc(2)+jmin -1 ;
-      !kdmin  = iminloc(3)+kmin -1 ;
-
-      !LB:
-      !IF ( jt == 1) PRINT *, '#      Time    Max MOC (Sv)     Lat         Depth'
-      !PRINT *, jt, ovtmax, rlat(1,jlatmax), gdepw(kdmax)
-      !LB.
 
    END DO !LB nt
 
@@ -175,16 +164,11 @@ PROGRAM cdfmaxmoc
 
 
    WRITE( cf_out , '(a,"/max_moc_",a,"_",2a,".nc")' ) trim(cd_out), trim(cbasin), clatmin, clatmax
-
-
-
-   PRINT *, trim(cf_out)
-
+   
    id_moc = 0 ; id_lat_max = 0 ; id_depthw_max = 0
 
    INQUIRE( FILE=cf_out, EXIST=lfncout )
-
-
+   
    IF ( .NOT. lfncout ) THEN
 
       !! Creating file
@@ -245,23 +229,12 @@ PROGRAM cdfmaxmoc
       ierr = NF90_PUT_VAR(idf_out, id_moc, (/ ovtmax(jt) /), start=(/jt_pos+jt/), count=(/1/))
       ierr = NF90_PUT_VAR(idf_out, id_lat_max, (/ rlat(1,jlatmax(jt)) /), start=(/jt_pos+jt/), count=(/1/))
       ierr = NF90_PUT_VAR(idf_out, id_depthw_max, (/ gdepw(kdmax(jt)) /), start=(/jt_pos+jt/), count=(/1/))
-
+      
    END DO
 
    ierr = NF90_CLOSE(idf_out)
 
    PRINT *, ''
-
-   !! Writing into ASCCI file:
-
-   !OPEN(15, FILE='max_moc.dat', FORM='FORMATTED', RECL=512, STATUS='unknown')
-   !WRITE(15,*) '#    Time    Max MOC (Sv)    Lat       Depth' !     ('//trim(cbasin)//')'
-   !DO jt = 1, nt
-   !   rdt = 1./REAL(nt)
-   !   rmon = ryear + rdt/2. + (jt-1)*rdt
-   !   WRITE(15,'(f10.4,"  ",f10.4,"  ",f10.4,"  ",f10.4)') rmon, ovtmax(jt), rlat(1,jlatmax(jt)), gdepw(kdmax(jt))
-   !END DO
-   !CLOSE(15)
 
 
 END PROGRAM cdfmaxmoc

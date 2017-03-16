@@ -197,7 +197,7 @@ PROGRAM cdfvT
 
   DO jt=1,nt
 
-     PRINT *, 'jt =', jt
+     PRINT *, ' * [cdfvT] jt = ', jt
 
      CALL GETVAR_3D(idf_t, idv_t, cf_t, cv_t, nt, jt, T_3D)
      CALL GETVAR_3D(idf_s, idv_s, cf_t, cv_s, nt, jt, S_3D)

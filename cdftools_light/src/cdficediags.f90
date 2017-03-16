@@ -117,7 +117,7 @@ PROGRAM cdficediag
 
   DO jt = 1, nt
 
-     PRINT *, ' jt = ', jt
+     PRINT *, ' * [cdficediags] jt = ', jt
      
      IF ( conly_c == '000' ) THEN
         ricethick(:,:)= getvar(cf_ice, 'ice_thic',  1 ,npiglo,npjglo, ktime=jt)

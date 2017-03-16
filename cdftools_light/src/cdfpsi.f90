@@ -143,7 +143,7 @@ PROGRAM cdfpsi
 
   DO jt=1,nt
      
-     PRINT *, 'jt =', jt
+     PRINT *, ' * [cdfpsi] jt = ', jt
 
      ztrpu(:,:)= 0.d0
      ztrpv(:,:)= 0.d0
