@@ -201,7 +201,12 @@ done
 cat ${BARAKUDA_ROOT}/src/html/conf_end.html >> index.html ; # Closing HTML file...
 
 cp ${BARAKUDA_ROOT}/src/html/conf_*.html  .
-cp ${BARAKUDA_ROOT}/src/html/logo.*g     .
+if [ ${ece_exp} -eq 0 ]; then
+    cp ${BARAKUDA_ROOT}/src/html/logo.*g .
+else
+    cp ${BARAKUDA_ROOT}/src/html/logo_ece.svg ./logo.svg
+    cp ${BARAKUDA_ROOT}/src/html/logo_ece.png ./logo.png
+fi
 echo; echo
 
 

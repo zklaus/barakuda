@@ -867,10 +867,12 @@ if [ ${ISTAGE} -eq 2 ]; then
     echo; echo
 
     cp ${BARAKUDA_ROOT}/src/html/conf_*.html ${HTML_DIR}/
-    cp ${BARAKUDA_ROOT}/src/html/logo.*g    ${HTML_DIR}/
-    if [ ${ece_exp} -gt 0 ]; then
-        cp ${BARAKUDA_ROOT}/src/html/logo_ece.svg ${HTML_DIR}/logo.svg
-        cp ${BARAKUDA_ROOT}/src/html/logo_ece.png ${HTML_DIR}/logo.png
+    
+    if [ ${ece_exp} -eq 0 ]; then
+        cp -L ${BARAKUDA_ROOT}/src/html/logo.*g      ${HTML_DIR}/
+    else
+        cp -L ${BARAKUDA_ROOT}/src/html/logo_ece.svg ${HTML_DIR}/logo.svg
+        cp -L ${BARAKUDA_ROOT}/src/html/logo_ece.png ${HTML_DIR}/logo.png
     fi
     
     mv -f index.html ${HTML_DIR}/
