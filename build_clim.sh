@@ -13,6 +13,7 @@
 ivt=1   ; # Create a climatology for VT
 iamoc=1 ; # Create a climatology for 2D lat-depth AMOC?
 ibpsi=0 ; # Create a climatology for barotropic stream function
+icurl=1 ; # Create a climatology of the windstress curl
 
 export script=build_clim
 #export BARAKUDA_ROOT=`pwd`
@@ -116,10 +117,10 @@ C2EV="nav_lon,nav_lat,depthv"
 C2EW="nav_lon,nav_lat,depthw"
 
 GRID_IMP="grid_T"
-if [ ${ivt} -eq 1 ] || [ ${ibpsi} -eq 1 ]; then
+if [ ${ivt} -eq 1 ] || [ ${ibpsi} -eq 1 ] || [ ${icurl} -eq 1 ]; then
     GRID_IMP+=" grid_U"
 fi
-if [ ${iamoc} -eq 1 ] || [ ${ivt} -eq 1 ] || [ ${ibpsi} -eq 1 ]; then
+if [ ${iamoc} -eq 1 ] || [ ${ivt} -eq 1 ] || [ ${ibpsi} -eq 1 ] || [ ${icurl} -eq 1 ]; then
     GRID_IMP+=" grid_V"
 fi
 if [ `contains_string ${FILE_ICE_SUFFIX} ${NEMO_SAVED_FILES}` -eq 1 ]; then
@@ -207,7 +208,7 @@ while [ ${jyear} -le ${Y2} ]; do
     # Monthly files to work with for current year:
     ft1m=${CRT1M}_grid_T.nc
     fu1m=${CRT1M}_grid_U.nc
-    fv1m=${CRT1M}_grid_V.nc    
+    fv1m=${CRT1M}_grid_V.nc
     # Annual files to work with for current year:
     CRT1Y=`echo ${CRT1M} | sed -e s/"_${TSTAMP}_"/"_${ANNUAL_3D}_"/g`
     ft1y=${CRT1Y}_grid_T.nc
@@ -254,16 +255,29 @@ while [ ${jyear} -le ${Y2} ]; do
         echo
     fi
 
+    if [ ${icurl} -eq 1 ]; then
+        # Curl of wind stress
+        if [ ! "${NN_TAUX}" = "X" ] && [ ! "${NN_TAUY}" = "X" ]; then
+            rm -f curl.nc
+            echo " *** CALLING: cdfcurl.x ${fu3d} ${fv3d} ${NN_TAUX} ${NN_TAUY} 1 &"
+            cdfcurl.x ${fu3d} ${fv3d} ${NN_TAUX} ${NN_TAUY} 1 &
+        else
+            echo " You need to define NN_TAUX and NN_TAUY if you want to compute the curl of the wind stress!"
+        fi
+        echo
+    fi
+
     wait
 
     ncwa -O -a x moc.nc ${CFG3D}_MOC.nc ; # removing degenerate x record...
     rm -f moc.nc
-    
-    if [ ${ibpsi} -eq 1 ]; then mv -f psi.nc ${CFG3D}_PSI.nc; fi
-    
+
+    if [ ${ibpsi} -eq 1 ]; then mv -f psi.nc  ${CFG3D}_PSI.nc;   fi
+    if [ ${icurl} -eq 1 ]; then mv -f curl.nc ${CFG3D}_TCURL.nc; fi
+
     echo "After year ${jyear}:"; ls -l *.nc*
     echo
-    
+
     ((jyear++))
     export jyear=${jyear}
 
@@ -276,7 +290,7 @@ echo "Phase 2:"; ls ; echo
 # Mean monthly climatology
 
 SUFF_FOR_MONTHLY="${NEMO_SAVED_FILES}"
-if [ "${ANNUAL_3D}" = "" ]; then SUFF_FOR_MONTHLY+=" VT MOC PSI"; fi
+if [ "${ANNUAL_3D}" = "" ]; then SUFF_FOR_MONTHLY+=" VT MOC PSI TCURL"; fi
 echo; echo "Will build monthly clim for files with these suffixes:"; echo ${SUFF_FOR_MONTHLY}; echo
 
 for suff in ${SUFF_FOR_MONTHLY}; do
@@ -308,7 +322,7 @@ for suff in ${SUFF_FOR_MONTHLY}; do
     else
         echo ; echo " Ignoring monthly ${suff} files!"; echo
     fi
-    
+
 done ; # loop along monthly files suffixes
 
 wait
@@ -316,7 +330,7 @@ wait
 
 # Mean annual climatology for 3D-variable-based fields:
 
-SUFF_FOR_ANNUAL="VT MOC PSI"
+SUFF_FOR_ANNUAL="VT MOC PSI TCURL"
 if [ ! "${ANNUAL_3D}" = "" ]; then SUFF_FOR_ANNUAL+=" ${NEMO_SAVED_FILES_3D}"; fi
 echo; echo "Will build annual clim for files with these suffixes:"; echo ${SUFF_FOR_ANNUAL}; echo
 
@@ -331,7 +345,7 @@ for suff in ${SUFF_FOR_ANNUAL}; do
         echo
     else
         echo ; echo " Ignoring annual ${suff} files!"; echo
-    fi    
+    fi
 done ; # loop along annual files suffixes
 wait
 

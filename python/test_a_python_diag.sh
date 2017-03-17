@@ -14,7 +14,8 @@ imean3d=0
 ienso=0
 imov=0
 issh=0
-its=1
+iwstress=1
+its=0
 imld=0
 irnf=0
 iice=0
@@ -47,8 +48,9 @@ ihov=0
 #export EXP="a0ez" ; NC=nc ; jyear=1945
 
 CONFIG="ORCA1_L75"
-ARCH="T159_ece32_triolith"
-export EXP="LB20" ; NC=nc4 ; jyear=1990
+#ARCH="T159_ece32_triolith"
+ARCH="T255_ece32_triolith"
+export EXP="LB1B" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -184,6 +186,11 @@ fi
 if [ ${issh} -eq 1 ]; then
     CMD="python exec/ssh.py ${y1_clim} ${y2_clim}"
 fi
+
+if [ ${iwstress} -eq 1 ]; then
+    CMD="python exec/wind_stress.py ${y1_clim} ${y2_clim}"
+fi
+
 
 if [ ${imld} -eq 1 ]; then
     CMD="python exec/mld.py ${y1_clim} ${y2_clim}"

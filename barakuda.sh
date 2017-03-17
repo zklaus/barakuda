@@ -683,9 +683,11 @@ if [ ${ISTAGE} -eq 2 ]; then
             export CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
             ftcli=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_grid_T.nc4
             ficli=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_${FILE_ICE_SUFFIX}.nc4
+            fcsbc=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_SBC.nc4
             fclvt=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_VT.nc4
             fcmoc=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_MOC.nc4
             fcpsi=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_PSI.nc4
+            fccrl=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_TCURL.nc4
             iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
         else
             echo; echo "PROBLEM! => you set l_clim_diag to true but no file 'last_clim' was found in:"
@@ -782,6 +784,23 @@ if [ ${ISTAGE} -eq 2 ]; then
                 cd ../ ;  echo
             else
                 echo; echo "WARNING: did not find ${NN_SSH} into ${ftcli} !!!!"; echo
+            fi
+            
+            # Wind-stress module and curl
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            if [ -f ${fccrl} ] && [ `ipresent_var_in_ncf ${fcsbc} ${NN_TAUM}` -eq 1 ]; then
+                echo; echo; echo " Wind-stress module and curl maps"
+                export DIRS_2_EXP="${DIRS_2_EXP} tau"
+                cd ${DIAG_D}/
+                rm -rf tau; mkdir tau; cd tau/
+                echo " *** CALLING: wind_stress.py ${iclyear}"; echo
+                wind_stress.py ${iclyear} &
+                cd ../ ;  echo
+            else
+                echo
+                echo "WARNING: did not find file ${fccrl} !!!"
+                echo "         or did not find ${NN_TAUM} into ${fcsbc} !!!!"
+                echo
             fi
             
 
