@@ -88,7 +88,6 @@ id_in.close()
 rmult = 1.E-3 ; # to Sverdrup!
 cunit='Sv'
 
-# 1 RUNOFF !
 vvar = [ vdic['NN_FWF'], vdic['NN_P'], vdic['NN_RNF'], vdic['NN_CLV'], vdic['NN_E'] ]
 
 for cvar in vvar:
