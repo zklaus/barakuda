@@ -32,7 +32,7 @@ function barakuda_import_files()
     # Autosub !!!
     echo
     echo "Inside barakuda_extract_autosub => year = ${cyear}"
-    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"`
+    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<Y_INI_EC>|${Y_INI_EC}|"g`
     cd ${NEMO_OUT_D}/
     cpr="MMO_${EXP}_${Y_INI_EC}0101_fc00_"
     #
@@ -72,7 +72,7 @@ function barakuda_check_year_is_complete()
     export TTAG=${cy1}0101_${cy2}1231 # calendar-related part of the file name
     #
     # Testing if the current year-group has been done
-    tdir=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"`
+    tdir=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"  -e "s|<Y_INI_EC>|${Y_INI_EC}|g"`
     cftar="${tdir}/MMO_${EXP}_${Y_INI_EC}0101_fc00_${cy1}0101-${cy1}1231.tar"
     if ${lcontinue}; then
         if [ ! -f ${cftar} ]; then

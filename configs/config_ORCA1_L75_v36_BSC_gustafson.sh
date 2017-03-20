@@ -6,9 +6,9 @@
 #
 # OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2 beta tunning on 75 levels
 #
-#        Machine: MareNostrum@BSC
+#        Machine: gustafson@BSC
 #
-#        L. Brodeau, November 2016
+#        L. Brodeau, 2017
 #
 #===========================================================
 
@@ -16,43 +16,44 @@ export CONF=ORCA1.L75 ; # horizontal global ORCA configuration
 export NBL=75         ; # number of levels
 
 export HOST=GUSTAFSON ; # this has no importance at all, it will just become an "info" on the web-page!
-export MASTERMIND="Eleftheria" ; # same here, who's the person who designed/ran this simulation?
+export MASTERMIND="BSC / Eleftheria" ; # same here, who's the person who designed/ran this simulation?
 
 export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
 
-# File system / path on which most netcdf data will be read:
-export STORE_DIR="/scratch/Earth/lbrodeau"
+# Path / directory structure in which to find NEMO output file (you can use
+# <ORCA> and <EXP> as substitute to your ORCA grid and experiment (EXP) name):
+export NEMO_OUT_STRCT="/esarchive/exp/nemo/<EXP>/<Y_INI_EC>0101/fc00/outputs"
+
+# Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
+export DIAG_DIR="/scratch/Earth/${USER}/barakuda/${CONF}_ece32_ee"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
 export CONF_INI_DIR="/esnas/obs/barakuda/ORCA1.L75"
 
-# In what directory of the local machine to save the diagnostics:
-export DIAG_DIR="/scratch/Earth/${USER}/barakuda/${CONF}_ece32_ee"
+# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
+export SCRATCH="/scratch/Earth/${USER}"
 
 export PYTHON_HOME="/home/Earth/lbrodeau/opt/Canopy/User" ; # HOME to python distribution with matplotlib and basemap !
 
 export DIR_NCVIEW_CMAP="${BARAKUDA_ROOT}/src/ncview_colormaps"
 
-# Is it an ec-earth run?
-export ece_run=10; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run done from traditional NEMO setup
-#                  # 1 => it's an OCEAN-ONLY EC-Earth run done from a EC-Earth setup
-#                  # 2 => it's a  COUPLED  EC-Earth run
+# Is it an ec-earth experiment?
+export ece_exp=10; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only NEMO experiment done from traditional NEMO setup
+#                  # 1 => it's an OCEAN-ONLY EC-Earth experiment done from a EC-Earth setup
+#                  # 2 => it's a  COUPLED  EC-Earth experiment
 #                  #      Both 1 and 2 imply that NEMO files are stored in something like
-#                  #       ${STORE_DIR}/<RUN>/output/nemo/<YYY>
+#                  #       ${SOMEWHERE}/<EXP>/output/nemo/<YYY>
 #                  #       where YYY starts from '001' to
 #                  #      If you select '2', make sure 'cdo' is available and working!!!
-#                  # 10 => this run controled by AutoSubmit (so NEMO files are tared somerwhere?)
+#                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
-export Y_INI_EC=1958 ;    # initial year if ece_run /= 0 !!!
+export Y_INI_EC=1958 ;    # initial year if ece_exp /= 0 !!!
 export TRES_IFS=XXX  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
 export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
 
-# List of suffix of files that have been saved by NEMO and that are needed for the diags:
+# List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
-
-# Directory structure in which to find NEMO output file (use <ORCA> and <RUN>):
-export NEMO_OUT_STRCT="/esarchive/exp/nemo/<RUN>/${Y_INI_EC}0101/fc00/outputs"
 
 export TSTAMP="1m"   ; # output time-frequency stamp as in NEMO output files...
 
@@ -62,19 +63,16 @@ export NEMO_SAVED_FILES_3D="" ; #     ''
 
 # How does the nemo files prefix looks like
 # Everything before "<year_related_info>_grid_<X>" or "<year_related_info>_icemod"
-# use <ORCA>, <RUN> and <TSTAMP>=>  Ex: export NEMO_FILE_PREFIX="<ORCA>-<RUN>_<TSTAMP>_"
-export NEMO_FILE_PREFIX="<RUN>_<TSTAMP>_"
+# use <ORCA>, <EXP> and <TSTAMP>=>  Ex: export NEMO_FILE_PREFIX="<ORCA>-<EXP>_<TSTAMP>_"
+export NEMO_FILE_PREFIX="<EXP>_<TSTAMP>_"
 # => should get rid of TSTAMP actually...
-
-# Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
-export SCRATCH="/scratch/Earth/${USER}"
 
 
 ####### NEMO => what fields in what files ??? ############
 #       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   => depends on the XIOS *.xml setup you used...
 #   => always specify a string for the NN_* variables
-#      USE "X" if the field is not present your NEMO output file
+#      USE "X" if the field is not present in your NEMO output
 #
 # State variables and others in grid_T files:
 export NN_SST="tos"
@@ -110,6 +108,8 @@ export NN_E="X"          ; # name of total evaporation in "FILE_FLX_SUFFIX" file
 # ++ Surface heat fluxes:
 export NN_QNET="qt_oce"       ; # name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
 export NN_QSOL="qsr_oce"  ; # name of net surface solar flux in "FILE_FLX_SUFFIX" file...
+# ++ Wind-stress module:
+export NN_TAUM="X"         ; # name of Wind-stress module in "FILE_FLX_SUFFIX" file...
 #
 ################################################################################################
 
@@ -117,16 +117,16 @@ export NN_QSOL="qsr_oce"  ; # name of net surface solar flux in "FILE_FLX_SUFFIX
 export MM_FILE=${CONF_INI_DIR}/mesh_mask.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
 
-# 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO run):
-export F_T_CLIM_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export F_S_CLIM_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export SST_CLIM_12=${CONF_INI_DIR}/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc4
-export NN_T_CLIM="thetao"
-export NN_S_CLIM="so"
-export NN_SST_CLIM="tos"
+# 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
+export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
+export F_S_OBS_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
+export F_SST_OBS_12=${CONF_INI_DIR}/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc4
+export NN_T_OBS="thetao"
+export NN_S_OBS="so"
+export NN_SST_OBS="tos"
 
-export ICE_CLIM_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
-export NN_ICEF_CLIM="ice_cover"
+export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
+export NN_ICEF_OBS="ice_cover"
 
 
 # A text file where the cross sections (to compute transports) are defined :
@@ -155,12 +155,13 @@ export RWWWD=/bsc/www/htdocs/public/${USER}/BaraKuda ; # directory of the local 
 
 # Movies of SST and SSS compared to OBS:
 export i_do_movi=1
+export iffmpeg_x264=1 ; # is, by chance, ffmpeg with support for x264 encoding available on your stystem?
 
 # Basic 3D and surface averages:
 export i_do_mean=1
 
 # IFS surface fluxes of heat and freshwater
-export i_do_ifs_flx=1 ; # only relevant when ece_run=2...
+export i_do_ifs_flx=0 ; # only relevant when ece_exp=2...
 
 # AMOC:
 export i_do_amoc=1

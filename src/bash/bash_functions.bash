@@ -174,7 +174,7 @@ function barakuda_setup()
     
     mkdir -p ${DIAG_D} ${TMP_DIR}
 
-    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g"`
+    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<Y_INI_EC>|${Y_INI_EC}|g"`
     if [ ! -d ${NEMO_OUT_D} ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi
 
     echo; echo " * Config to be used: ${CONFIG} => ORCA grid is ${ORCA}"

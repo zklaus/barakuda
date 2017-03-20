@@ -6,7 +6,7 @@
 #
 # OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2 beta tunning on 75 levels
 #
-#        Machine: MareNostrum@BSC
+#        Machine: gustafson@BSC
 #
 #        L. Brodeau, 2017
 #
@@ -28,7 +28,6 @@ export NEMO_OUT_STRCT="/scratch/Earth/etourign/barakuda/<EXP>"
 
 # Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
 export DIAG_DIR="/scratch/Earth/${USER}/barakuda/${CONF}_ece3"
-#export DIAG_DIR="/esarchive/scratch/${USER}/barakuda/${CONF}_ece3"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
 export CONF_INI_DIR="/esnas/obs/barakuda/ORCA025.L75"
@@ -111,6 +110,8 @@ export NN_E="X"          ; # name of total evaporation in "FILE_FLX_SUFFIX" file
 # ++ Surface heat fluxes:
 export NN_QNET="hfds"    ; # name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
 export NN_QSOL="rsntds"  ; # name of net surface solar flux in "FILE_FLX_SUFFIX" file...
+# ++ Wind-stress module:
+export NN_TAUM="X"         ; # name of Wind-stress module in "FILE_FLX_SUFFIX" file...
 #
 ################################################################################################
 
@@ -156,7 +157,7 @@ export RWWWD=/bsc/www/htdocs/public/${USER}/BaraKuda ; # directory of the local 
 
 # Movies of SST and SSS compared to OBS:
 export i_do_movi=1
-export iffmpeg_x264=1 ; # is by chance, ffmpeg with support for x264 encoding available on your stystem?
+export iffmpeg_x264=1 ; # is, by chance, ffmpeg with support for x264 encoding available on your stystem?
 
 # Basic 3D and surface averages:
 export i_do_mean=1
