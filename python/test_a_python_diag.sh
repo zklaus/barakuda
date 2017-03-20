@@ -11,10 +11,11 @@ itempsal=0
 ifsflx=0
 imean2d=0
 imean3d=0
+iSflx=1
 ienso=0
 imov=0
 issh=0
-iwstress=1
+iwstress=0
 its=0
 imld=0
 irnf=0
@@ -102,6 +103,11 @@ if [ ${imean3d} -eq 1 ]; then
     check_if_file ${ft}
 fi
 
+if [ ${iSflx} -eq 1 ]; then
+    ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_${FILE_FLX_SUFFIX}.${NC}
+    check_if_file ${ft}
+fi
+
 
 
 export PYTHONPATH=${PYTHON_HOME}/lib/python2.7/site-packages:${BARAKUDA_ROOT}/python/modules
@@ -173,6 +179,11 @@ fi
 if [ ${imean3d} -eq 1 ]; then
     export DIAG_D="."
     CMD="python exec/mean_3d.py ${ft} ${jyear} T"
+fi
+
+if [ ${iSflx} -eq 1 ]; then
+    export DIAG_D="."
+    CMD="python exec/flux_int_basins.py ${ft} ${jyear}"
 fi
 
 
