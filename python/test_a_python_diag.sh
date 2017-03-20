@@ -11,11 +11,11 @@ itempsal=0
 ifsflx=0
 imean2d=0
 imean3d=0
-iSflx=1
+iSflx=0
 ienso=0
 imov=0
 issh=0
-iwstress=0
+iwstress=1
 its=0
 imld=0
 irnf=0
@@ -51,7 +51,7 @@ ihov=0
 CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_triolith"
 ARCH="T255_ece32_triolith"
-export EXP="LB1B" ; NC=nc4 ; jyear=1990
+export EXP="LB10" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
