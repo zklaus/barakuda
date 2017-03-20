@@ -788,8 +788,9 @@ if [ ${ISTAGE} -eq 2 ]; then
             
             # Wind-stress module and curl
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            if [ -f ${fccrl} ] && [ `ipresent_var_in_ncf ${fcsbc} ${NN_TAUM}` -eq 1 ]; then
+            if [ -f ${fccrl} ]; then
                 echo; echo; echo " Wind-stress module and curl maps"
+                if [ -x ${NN_TAUM} ]; then echo "ERROR: define variable NN_TAUM in ${fconfig}! ('X' if not present in NEMO output)"; exit; fi
                 export DIRS_2_EXP="${DIRS_2_EXP} tau"
                 cd ${DIAG_D}/
                 rm -rf tau; mkdir tau; cd tau/
