@@ -164,13 +164,15 @@ while ${lcontinue}; do
         fu1m=${CRT1M}_grid_U.nc
         fv1m=${CRT1M}_grid_V.nc
         fj1m=${CRT1M}_${FILE_ICE_SUFFIX}.nc ; # can be icemod or grid_T ....
+        ff1m=${CRT1M}_${FILE_FLX_SUFFIX}.nc ; # file with surface fluxes
         #
         # Annual files to work with for current year:
         CRT1Y=`echo ${CRT1M} | sed -e s/"_${TSTAMP}_"/"_${ANNUAL_3D}_"/g`
         ft1y=${CRT1Y}_grid_T.nc
         fu1y=${CRT1Y}_grid_U.nc
         fv1y=${CRT1Y}_grid_V.nc
-        fj1y=${CRT1Y}_${FILE_ICE_SUFFIX}.nc ; # can be icemod or grid_T ....
+        fj1y=${CRT1Y}_${FILE_ICE_SUFFIX}.nc
+        ff1y=${CRT1Y}_${FILE_FLX_SUFFIX}.nc
         CFG3D=${CRT1M}
         #
         # Files that contain the 3D fields (might be monthly or annaual sometimes (when "${ANNUAL_3D}" = "1y")        
@@ -203,10 +205,12 @@ while ${lcontinue}; do
         # Computing time-series of spatially-averaged variables
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if [ ${i_do_mean} -eq 1 ]; then
+            #
             echo; echo "3D-averaging for time series"
             echo " *** CALLING: mean_3d.py ${ft1m} ${jyear} T &"
             mean_3d.py ${ft1m} ${jyear} T &
             pid_mn3dt=$! ; echo
+            #
             echo " *** CALLING: mean_3d.py ${ft1m} ${jyear} S &"
             mean_3d.py ${ft1m} ${jyear} S &
             pid_mn3ds=$! ; echo
@@ -215,8 +219,14 @@ while ${lcontinue}; do
             echo " *** CALLING: mean_2d.py ${ft1m} ${jyear} &"
             mean_2d.py ${ft1m} ${jyear} &
             pid_mn2d=$! ; echo
+            #
+            echo; echo "2D-integration of some surface fluxes over basins"
+            echo " *** CALLING: flux_int_basins.py ${ff1m} ${jyear} &"
+            flux_int_basins.py ${ff1m} ${jyear} &
+            pid_ssf=$! ; echo
+            #
         fi
-
+        
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Creating VT file if needed
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -494,7 +504,7 @@ while ${lcontinue}; do
 
         echo
         echo " Waiting for backround jobs for current year (${jyear}) !"
-        wait  ${pid_mn3dt} ${pid_mn3ds} ${pid_movt} ${pid_movs} ${pid_movm} ${pid_movi} ${pid_mn2d} ${pid_flxl}
+        wait  ${pid_mn3dt} ${pid_mn3ds} ${pid_movt} ${pid_movs} ${pid_movm} ${pid_movi} ${pid_mn2d} ${pid_ssf} ${pid_flxl}
         wait
         echo "  Done waiting for year ${cyear} !"
         if [ ${i_do_movi} -eq 1 ]; then rsync -avP movies ${DIAG_D}/ ; fi

@@ -25,7 +25,7 @@ export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b_tuning)" ;   #  // same here 
 export NEMO_OUT_STRCT="/proj/bolinc/users/x_laubr/run/<EXP>/output/nemo"
 
 # Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
-export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/${CONF}_ece32"
+export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
 export CONF_INI_DIR="/proj/bolinc/users/x_laubr/ORCA1/ORCA1-I/barakuda_clim"
