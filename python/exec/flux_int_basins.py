@@ -134,11 +134,6 @@ for cvar in vvar:
         if Nt != 12: print 'ERROR: '+cnexec+' => only treating monthly data so far...'; sys.exit(0)
     
         if (nj0,ni0) != (nj,ni): print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'; sys.exit(0)
-
-        if jv == 0:
-            vtime = nmp.zeros(Nt)
-            for jt in range(Nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./float(Nt)
-            print ' * Calendar: ', vtime[:]
     
         Xd_m_x_A = nmp.zeros((Nt,nj,ni))
         for jt in range(Nt):
@@ -162,6 +157,12 @@ for cvar in vvar:
 
 
 # Time to write netcdf file:
+
+vtime = nmp.zeros(12)
+for jt in range(12): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./float(12)
+#print ' * Calendar: ', vtime[:]
+
+
 c1 = '2D-integral of '
 jb = 0
 for cbasin in list_basin_names[:]:
