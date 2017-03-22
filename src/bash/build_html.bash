@@ -194,15 +194,31 @@ EOF
 
 
 
-    # Sea-ice page
+    # Sea-ice stuff
     if [ ${i_do_ice}  -gt 0 ]; then
+        
         if [ ${i_do_movi} -eq 1 ]; then
-            cat >> index.html <<EOF
-            ${ctl} Evolution of Arctic/Antarctic concentration ${ctr}
-            ${img_l}icen_${cr}.gif${img_r}
-            ${img_l}ices_${cr}.gif${img_r}
+            echo "            ${ctl} Evolution of Arctic/Antarctic sea-ice concentration ${ctr}" >> index.html
+            if [ "${iffmpeg_x264}" = "1" ]; then
+                # :) mp4 x264 video for HTML5 compatible browser
+                cat >> index.html <<EOF
+        <video width="600" height="576" controls>
+          <source src="movie_icen_x264_576px.mp4" type="video/mp4">
+            Time to install a recent version of Firefox my friend...
+        </video>
+        <video width="600" height="456" controls>
+          <source src="movie_ices_x264_456px.mp4" type="video/mp4">
+            Time to install a recent version of Firefox my friend...
+        </video>
+        ${spf}
 EOF
+            else
+                # :( GIF video
+                echo "            ${img_l}icen_${cr}.gif${img_r}" >> index.html
+                echo "            ${img_l}ices_${cr}.gif${img_r}" >> index.html
+            fi
         fi
+        
         cat >> index.html <<EOF
         ${ctl} Arctic/Antarctic sea-ice time-series${ctr}
         ${img_l}seaice_extent_winter_${cr}.${ff}${img_r}

@@ -584,8 +584,11 @@ if [ ${ISTAGE} -eq 2 ]; then
             # FFMPEG compiled with x264 mp4 support is available on host:
             cd movies/
             for cc in dsst dsss mld icen ices; do
-                echo " *** CALLING: images2mp4.sh ${cc} ${FIG_FORM} 520 8 &"
-                images2mp4.sh ${cc} ${FIG_FORM} 520 8 &
+                hh=520 ; # height of image in pixels
+                if [ "${cc}" = "icen" ]; then hh=576; fi
+                if [ "${cc}" = "ices" ]; then hh=456; fi
+                echo " *** CALLING: images2mp4.sh ${cc} ${FIG_FORM} ${hh} 8 &"
+                images2mp4.sh ${cc} ${FIG_FORM} ${hh} 8 &
                 echo
             done
             cd ${DIAG_D}/

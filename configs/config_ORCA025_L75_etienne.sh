@@ -6,7 +6,7 @@
 #
 # OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2 beta tunning on 75 levels
 #
-#        Machine: gustafson@BSC
+#        Machine: gustafson.bsc.es
 #
 #        L. Brodeau, 2017
 #
