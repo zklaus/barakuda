@@ -7,6 +7,7 @@
 #       L. Brodeau, 2017
 
 import sys
+from os import path
 import numpy as nmp
 from netCDF4 import Dataset
 
@@ -24,25 +25,25 @@ CPAL_TAUM='cubehelix_r'
 Rmax = 0.3 ; dR = 0.05  ; # Wind stress curl (10^-6 s)
 Tmax = 0.3 ; dT = 0.025 ; # Wind stress module (N/m^2)
   
-venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','FIG_FORM','NN_TAUM'}
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','FIG_FORM','FILE_FLX_SUFFIX','NN_TAUM'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
 CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
+cd_clim = vdic['DIAG_D']+'/clim'
+
 path_fig='./'
 fig_type=vdic['FIG_FORM']
-
 
 
 narg = len(sys.argv)
 if narg < 3: print 'Usage: '+sys.argv[0]+' <year1> <year2>'; sys.exit(0)
 cy1 = sys.argv[1] ; cy2=sys.argv[2]; jy1=int(cy1); jy2=int(cy2)
-
-
 jy1_clim = jy1 ; jy2_clim = jy2
 print ' => mean on the clim : ', jy1_clim, jy2_clim, '\n'
 
+ctag = CONFEXP+'_'+cy1+'-'+cy2
 
 # Getting coordinates:
 bt.chck4f(vdic['MM_FILE'])
@@ -51,25 +52,48 @@ xlon   = id_mm.variables['glamt'][0,:,:] ; xlat = id_mm.variables['gphit'][0,:,:
 Xmask = id_mm.variables['tmask'][0,0,:,:]
 id_mm.close()
 
+l_tau_is_annual = False
+cf_nemo_curl = cd_clim+'/mclim_'+ctag+'_TCURL.nc4'
 
-cf_nemo_curl = vdic['DIAG_D']+'/clim/mclim_'+CONFEXP+'_'+cy1+'-'+cy2+'_TCURL.nc4'
+if not path.exists(cf_nemo_curl):
+    cf_nemo_curl = cd_clim+'/aclim_'+ctag+'_TCURL.nc4'
+    if path.exists(cf_nemo_curl):
+        l_tau_is_annual = True
+        print '\n *** wind_stress.py : wind stress is annual...'
+    else:
+        print '\n *** WARNING: wind_stress.py : giving up neither annual nor monthly curl clim found!'
+        sys.exit(0)
+    
+
+
+
+
+
 
 #  Getting NEMO mean monthly climatology of wind stress module:
-cextra = ''
+cextra_tau = ''
 cv_taum = vdic['NN_TAUM']
 if cv_taum != 'X':
-    cf_nemo_taum = vdic['DIAG_D']+'/clim/mclim_'+CONFEXP+'_'+cy1+'-'+cy2+'_SBC.nc4'
+    cf_nemo_taum = cd_clim+'/mclim_'+ctag+'_'+vdic['FILE_FLX_SUFFIX']+'.nc4'
+    if l_tau_is_annual: cf_nemo_taum = cd_clim+'/aclim_'+ctag+'_'+vdic['FILE_FLX_SUFFIX']+'.nc4'
 else:
     #Falling back on what cdfcurl.x has computed from monthly averaged Taux and Tauy:
     cf_nemo_taum = cf_nemo_curl
     cv_taum = 'sotaum'
-    cextra = ' (from monthly-averaged Tau_x & Tau_y)'
+    cextra_tau = ' (from monthly-averaged Tau_x & Tau_y !)'
+    if l_tau_is_annual: cextra_tau = ' (from annually-averaged Tau_x & Tau_y !)'
     
 bt.chck4f(cf_nemo_taum)
 id_nemo = Dataset(cf_nemo_taum)
 Xtaum   = id_nemo.variables[cv_taum][:,:,:]
 id_nemo.close()
-[ nt, nj, ni ] = Xtaum.shape ; print ' Shape of TAUM :', nt, nj, ni, '\n'
+[ Nt, nj, ni ] = Xtaum.shape ; print ' Shape of TAUM :', Nt, nj, ni, '\n'
+
+if not Nt in [1,12]:
+    print '\n *** ERROR: wind_stress.py : only accepting monthly or annual climatologies!', Nt
+    sys.exit(0)
+
+
 
 #  Getting NEMO mean monthly climatology of CURL:
 bt.chck4f(cf_nemo_curl)
@@ -77,56 +101,55 @@ id_nemo = Dataset(cf_nemo_curl)
 Xcurl   = id_nemo.variables[cv_curl][:,:,:]
 id_nemo.close()
 
-
-Xtaum_plot = nmp.zeros((3,nj,ni))
-Xtaum_plot[0,:,:] = nmp.mean(Xtaum[:,:,:]  ,axis=0) ;  # Annual
-Xtaum_plot[1,:,:] = nmp.mean(Xtaum[:3,:,:] ,axis=0) ;  # Winter
-Xtaum_plot[2,:,:] = nmp.mean(Xtaum[6:9,:,:],axis=0) ;  # Summer
+cextra_crl = ' (from monthly-averaged Tau_x & Tau_y !)'
+if l_tau_is_annual: cextra_crl = ' (from annually-averaged Tau_x & Tau_y !)'
 
 
+
+
+nper = 3
+if l_tau_is_annual: nper = 1
+
+Xtaum_plot = nmp.zeros((nper,nj,ni))
 Xcurl_plot = nmp.zeros((3,nj,ni))
+
+Xtaum_plot[0,:,:] = nmp.mean(Xtaum[:,:,:]  ,axis=0) ;  # Annual
 Xcurl_plot[0,:,:] = nmp.mean(Xcurl[:,:,:]  ,axis=0) ;  # Annual
-Xcurl_plot[1,:,:] = nmp.mean(Xcurl[:3,:,:] ,axis=0) ;  # Winter
-Xcurl_plot[2,:,:] = nmp.mean(Xcurl[6:9,:,:],axis=0) ;  # Summer
 
-
-
-
-
+if not l_tau_is_annual:
+    Xtaum_plot[1,:,:] = nmp.mean(Xtaum[:3,:,:] ,axis=0) ;  # Winter
+    Xtaum_plot[2,:,:] = nmp.mean(Xtaum[6:9,:,:],axis=0) ;  # Summer
+    Xcurl_plot[1,:,:] = nmp.mean(Xcurl[:3,:,:] ,axis=0) ;  # Winter
+    Xcurl_plot[2,:,:] = nmp.mean(Xcurl[6:9,:,:],axis=0) ;  # Summer
 
 
 # the Jean-Marc Molines method:
 ji_lat0 = nmp.argmax(xlat[nj-1,:])
 
-
-
 # Annual Curl:
 bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xcurl_plot[0,:,:], Xmask, -Rmax, Rmax, dR,
               corca=vdic['ORCA'], lkcont=False, cpal=CPAL_CURL,
               cfignm=path_fig+'tau_curl_annual_'+CONFEXP, cbunit=r'$(10^{-6}s^{-1})$',
-              ctitle='Wind stress curl, '+CONFEXP+' ('+cy1+'-'+cy2+')',
+              ctitle='Wind stress curl, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra_crl,
               lforce_lim=False, i_cb_subsamp=1,
               cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
 
+if not l_tau_is_annual:
+    # JFM Curl:
+    bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xcurl_plot[1,:,:], Xmask, -Rmax, Rmax, dR,
+                  corca=vdic['ORCA'], lkcont=False, cpal=CPAL_CURL,
+                  cfignm=path_fig+'tau_curl_JFM_'+CONFEXP, cbunit=r'$(10^{-6}s^{-1})$',
+                  ctitle='Wind stress curl, JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra_crl,
+                  lforce_lim=False, i_cb_subsamp=1,
+                  cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
 
-# JFM Curl:
-bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xcurl_plot[1,:,:], Xmask, -Rmax, Rmax, dR,
-              corca=vdic['ORCA'], lkcont=False, cpal=CPAL_CURL,
-              cfignm=path_fig+'tau_curl_JFM_'+CONFEXP, cbunit=r'$(10^{-6}s^{-1})$',
-              ctitle='Wind stress curl, JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')',
-              lforce_lim=False, i_cb_subsamp=1,
-              cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
-
-# JAS Curl:
-bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xcurl_plot[2,:,:], Xmask, -Rmax, Rmax, dR,
-              corca=vdic['ORCA'], lkcont=False, cpal=CPAL_CURL,
-              cfignm=path_fig+'tau_curl_JAS_'+CONFEXP, cbunit=r'$(10^{-6}s^{-1})$',
-              ctitle='Wind stress curl, JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')',
-              lforce_lim=False, i_cb_subsamp=1,
-              cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
-
-
-
+    # JAS Curl:
+    bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xcurl_plot[2,:,:], Xmask, -Rmax, Rmax, dR,
+                  corca=vdic['ORCA'], lkcont=False, cpal=CPAL_CURL,
+                  cfignm=path_fig+'tau_curl_JAS_'+CONFEXP, cbunit=r'$(10^{-6}s^{-1})$',
+                  ctitle='Wind stress curl, JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra_crl,
+                  lforce_lim=False, i_cb_subsamp=1,
+                  cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
 
 
 
@@ -134,24 +157,24 @@ bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xcurl_plot[2,:,:], Xmask, -Rmax, Rmax,
 bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xtaum_plot[0,:,:], Xmask, 0., Tmax, dT,
               corca=vdic['ORCA'], lkcont=False, cpal=CPAL_TAUM,
               cfignm=path_fig+'taum_annual_'+CONFEXP, cbunit=r'$(N/m^2)$',
-              ctitle='Wind stress module, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra,
+              ctitle='Wind stress module, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra_tau,
               lforce_lim=False, i_cb_subsamp=1,
               cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
 
+if not l_tau_is_annual:
+    # JFM Taum:
+    bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xtaum_plot[1,:,:], Xmask, 0., Tmax, dT,
+                  corca=vdic['ORCA'], lkcont=False, cpal=CPAL_TAUM,
+                  cfignm=path_fig+'taum_JFM_'+CONFEXP, cbunit=r'$(N/m^2)$',
+                  ctitle='Wind stress module, JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra_tau,
+                  lforce_lim=False, i_cb_subsamp=1,
+                  cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
 
-# JFM Taum:
-bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xtaum_plot[1,:,:], Xmask, 0., Tmax, dT,
-              corca=vdic['ORCA'], lkcont=False, cpal=CPAL_TAUM,
-              cfignm=path_fig+'taum_JFM_'+CONFEXP, cbunit=r'$(N/m^2)$',
-              ctitle='Wind stress module, JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra,
-              lforce_lim=False, i_cb_subsamp=1,
-              cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
-
-# JAS Taum:
-bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xtaum_plot[2,:,:], Xmask, 0., Tmax, dT,
-              corca=vdic['ORCA'], lkcont=False, cpal=CPAL_TAUM,
-              cfignm=path_fig+'taum_JAS_'+CONFEXP, cbunit=r'$(N/m^2)$',
-              ctitle='Wind stress module, JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra,
-              lforce_lim=False, i_cb_subsamp=1,
-              cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
+    # JAS Taum:
+    bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xtaum_plot[2,:,:], Xmask, 0., Tmax, dT,
+                  corca=vdic['ORCA'], lkcont=False, cpal=CPAL_TAUM,
+                  cfignm=path_fig+'taum_JAS_'+CONFEXP, cbunit=r'$(N/m^2)$',
+                  ctitle='Wind stress module, JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra_tau,
+                  lforce_lim=False, i_cb_subsamp=1,
+                  cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
 
