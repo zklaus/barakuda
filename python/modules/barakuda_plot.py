@@ -871,52 +871,55 @@ class plot :
                          i_cb_subsamp=2):
 
         # Plot transport by sigma class...
-
-        import matplotlib.colors as colors   # colmap and co.
-        import barakuda_colmap as bcm
-
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
-
-        fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), dpi=None, facecolor='w', edgecolor='k') ; #trsp_sig_class
-        ax = plt.axes([0.07,  -0.025, 0.91, 0.98], axisbg = 'w')
-
-        vc = __vcontour__(rmin, rmax, dc)
-
-        nbins = len(vsigma_bounds) - 1
-
-        # Colmap:
-        colmap = bcm.chose_colmap(cpal)
-        pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
-        mpl.rcParams['contour.negative_linestyle'] = 'solid'
-        plt.contour.negative_linestyle='solid'
-
-        #cf = plt.contourf(VT, vsigma_bounds[:-1], XF, vc, cmap = colmap, norm = pal_norm)
-        cf = plt.pcolormesh(VT, vsigma_bounds[:-1], XF,  cmap = colmap, norm = pal_norm)
-        if lkcont:
-            cfc = plt.contour(VT, vsigma_bounds[:-1], XF, nmp.arange(-3.,3.,0.5), colors='k', linewidths=0.4)
-
-        # contour for specific values on the ploted field:
-        if len(vcont_spec1) >= 1:
-            cfs1 = plt.contour(VT, vsigma_bounds[:-1], XF, vcont_spec1, colors='white', linewidths = 1.)
-            plt.clabel(cfs1, inline=1, fmt='%4.1f', fontsize=11, manual=[(2080,2.)] )
-
-        __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cb_or='horizontal', cunit='Sv', cfont=font_clb, fontsize=10)
-
-        # AXES:
-        x1 = int(min(VT))  ; x2 = int(max(VT))+1
-        plt.axis([x1, x2, vsigma_bounds[nbins], vsigma_bounds[0]])
-
-        __nice_x_axis__(ax, plt, x1, x2, dt, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
-
-        plt.yticks( nmp.flipud(vsigma_bounds) )
-
-        label_big = { 'fontname':'Trebuchet MS', 'fontweight':'normal', 'fontsize':18 }
-        plt.ylabel(r'$\sigma_0$', **label_big)
-
-        plt.title(ctitle, **font_ttl)
-        plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #trsp_sig_class
-        print cfignm+'.'+cfig_type+' created!\n'
-        plt.close(1)
+        if nmp.sum(XF) == 0.:
+            print '\n  WARNING: plot_trsp_sig_class => doing nothing, arrays contains only 0!\n'
+        else:
+            
+            import matplotlib.colors as colors   # colmap and co.
+            import barakuda_colmap as bcm
+    
+            font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+    
+            fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), dpi=None, facecolor='w', edgecolor='k') ; #trsp_sig_class
+            ax = plt.axes([0.07,  -0.025, 0.91, 0.98], axisbg = 'w')
+    
+            vc = __vcontour__(rmin, rmax, dc)
+    
+            nbins = len(vsigma_bounds) - 1
+    
+            # Colmap:
+            colmap = bcm.chose_colmap(cpal)
+            pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
+            mpl.rcParams['contour.negative_linestyle'] = 'solid'
+            plt.contour.negative_linestyle='solid'
+    
+            #cf = plt.contourf(VT, vsigma_bounds[:-1], XF, vc, cmap = colmap, norm = pal_norm)
+            cf = plt.pcolormesh(VT, vsigma_bounds[:-1], XF,  cmap = colmap, norm = pal_norm)
+            if lkcont:
+                cfc = plt.contour(VT, vsigma_bounds[:-1], XF, nmp.arange(-3.,3.,0.5), colors='k', linewidths=0.4)
+    
+            # contour for specific values on the ploted field:
+            if len(vcont_spec1) >= 1:
+                cfs1 = plt.contour(VT, vsigma_bounds[:-1], XF, vcont_spec1, colors='white', linewidths = 1.)
+                plt.clabel(cfs1, inline=1, fmt='%4.1f', fontsize=11, manual=[(2080,2.)] )
+    
+            __nice_colorbar__(cf, plt, vc, i_sbsmp=i_cb_subsamp, cb_or='horizontal', cunit='Sv', cfont=font_clb, fontsize=10)
+    
+            # AXES:
+            x1 = int(min(VT))  ; x2 = int(max(VT))+1
+            plt.axis([x1, x2, vsigma_bounds[nbins], vsigma_bounds[0]])
+    
+            __nice_x_axis__(ax, plt, x1, x2, dt, cfont=font_xylb, dx_minor=__time_axis_minor_ticks__(dt))
+    
+            plt.yticks( nmp.flipud(vsigma_bounds) )
+    
+            label_big = { 'fontname':'Trebuchet MS', 'fontweight':'normal', 'fontsize':18 }
+            plt.ylabel(r'$\sigma_0$', **label_big)
+    
+            plt.title(ctitle, **font_ttl)
+            plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #trsp_sig_class
+            print cfignm+'.'+cfig_type+' created!\n'
+            plt.close(1)
 
         return
 
@@ -1506,9 +1509,12 @@ def __get_mat__(cf):
 
 
 def __vcontour__(zmin, zmax, zdc):
-    lngt = zmax - zmin
-    ncont = lngt/zdc
-    vcont = nmp.arange(zmin, zmax + zdc, zdc)
+    if (zmin,zmax) == (0.,0.) or (zmin,zmax) == (0,0):
+        vcont = [0.]
+    else:
+        lngt = zmax - zmin
+        ncont = lngt/zdc
+        vcont = nmp.arange(zmin, zmax + zdc, zdc)
     return vcont
 
 
@@ -1859,30 +1865,33 @@ def __time_axis_minor_ticks__(dt):
 
 
 def __suitable_axis_dx__(hmin, hmax, nb_val=20, lsym0=False):
-    dh = abs(hmax - hmin)/float(nb_val)
-    lfound = False
-    iexp = 20
-    while not lfound :
-        if dh%(10.**(iexp-1)) != dh: lfound = True
-        iexp = iexp - 1
-    if iexp < 1:
-        dh = round(dh, -iexp)
+    if (hmin,hmax) == (0.,0.) or (hmin,hmax) == (0,0):
+        dh = 0.
     else:
-        dh = round(dh,0)
-        dh = round(dh/(10.**iexp),0)*10.**iexp
-
-    dhi = dh*10.**(-iexp)
-    if dhi == 3.:         dh = 2.5*10.**(iexp)
-    if dhi in [4.,6.,7.]: dh =  5.*10.**(iexp)
-    if dhi in [8.,9.]:    dh = 10.*10.**(iexp) ; iexp=iexp+1
-
-    hmin = float(int(hmin*10.**(-iexp)))*10.**iexp
-    hmax = float(int((hmax+dh)*10.**(-iexp)))*10.**iexp
-
-    if lsym0:
-        # Force symetry about 0 !
-        hmax = max(abs(hmax),abs(hmin))
-        if hmax%dh != 0.: hmax = float(int(hmax/dh))*dh
-        hmin = -hmax
+        dh = abs(hmax - hmin)/float(nb_val)
+        lfound = False
+        iexp = 20
+        while not lfound :
+            if dh%(10.**(iexp-1)) != dh: lfound = True
+            iexp = iexp - 1
+        if iexp < 1:
+            dh = round(dh, -iexp)
+        else:
+            dh = round(dh,0)
+            dh = round(dh/(10.**iexp),0)*10.**iexp
+    
+        dhi = dh*10.**(-iexp)
+        if dhi == 3.:         dh = 2.5*10.**(iexp)
+        if dhi in [4.,6.,7.]: dh =  5.*10.**(iexp)
+        if dhi in [8.,9.]:    dh = 10.*10.**(iexp) ; iexp=iexp+1
+    
+        hmin = float(int(hmin*10.**(-iexp)))*10.**iexp
+        hmax = float(int((hmax+dh)*10.**(-iexp)))*10.**iexp
+    
+        if lsym0:
+            # Force symetry about 0 !
+            hmax = max(abs(hmax),abs(hmin))
+            if hmax%dh != 0.: hmax = float(int(hmax/dh))*dh
+            hmin = -hmax
 
     return hmin, hmax, dh

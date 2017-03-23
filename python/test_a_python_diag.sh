@@ -3,7 +3,7 @@
 #  B E T A  ! ! !
 
 # Diag to test:
-itrsig=0
+itrsig=1
 imhst=0
 iamoc=0
 icrosssect=0
@@ -15,7 +15,7 @@ iSflx=0
 ienso=0
 imov=0
 issh=0
-iwstress=1
+iwstress=0
 its=0
 imld=0
 irnf=0
