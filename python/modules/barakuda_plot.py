@@ -1220,7 +1220,7 @@ class plot :
             else:
                 plt.plot(vt[:], XD[jp,:], v_dflt_colors[jp], label=vlabels[jp], linewidth=2)
 
-        ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
+        #ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
 
         if lzonal:
             dt = 15. ; # x-axis increment (latitude!)
@@ -1858,7 +1858,7 @@ def __nb_col_row_legend__(nn):
 
 def __time_axis_minor_ticks__(dt):
     dt_mnr=0
-    if (dt>=2)  and (dt<10) and (dt%2 == 0) : dt_mnr=1
+    if ((dt>=2)  and (dt<10) and (dt%2 == 0)) or (dt==5) : dt_mnr=1
     if (dt>=10) and (dt<50) and (dt%5 == 0) : dt_mnr=5
     if (dt>=50) and (dt%50 == 0) : dt_mnr=10
     return dt_mnr
