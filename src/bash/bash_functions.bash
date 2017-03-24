@@ -134,7 +134,7 @@ function barakuda_setup()
     echo; echo "File types to import (NEMO_SAVED_FILES) : ${NEMO_SAVED_FILES}"; echo; echo
 
     # Need to be consistent with the netcdf installation upon which cdftools_light was compiled:
-    ff="cdftools_light/make.macro"
+    ff="${BARAKUDA_ROOT}/cdftools_light/make.macro"
     if [ ! -f ${ff} ]; then echo "PROBLEM: cannot find ${ff} (needed to get NCDF_DIR)!"; exit; fi
     export NCDF_DIR=`cat ${ff} | grep ^NCDF_DIR | cut -d = -f2 | sed -e s/' '//g`
     echo ; echo "NCDF_DIR = ${NCDF_DIR}"; echo
@@ -194,7 +194,7 @@ function barakuda_setup()
         if [ ${i_do_icet} -gt 0 ]; then echo " *** i_do_icet ${ca}"; exit; fi
 
         if [ ${ISTAGE} -eq 1 ]; then
-            for ex in ${L_EXEC}; do check_if_file cdftools_light/bin/${ex} "Compile CDFTOOLS executables!"; done
+            for ex in ${L_EXEC}; do check_if_file ${BARAKUDA_ROOT}/cdftools_light/bin/${ex} "Compile CDFTOOLS executables!"; done
         fi
     fi
 
