@@ -6,11 +6,11 @@
 #
 #    An OCEAN MONITORING python environment for NEMO
 #
-#             L. Brodeau, August 2009-2015
+#             L. Brodeau, 2009-2017
 #
 #===============================================================
 
-#export BARAKUDA_ROOT=`pwd`
+export script=compare_time-series
 [ -z ${BARAKUDA_ROOT+x} ] && export BARAKUDA_ROOT=${PWD}
 
 export FIG_FORMAT='png'
@@ -20,8 +20,11 @@ export FIG_FORMAT='png'
 # Supported ORCA grids:
 ORCA_LIST="ORCA1.L75 ORCA1.L46 ORCA1.L42 ORCA2 ORCA2_L46"
 
-# Checking available configs
-list_conf=`\ls configs/config_*.sh` ; list_conf=`echo ${list_conf} | sed -e s/'configs\/config_'/''/g -e s/'.sh'/''/g`
+# Display available configs:
+list_conf="`\ls ${BARAKUDA_ROOT}/configs/config_*.sh | sed -e "s|${BARAKUDA_ROOT}/configs\/config_||g" -e s/'.sh'/''/g`"
+# User configs, potentially in the directory from which barakuda.sh is called:
+list_conf+=" `\ls ./config_*.sh | sed -e "s|.\/config_||g" -e s/'.sh'/''/g`"
+
 
 # Important bash functions:
 . ${BARAKUDA_ROOT}/src/bash/bash_functions.bash
@@ -83,11 +86,16 @@ if [ -z ${ORCA} ]; then echo "ORCA grid of config ${CONFIG} not supported yet"; 
 
 echo
 
-# sourcing configuration file
-fconfig=${BARAKUDA_ROOT}/configs/config_${CONFIG}.sh
-echo "Sourcing ${fconfig} !"
+if [ -f ./config_${CONFIG}.sh ]; then
+    # sourcing local configuration file if present:
+    fconfig=./config_${CONFIG}.sh
+else
+    # sourcing barakuda-distribution configuration file:
+    fconfig=${BARAKUDA_ROOT}/configs/config_${CONFIG}.sh
+fi
 if [ -f ${fconfig} ]; then
-    echo "${fconfig} found!" ; . ${fconfig}
+    echo "Sourcing configuration file: ${fconfig} !"
+    . ${fconfig}
 else
     echo "PROBLEM: cannot find file ${fconfig} !"; exit
 fi

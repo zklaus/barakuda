@@ -16,11 +16,13 @@ ibpsi=0 ; # Create a climatology for barotropic stream function
 icurl=1 ; # Create a climatology of the windstress curl
 
 export script=build_clim
-#export BARAKUDA_ROOT=`pwd`
 [ -z ${BARAKUDA_ROOT+x} ] && export BARAKUDA_ROOT=${PWD}
 
-# Checking available configs
-list_conf=`\ls configs/config_*.sh` ; list_conf=`echo ${list_conf} | sed -e s/'configs\/config_'/''/g -e s/'.sh'/''/g`
+# Display available configs:
+list_conf="`\ls ${BARAKUDA_ROOT}/configs/config_*.sh | sed -e "s|${BARAKUDA_ROOT}/configs\/config_||g" -e s/'.sh'/''/g`"
+# User configs, potentially in the directory from which barakuda.sh is called:
+list_conf+=" `\ls ./config_*.sh | sed -e "s|.\/config_||g" -e s/'.sh'/''/g`"
+
 
 # Important bash functions:
 . ${BARAKUDA_ROOT}/src/bash/bash_functions.bash
@@ -41,15 +43,20 @@ done
 
 barakuda_check
 
-# sourcing configuration file
-fconfig=${BARAKUDA_ROOT}/configs/config_${CONFIG}.sh
-
+if [ -f ./config_${CONFIG}.sh ]; then
+    # sourcing local configuration file if present:
+    fconfig=./config_${CONFIG}.sh
+else
+    # sourcing barakuda-distribution configuration file:
+    fconfig=${BARAKUDA_ROOT}/configs/config_${CONFIG}.sh
+fi
 if [ -f ${fconfig} ]; then
-    echo "Sourcing ${fconfig} !"
+    echo "Sourcing configuration file: ${fconfig} !"
     . ${fconfig}
 else
     echo "PROBLEM: cannot find file ${fconfig} !"; exit
 fi
+echo
 
 # If auto-submit experiment (ece_exp=10) then overides a few functions with:
 if [ ${ece_exp} -ge 10 ]; then

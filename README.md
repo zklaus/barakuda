@@ -19,7 +19,7 @@ I / What do you need to be able to use BaraKuda ?
   => https://www.enthought.com/products/canopy/
 
   In any case, specify the appropriate "PYTHON_HOME" environment variable in
-  your config/conf_<MYCONF>.sh file
+  your ${BARAKUDA_ROOT}/configs/config_<MYCONF>.sh or ./config_<MYCONF>.sh file
 
 - NEMO output data! => A directory containing the MONTHLY-AVERAGED, global
                        (rebuilt), NEMO output to analyze
@@ -29,7 +29,7 @@ I / What do you need to be able to use BaraKuda ?
   XIOS2 can be found in: src/xios2_xml_barakuda_nemo3.6/
 
 - a NEMO mesh_mask file and the the corresponding basin_mask (ocean basins).
-  (variables MM_FILE and BM_FILE into your config/conf_<MYCONF>.sh file)
+  (variables MM_FILE and BM_FILE into the config_<MYCONF>.sh file you use)
   To create the NEMO mesh_mask.nc just launch the relevant NEMO experiment with the
   namelist parameter nn_msh set to 1 !
   If you use ORCA1 or ORCA025 you can use the
@@ -46,10 +46,10 @@ II / Compile CDFTOOLS executables
 
 
  * CDFTOOLS is a set of FORTRAN executables intended to perform a multitude of
-   diagnostics on NEMO output file and is developed by Jean-Marc Molines at LGGE
-   in Grenoble.  However, this is a slightly modified light version here...  SO
-   DO NOT USE AN OFFICIAL CDFTOOLS DISTRIBUTION, stick to the one that comes
-   with BaraKuda!
+   diagnostics on NEMO output file and is developed by Jean-Marc Molines from
+   the MEOM team at the IGE Grenoble.  However, this is a slightly modified
+   light version here...  SO DO NOT USE AN OFFICIAL CDFTOOLS DISTRIBUTION, stick
+   to the one that comes with BaraKuda!
 
 - move to the 'barakuda/cdftools_light' directory
 
@@ -75,10 +75,25 @@ II / Compile CDFTOOLS executables
 
 
 
-III / Create and configure your own "configs/config_<MY_CONF>.sh"
------------------------------------------------------------------
+III / Create and configure your own "config_<MY_CONF>.sh"
+---------------------------------------------------------
 
-IMPORTANT: Always refer to the most relevant 'configs/config_*_TEMPLATE.sh' file
+All setup related to your host, simulation, location of third party files is
+defined in the "config_<MY_CONF>.sh" file.
+
+You can either used to chose a config file located in the
+"${BARAKUDA_ROOT}/configs" directory of Barakuda:
+('${BARAKUDA_ROOT}/configs/config_<MY_CONF>.sh')
+
+Or, in case you have no write access into ${BARAKUDA_ROOT}/ and call the Barakuda
+suite of scripts from another location, hereafter "work directory", you can use
+a "config_<MY_CONF>.sh" present in the "work directory".
+
+Note: if a given "config_<MY_CONF>.sh" exists both in "${BARAKUDA_ROOT}/configs"
+and the "work directory", BaraKuda will always refer to "config_<MY_CONF>.sh"
+present in the "work directory".
+
+IMPORTANT: Always refer to the most relevant '${BARAKUDA_ROOT}/configs/config_*_TEMPLATE.sh' file
 to design or re-adjust yours! These are symbolic links pointing to the last
 officially supported and most up-to-date config files.  It should be
 sufficiently well commented for you to be able to adjust your own config file.
