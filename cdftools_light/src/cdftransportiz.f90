@@ -548,17 +548,6 @@ PROGRAM cdftransportiz
                saltrpsum = saltrpsum+saltrp(jseg)
             END DO   ! next segment
 
-            !IF ( jt == 1 )  THEN
-            !   WRITE(numout+jc,*)  '# LONmin LATmin LONmax LATmax = ', &
-            !        &                 gla(1),gphi(1), gla(nn-1), gphi(nn-1)
-            !   WRITE(numout+jc,*)  '# Top(m)  Bottom(m) =', gdepw(ilev0(jc)), gdepw(ilev1(jc)+1)
-            !   WRITE(numout+jc,*)  '#'
-            !   WRITE(numout+jc,*)  '# Time rec.  MassTrans(Sv) HeatTrans(PW) SaltTrans(kt/s)'
-            !END IF
-            !!lolo
-            !WRITE(numout+jc,9002) jt, voltrpsum/1.e6, heatrpsum/1.e15, saltrpsum/1.e6
-
-
             heatrpsum = heatrpsum - rau0*rcp*ref_temp*voltrpsum
 
             X_trsp(:,jt,jc) = (/ REAL(voltrpsum/1.e6,4), REAL(heatrpsum/1.e15,4), REAL(saltrpsum/1.e6,4) /) ! lolo
