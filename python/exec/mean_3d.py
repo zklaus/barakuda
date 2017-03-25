@@ -54,13 +54,14 @@ list_variables = id_mm.variables.keys()
 rmask  = id_mm.variables['tmask'][0,:,:,:]
 xe1t   = id_mm.variables['e1t'][0,:,:]
 xe2t   = id_mm.variables['e2t'][0,:,:]
+# we need a 3D field for e3t, because partial steps!!!
 if 'e3t_0' in list_variables[:]:
-    Xe3t = id_mm.variables['e3t_0'][0,:,:,:] # we need the 3D field becaus partial steps!!!
+    Xe3t = id_mm.variables['e3t_0'][0,:,:,:]
 else:
     print 'ERROR: '+cnexec+' => how do we retrieve 3D e3t???'; sys.exit(0)
 id_mm.close()
 
-[ nk, nj, ni ] = rmask.shape
+( nk, nj, ni ) = rmask.shape
 
 
 
@@ -114,11 +115,11 @@ print '      ==> variable '+cvar+' read !'
 j100m  = bt.find_index_from_value(100.  , vdepth) ; print 'j100m  = ', j100m,  '=> ', vdepth[j100m]
 j1000m = bt.find_index_from_value(1000. , vdepth) ; print 'j1000m = ', j1000m, '=> ', vdepth[j1000m]
 
-[ nt, nk0, nj0, ni0 ] = Xd_m.shape
+( nt, nk0, nj0, ni0 ) = Xd_m.shape
 
 if nt != 12 and nt != 1 : print 'ERROR: '+cnexec+' => only treating monthly or annual data so far...'; sys.exit(0)
 
-if [ nk0, nj0, ni0 ] != [ nk, nj, ni ]: print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'; sys.exit(0)
+if ( nk0, nj0, ni0 ) != ( nk, nj, ni ): print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'; sys.exit(0)
 
 vtime = nmp.zeros(nt)
 for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./float(nt)
@@ -141,13 +142,13 @@ for cocean in list_basin_names[:]:
     print '   ===> '+cvar+' in basin '+cocean+' ('+colnm+')'
 
     # Decrasing the domain size if possible:
-    (vjj , vji)  = nmp.where(mask[joce,0,:,:]>0.5)
-    j1 = max( nmp.min(vjj)-2 , 0    )
-    i1 = max( nmp.min(vji)-2 , 0    )
-    j2 = min( nmp.max(vjj)+2 , nj-1 ) + 1
-    i2 = min( nmp.max(vji)+2 , ni-1 ) + 1
-
-    if (i1,j1,i2,j2) != (0,0,ni,nj): print '       ===> zooming on i1,j1 -> i2,j2:', i1,j1,'->',i2,j2
+    (i1,j1,i2,j2) = bo.shrink_domain(mask[joce,0,:,:])
+    #(vjj , vji)  = nmp.where(mask[joce,0,:,:]>0.5)
+    #j1 = max( nmp.min(vjj)-2 , 0    )
+    #i1 = max( nmp.min(vji)-2 , 0    )
+    #j2 = min( nmp.max(vjj)+2 , nj-1 ) + 1
+    #i2 = min( nmp.max(vji)+2 , ni-1 ) + 1
+    #if (i1,j1,i2,j2) != (0,0,ni,nj): print '       ===> zooming on i1,j1 -> i2,j2:', i1,j1,'->',i2,j2
     
     # I) Montly mean for diffrent depth ranges
     # ========================================

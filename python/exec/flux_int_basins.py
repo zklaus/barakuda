@@ -85,12 +85,13 @@ for jb in range(nb_basins) :
         msk_tmp[:,:] = id_bm.variables['tmask'+list_basin_names[jb]][:,:]
         mask[jb,:,:] = msk_tmp[:,:]*mask_glo[:,:]    
     # Decrasing the domain size if possible:
-    (vjj , vji)  = nmp.where(mask[jb,:,:]>0.5)
-    j1[jb] = max( nmp.min(vjj)-2 , 0    )
-    i1[jb] = max( nmp.min(vji)-2 , 0    )
-    j2[jb] = min( nmp.max(vjj)+2 , nj-1 ) + 1
-    i2[jb] = min( nmp.max(vji)+2 , ni-1 ) + 1            
-    if (i1[jb],i2[jb]) == (0,ni): i2[jb] = i2[jb]-2 ; # Mind east-west periodicity overlap of 2 points...
+    (i1[jb],j1[jb],i2[jb],j2[jb]) = bo.shrink_domain(mask[jb,:,:])
+    #(vjj , vji)  = nmp.where(mask[jb,:,:]>0.5)
+    #j1[jb] = max( nmp.min(vjj)-2 , 0    )
+    #i1[jb] = max( nmp.min(vji)-2 , 0    )
+    #j2[jb] = min( nmp.max(vjj)+2 , nj-1 ) + 1
+    #i2[jb] = min( nmp.max(vji)+2 , ni-1 ) + 1            
+    #if (i1[jb],i2[jb]) == (0,ni): i2[jb] = i2[jb]-2 ; # Mind east-west periodicity overlap of 2 points...
 id_bm.close()
 
 del mask_glo, msk_tmp

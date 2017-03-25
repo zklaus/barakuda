@@ -145,11 +145,11 @@ def mean_3d(XD, LSM, XVOL):
     #
     # XD             : 3D+T array containing data
     # LSM            : 3D land sea mask
-    # XVOL           : 3D E1T*E2T*E3T  : 3D mesh sizes
+    # XVOL           : 3D E1T*E2T*E3T  : 3D mesh volume
     #
-    # RETURN vmean: vector containing mean values for each time
+    # RETURN vmean: vector containing 3d-averaged values at each time record
 
-    [ lt, lz, ly, lx ] = nmp.shape(XD)
+    ( lt, lz, ly, lx ) = nmp.shape(XD)
 
     if nmp.shape(LSM) != ( lz, ly, lx ):
         print 'ERROR: mean_3d.barakuda_orca.py => XD and LSM do not agree in shape!'
@@ -174,19 +174,19 @@ def mean_3d(XD, LSM, XVOL):
 
 def mean_2d(XD, LSM, XAREA):
     #
-    # XD     : 2D+T array containing data
-    # LSM    : 2D land sea mask
-    # XAREA  : E1T*E2T, 2D mesh sizes
+    # XD             : 2D+T array containing data
+    # LSM            : 2D land sea mask
+    # XAREA          : 2D E1T*E2T  : mesh area
     #
-    # RETURN vmean: the mean value at each record
+    # RETURN vmean: vector containing 2d-averaged values at each time record
 
-    [ lt, ly, lx ] = nmp.shape(XD)
+    ( lt, ly, lx ) = nmp.shape(XD)
 
     if nmp.shape(LSM) != ( ly, lx ):
-        print 'ERROR: mean_3d.barakuda_orca.py => XD and LSM do not agree in shape!'
+        print 'ERROR: mean_2d.barakuda_orca.py => XD and LSM do not agree in shape!'
         sys.exit(0)
     if nmp.shape(XAREA) != ( ly, lx ):
-        print 'ERROR: mean_3d.barakuda_orca.py => XD and XAREA do not agree in shape!'
+        print 'ERROR: mean_2d.barakuda_orca.py => XD and XAREA do not agree in shape!'
         sys.exit(0)
 
     vmean = nmp.zeros(lt)
@@ -275,3 +275,30 @@ def transect_zon_or_med(x1, x2, y1, y2, xlon, xlat): #, rmin, rmax, dc):
     if lvert and (ji1 != ji2): ji2=ji1
     #
     return ( ji1, ji2, jj1, jj2 )
+
+
+def shrink_domain(LSM):
+    # Decrasing the domain size to only retain the (rectangular region) with
+    # ocean points (LSM == 1)
+    #
+    # Input:
+    #     LSM : 2D land sea mask array
+    # Output:
+    #  (i1,j1,i2,j2): coordinates of the 2 points defining the rectangular region 
+    #
+    ( ly, lx ) = nmp.shape(LSM)
+    #
+    #if nmp.shape(LSM) != ( lz, ly, lx ):
+    #    print 'ERROR: shrink_domain.barakuda_orca.py => XD and LSM do not agree in shape!'
+    #    sys.exit(0)
+    (vjj , vji)  = nmp.where(LSM[:,:]>0.5)
+    j1 = max( nmp.min(vjj)-2 , 0    )
+    i1 = max( nmp.min(vji)-2 , 0    )
+    j2 = min( nmp.max(vjj)+2 , ly-1 ) + 1
+    i2 = min( nmp.max(vji)+2 , lx-1 ) + 1
+    #
+    if (i1,j1,i2,j2) != (0,0,lx,ly):
+        print '       ===> zooming on i1,j1 -> i2,j2:', i1,j1,'->',i2,j2
+    if (i1,i2) == (0,lx): i2 = i2-2 ; # Mind east-west periodicity overlap of 2 points...
+    #
+    return (i1,j1,i2,j2)
