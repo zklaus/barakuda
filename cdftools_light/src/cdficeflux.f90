@@ -40,8 +40,8 @@ PROGRAM cdficeflux
   !!  interm_pt  : choose intermediate points on a broken line.
   !!----------------------------------------------------------------------
   USE cdfio
-  USE modcdfnames
-  USE modutils       ! for global attribute
+  !USE modcdfnames
+  !USE modutils       ! for global attribute
   !!----------------------------------------------------------------------
   !! CDFTOOLS_3.0 , MEOM 2011
   !! $Id: cdficeflux.f90 669 2013-05-31 14:20:52Z molines $
@@ -96,7 +96,7 @@ PROGRAM cdficeflux
   !REAL(KIND=4), DIMENSION(:,:),   ALLOCATABLE :: zu, zut, zus   ! Zonal velocities and uT uS
   !REAL(KIND=4), DIMENSION(:,:),   ALLOCATABLE :: zv, zvt, zvs   ! Meridional velocities and uT uS
   !LB:
-  REAL(KIND=4), DIMENSION(:,:),   ALLOCATABLE :: zu_i, zv_i, zc_i, zh_i     ! velocities, concentration and thickness of sea-ice
+  REAL(KIND=4), DIMENSION(:,:),   ALLOCATABLE :: zu_i, zv_i, zc_i, zh_i ! velocities, concentration and thickness of sea-ice
   !LB.
   REAL(KIND=4), DIMENSION(:,:),   ALLOCATABLE :: rdum           ! dummy (1x1) array for ncdf output
   REAL(KIND=4), DIMENSION(:),     ALLOCATABLE :: tim            ! time counter
@@ -136,6 +136,9 @@ PROGRAM cdficeflux
 
   TYPE(variable), DIMENSION(:),   ALLOCATABLE :: stypvar        ! structure of output
 
+
+  CHARACTER(LEN=256)                          :: cn_fmm
+
   CHARACTER(LEN=256)                          :: cf_sections='transport_ice.dat'  ! input file containing sections !LB
   CHARACTER(LEN=256)                          :: cf_icefil      ! seaice file   (in) !LB
   CHARACTER(LEN=256)                          :: cf_out         ! output file name (ASCII)
@@ -148,10 +151,13 @@ PROGRAM cdficeflux
   CHARACTER(LEN=256)                          :: cline               ! dummy char variable
   CHARACTER(LEN=256), DIMENSION(3)            :: cldumt              ! dummy char variable
 
+  CHARACTER(LEN=20) :: ce1, ce2, cvmask
+
+
   LOGICAL                                     :: ltest   = .FALSE.   ! flag for test case
   LOGICAL                                     :: lchk    = .FALSE.   ! flag for missing files
   !!----------------------------------------------------------------------
-  CALL ReadCdfNames()
+  !CALL ReadCdfNames()
 
   narg= iargc()
   ! Print usage if no argument
@@ -177,7 +183,7 @@ PROGRAM cdficeflux
      PRINT *,'      [-time jt ]:  compute transports for time index jt. Default is 1.'
      PRINT *,'      '
      PRINT *,'     REQUIRED FILES :'
-     PRINT *,'      Files ',TRIM(cn_fhgr),', ',TRIM(cn_fzgr),' must be in the current directory.'
+     PRINT *,'      File ',TRIM(cn_fmm),' must be in the current directory.'
      PRINT *,'      '
      PRINT *,'     OUTPUT : '
      PRINT *,'      - Standard output '
@@ -195,7 +201,7 @@ PROGRAM cdficeflux
   itime  = 1
   nclass = 1 ; jclass = 1
   ijarg  = 1
-  CALL SetGlobalAtt(cglobal)
+  !CALL SetGlobalAtt(cglobal)
 
   ! Browse command line for arguments and/or options
   DO WHILE (ijarg <= narg )
@@ -218,27 +224,33 @@ PROGRAM cdficeflux
 
 
   ! checking if all required files are available
-  lchk = lchk .OR. chkfile(cn_fzgr)
-  lchk = lchk .OR. chkfile(cn_fhgr)
-  IF ( ltest ) THEN
-     ! OK
-  ELSE
-     lchk = lchk .OR. chkfile(cf_icefil)
-  ENDIF
-  IF ( lchk ) STOP ! missing files
+  !lchk = lchk .OR. chkfile(cn_fmm)
+  !lchk = lchk .OR. chkfile(cn_fmm)
+  !IF ( ltest ) THEN
+  !   ! OK
+  !ELSE
+  !   lchk = lchk .OR. chkfile(cf_icefil)
+  !ENDIF
+  !IF ( lchk ) STOP ! missing files
+
+
+  ce1='e1t'
+  ce2='e2t'
+  cvmask='tmask'
+
 
   ! adjust the number of output variables according to options
   nvarout = 1
 
 
-  npiglo = getdim (cf_icefil,cn_x)
-  npjglo = getdim (cf_icefil,cn_y)
-  npk    = getdim (cf_icefil,cn_z)
-  npt    = getdim (cf_icefil,cn_t)
+  npiglo = getdim (cf_icefil,'x')
+  npjglo = getdim (cf_icefil,'y')
+  !npk    = getdim (cf_icefil,'z')
+  npt    = getdim (cf_icefil,'time')
 
   PRINT *, 'npiglo =', npiglo
   PRINT *, 'npjglo =', npjglo
-  PRINT *, 'npk    =', npk
+  !PRINT *, 'npk    =', npk
   PRINT *, 'npt    =', npt
 
 
@@ -262,11 +274,11 @@ PROGRAM cdficeflux
   ALLOCATE ( tim(npt)                       )
   !
   ! read metrics and grid position
-  e1t(:,:)   = getvar(cn_fhgr, cn_ve1t, 1, npiglo, npjglo)
-  e2t(:,:)   = getvar(cn_fhgr, cn_ve2t, 1, npiglo, npjglo)
+  e1t(:,:)   = getvar(cn_fmm, ce1, 1, npiglo, npjglo)
+  e2t(:,:)   = getvar(cn_fmm, ce2, 1, npiglo, npjglo)
 
-  glamf(:,:) = getvar(cn_fhgr, cn_glamf, 1,npiglo, npjglo)
-  gphif(:,:) = getvar(cn_fhgr, cn_gphif, 1,npiglo, npjglo)
+  glamf(:,:) = getvar(cn_fmm, 'glamf', 1,npiglo, npjglo)
+  gphif(:,:) = getvar(cn_fmm, 'gphif', 1,npiglo, npjglo)
 
 
 

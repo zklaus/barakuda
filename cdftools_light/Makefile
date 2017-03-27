@@ -23,7 +23,9 @@ EXEC = ./bin/cdfpsi.x \
        ./bin/cdfmoc.x \
        ./bin/cdfcurl.x \
        ./bin/cdfvT.x \
-       ./bin/cdftransportiz.x
+       ./bin/cdftransportiz.x \
+       ./bin/cdftransport_test_sign.x \
+       ./bin/cdficeflux.x
 
 all: $(EXEC)
 
@@ -54,6 +56,9 @@ all: $(EXEC)
 
 ./bin/cdftransportiz.x: src/cdfio.o src/io_ezcdf.o src/cdftransportiz.f90
 	$(F90) src/cdftransportiz.f90 -o ./bin/cdftransportiz.x  src/cdfio.o src/io_ezcdf.o $(FFLAGS)
+
+./bin/cdftransport_test_sign.x: src/cdfio.o src/io_ezcdf.o src/cdftransport_test_sign.f90
+	$(F90) src/cdftransport_test_sign.f90 -o ./bin/cdftransport_test_sign.x  src/cdfio.o src/io_ezcdf.o $(FFLAGS)
 
 ./bin/cdficeflux.x: src/cdfio.o src/io_ezcdf.o src/cdficeflux.f90
 	$(F90) src/cdficeflux.f90 -o ./bin/cdficeflux.x  src/cdfio.o $(FFLAGS)

@@ -23,7 +23,7 @@ ORCA_LIST="ORCA1.L75 ORCA1.L46 ORCA1.L42 ORCA2 ORCA2_L46"
 # Display available configs:
 list_conf="`\ls ${BARAKUDA_ROOT}/configs/config_*.sh | sed -e "s|${BARAKUDA_ROOT}/configs\/config_||g" -e s/'.sh'/''/g`"
 # User configs, potentially in the directory from which barakuda.sh is called:
-list_conf+=" `\ls ./config_*.sh | sed -e "s|.\/config_||g" -e s/'.sh'/''/g`"
+list_conf+=" `\ls ./config_*.sh 2>/dev/null | sed -e "s|.\/config_||g" -e s/'.sh'/''/g`"
 
 
 # Important bash functions:
