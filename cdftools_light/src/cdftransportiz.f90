@@ -64,7 +64,10 @@ PROGRAM cdftransportiz
 
    REAL(4) ::  rxi0,ryj0, rxi1, ryj1
 
-   REAL(8) :: ref_temp=0, rU, rV
+   REAL(8) :: &
+      &        ref_temp=0., & ! reference temperature (in Celsius) for the transport of heat
+      &        ref_sali=0., & ! reference salinity    (in PSU) for the transport of salt
+      &       rU, rV
 
    REAL(4) ::   ai,bi, aj,bj,d
    REAL(4) ::    rxx(jpseg),ryy(jpseg)
@@ -363,12 +366,13 @@ PROGRAM cdftransportiz
                ! integrates vertically
                ztrpu (:,:,jc) = ztrpu (:,:,jc) + zwku (:,:)
                ztrpv (:,:,jc) = ztrpv (:,:,jc) + zwkv (:,:)
+
                ztrput(:,:,jc) = ztrput(:,:,jc) + zwkut(:,:) * rau0*rcp
                ztrpvt(:,:,jc) = ztrpvt(:,:,jc) + zwkvt(:,:) * rau0*rcp
 
                ! At the end instead
-               !ztrput(:,:,jc) = ztrput(:,:,jc) + rau0*rcp*(zwkut(:,:) - ref_temp*zu (:,:)*e2u(:,:)*e3u(:,:))
-               !ztrpvt(:,:,jc) = ztrpvt(:,:,jc) + rau0*rcp*(zwkvt(:,:) - ref_temp*zv (:,:)*e1v(:,:)*e3v(:,:))
+               !ztrput(:,:,jc) = ztrput(:,:,jc) + rau0*rcp*(zwkut(:,:) - ref_temp*zwku(:,:))
+               !ztrpvt(:,:,jc) = ztrpvt(:,:,jc) + rau0*rcp*(zwkvt(:,:) - ref_temp*zwkv(:,:))
 
                ztrpus(:,:,jc) = ztrpus(:,:,jc) + zwkus(:,:)
                ztrpvs(:,:,jc) = ztrpvs(:,:,jc) + zwkvs(:,:)
@@ -535,6 +539,7 @@ PROGRAM cdftransportiz
             END DO   ! next segment
 
             heatrpsum = heatrpsum - rau0*rcp*ref_temp*voltrpsum
+            saltrpsum = saltrpsum -          ref_sali*voltrpsum
 
             X_trsp(:,jt,jc) = (/ REAL(voltrpsum/1.e6,4), REAL(heatrpsum/1.e15,4), REAL(saltrpsum/1.e6,4) /) ! lolo
 
