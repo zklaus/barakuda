@@ -1174,7 +1174,7 @@ class plot :
     def __1d_multi(self,vt, XD, vlabels, cfignm='fig', dt=5, i_t_jump=1, cyunit=None, ctitle='',
                    cfig_type='png', ymin=0, ymax=0, lzonal=False, xmin=0, xmax=0,
                    loc_legend='lower center', line_styles=[], fig_size=FIG_SIZE_DEF,
-                   l_tranparent_bg=True, cxunit=None, lmask=True):
+                   l_tranparent_bg=True, cxunit=None, lmask=True, cinfo=''):
 
         # lzonal => zonally averaged curves...
         if lzonal:
@@ -1248,6 +1248,14 @@ class plot :
         __nice_y_axis__(ax, plt, ymin, ymax, dy, i_sbsmp=1, cunit=cyunit, cfont=font_xylb, dy_minor=0)
 
         plt.title(ctitle, **font_ttl)
+        
+        if cinfo != '':
+            # Ading info:
+            yp = 0.95
+            if loc_legend != '0' and l_legend_out: yp = -0.1
+            props = dict(boxstyle='round', facecolor='w') ;#, alpha=0.5)
+            ax.text(0.05, yp, cinfo, transform=ax.transAxes,
+                    verticalalignment='top', bbox=props, fontsize=10)
 
         if loc_legend != '0':
             if l_legend_out:
@@ -1257,6 +1265,10 @@ class plot :
                 plt.legend(bbox_to_anchor=(0.9, -0.05), ncol=nb_col, shadow=True, fancybox=True)
             else:
                 plt.legend(loc=loc_legend, ncol=nb_col, shadow=True, fancybox=True)
+
+
+            
+            
 
         cf_fig = cfignm+'.'+cfig_type
 

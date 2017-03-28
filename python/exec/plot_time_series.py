@@ -301,7 +301,28 @@ if idfig == 'htf':
         VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], vqnt_ifs[:])
         bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_qnt_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Surface net heat flux (annual)',
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out',
+                            cinfo='Mean diff = '+str(round(nmp.mean(vqnt[:]-vqnt_ifs[:]),3))+' '+cyu )
+
+
+    # Only Qnon-solar (NEMO and IFS)
+    if l_htf_ifs and l_qsr:
+        vlab = [] ; nbd = 2
+        Xplt = nmp.zeros((nbd,nbm))
+        Xplt[0,:] = vqnt[:] - vqsr[:] ; vlab.append('Qnsol NEMO ('+vdic_htf['NN_QNET']+'-'+vdic_htf['NN_QSOL']+')')
+        Xplt[1,:] = vqnt_ifs[:] - vqsr_ifs[:] ; vlab.append('Qnsol IFS (STR+SLHF+SSHF)')
+        bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_qns_NEMO_IFS_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Surface net NON-solar flux (monthly)',
                             ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+        # Same but annual:
+        Xplt = nmp.zeros((nbd,nby))
+        VY, Xplt[0,:] = bt.monthly_2_annual(vtime[:], vqnt[:] - vqsr[:])
+        VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], vqnt_ifs[:] - vqsr_ifs[:])
+        bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_qns_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
+                            cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Surface net NON-solar flux (annual)',
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out',
+                            cinfo='Mean diff = '+str(round(nmp.mean(vqnt[:]-vqsr[:] - (vqnt_ifs[:]-vqsr_ifs[:])),3))+' '+cyu )
+
 
     # Only Qsol (NEMO and IFS)
     if l_htf_ifs and l_qsr:
@@ -318,7 +339,8 @@ if idfig == 'htf':
         VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], vqsr_ifs[:])
         bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_qsr_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Surface net solar flux (annual)',
-                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out',
+                            cinfo='Mean diff = '+str(round(nmp.mean(vqsr[:]-vqsr_ifs[:]),3))+' '+cyu )
 
 
 
@@ -443,7 +465,8 @@ if idfig == 'fwf':
         if l_clv: VY, Xplt[2,:] = bt.monthly_2_annual(vtime[:], vrnf[:] + vclv[:])
         bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_rnf_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Continental runoffs (annual)',
-                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out',
+                            cinfo='Mean diff = '+str(round(nmp.mean(vrnf[:]+vemp_land_ifs[:]),3))+' '+cyu )
 
 
     # Only runoff and calving in NEMO:
@@ -482,7 +505,8 @@ if idfig == 'fwf':
         VY, Xplt[1,:] = bt.monthly_2_annual(vtime[:], vp_ifs[:])
         bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_prc_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Precip (annual)',
-                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out',
+                            cinfo='Mean diff = '+str(round(nmp.mean(vprc[:]-vp_ifs[:]),3))+' '+cyu )
 
 
     # Only Evaporation (NEMO and IFS)
@@ -503,7 +527,8 @@ if idfig == 'fwf':
         if l_evb: Xplt[2,:] = bt.monthly_2_annual(vtime[:], vevb[:])
         bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_evp_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': Evaporation (annual)',
-                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out',
+                            cinfo='Mean diff = '+str(round(nmp.mean(vevp[:]-ve_ifs[:]),3))+' '+cyu )
 
 
     # Only [ Evaporation - Precipitation ] (NEMO and IFS)
@@ -521,7 +546,8 @@ if idfig == 'fwf':
         VY, Xplt[1,:] =       bt.monthly_2_annual(vtime[:], ve_ifs[:] - vp_ifs[:])
         bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_EmP_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': E-P (annual)',
-                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out',
+                            cinfo='Mean diff = '+str(round(nmp.mean((vevp[:]-vprc[:])-(ve_ifs[:]-vp_ifs[:])),3))+' '+cyu )
 
 
     # Only [ Evaporation - Precipitation - Runoffs ] (NEMO and IFS)
@@ -544,7 +570,8 @@ if idfig == 'fwf':
         if l_clv: Vy, Xplt[3,:] = bt.monthly_2_annual(vtime[:], vfwf[:] + vclv[:])
         bp.plot("1d_multi")(VY, Xplt, vlab, cfignm=cdiag+'_EmPmR_NEMO_IFS_annual_'+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle = 'NEMO & IFS, '+CONFEXP+': E-P-R (annual)',
-                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out')
+                            ymin=ym, ymax=yp, cfig_type=ff, loc_legend='out',
+                            cinfo='Mean diff = '+str(round(nmp.mean((vevp[:]-vprc[:]-vrnf[:])-(ve_ifs[:]-vp_ifs[:]+vemp_land_ifs[:])),3))+' '+cyu )
 
 
 
@@ -569,31 +596,6 @@ if idfig == 'fwf':
         bp.plot("1d_multi")(vtime, Xplt, vlab, cfignm=cdiag+'_prc_IFS_'+CONFEXP, dt=ittic,
                             cyunit=cyu, ctitle = CONFEXP+': Precip and NEMO runoffs (monthly)', ymin=ym, ymax=yp, cfig_type=ff,
                             loc_legend='out')
-
-
-        # Everything possible
-        #Xplt = nmp.zeros((9,nbm))
-        #vlab = []
-        #if l_emp:     Xplt[0,:] = vemp[:]     ; vlab.append('E-P NEMO ('+vdic_fwf['NN_EMP']+')')
-        #if l_fwf_ifs: Xplt[1,:] = vemp_ifs[:] ; vlab.append('E-P IFS')
-        #if l_emp:     Xplt[2,:] = vfwf[:]     ; vlab.append('E-P-R NEMO ('+vdic_fwf['NN_FWF']+')')
-        #if l_rnf:     Xplt[3,:] = vrnf[:]     ; vlab.append('R NEMO ('+vdic_fwf['NN_RNF']+')')
-        #if l_fwf_ifs: Xplt[4,:] = ve_ifs[:]   ; vlab.append('E IFS')
-        #if l_prc and l_prc_nemo_valid:     Xplt[5,:] = vprc[:]     ; vlab.append('P NEMO ('+vdic_fwf['NN_P']+')')
-        #if l_fwf_ifs: Xplt[6,:] = vp_ifs[:]   ; vlab.append('P IFS')
-        #if l_clv:     Xplt[7,:] = vclv[:]     ; vlab.append('Calving NEMO ('+vdic_fwf['NN_CLV']+')')
-        #if l_evp:     Xplt[8,:] = vevp[:]     ; vlab.append('E NEMO ('+vdic_fwf['NN_E']+')')
-        #
-        #bp.plot("1d_multi")(vtime, Xplt, vlab,
-        #                    cfignm=cdiag+'_emp_ALL_IFS_'+CONFEXP, dt=ittic,
-        #                    loc_legend='out', cyunit=cyu,
-        #                    ctitle = CONFEXP+': fresh-water budgets', ymin=ym, ymax=yp, cfig_type=ff)
-
-
-
-
-
-
 
 
 

@@ -3,7 +3,7 @@
 #  B E T A  ! ! !
 
 # Diag to test:
-itrsig=1
+itrsig=0
 imhst=0
 iamoc=0
 icrosssect=0
@@ -16,7 +16,7 @@ ienso=0
 imov=0
 issh=0
 iwstress=0
-its=0
+its=1
 imld=0
 irnf=0
 iice=0
@@ -36,17 +36,17 @@ ihov=0
 #ARCH="ece32_marenostrum"
 #export EXP="LR20" ; NC=nc4 ; jyear=2540
 
-#CONFIG="ORCA1_L75"
-#ARCH="T159_ece32_triolith"
-#export EXP="LB2E" ; NC=nc4 ; jyear=2010
+CONFIG="ORCA1_L75"
+ARCH="T159_ece32_triolith"
+export EXP="LB30" ; NC=nc4 ; jyear=2010
 
 #CONFIG="ORCA025_L75"
 #ARCH="T511_ece32_triolith"
 #export EXP="HC71" ; NC=nc ; jyear=1990
 
-CONFIG="ORCA025_L75"
-ARCH="etienne"
-export EXP="a0ez" ; NC=nc ; jyear=1945
+#CONFIG="ORCA025_L75"
+#ARCH="etienne"
+#export EXP="a0ez" ; NC=nc ; jyear=1945
 
 #CONFIG="ORCA1_L75"
 #ARCH="T255_ece32_triolith"
@@ -151,10 +151,10 @@ if [ ${itempsal} -eq 1 ]; then
 fi
 
 if [ ${its} -eq 1 ]; then
-    diag=3d_thetao ; ln -sf ${DIAG_D}/3d_${NN_T}*.nc .
+    #diag=3d_thetao ; ln -sf ${DIAG_D}/3d_${NN_T}*.nc .
     #diag=mean_zos  ; ln -sf ${DIAG_D}/mean_${NN_SSH}*.nc .
-    #diag=mean_fwf
-    #diag=mean_htf
+    #diag=mean_htf ; ln -sf ${DIAG_D}/mean_htf*.nc .
+    diag=mean_fwf ; ln -sf ${DIAG_D}/mean_fwf*.nc .
     #ln -sf ${DIAG_D}/${diag}*.nc .
     CMD="python exec/plot_time_series.py ${diag}"
 fi
