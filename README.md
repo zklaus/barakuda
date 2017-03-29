@@ -25,8 +25,8 @@ I / What do you need to be able to use BaraKuda ?
                        (rebuilt), NEMO output to analyze
   (grid_T, grid_U, grid_V and icemod files) as "*.nc", "*.nc.gz" or ".nc4"
 
-  For NEMO 3.6 and above the appropriate set of xml configuration files for
-  XIOS2 can be found in: src/xios2_xml_barakuda_nemo3.6/
+  For NEMO 3.6 and above some appropriate sets of xml configuration files for
+  XIOS2 can be found in: src/xios2_xml/
 
 - a NEMO mesh_mask file and the the corresponding basin_mask (ocean basins).
   (variables MM_FILE and BM_FILE into the config_<MYCONF>.sh file you use)
