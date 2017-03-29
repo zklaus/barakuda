@@ -2,18 +2,19 @@
 <!-- $id$ -->
 
 <!--
-    ============================================================================================================
-    =                                  definition of all existing variables                                    =
-    =                                            DO NOT CHANGE                                                 =
-    ============================================================================================================
-  -->
+============================================================================================================
+=                                  definition of all existing variables                                    =
+=                                            DO NOT CHANGE                                                 =
+============================================================================================================
+-->
+
 <field_definition level="1" prec="4" operation="average" enabled=".TRUE." default_value="1.e20" > <!-- time step automaticaly defined -->
 
   <!--
       ============================================================================================================
       Dynamical ocean model variables
       ============================================================================================================
-    -->
+  -->
 
   <!-- T grid -->
 
@@ -33,12 +34,14 @@
     <field id="sstgrad"      long_name="module of sst gradient"                                                                  unit="degC/m"   />
     <field id="sstgrad2"     long_name="square of module of sst gradient"                                                        unit="degC2/m2" />
     <field id="sbt"          long_name="sea bottom temperature"                                                                  unit="degC"     />
+    <field id="tosmint"      long_name="vertical integral of temperature times density"   standard_name="integral_wrt_depth_of_product_of_density_and_potential_temperature"  unit="(kg m2) degree_C" />
 
     <field id="sss"          long_name="sea surface salinity"             standard_name="sea_surface_salinity"   unit="1e-3" />
     <field id="sss2"         long_name="square of sea surface salinity"                                          unit="1e-6"  > sss * sss </field >
     <field id="sssmax"       long_name="max of sea surface salinity"   field_ref="sss"   operation="maximum"                 />
     <field id="sssmin"       long_name="min of sea surface salinity"   field_ref="sss"   operation="minimum"                 />
     <field id="sbs"          long_name="sea bottom salinity"                                                     unit="1e-3" />
+    <field id="somint"       long_name="vertical integral of salinity times density"   standard_name="integral_wrt_depth_of_product_of_density_and_salinity"  unit="(kg m2) x (1e-3)" />
 
     <field id="taubot"       long_name="bottom stress module"                                                    unit="N/m2" />
 
@@ -217,11 +220,13 @@
 
     <!-- available if key_oasis3 + conservative method -->
     <field id="rain"          long_name="Liquid precipitation"                                     standard_name="rainfall_flux"                                                                 unit="kg/m2/s"  />
+    <field id="rain_ao_cea"   long_name="Liquid precipitation over ice-free ocean (cell average)"  standard_name="rainfall_flux"                                                                 unit="kg/m2/s"  />
     <field id="evap_ao_cea"   long_name="Evaporation over ice-free ocean (cell average)"           standard_name="water_evaporation_flux"                                                        unit="kg/m2/s"  />
     <field id="isnwmlt_cea"   long_name="Snow over Ice melting (cell average)"                     standard_name="surface_snow_melt_flux"                                                        unit="kg/m2/s"  />
     <field id="fsal_virt_cea" long_name="Virtual salt flux due to ice formation (cell average)"    standard_name="virtual_salt_flux_into_sea_water_due_to_sea_ice_thermodynamics"                unit="kg/m2/s"  />
     <field id="fsal_real_cea" long_name="Real salt flux due to ice formation (cell average)"       standard_name="downward_sea_ice_basal_salt_flux"                                              unit="kg/m2/s"  />
     <field id="hflx_rain_cea" long_name="heat flux due to rainfall"                                standard_name="temperature_flux_due_to_rainfall_expressed_as_heat_flux_into_sea_water"        unit="W/m2"     />
+    <field id="hflx_prec_cea" long_name="heat flux due to precipitation"                           standard_name="temperature_flux_due_to_precipitation_expressed_as_heat_flux_into_sea_water"        unit="W/m2"     />
     <field id="hflx_evap_cea" long_name="heat flux due to evaporation"                             standard_name="temperature_flux_due_to_evaporation_expressed_as_heat_flux_out_of_sea_water"   unit="W/m2"     />
     <field id="hflx_snow_cea" long_name="heat flux due to snow falling"                            standard_name="heat_flux_onto_ocean_and_ice_due_to_snow_thermodynamics"                       unit="W/m2"     />
     <field id="hflx_snow_ai_cea" long_name="heat flux due to snow falling over ice"                standard_name="heat_flux_onto_ice_due_to_snow_thermodynamics"                                 unit="W/m2"     />
@@ -400,6 +405,7 @@
 
     <!-- variables available with key_diaar5 -->
     <field id="u_masstr"     long_name="ocean eulerian mass transport along i-axis"    standard_name="ocean_mass_x_transport"                          unit="kg/s"        grid_ref="grid_U_3D" />
+    <field id="u_masstr_vint" long_name="vertical integral of ocean eulerian mass transport along i-axis"    standard_name="vertical_integral_of_ocean_mass_x_transport"  unit="kg/s" />
     <field id="u_heattr"     long_name="ocean eulerian heat transport along i-axis"    standard_name="ocean_heat_x_transport"                          unit="W"                                />
     <field id="u_salttr"     long_name="ocean eulerian salt transport along i-axis"    standard_name="ocean_salt_x_transport"                          unit="1e-3*kg/s"                        />
     <field id="ueiv_heattr"  long_name="ocean bolus heat transport along i-axis"       standard_name="ocean_heat_x_transport_due_to_bolus_advection"   unit="W"                                />
@@ -483,6 +489,26 @@
     <field id="aht2d"        long_name="lateral eddy diffusivity"       standard_name="ocean_tracer_xy_laplacian_diffusivity"      unit="m2/s"   grid_ref="grid_W_2D" />
     <field id="aht2d_eiv"    long_name="EIV lateral eddy diffusivity"   standard_name="ocean_tracer_bolus_laplacian_diffusivity"   unit="m2/s"   grid_ref="grid_W_2D" />
   </field_group>
+
+  <!-- product fields -->
+  <field_group id="diaprod">
+    <field id="ut"           long_name="product_of_sea_water_x_velocity_and_potential_temperature"      unit="degree_C m/s"      grid_ref="grid_U_3D"   />
+    <field id="ut_e3u"       long_name="product_of_sea_water_x_velocity_and_potential_temperature * e3u"  unit="degree_C m2/s"   grid_ref="grid_U_3D" > ut * e3u </field >
+    <field id="us"           long_name="product_of_sea_water_x_velocity_and_salinity"                   unit="PSU m/s"       grid_ref="grid_U_3D"   />
+    <field id="us_e3u"       long_name="product_of_sea_water_x_velocity_and_salinity * e3u"             unit="PSU m2/s"      grid_ref="grid_U_3D" > us * e3u </field >
+    <field id="urhop"        long_name="product_of_sea_water_x_velocity_and_potential_density"          unit="(kg/m3).(m/s)" grid_ref="grid_U_3D"   />
+    <field id="urhop_e3u"    long_name="product_of_sea_water_x_velocity_and_potential_density * e3u"    unit="(kg/m3).(m2/s)"   grid_ref="grid_U_3D" > urhop * e3u </field >
+    <field id="vt"           long_name="product_of_sea_water_y_velocity_and_potential_temperature"      unit="degree_C m/s"      grid_ref="grid_V_3D"   />
+    <field id="vt_e3v"       long_name="product_of_sea_water_y_velocity_and_potential_temperature * e3v"  unit="degree_C m2/s"   grid_ref="grid_V_3D" > vt * e3v </field >
+    <field id="vs"           long_name="product_of_sea_water_y_velocity_and_salinity"                   unit="PSU m/s"       grid_ref="grid_V_3D"   />
+    <field id="vs_e3v"       long_name="product_of_sea_water_y_velocity_and_salinity * e3t"             unit="PSU m2/s"      grid_ref="grid_V_3D" > vs * e3v </field >
+    <field id="vrhop"        long_name="product_of_sea_water_y_velocity_and_potential_density"          unit="(kg/m3).(m/s)" grid_ref="grid_V_3D"   />
+    <field id="vrhop_e3v"    long_name="product_of_sea_water_y_velocity_and_potential_density * e3t"    unit="(kg/m3).(m2/s)"  grid_ref="grid_V_3D" > vrhop * e3v </field >
+    <field id="wt"           long_name="product_of_upward_sea_water_velocity_and_potential_temperature" unit="degree_C m/s"      grid_ref="grid_W_3D"   />
+    <field id="ws"           long_name="product_of_upward_sea_water_velocity_and_salinity"              unit="PSU m/s"       grid_ref="grid_W_3D"   />
+    <field id="wrhop"        long_name="product_of_upward_sea_water_velocity_and_potential_density"     unit="(kg/m3).(m/s)" grid_ref="grid_W_3D"   />
+  </field_group>
+
 
   <!-- scalar variables available with key_diaar5 -->
 
@@ -572,13 +598,15 @@
     <field id="sophtldf"          long_name="Diffusive Heat Transport"                     unit="PW"       grid_ref="grid_znl_T_2D" />
     <field id="sopstadv"          long_name="Advective Salt Transport"                     unit="Giga g/s" grid_ref="grid_znl_T_2D" />
     <field id="sopstldf"          long_name="Diffusive Salt Transport"                     unit="Giga g/s" grid_ref="grid_znl_T_2D" />
+    <field id="sopht_vt"          long_name="Heat Transport"                               unit="PW"       grid_ref="grid_znl_T_2D" />
+    <field id="sopst_vs"          long_name="Salt Transport"                               unit="Giga g/s" grid_ref="grid_znl_T_2D" />
   </field_group>
 
   <!--
       ============================================================================================================
       Physical ocean model trend diagnostics : temperature, KE, PE, momentum
       ============================================================================================================
-    -->
+  -->
 
   <field_group id="trendT" grid_ref="grid_T_3D">
     <!-- variables available with ln_tra_trd -->
@@ -703,7 +731,7 @@
       ============================================================================================================
       Definitions for iodef_demo.xml
       ============================================================================================================
-    -->
+  -->
 
   <field_group id="mooring" >
     <field field_ref="toce"         name="thetao"   long_name="sea_water_potential_temperature"      />
