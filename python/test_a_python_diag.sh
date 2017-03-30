@@ -3,6 +3,7 @@
 #  B E T A  ! ! !
 
 # Diag to test:
+# One at a time please!!!
 itrsig=0
 imhst=0
 iamoc=0
@@ -15,8 +16,8 @@ iSflx=0
 ienso=0
 imov=0
 issh=0
-iwstress=0
-its=1
+iwind=1
+its=0
 imld=0
 irnf=0
 iice=0
@@ -199,8 +200,8 @@ if [ ${issh} -eq 1 ]; then
     CMD="python exec/ssh.py ${y1_clim} ${y2_clim}"
 fi
 
-if [ ${iwstress} -eq 1 ]; then
-    CMD="python exec/wind_stress.py ${y1_clim} ${y2_clim}"
+if [ ${iwind} -eq 1 ]; then
+    CMD="python exec/wind.py ${y1_clim} ${y2_clim}"
 fi
 
 

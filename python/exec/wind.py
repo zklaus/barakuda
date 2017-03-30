@@ -2,7 +2,9 @@
 
 #       B a r a K u d a
 #
-#     Generate global plot of wind stress and its curl
+#     Generate global plots related to wind
+#     wind stress, its curl, wind speed, etc
+#     Use climatology fields built with 'build_clim.sh'
 #
 #       L. Brodeau, 2017
 
@@ -21,11 +23,14 @@ CPAL_CURL='ncview_jaisnb'
 #CPAL_TAUM='ncview_nrl'
 CPAL_TAUM='cubehelix_r'
 
+CPAL_WNDM='CMRmap_r'
+
 # Max values and increment for figures:
 Rmax = 0.3 ; dR = 0.05  ; # Wind stress curl (10^-6 s)
 Tmax = 0.3 ; dT = 0.025 ; # Wind stress module (N/m^2)
+Wmax = 15. ; Wmin = 2. ; dW = 1.    ; # Surface wind speed module (m/s)
   
-venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','FIG_FORM','FILE_FLX_SUFFIX','NN_TAUM'}
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','FIG_FORM','FILE_FLX_SUFFIX','NN_TAUM','NN_WNDM'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
@@ -59,9 +64,9 @@ if not path.exists(cf_nemo_curl):
     cf_nemo_curl = cd_clim+'/aclim_'+ctag+'_TCURL.nc4'
     if path.exists(cf_nemo_curl):
         l_tau_is_annual = True
-        print '\n *** wind_stress.py : wind stress is annual...'
+        print '\n *** wind.py : wind stress is annual...'
     else:
-        print '\n *** WARNING: wind_stress.py : giving up neither annual nor monthly curl clim found!'
+        print '\n *** WARNING: wind.py : giving up neither annual nor monthly curl clim found!'
         sys.exit(0)
     
 
@@ -90,7 +95,7 @@ id_nemo.close()
 [ Nt, nj, ni ] = Xtaum.shape ; print ' Shape of TAUM :', Nt, nj, ni, '\n'
 
 if not Nt in [1,12]:
-    print '\n *** ERROR: wind_stress.py : only accepting monthly or annual climatologies!', Nt
+    print '\n *** ERROR: wind.py : only accepting monthly or annual climatologies!', Nt
     sys.exit(0)
 
 
@@ -104,6 +109,20 @@ id_nemo.close()
 cextra_crl = ' (from monthly-averaged Tau_x & Tau_y !)'
 if l_tau_is_annual: cextra_crl = ' (from annually-averaged Tau_x & Tau_y !)'
 
+
+#  Getting surface wind speed as seen in NEMO if we find it!!!
+l_do_wndm = False
+cv_wndm = vdic['NN_WNDM']
+if cv_wndm != 'X':
+    cf_nemo_wndm = cd_clim+'/mclim_'+ctag+'_'+vdic['FILE_FLX_SUFFIX']+'.nc4'
+    if path.exists(cf_nemo_wndm):        
+        id_nemo = Dataset(cf_nemo_wndm)
+        list_var = id_nemo.variables.keys()
+        if cv_wndm in list_var:
+            Xwndm   = id_nemo.variables[cv_wndm][:,:,:]
+            l_do_wndm = True
+            print '\n *** wind.py : we found wind speed in '+cf_nemo_wndm ; #lolo
+        id_nemo.close()
 
 
 
@@ -121,6 +140,14 @@ if not l_tau_is_annual:
     Xtaum_plot[2,:,:] = nmp.mean(Xtaum[6:9,:,:],axis=0) ;  # Summer
     Xcurl_plot[1,:,:] = nmp.mean(Xcurl[:3,:,:] ,axis=0) ;  # Winter
     Xcurl_plot[2,:,:] = nmp.mean(Xcurl[6:9,:,:],axis=0) ;  # Summer
+
+
+if l_do_wndm:
+    Xwndm_plot = nmp.zeros((nper,nj,ni))
+    Xwndm_plot[0,:,:] = nmp.mean(Xwndm[:,:,:]  ,axis=0) ;  # Annual
+    Xwndm_plot[1,:,:] = nmp.mean(Xwndm[:3,:,:] ,axis=0) ;  # Winter
+    Xwndm_plot[2,:,:] = nmp.mean(Xwndm[6:9,:,:],axis=0) ;  # Summer
+
 
 
 # the Jean-Marc Molines method:
@@ -178,3 +205,29 @@ if not l_tau_is_annual:
                   lforce_lim=False, i_cb_subsamp=1,
                   cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
 
+
+
+if l_do_wndm:
+    # Annual Wndm:
+    bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xwndm_plot[0,:,:], Xmask, Wmin, Wmax, dW,
+                  corca=vdic['ORCA'], lkcont=False, cpal=CPAL_WNDM,
+                  cfignm=path_fig+'wndm_annual_'+CONFEXP, cbunit=r'$(m/s)$',
+                  ctitle='Surface wind speed module, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra_tau,
+                  lforce_lim=False, i_cb_subsamp=1,
+                  cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
+    
+    # JFM Wndm:
+    bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xwndm_plot[1,:,:], Xmask, Wmin, Wmax, dW,
+                  corca=vdic['ORCA'], lkcont=False, cpal=CPAL_WNDM,
+                  cfignm=path_fig+'wndm_JFM_'+CONFEXP, cbunit=r'$(m/s)$',
+                  ctitle='Surface wind speed module, JFM, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra_tau,
+                  lforce_lim=False, i_cb_subsamp=1,
+                  cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)
+
+    # JAS Wndm:
+    bp.plot("2d")(xlon[0,:], xlat[:,ji_lat0], Xwndm_plot[2,:,:], Xmask, Wmin, Wmax, dW,
+                  corca=vdic['ORCA'], lkcont=False, cpal=CPAL_WNDM,
+                  cfignm=path_fig+'wndm_JAS_'+CONFEXP, cbunit=r'$(m/s)$',
+                  ctitle='Surface wind speed module, JAS, '+CONFEXP+' ('+cy1+'-'+cy2+')'+cextra_tau,
+                  lforce_lim=False, i_cb_subsamp=1,
+                  cfig_type=fig_type, lat_min=-77., lat_max=75., lpix=True)

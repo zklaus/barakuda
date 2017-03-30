@@ -65,7 +65,7 @@ function build_index_html()
         <big> <a href="./sea_ice/index.html">  Arctic and Antarctic sea-ice extent vs OBS </a> </big> ${spf}
         <big> <a href="./mld/index.html">  Mixed Layer depth in relevent regions </a> </big>          ${spf}
         <big> <a href="./moc/index.html">  Meridional Overturning Circulation </a> </big>             ${spf}
-        <big> <a href="./tau/index.html">  Surface Wind Stress </a> </big>                            ${spf}
+        <big> <a href="./wind/index.html">  Surface Wind (stress, curl, speed) </a> </big>            ${spf}
 EOF
         if [ ${i_do_sect} -eq 1 ]; then
             echo "<big> <a href='./temp_sal/index_sections.html'> Zonal/Meridional sections of T & S vs OBS</a> </big>    ${spf}" >> index.html

@@ -808,11 +808,11 @@ if [ ${ISTAGE} -eq 2 ]; then
             if [ -f ${fccrl} ]; then
                 echo; echo; echo " Wind-stress module and curl maps"
                 if [ -x ${NN_TAUM} ]; then echo "ERROR: define variable NN_TAUM in ${fconfig}! ('X' if not present in NEMO output)"; exit; fi
-                export DIRS_2_EXP="${DIRS_2_EXP} tau"
+                export DIRS_2_EXP="${DIRS_2_EXP} wind"
                 cd ${DIAG_D}/
-                rm -rf tau; mkdir tau; cd tau/
-                echo " *** CALLING: wind_stress.py ${iclyear}"; echo
-                wind_stress.py ${iclyear} &
+                rm -rf wind; mkdir wind; cd wind/
+                echo " *** CALLING: wind.py ${iclyear}"; echo
+                wind.py ${iclyear} &
                 cd ../ ;  echo
             else
                 echo
