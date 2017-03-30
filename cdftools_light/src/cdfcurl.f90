@@ -35,8 +35,8 @@ PROGRAM cdfcurl
       PRINT *,' USAGE : cdfcurl fileU fileV varU varV lev'
       PRINT *,'        lev is the level where the curl will be computed'
       PRINT *,'        Produce a cdf file curl.nc with socurl variable'
-      PRINT *,'        Need mesh_hgr.nc'
-      PRINT *,'                         '
+      PRINT *,'        Needs mesh_mask.nc'
+      PRINT *,'                          '
       STOP
    ENDIF
 
