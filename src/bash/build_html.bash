@@ -158,9 +158,10 @@ EOF
 
     # Surface heat flux diagnostics:
     if [ ! "${NN_QNET}" = "X" ]; then
-        LIST_HF_FIG="htf_qnt htf_qsr \
+        LIST_HF_FIG="htf_qnt htf_qsr htf_qns \
         htf_qnt_NEMO_IFS htf_qnt_NEMO_IFS_annual \
-        htf_qsr_NEMO_IFS htf_qsr_NEMO_IFS_annual"
+        htf_qsr_NEMO_IFS htf_qsr_NEMO_IFS_annual \
+        htf_qns_NEMO_IFS htf_qns_NEMO_IFS_annual"
         #
         cat >> index.html <<EOF
     ${ctl} Surface Heat flux time-series ${ctr}

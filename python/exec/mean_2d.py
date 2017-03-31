@@ -27,7 +27,7 @@ lon2_nino = 360. - 120.  ; # east
 lat2_nino = 5.
 
 
-cv_evb = 'evap_ao_cea' ; # debug evap in ec-earth...
+#cv_evb = 'evap_ao_cea' ; # debug evap in ec-earth...
 
 venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','BM_FILE','NEMO_SAVED_FILES','FILE_FLX_SUFFIX',
                'NN_SST','NN_SSS','NN_SSH','NN_MLD','TSTAMP','NN_FWF','NN_EMP','NN_P','NN_RNF',
@@ -209,11 +209,11 @@ if l_fwf:
         EVP_m = id_in.variables[cv_evp][:,:,:]
         print '   *** Calving ('+cv_evp+') read!'
 
-    l_evb = False
-    if  cv_evb in list_variables[:]:
-        l_evb = True
-        EVB_m = id_in.variables[cv_evb][:,:,:]
-        print '   *** Calving ('+cv_evb+') read!'
+    #l_evb = False
+    #if  cv_evb in list_variables[:]:
+    #    l_evb = True
+    #    EVB_m = id_in.variables[cv_evb][:,:,:]
+    #    print '   *** Calving ('+cv_evb+') read!'
 
     id_in.close()
 
@@ -230,13 +230,13 @@ if l_fwf:
 
     vfwf = nmp.zeros(nt)
     
-    vemp = [] ; vrnf = [] ; vprc = [] ; vclv = [] ; vevp = [] ; vevb = []
+    vemp = [] ; vrnf = [] ; vprc = [] ; vclv = [] ; vevp = [] ; #vevb = []
     if l_emp: vemp = nmp.zeros(nt)
     if l_rnf: vrnf = nmp.zeros(nt)
     if l_prc: vprc = nmp.zeros(nt)
     if l_clv: vclv = nmp.zeros(nt)
     if l_evp: vevp = nmp.zeros(nt)
-    if l_evb: vevb = nmp.zeros(nt)
+    #if l_evb: vevb = nmp.zeros(nt)
 
 
     for jt in range(nt):
@@ -247,7 +247,7 @@ if l_fwf:
         if l_prc: vprc[jt] = nmp.sum( PRC_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
         if l_clv: vclv[jt] = nmp.sum( CLV_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
         if l_evp: vevp[jt] = nmp.sum( EVP_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
-        if l_evb: vevb[jt] = nmp.sum( EVB_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
+        #if l_evb: vevb[jt] = nmp.sum( EVB_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-3 ;  # to Sv
 
     cf_out   = vdic['DIAG_D']+'/mean_fwf_'+CONFEXP+'_GLO.nc'
 
@@ -257,9 +257,10 @@ if l_fwf:
                             vd3=vrnf, cvar3='R',     cln_d3='Globally averaged continental runoffs',
                             vd4=vprc, cvar4='P',     cln_d4='Globally averaged total precip (nemo:'+cv_prc+')',
                             vd5=vclv, cvar5='ICalv', cln_d5='Globally averaged ice calving from icebergs (nemo:'+cv_clv+')',
-                            vd6=vevp, cvar6='E',     cln_d6='Globally averaged evaporation (nemo:'+cv_evp+')',
-                            vd7=vevb, cvar7='Eb',    cln_d7='Globally averaged evaporation with sea-ice consideration (nemo:'+cv_evb+')'
-                            )
+                            vd6=vevp, cvar6='E',     cln_d6='Globally averaged evaporation (nemo:'+cv_evp+')')
+    #
+    #                            vd7=vevb, cvar7='Eb',    cln_d7='Globally averaged evaporation with sea-ice consideration (nemo:'+cv_evb+')'
+    #                        )
 
     print ' +++ '+cnexec+' => Done with freshwater flux diags!\n'
 

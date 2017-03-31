@@ -946,11 +946,11 @@ if [ ${ISTAGE} -eq 2 ]; then
 
 
 else
-    echo; echo "Diagnostics built! Run \"${0} -e\" to create figure and HTML page..."; echo
-
-
+    echo
+    echo "Diagnostics built and saved! (${DIAG_D})"
+    echo "Re-Run \"${script}.sh\" adding the  \"-e\" or \"-E\" switch to create figure and HTML page..."
+    echo
 fi
-
 
 #debug:
 rm -rf ${TMP_DIR} 2>/dev/null
