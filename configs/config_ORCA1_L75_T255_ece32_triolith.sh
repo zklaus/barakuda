@@ -75,20 +75,20 @@ export NEMO_FILE_PREFIX="<EXP>_<TSTAMP>_"
 #      USE "X" if the field is not present in your NEMO output
 #
 # State variables and others in grid_T files:
-export NN_SST="sosstsst"
-export NN_SSS="sosaline"
-export NN_SSH="sossheig"
-export NN_T="votemper"
-export NN_S="vosaline"
+export NN_SST="tos"
+export NN_SSS="sos"
+export NN_SSH="zos"
+export NN_T="thetao"
+export NN_S="so"
 export NN_MLD="mldr10_1"
 #
 # State variables and others in grid_U files:
-export NN_U="vozocrtx"
-export NN_TAUX="sozotaux"
+export NN_U="uo"
+export NN_TAUX="tauuo"
 export NN_U_EIV="0" ; # 0 => ignore
 # State variables and others in grid_V files:
-export NN_V="vomecrty"
-export NN_TAUY="sometauy"
+export NN_V="vo"
+export NN_TAUY="tauvo"
 export NN_V_EIV="0" ; # 0 => ignore
 #
 # Sea-ice fields:
