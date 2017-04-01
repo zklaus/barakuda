@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#lolo_tmp
+#export i_save_ifs_2d_fluxes=1
+
 #################################################################################
 #
 #  PURPOSE: Extract all possible surface flux components of freshwater (FWF) and
@@ -51,7 +54,9 @@ if [ -z ${cyear} ]; then echo "${cmsg} cyear is unknown!"; exit ; fi
 if [ -z ${NEMO_OUT_D} ]; then echo "${cmsg} NEMO_OUT_D is unknown!"; exit ; fi
 if [ -z ${DIAG_D} ]; then echo "${cmsg} DIAG_D is unknown!"; exit ; fi
 
+echo ; echo "DIAG_D = ${DIAG_D}"; echo
 mkdir -p ${DIAG_D}
+
 
 echo " MOD_CDO => ${MOD_CDO} !!!"
 if [ ! "${MOD_CDO}" = "" ]; then module add ${MOD_CDO}; fi
@@ -153,8 +158,42 @@ if [ "${wc}" = "" ]; then
     exit
 fi
 
+wc=`which nccopy`
+if [ "${wc}" = "" ]; then
+    echo "=========================================================="
+    echo "WARNING: $0 => command 'nccopy' not found)"
+    echo "=========================================================="
+    echo
+    lnc4=false
+else
+    lnc4=true
+fi
+
+
 
 FLX_EXTRACT_S=`echo "${FLX_EXTRACT}" | sed -e s/','/' '/g` ; # with a ' ' instead of a ','
+
+
+
+flsm_exp=${EXP_DIR}/output/ifs/001/ICMGG${EXP}+000000
+if [ "${i_save_ifs_2d_fluxes}" = "1" ]; then
+    
+    cdir_ifs_flx=${DIAG_D}/sflx_ifs
+    mkdir -p ${cdir_ifs_flx}
+
+    if [ ! -f ${flsm_exp} ]; then
+        echo " WARNING: ${0} => you set i_save_ifs_2d_fluxes=1 but file with LSM cannot be found:"
+        echo "      ==> ${flsm_exp}"
+        echo "      ==> setting i_save_ifs_2d_fluxes=0 !!!"
+    else
+        echo "cdo -R -t ecmwf -f nc -selvar,LSM ${flsm_exp} LSM_${EXP}_xy.nc"
+        cdo -R -t ecmwf -f nc -selvar,LSM ${flsm_exp} LSM_${EXP}_xy.nc
+        echo
+        # Creating ocean mask MSK:
+        ncap2 -h -A -s "MSK=LSM*0."           LSM_${EXP}_xy.nc -o LSM_${EXP}_xy.nc
+        ncap2 -O -s 'where(LSM < 0.1) MSK=1.' LSM_${EXP}_xy.nc -o LSM_${EXP}_xy.nc        
+    fi
+fi
 
 
 
@@ -173,14 +212,19 @@ for cm in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"; do
         echo " pptime = ${pptime} seconds !"
     fi
 
-    FALL=ALL_${EXP}_${cyear}${cm}.nc
+    FALL=ALL_${EXP}_${cyear}${cm}
 
     # Extracting variables of interest and converting to netcdf at the same time (keep gaussian-reduced grid!!!)
-    echo "cdo -t ecmwf -f nc -selvar,${FLX_EXTRACT} ${fgrb} ${FALL}"
-    cdo -t ecmwf -f nc -selvar,${FLX_EXTRACT} ${fgrb} ${FALL}
-    echo "done"; echo
+    echo "cdo -t ecmwf -f nc -selvar,${FLX_EXTRACT} ${fgrb} ${FALL}.nc"
+    cdo -t ecmwf -f nc -selvar,${FLX_EXTRACT} ${fgrb} ${FALL}.nc
+    
+    if [ "${i_save_ifs_2d_fluxes}" = "1" ]; then
+        echo "cdo -R -t ecmwf -f nc -selvar,${FLX_EXTRACT} ${fgrb} ${FALL}_xy.nc"
+        cdo -R -t ecmwf -f nc -selvar,${FLX_EXTRACT} ${fgrb} ${FALL}_xy.nc
+    fi
+    echo
 
-    ncrename -h -O -d rgrid,x ${FALL}
+    ncrename -h -O -d rgrid,x ${FALL}.nc
 
     icpt=0
     for BVAR in ${FLX_EXTRACT_S}; do
@@ -194,31 +238,36 @@ for cm in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"; do
         #BVAR=`echo ${VAR}| tr '[:lower:]' '[:upper:]'`
 
         # To netcdf monthly:
-        echo "ncra -h -O -v ${BVAR} ${FALL} -O ${ftreat}_m.nc"
-        ncra -h -O -v ${BVAR} ${FALL} -O ${ftreat}_m.nc
+        #echo "ncra -h -O -v ${BVAR} ${FALL}.nc -O ${ftreat}_m.nc"
+        ncra -h -O -v ${BVAR} ${FALL}.nc -o ${ftreat}_m.nc
 
         # To a flux (originally cumulated flux over time):
-        echo "ncap2 -h -A -s ${VAR}=${BVAR}/${pptime} ${ftreat}_m.nc -o ${ftreat}.nc"
+        #echo "ncap2 -h -A -s ${VAR}=${BVAR}/${pptime} ${ftreat}_m.nc -o ${ftreat}.nc"
         ncap2 -h -A -s "${VAR}=${BVAR}/${pptime}" ${ftreat}_m.nc -o ${ftreat}.nc ; rm ${ftreat}_m.nc
-        #ncatted -O -a units,${VAR},o,c,'m of water / s' ${ftreat}.nc
 
         # Append ocean mask surface into the file:
         ncks -h -A -v ifs_area_glob  metrics.nc -o ${ftreat}.nc
         ncks -h -A -v ifs_area_ocean metrics.nc -o ${ftreat}.nc
         ncks -h -A -v ifs_area_land  metrics.nc -o ${ftreat}.nc
+        
 
-        isign=1
-        if [ "${VAR}" = "e" ]; then isign=-1; fi
+        sign="1."
+        if [ "${VAR}" = "e" ]; then sign="-1."; fi
 
-        cu='pw'; cun='PW'; rfact="1.E-15"; ctype="htf"
+        cu='pw'; cun='PW'; rfact="1.E-15"; ctype="htf" ; cun2d='W/m^2' # ???
         if [ "${VAR}" = "e" ] || [ "${VAR}" = "lsp" ] || [ "${VAR}" = "cp" ]; then
-            cu='sv'; cun='Sv'; rfact="1.E-6"; ctype="fwf"
+            cu='sv'; cun='Sv'; rfact="1.E-6"; ctype="fwf" ; cun2d='m/s???' # ???
         fi
 
+
+
+        # Global horizontal integration
+        #------------------------------
+
         # Multiplying ${VAR} and ifs_area_masked:
-        ncap2 -h -A -s "${VAR}2d=(${isign}*ifs_area_ocean*${VAR})"     ${ftreat}.nc -o ${ftreat}.nc
-        ncap2 -h -A -s "${VAR}2d_glb=(${isign}*ifs_area_glob*${VAR})"  ${ftreat}.nc -o ${ftreat}.nc
-        ncap2 -h -A -s "${VAR}2d_land=(${isign}*ifs_area_land*${VAR})" ${ftreat}.nc -o ${ftreat}.nc
+        ncap2 -h -A -s "${VAR}2d=(${sign}*ifs_area_ocean*${VAR})"     ${ftreat}.nc -o ${ftreat}.nc
+        ncap2 -h -A -s "${VAR}2d_glb=(${sign}*ifs_area_glob*${VAR})"  ${ftreat}.nc -o ${ftreat}.nc
+        ncap2 -h -A -s "${VAR}2d_land=(${sign}*ifs_area_land*${VAR})" ${ftreat}.nc -o ${ftreat}.nc
 
         # Total volume evaporated over ocean during the current month:
         ncap2 -h -A -s "flx_${VAR}_${cu}=${VAR}2d.total(\$x)*${rfact}"           ${ftreat}.nc -o ${ftreat}.nc
@@ -232,25 +281,55 @@ for cm in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"; do
         ncks -h -A -v flx_${VAR}_glb_${cu}  ${ftreat}.nc -o final_${ctype}_${cm}.nc
         ncks -h -A -v flx_${VAR}_land_${cu} ${ftreat}.nc -o final_${ctype}_${cm}.nc
 
-        # Checking surface of the ocean to be sure...
-        #if [ ${icpt} -eq 1 ]; then
-        #    ncap2 -h -A -s "srf_ocean=ifs_area_ocean.total(\$x)*1.E-12" ${ftreat}.nc -o ${ftreat}.nc
-        #    ncatted -O -a units,srf_ocean,o,c,'10^6 km^2' ${ftreat}.nc
-        #    ncks -h -A -v srf_ocean ${ftreat}.nc -o final_${ctype}_${cm}.nc
-        #fi
+
+
+        # Same for field in lat-lon:
+        if [ "${i_save_ifs_2d_fluxes}" = "1" ]; then
+            ncra  -h -O -v ${BVAR} ${FALL}_xy.nc -o ${ftreat}_m_xy.nc ; # Montly !
+            ncap2 -h -A -s "tmp=${BVAR}/${pptime}" ${ftreat}_m_xy.nc -o ${ftreat}_xy.nc ; rm ${ftreat}_m_xy.nc
+            ncks  -h -A -v MSK LSM_${EXP}_xy.nc  -o ${ftreat}_xy.nc ; # Appends 2D ocean mask !
+            # Masking and removing the rif-raf:
+            ncap2 -h -A -s "tmpd=${sign}*tmp*MSK-(1.-MSK)*9999." ${ftreat}_xy.nc -o tmp.nc ; rm -f ${ftreat}_xy.nc
+            ncap2 -h -A -s "${VAR}=float(tmpd)" tmp.nc -o tmp.nc ; # to float
+            ncks  -h -O -v ${VAR} tmp.nc -o ${ftreat}_xy.nc ; rm -f tmp.nc
+            ncatted -O -h -a _FillValue,${VAR},o,float,-9999. ${ftreat}_xy.nc
+            ncatted -O -a units,${VAR},o,c,"${cun2d}" ${ftreat}_xy.nc ; # correct unit!
+        fi
 
         rm -f ${ftreat}.nc
 
         # End loop variables
     done
 
-    rm -f ${FALL}
+    rm -f ${FALL}.nc
 
     echo " *** month ${cm} done!"
     echo
 
-
 done
+
+
+if [ "${i_save_ifs_2d_fluxes}" = "1" ]; then
+    fo2d=FLX_IFS_2D_${EXP}_${cyear}.nc ;    rm -f ${fo2d}
+    for BVAR in ${FLX_EXTRACT_S}; do
+        VAR=`echo ${BVAR} | tr '[:upper:]' '[:lower:]'`
+        echo "ncrcat -h -A ${VAR}_${EXP}_${cyear}*_xy.nc -o ${fo2d}"
+        ncrcat -h -A ${VAR}_${EXP}_${cyear}*_xy.nc -o ${fo2d}
+        echo
+    done
+    
+    # Cleaning attributes:
+    for ga in "history" "NCO" "CDO" "nco_openmp_thread_number" "history_of_appended_files" "CDI" "institution"; do
+        ncatted -h -O -a ${ga},global,d,c, ${fo2d}
+    done
+    ncatted -h -O -a About,global,o,c,"Created by Barakuda (https://github.com/brodeau/barakuda)" ${fo2d}
+
+    if ${lnc4}; then
+        nccopy -k 4 -d 9 ${fo2d} ${fo2d}4 &
+    fi
+    rm -f *_${EXP}_${cyear}*_xy.nc
+fi
+
 
 
 for ct in "htf" "fwf"; do
@@ -287,8 +366,17 @@ rm -f metrics.nc final_htf_*.nc final_fwf_*.nc
 for ct in "htf" "fwf"; do
 
     fout=${DIAG_D}/mean_${ct}_IFS_${EXP}_GLO.nc
-
+    
+    # Cleaning attributes:
+    for ga in "history" "NCO" "CDO" "nco_openmp_thread_number" "history_of_appended_files"; do
+        ncatted -h -O -a ${ga},global,d,c, final_${ct}.nc
+    done
+    
     if [ ! -f ${fout} ]; then
+        ncatted -h -O -a Global_Ocean_Area,global,o,c,"${srf_ocean_ifs} 10^6 km^2" final_${ct}.nc
+        ncatted -h -O -a Global_Land_Area,global,o,c,"${srf_land_ifs} 10^6 km^2"   final_${ct}.nc
+        ncatted -h -O -a Global_Area,global,o,c,"${srf_glob_ifs} 10^6 km^2"        final_${ct}.nc
+        ncatted -h -O -a About,global,o,c,"Created by Barakuda (https://github.com/brodeau/barakuda)" final_${ct}.nc
         mv final_${ct}.nc ${fout}
     else
         ncrcat -h -A ${fout} final_${ct}.nc -o ${fout}
@@ -299,9 +387,17 @@ for ct in "htf" "fwf"; do
 done
 
 
+if [ "${i_save_ifs_2d_fluxes}" = "1" ]; then
+    if ${lnc4}; then
+        wait
+        rm -f ${fo2d}
+    fi
+    mv -f ${fo2d}* ${cdir_ifs_flx}/
+fi
+
 if [ ! "${MOD_CDO}" = "" ]; then module rm ${MOD_CDO}; fi
 
 cd ../
 rm -rf ./IFS
 
-exit
+exit 0

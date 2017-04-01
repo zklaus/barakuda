@@ -9,14 +9,14 @@ imhst=0
 iamoc=0
 icrosssect=0
 itempsal=0
-ifsflx=0
+ifsflx=1
 imean2d=0
 imean3d=0
 iSflx=0
 ienso=0
 imov=0
 issh=0
-iwind=1
+iwind=0
 its=0
 imld=0
 irnf=0
@@ -37,10 +37,6 @@ ihov=0
 #ARCH="ece32_marenostrum"
 #export EXP="LR20" ; NC=nc4 ; jyear=2540
 
-CONFIG="ORCA1_L75"
-ARCH="T159_ece32_triolith"
-export EXP="LB30" ; NC=nc4 ; jyear=2010
-
 #CONFIG="ORCA025_L75"
 #ARCH="T511_ece32_triolith"
 #export EXP="HC71" ; NC=nc ; jyear=1990
@@ -49,9 +45,14 @@ export EXP="LB30" ; NC=nc4 ; jyear=2010
 #ARCH="etienne"
 #export EXP="a0ez" ; NC=nc ; jyear=1945
 
+CONFIG="ORCA1_L75"
+ARCH="T255_ece32_triolith"
+export EXP="SC78" ; NC=nc4 ; jyear=1993
+
 #CONFIG="ORCA1_L75"
-#ARCH="T255_ece32_triolith"
-#export EXP="LB10" ; NC=nc4 ; jyear=1990
+#ARCH="T159_ece32_triolith"
+#export EXP="LB30" ; NC=nc4 ; jyear=2010
+
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
@@ -138,7 +139,7 @@ if [ ${iamoc} -eq 1 ]; then
 fi
 
 if [ ${icrosssect} -eq 1 ]; then
-    export DIAG_D="."
+    export DIAG_D=`pwd`
     CMD="python exec/cross_sections.py ${ft} ${jyear}"
 fi
 
@@ -167,22 +168,22 @@ fi
 
 
 if [ ${ifsflx} -eq 1 ]; then
-    export DIAG_D="."
+    export DIAG_D="`pwd`/flx"
     CMD="${BARAKUDA_ROOT}/src/bash/extract_ifs_surf_fluxes.sh"
 fi
 
 if [ ${imean2d} -eq 1 ]; then
-    export DIAG_D="."
+    export DIAG_D=`pwd`
     CMD="python exec/mean_2d.py ${ft} ${jyear}"
 fi
 
 if [ ${imean3d} -eq 1 ]; then
-    export DIAG_D="."
+    export DIAG_D=`pwd`
     CMD="python exec/mean_3d.py ${ft} ${jyear} T"
 fi
 
 if [ ${iSflx} -eq 1 ]; then
-    export DIAG_D="."
+    export DIAG_D=`pwd`
     CMD="python exec/flux_int_basins.py ${ft} ${jyear}"
 fi
 
