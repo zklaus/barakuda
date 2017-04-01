@@ -191,7 +191,7 @@ if [ "${i_save_ifs_2d_fluxes}" = "1" ]; then
         echo
         # Creating ocean mask MSK:
         ncap2 -h -A -s "MSK=LSM*0."           LSM_${EXP}_xy.nc -o LSM_${EXP}_xy.nc
-        ncap2 -O -s 'where(LSM < 0.1) MSK=1.' LSM_${EXP}_xy.nc -o LSM_${EXP}_xy.nc        
+        ncap2 -O -s 'where(LSM < 0.5) MSK=1.' LSM_${EXP}_xy.nc -o LSM_${EXP}_xy.nc        
     fi
 fi
 
