@@ -116,7 +116,7 @@ barakuda_import_mesh_mask ; # Importing mesh_mask (+basin) files...
 
 if [ ${ISTAGE} -eq 1 ]; then
     # Importing cdftools executables:
-    for ex in ${L_EXEC}; do rsync -avP ${BARAKUDA_ROOT}/cdftools_light/bin/${ex} . ; done
+    for ex in ${L_EXEC}; do rsync -v ${BARAKUDA_ROOT}/cdftools_light/bin/${ex} . ; done
 fi
 
 
@@ -511,7 +511,7 @@ while ${lcontinue}; do
         wait  ${pid_mn3dt} ${pid_mn3ds} ${pid_movt} ${pid_movs} ${pid_movm} ${pid_movi} ${pid_mn2d} ${pid_ssf} ${pid_flxl}
         wait
         echo "  Done waiting for year ${cyear} !"
-        if [ ${i_do_movi} -eq 1 ]; then rsync -avP movies ${DIAG_D}/ ; fi
+        if [ ${i_do_movi} -eq 1 ]; then rsync -rv movies ${DIAG_D}/ ; fi
         rm -f *.tmp broken_line_* tmp_ice.nc
         rm -f ${CRT1M}_*.nc ${CRT1Y}_*.nc ; #debug
         echo
