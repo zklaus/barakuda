@@ -5,8 +5,8 @@
 import sys
 from string import replace
 import os
-from netCDF4 import Dataset
 import numpy as nmp
+from netCDF4 import Dataset
 
 import barakuda_tool as bt
 import barakuda_plot as bp
