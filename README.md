@@ -3,20 +3,19 @@
 
 
 
-## Quick getting-started guide to BaraKuda
+# Quick getting-started guide to BaraKuda
 
-#I / What do you need to be able to use BaraKuda ?
---
+## Requirements
 
-- A FORTRAN 90 compiler
+* A FORTRAN 90 compiler
 
-- netcdf library with support for the appropriate F90 compiler
+* netcdf library with support for the appropriate F90 compiler
 
-- NCO
+* NCO
 
-- 'convert' from ImageMagick if you want to generate GIF movies (i_do_movi=1) 
+* 'convert' from ImageMagick if you want to generate GIF movies (i_do_movi=1) 
 
-- For time-series and 2D plots, the following up-to-date packages:
+* For time-series and 2D plots, the following up-to-date packages:
   => python-netcdf4 (from netCDF4 import Dataset) and Matplotlib
   => for map projections you'll also need the Basemap package
   
@@ -26,14 +25,14 @@
   In any case, specify the appropriate "PYTHON_HOME" environment variable in
   your ${BARAKUDA_ROOT}/configs/config_<MYCONF>.sh or ./config_<MYCONF>.sh file
 
-- NEMO output data! => A directory containing the MONTHLY-AVERAGED, global
+* NEMO output data! => A directory containing the MONTHLY-AVERAGED, global
                        (rebuilt), NEMO output to analyze
   (grid_T, grid_U, grid_V and icemod files) as "*.nc", "*.nc.gz" or ".nc4"
 
   For NEMO 3.6 and above some appropriate sets of xml configuration files for
   XIOS2 can be found in: src/xios2_xml/
 
-- a NEMO mesh_mask file and the the corresponding basin_mask (ocean basins).
+* a NEMO mesh_mask file and the the corresponding basin_mask (ocean basins).
   (variables MM_FILE and BM_FILE into the config_<MYCONF>.sh file you use)
   To create the NEMO mesh_mask.nc just launch the relevant NEMO experiment with the
   namelist parameter nn_msh set to 1 !
@@ -66,16 +65,16 @@ II / Compile CDFTOOLS executables
    light version here...  SO DO NOT USE AN OFFICIAL CDFTOOLS DISTRIBUTION, stick
    to the one that comes with BaraKuda!
 
-- move to the 'barakuda/cdftools_light' directory
+* move to the 'barakuda/cdftools_light' directory
 
-- configure your own 'make.macro' for your system (some templates for gfortran
+* configure your own 'make.macro' for your system (some templates for gfortran
   and Intel are provided...)
     => just copy or link your own "macro.your_arch" to "make.macro" !
     => F90 compiler and related netcdf library to use
 
-- compile with 'gmake'
+* compile with 'gmake'
 
-- if that was successful the 'barakuda/bin' directory should contain the 8
+* if that was successful the 'barakuda/bin' directory should contain the 8
   following executables:
 ~~~~~~~~~~~~~~~~~~~~~~~~~
  * cdficediags.x
