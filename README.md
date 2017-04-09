@@ -1,7 +1,12 @@
-# Quick getting-started guide to BaraKuda
 
-I / What do you need to be able to use BaraKuda ?
--------------------------------------------------
+![Barakuda Logo](https://brodeau.github.io/barakuda/logo.svg)
+
+
+
+## Quick getting-started guide to BaraKuda
+
+#I / What do you need to be able to use BaraKuda ?
+--
 
 - A FORTRAN 90 compiler
 
