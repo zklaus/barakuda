@@ -139,22 +139,24 @@ if l_htf:
         print '   *** Qsol ('+cv_qsr+') read!'
     id_in.close()
     l_htf = l_qnt ; # Forgeting heat flux if both Qnet is missing...
-
-    [ nt, nj0, ni0 ] = QNT_m.shape
-    vtime = nmp.zeros(nt)
-    for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./12.
-    vqnt = [] ; vqsr = []
-    if l_qnt: vqnt = nmp.zeros(nt)
-    if l_qsr: vqsr = nmp.zeros(nt)
-    for jt in range(nt):
-        # Mind the 2 point folding overlap, must not be included in sum!
-        if l_qnt: vqnt[jt] = nmp.sum( QNT_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-9 ;  # to PW
-        if l_qsr: vqsr[jt] = nmp.sum( QSR_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-9 ;  # to PW
-
-    cf_out   = vdic['DIAG_D']+'/mean_htf_'+CONFEXP+'_GLO.nc'
-    bnc.wrt_appnd_1d_series(vtime, vqnt, cf_out, 'Qnet',
-                            cu_t='year', cu_d='PW', cln_d ='Globally averaged net heat flux (nemo:'+cv_qnt+')',
-                            vd2=vqsr, cvar2='Qsol', cln_d2='Globally averaged net solar heat flux (nemo:'+cv_qsr+')')
+    
+    if l_qnt: [ nt, nj0, ni0 ] = QNT_m.shape
+    if l_qsr: [ nt, nj0, ni0 ] = QSR_m.shape
+    if l_qnt or l_qsr:
+        vtime = nmp.zeros(nt)
+        for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./12.
+        vqnt = [] ; vqsr = []
+        if l_qnt: vqnt = nmp.zeros(nt)
+        if l_qsr: vqsr = nmp.zeros(nt)
+        for jt in range(nt):
+            # Mind the 2 point folding overlap, must not be included in sum!
+            if l_qnt: vqnt[jt] = nmp.sum( QNT_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-9 ;  # to PW
+            if l_qsr: vqsr[jt] = nmp.sum( QSR_m[jt,:-2,:-2]*Xarea_t[:-2,:-2] ) * 1.E-9 ;  # to PW
+    
+        cf_out   = vdic['DIAG_D']+'/mean_htf_'+CONFEXP+'_GLO.nc'
+        bnc.wrt_appnd_1d_series(vtime, vqnt, cf_out, 'Qnet',
+                                cu_t='year', cu_d='PW', cln_d ='Globally averaged net heat flux (nemo:'+cv_qnt+')',
+                                vd2=vqsr, cvar2='Qsol', cln_d2='Globally averaged net solar heat flux (nemo:'+cv_qsr+')')
     print ' +++ '+cnexec+' => Done with heat flux diags!\n'
 
 # Freshwater fluxes

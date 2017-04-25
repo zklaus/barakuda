@@ -143,7 +143,9 @@ while ${lcontinue}; do
     i_get_file=0
     if [ $((${jyear}%${IFREQ_SAV_YEARS})) -eq 0 ]; then
         barakuda_check_year_is_complete  ; # lcontinue might be updated to false!
-    fi
+    fi    
+    echo; echo "Yeah! Year ${jyear} is saved..."; echo
+
 
     CRT1M=${CPREF}${cyear}0101_${cyear}1231
 
@@ -952,8 +954,7 @@ else
     echo
 fi
 
-#debug:
-rm -rf ${TMP_DIR} 2>/dev/null
+rm -rf ${TMP_DIR} 2>/dev/null ; #debug
 
 echo
 

@@ -119,7 +119,10 @@ j1000m = bt.find_index_from_value(1000. , vdepth) ; print 'j1000m = ', j1000m, '
 
 if nt != 12 and nt != 1 : print 'ERROR: '+cnexec+' => only treating monthly or annual data so far...'; sys.exit(0)
 
-if ( nk0, nj0, ni0 ) != ( nk, nj, ni ): print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'; sys.exit(0)
+if ( nk0, nj0, ni0 ) != ( nk, nj, ni ):
+    print 'ERROR: '+cnexec+' => Field and metrics do not agree in size!'
+    print '     ==> nk0, nj0, ni0 / nk, nj, ni = ', nk0, nj0, ni0, '/', nk, nj, ni
+    sys.exit(0)
 
 vtime = nmp.zeros(nt)
 for jt in range(nt): vtime[jt] = float(jyear) + (float(jt)+0.5)*1./float(nt)

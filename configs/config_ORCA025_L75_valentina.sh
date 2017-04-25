@@ -6,29 +6,29 @@
 #
 # OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2 beta tunning on 75 levels
 #
-#        Machine: gustafson@BSC
+#        Machine: gustafson.bsc.es
 #
 #        L. Brodeau, 2017
 #
 #===========================================================
 
-export CONF=ORCA1.L75 ; # horizontal global ORCA configuration
-export NBL=75         ; # number of levels
+export CONF=ORCA025.L75 ; # horizontal global ORCA configuration
+export NBL=75           ; # number of levels
 
-export HOST=GUSTAFSON ; # this has no importance at all, it will just become an "info" on the web-page!
-export MASTERMIND="BSC / Eleftheria" ; # same here, who's the person who designed/ran this simulation?
+export HOST=`hostname`.bsc.es    ; # this has no importance at all, it will just become an "info" on the web-page!
+export MASTERMIND="BSC / Valentina" ; # same here, who's the person who designed/ran this simulation?
 
-export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b_tuning)" ;   #  // same here ...
+export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b)" ;   #  // same here ...
 
 # Path / directory structure in which to find NEMO output file (you can use
 # <ORCA> and <EXP> as substitute to your ORCA grid and experiment (EXP) name):
-export NEMO_OUT_STRCT="/esarchive/exp/nemo/<EXP>/<Y_INI_EC>0101/fc00/outputs"
-#                       /esarchive/exp/ecearth/a0go/original_files/19890101/fc0/outputs
+export NEMO_OUT_STRCT="/esnas/exp/ecearth/<EXP>/original_files/<Y_INI_EC>0101/fc0/outputs"
+
 # Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
-export DIAG_DIR="/scratch/Earth/${USER}/barakuda/${CONF}_ece32"
+export DIAG_DIR="/scratch/Earth/${USER}/barakuda/valentina"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/esnas/obs/barakuda/ORCA1.L75"
+export CONF_INI_DIR="/esnas/obs/barakuda/ORCA025.L75"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="/scratch/Earth/${USER}"
@@ -47,7 +47,8 @@ export ece_exp=10; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  #      If you select '2', make sure 'cdo' is available and working!!!
 #                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
-export Y_INI_EC=1958 ;    # initial year if ece_exp /= 0 !!!
+export Y_INI_EC=1960 ;    # initial year if ece_exp /= 0 !!!
+export NCHNKS_Y=2    ;    # number of chunks per year (only needed if NCHNKS_Y >= 2 !)
 export TRES_IFS=XXX  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
 export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
@@ -75,20 +76,20 @@ export NEMO_FILE_PREFIX="<EXP>_<TSTAMP>_"
 #      USE "X" if the field is not present in your NEMO output
 #
 # State variables and others in grid_T files:
-export NN_SST="tos"
-export NN_SSS="sos"
-export NN_SSH="zos"
-export NN_T="thetao"
-export NN_S="so"
+export NN_SST="sosstsst"
+export NN_SSS="vosaline"
+export NN_SSH="sossheig"
+export NN_T="votemper"
+export NN_S="vosaline"
 export NN_MLD="mldr10_1"
 #
 # State variables and others in grid_U files:
-export NN_U="uo"
-export NN_TAUX="tauuo"
+export NN_U="vozocrtx"
+export NN_TAUX="sozotaux"
 export NN_U_EIV="0" ; # 0 => ignore
 # State variables and others in grid_V files:
-export NN_V="vo"
-export NN_TAUY="tauvo"
+export NN_V="vomecrty"
+export NN_TAUY="sometauy"
 export NN_V_EIV="0" ; # 0 => ignore
 #
 # Sea-ice fields:
@@ -115,30 +116,30 @@ export NN_WNDM="X"      ; # name of surface wind  speed module in "FILE_FLX_SUFF
 ################################################################################################
 
 # Land-sea mask and basins files:
-export MM_FILE=${CONF_INI_DIR}/mesh_mask.nc4
-export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
+export MM_FILE=${CONF_INI_DIR}/mesh_mask_ORCA025.L75_ece3.2_2017.nc4
+export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA025_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
-export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export F_S_OBS_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export F_SST_OBS_12=${CONF_INI_DIR}/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc4
+export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
+export F_S_OBS_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
+export F_SST_OBS_12=${CONF_INI_DIR}/sst_1x1-ORCA025_Reynolds_mnth_1982-2005.nc4
 export NN_T_OBS="thetao"
 export NN_S_OBS="so"
-export NN_SST_OBS="tos"
+export NN_SST_OBS="sst"
 
-export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
+export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA025_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_OBS="ice_cover"
 
 
 # A text file where the cross sections (to compute transports) are defined :
-export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1.dat"
+export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_y1050.dat"
 
 # For transport by sigma-class:
-export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA1.dat"
+export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA025_y1050.dat"
 
 # Files with the list of rectangular domains to "analyze" more closely:
-export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
-export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
+export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025_y1050.txt"
+export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025_y1050.txt"
 
 # In what format should figures be produced ('png' recommanded, but 'svg' supported!):
 export FIG_FORM="png"
@@ -214,5 +215,5 @@ export i_do_zcrit=0
 # Fresh-water transport associated to sea-ice transport
 #  => must compile cdficeflux.x but depends on more recent CDFTOOLS module...
 export i_do_icet=0 ; # treat sea-ice volume transport!
-export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1_ARCTIC.dat"
+export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_ARCTIC.dat"
 
