@@ -32,7 +32,7 @@ function barakuda_first_last_years()
 
     if [ ${nbfpy} -gt 1 ] && [ ! "${M_INI_EC}" = "01" ]; then
         echo " *** barakuda_import_files => must start from $((${YEAR_INI}+1))"
-        echo "                              since montly records would be missing!"
+        echo "                              since monthly records would be missing!"
         export YEAR_INI=$((${YEAR_INI}+1))
         echo ""
     fi
@@ -81,7 +81,8 @@ function barakuda_import_files()
     
     if [ ${nbfpy} -gt 1 ] && [ ! "${M_INI_EC}" = "01" ] && [ "${cyear}" = "${YEAR_END}" ]; then
         echo " *** barakuda_import_files => must quit before proceeding last year"
-        echo "                              since montly records would be missing!"
+        echo "                              since monthly records would be missing!"
+        cd /tmp/ ; rm -rf ${TMP_DIR}
         echo " Bye!"
         exit 0
     fi
