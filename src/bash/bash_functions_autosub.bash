@@ -28,7 +28,14 @@ function barakuda_first_last_years()
 
     cd ${NEMO_OUT_D}/
     
-    YEAR_INI=${Y_INI_EC}
+    export YEAR_INI=${Y_INI_EC}
+
+    if [ ${nbfpy} -gt 1 ] && [ ! "${M_INI_EC}" = "01" ]; then
+        echo " *** barakuda_import_files => must start from $((${YEAR_INI}+1))"
+        echo "                              since montly records would be missing!"
+        export YEAR_INI=$((${YEAR_INI}+1))
+        echo ""
+    fi
     
     if ${LFORCE_YINI}; then
         if [ ${YEAR0} -lt ${YEAR_INI_F} ]; then echo "ERROR: forced initial year is before first year!"; exit; fi
@@ -71,6 +78,13 @@ function barakuda_import_files()
     
     cycm=`printf "%04d" $((${jyear}-1))`
     cycp=`printf "%04d" $((${jyear}+1))`
+    
+    if [ ${nbfpy} -gt 1 ] && [ ! "${M_INI_EC}" = "01" ] && [ "${cyear}" = "${YEAR_END}" ]; then
+        echo " *** barakuda_import_files => must quit before proceeding last year"
+        echo "                              since montly records would be missing!"
+        echo " Bye!"
+        exit 0
+    fi
 
     echo " *** Going to extract year ${cyear} into:"
     echo "   ${TMP_DIR}"

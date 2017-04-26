@@ -38,7 +38,7 @@ export PYTHON_HOME="/home/Earth/lbrodeau/opt/Canopy/User" ; # HOME to python dis
 
 export DIR_NCVIEW_CMAP="${BARAKUDA_ROOT}/src/ncview_colormaps"
 
-# Is it an ec-earth experiment?
+# Is it an ec-earth (or autosubmit-controlled) experiment?
 export ece_exp=10; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only NEMO experiment done from traditional NEMO setup
 #                  # 1 => it's an OCEAN-ONLY EC-Earth experiment done from a EC-Earth setup
 #                  # 2 => it's a  COUPLED  EC-Earth experiment
@@ -46,13 +46,13 @@ export ece_exp=10; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  #       ${SOMEWHERE}/<EXP>/output/nemo/<YYY>
 #                  #       where YYY starts from '001' to
 #                  #      If you select '2', make sure 'cdo' is available and working!!!
-#                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
+#                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere...)
 #
 export Y_INI_EC=1950 ;    # initial year,  only needed if ece_exp /= 0  !!!
 export M_INI_EC=02   ;    # initial month, only needed if ece_exp >= 10 !!!
-export NCHNKS_Y=4    ;    # number of chunks per year (only needed if NCHNKS_Y >= 2 !)
-export TRES_IFS=XXX  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
-export AGCM_INFO="IFS T${TRES_IFS}"
+export NCHNKS_Y=4    ;    # number of chunks per year if ece_exp >= 10 (only needed if NCHNKS_Y >= 2 !)
+export TRES_IFS=XXX  ;    # spectral resolution for IFS (only needed if ece_exp=2), ex: T255 => TRES_IFS=255
+export AGCM_INFO="IFS T${TRES_IFS}" ; #        ''
 ###--- end EC-Earth IFS relate section ---
 
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
