@@ -12,6 +12,7 @@ PROGRAM cdftransportiz
    !!               (1) Mass transport ( Sv)
    !!               (2) Heat Transport (PW)
    !!               (3) Salt Transport (kT/sec)
+   !!               (4) Freshwater Transport (Sv)
    !!             The transport is > 0 left handside of the line
    !!             This program use a zig-zag line going through U and V-points.
    !!             It takes as input : VT files, gridU, gridV files.
@@ -51,7 +52,7 @@ PROGRAM cdftransportiz
    INTEGER   :: jk, jc, jj, jt                  !: dummy loop index !LB
    INTEGER   :: narg, iargc, istatus                         !: command line
    INTEGER   :: npiglo,npjglo, npk, nt               !: size of the domain !LB
-   INTEGER   :: ii0, ii1, ij0, ij1, ik
+   INTEGER   :: ii0, ii1, ij0, ij1, ik, ispace
    INTEGER   :: numin  = 16
 
    INTEGER(KIND=4) :: idirx, idiry   ! sense of description of the section
@@ -65,16 +66,17 @@ PROGRAM cdftransportiz
    REAL(4) ::  rxi0,ryj0, rxi1, ryj1
 
    REAL(8) :: &
-      &        ref_temp=0., & ! reference temperature (in Celsius) for the transport of heat
-      &        ref_sali=0., & ! reference salinity    (in PSU) for the transport of salt
+      &        ref_temp = 0.,   & ! reference temperature (in Celsius) for the transport of heat
+      &        ref_sali = 34.8, & ! reference salinity    (in PSU) for the transport of salt
       &       rU, rV
+   CHARACTER(len=128) :: ctest, c0, c1='0', c2='34.8'
 
    REAL(4) ::   ai,bi, aj,bj,d
    REAL(4) ::    rxx(jpseg),ryy(jpseg)
    REAL(4), DIMENSION(jpseg) :: gla, gphi
 
    REAL(8), DIMENSION(jpseg) :: voltrp, heatrp, saltrp
-   REAL(8)                   :: voltrpsum, heatrpsum, saltrpsum
+   REAL(8)                   :: voltrpsum, heatrpsum, saltrpsum, frwtrpsum
    COMPLEX yypt(jpseg), yypti
 
    REAL(4), DIMENSION (:,:),   ALLOCATABLE ::         e1v, e3v ,gphiv, zv, zvt, zvs !: mask, metrics
@@ -85,8 +87,6 @@ PROGRAM cdftransportiz
 
    REAL(8),   DIMENSION (:,:), ALLOCATABLE :: zwku,zwkv,    zwkut,zwkvt,   zwkus,zwkvs
    REAL(8),   DIMENSION (:,:,:), ALLOCATABLE :: ztrpu, ztrpv, ztrput,ztrpvt, ztrpus,ztrpvs
-
-   CHARACTER(len=8) :: ctest, crt
 
    CHARACTER(LEN=256) :: conf_tag, cf_vt , cf_u, cf_v, csection, cf_broken_line,  &
       &                cfilvtrp='vtrp.txt', cfilhtrp='htrp.txt', cfilstrp='strp.txt'
@@ -120,7 +120,7 @@ PROGRAM cdftransportiz
    CHARACTER(LEN=64)  :: cv_u, cv_v, cv_ueiv, cv_veiv, cv_dum
    REAL :: ryear
    INTEGER :: ierr, jt_pos, idf_out, idd_t, idv_time
-   INTEGER, DIMENSION(:)    , ALLOCATABLE :: id_volu, id_heat, id_salt
+   INTEGER, DIMENSION(:)    , ALLOCATABLE :: id_volu, id_heat, id_salt, id_frwt
    REAL(4), DIMENSION(:,:,:), ALLOCATABLE :: X_trsp   ! lolo
    !! LOLO.
 
@@ -193,8 +193,8 @@ PROGRAM cdftransportiz
 
 
    !! Lolo: allocating array to contain transports:
-   ALLOCATE( X_trsp(3,nt,nclass) ) ; ! 3 transports, nt values, nclass levels
-   ALLOCATE( id_volu(0:nclass), id_heat(0:nclass), id_salt(0:nclass) )
+   ALLOCATE( X_trsp(4,nt,nclass) ) ; ! 3 transports, nt values, nclass levels
+   ALLOCATE( id_volu(0:nclass), id_heat(0:nclass), id_salt(0:nclass), id_frwt(0:nclass) )
 
    ! Allocate arrays
    ALLOCATE( zu (npiglo,npjglo), zut(npiglo,npjglo), zus(npiglo,npjglo) )
@@ -255,18 +255,20 @@ PROGRAM cdftransportiz
       !    South-to-north   (dy>0, dx=0)=>  Mx*dy (+ve for an eastward flow)
       norm_u =  idiry
       norm_v = -idirx
-
-
+      
       READ(numin,'(a)') ctest
-      IF (TRIM(ctest) == 'ref_temp' ) THEN
-         !READ(numin,'(f)') ref_temp
-         READ(numin,*) ref_temp
-         PRINT *, '  => reference temperature for heat transport is ', ref_temp
+      IF (ctest(1:14) == 'ref_temp_sali:' ) THEN
+         c0 = TRIM(ctest(14+2:))
+         ispace = SCAN(TRIM(c0),' ')
+         c1 = TRIM((c0(1:ispace-1)))
+         c2 = TRIM((c0(ispace+1:)))
+         READ(c1,*) ref_temp
+         READ(c2,*) ref_sali
       ELSE
          BACKSPACE(numin)
       END IF
 
-      WRITE(crt,'(f7.4)') ref_temp
+      PRINT *, '   => reference temperature and salinity:', REAL(ref_temp,4), REAL(ref_sali,4)
 
 
       ! get e3u, e3v  at all levels
@@ -369,10 +371,6 @@ PROGRAM cdftransportiz
 
                ztrput(:,:,jc) = ztrput(:,:,jc) + zwkut(:,:) * rau0*rcp
                ztrpvt(:,:,jc) = ztrpvt(:,:,jc) + zwkvt(:,:) * rau0*rcp
-
-               ! At the end instead
-               !ztrput(:,:,jc) = ztrput(:,:,jc) + rau0*rcp*(zwkut(:,:) - ref_temp*zwku(:,:))
-               !ztrpvt(:,:,jc) = ztrpvt(:,:,jc) + rau0*rcp*(zwkvt(:,:) - ref_temp*zwkv(:,:))
 
                ztrpus(:,:,jc) = ztrpus(:,:,jc) + zwkus(:,:)
                ztrpvs(:,:,jc) = ztrpvs(:,:,jc) + zwkvs(:,:)
@@ -516,6 +514,7 @@ PROGRAM cdftransportiz
             voltrpsum = 0.
             heatrpsum = 0.
             saltrpsum = 0.
+            frwtrpsum = 0.
 
             DO jseg = 1, nn-1
                ii0=rxx(jseg)
@@ -537,11 +536,13 @@ PROGRAM cdftransportiz
                heatrpsum = heatrpsum+heatrp(jseg)
                saltrpsum = saltrpsum+saltrp(jseg)
             END DO   ! next segment
-
+            
+            frwtrpsum = voltrpsum - saltrpsum/ref_sali               ! only valid if saltrpsum was calculated with a ref salinity of 0.!
             heatrpsum = heatrpsum - rau0*rcp*ref_temp*voltrpsum
             saltrpsum = saltrpsum -          ref_sali*voltrpsum
 
-            X_trsp(:,jt,jc) = (/ REAL(voltrpsum/1.e6,4), REAL(heatrpsum/1.e15,4), REAL(saltrpsum/1.e6,4) /) ! lolo
+
+            X_trsp(:,jt,jc) = (/ REAL(voltrpsum/1.e6,4), REAL(heatrpsum/1.e15,4), REAL(saltrpsum/1.e6,4), REAL(frwtrpsum/1.e6,4) /) ! lolo
 
 
          END DO ! next class
@@ -558,7 +559,7 @@ PROGRAM cdftransportiz
       WRITE(cf_out, '(a,"/transport_sect_",a,".nc")') trim(cd_out), trim(csection)
       IF ( leiv ) WRITE(cf_out, '(a,"/transport_sect_",a,"_eiv.nc")') trim(cd_out), trim(csection)
 
-      id_volu = 0 ; id_heat = 0 ; id_salt = 0
+      id_volu = 0 ; id_heat = 0 ; id_salt = 0 ; id_frwt = 0
 
       !! LOLO netcdf
       INQUIRE( FILE=cf_out, EXIST=lfncout )
@@ -576,14 +577,17 @@ PROGRAM cdftransportiz
          ierr = NF90_DEF_VAR(idf_out, 'trsp_volu', NF90_FLOAT, (/idd_t/), id_volu(0))
          ierr = NF90_DEF_VAR(idf_out, 'trsp_heat', NF90_FLOAT, (/idd_t/), id_heat(0))
          ierr = NF90_DEF_VAR(idf_out, 'trsp_salt', NF90_FLOAT, (/idd_t/), id_salt(0))
+         ierr = NF90_DEF_VAR(idf_out, 'trsp_frwt', NF90_FLOAT, (/idd_t/), id_frwt(0))
 
          ierr = NF90_PUT_ATT(idf_out, id_volu(0), 'long_name', 'TOTAL: Transport of volume')
          ierr = NF90_PUT_ATT(idf_out, id_heat(0), 'long_name', 'TOTAL: Transport of heat')
          ierr = NF90_PUT_ATT(idf_out, id_salt(0), 'long_name', 'TOTAL: Transport of salt')
+         ierr = NF90_PUT_ATT(idf_out, id_frwt(0), 'long_name', 'TOTAL: Transport of liquid freshwater')
 
          ierr = NF90_PUT_ATT(idf_out, id_volu(0), 'units', 'Sv')
          ierr = NF90_PUT_ATT(idf_out, id_heat(0), 'units', 'PW')
          ierr = NF90_PUT_ATT(idf_out, id_salt(0), 'units', 'kt/s')
+         ierr = NF90_PUT_ATT(idf_out, id_frwt(0), 'units', 'Sv')
 
          IF ( nclass > 1 ) THEN
             DO jc = 1, nclass
@@ -591,22 +595,26 @@ PROGRAM cdftransportiz
                ierr = NF90_DEF_VAR(idf_out, 'trsp_volu'//trim(cdum), NF90_FLOAT, (/idd_t/), id_volu(jc))
                ierr = NF90_DEF_VAR(idf_out, 'trsp_heat'//trim(cdum), NF90_FLOAT, (/idd_t/), id_heat(jc))
                ierr = NF90_DEF_VAR(idf_out, 'trsp_salt'//trim(cdum), NF90_FLOAT, (/idd_t/), id_salt(jc))
+               ierr = NF90_DEF_VAR(idf_out, 'trsp_frwt'//trim(cdum), NF90_FLOAT, (/idd_t/), id_frwt(jc))
 
                WRITE(cdum,'(f7.2,"-",f7.2,"m  (t-points)")') gdept(ilev0(jc)), gdept(ilev1(jc))
 
                ierr = NF90_PUT_ATT(idf_out, id_volu(jc), 'long_name', 'Transport of volume, '//trim(cdum))
                ierr = NF90_PUT_ATT(idf_out, id_heat(jc), 'long_name', 'Transport of heat, '//trim(cdum))
                ierr = NF90_PUT_ATT(idf_out, id_salt(jc), 'long_name', 'Transport of salt, '//trim(cdum))
+               ierr = NF90_PUT_ATT(idf_out, id_frwt(jc), 'long_name', 'Transport of liquid freshwater, '//trim(cdum))
 
                ierr = NF90_PUT_ATT(idf_out, id_volu(jc), 'units', 'Sv')
                ierr = NF90_PUT_ATT(idf_out, id_heat(jc), 'units', 'PW')
                ierr = NF90_PUT_ATT(idf_out, id_salt(jc), 'units', 'kt/s')
+               ierr = NF90_PUT_ATT(idf_out, id_frwt(jc), 'units', 'Sv')
             END DO
          END IF
-
-         ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'Info', 'Reference temperature for heat transport is '//trim(crt)//' deg.C')
+         
+         ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'Info1', 'Reference temperature for heat transport is '//TRIM(c1)//' deg.C')
+         ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'Info2', 'Reference salinity for salt and freshwater transports is '//TRIM(c2)//' PSU')
          ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', 'Created by BaraKuda (cdftransportiz.f90), contact: brodeau@gmail.com')
-
+         
          ierr = NF90_ENDDEF(idf_out)
          jt_pos = 0
 
@@ -619,6 +627,7 @@ PROGRAM cdftransportiz
          ierr = NF90_INQ_VARID(idf_out, 'trsp_volu', id_volu(0))
          ierr = NF90_INQ_VARID(idf_out, 'trsp_heat', id_heat(0))
          ierr = NF90_INQ_VARID(idf_out, 'trsp_salt', id_salt(0))
+         ierr = NF90_INQ_VARID(idf_out, 'trsp_frwt', id_frwt(0))
 
          IF ( nclass > 1 ) THEN
             DO jc = 1, nclass
@@ -626,6 +635,7 @@ PROGRAM cdftransportiz
                ierr = NF90_INQ_VARID(idf_out, 'trsp_volu'//trim(cdum), id_volu(jc))
                ierr = NF90_INQ_VARID(idf_out, 'trsp_heat'//trim(cdum), id_heat(jc))
                ierr = NF90_INQ_VARID(idf_out, 'trsp_salt'//trim(cdum), id_salt(jc))
+               ierr = NF90_INQ_VARID(idf_out, 'trsp_frwt'//trim(cdum), id_frwt(jc))
             END DO
          END IF
 
@@ -649,6 +659,7 @@ PROGRAM cdftransportiz
             ierr = NF90_PUT_VAR(idf_out, id_volu(0), (/ X_trsp(1,jt,1) /), start=(/jt_pos+jt/), count=(/1/))
             ierr = NF90_PUT_VAR(idf_out, id_heat(0), (/ X_trsp(2,jt,1) /), start=(/jt_pos+jt/), count=(/1/))
             ierr = NF90_PUT_VAR(idf_out, id_salt(0), (/ X_trsp(3,jt,1) /), start=(/jt_pos+jt/), count=(/1/))
+            ierr = NF90_PUT_VAR(idf_out, id_frwt(0), (/ X_trsp(3,jt,1) /), start=(/jt_pos+jt/), count=(/1/))
 
          ELSE
 
@@ -656,11 +667,13 @@ PROGRAM cdftransportiz
             ierr = NF90_PUT_VAR(idf_out, id_volu(0), (/ SUM(X_trsp(1,jt,:)) /), start=(/jt_pos+jt/), count=(/1/))
             ierr = NF90_PUT_VAR(idf_out, id_heat(0), (/ SUM(X_trsp(2,jt,:)) /), start=(/jt_pos+jt/), count=(/1/))
             ierr = NF90_PUT_VAR(idf_out, id_salt(0), (/ SUM(X_trsp(3,jt,:)) /), start=(/jt_pos+jt/), count=(/1/))
+            ierr = NF90_PUT_VAR(idf_out, id_frwt(0), (/ SUM(X_trsp(3,jt,:)) /), start=(/jt_pos+jt/), count=(/1/))
 
             DO jc = 1, nclass
                ierr = NF90_PUT_VAR(idf_out, id_volu(jc), (/ X_trsp(1,jt,jc) /), start=(/jt_pos+jt/), count=(/1/))
                ierr = NF90_PUT_VAR(idf_out, id_heat(jc), (/ X_trsp(2,jt,jc) /), start=(/jt_pos+jt/), count=(/1/))
                ierr = NF90_PUT_VAR(idf_out, id_salt(jc), (/ X_trsp(3,jt,jc) /), start=(/jt_pos+jt/), count=(/1/))
+               ierr = NF90_PUT_VAR(idf_out, id_frwt(jc), (/ X_trsp(3,jt,jc) /), start=(/jt_pos+jt/), count=(/1/))
             END DO
          END IF
 

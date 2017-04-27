@@ -6,4 +6,3 @@ NCDF= -I$(NCDF_DIR)/include -L$(NCDF_DIR)/lib -lnetcdf -lnetcdff
 F90=ifort
 
 FFLAGS= -O3 -xHOST -CB -traceback -fpe0  -module ./mod $(NCDF)
-
