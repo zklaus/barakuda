@@ -69,7 +69,7 @@ PROGRAM cdftransportiz
       &        ref_temp = 0.,   & ! reference temperature (in Celsius) for the transport of heat
       &        ref_sali = 34.8, & ! reference salinity    (in PSU) for the transport of salt
       &       rU, rV
-   CHARACTER(len=128) :: ctest, c0, c1='0', c2='34.8'
+   CHARACTER(len=128) :: ctest, c0, c1='0.', c2='34.8'
 
    REAL(4) ::   ai,bi, aj,bj,d
    REAL(4) ::    rxx(jpseg),ryy(jpseg)
