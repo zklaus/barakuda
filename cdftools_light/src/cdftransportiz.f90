@@ -134,6 +134,15 @@ PROGRAM cdftransportiz
       PRINT *,'    => files are: <CONFTAG>_VT.nc <CONFTAG>_grid_U.nc <CONFTAG>_grid_V.nc'
       PRINT *,' If eddy-induced velocity is not relevant, specify "0" "0" for <nameUeiv> <nameVeiv>'
       PRINT *,' Files mesh_mask.nc must be in te current directory'
+      PRINT *, ''
+      PRINT *,' In your transportiz.dat, you can specify the reference temperature and salinity to use'
+      PRINT *,' to compute transports (defaults are 0. deg.C and 34.8 PSU).'
+      PRINT *,' below the line with i,j coordinates, specify "ref_temp_sali: T0 S0". Ex:'
+      PRINT *,'FRAM-STRAIT'
+      PRINT *,'279 268 272 272'
+      PRINT *,'ref_temp_sali: -0.5 35.'
+      PRINT *,'...'
+      PRINT *,''
       STOP
    ENDIF
 
