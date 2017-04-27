@@ -4,7 +4,7 @@
 #
 #         Configuration file for
 #
-# OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2 on 75 levels
+# OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2.2 on 75 levels
 #
 #        Machine: triolith.nsc.liu.se
 #
@@ -16,7 +16,7 @@ export CONF=ORCA1.L75 ; # horizontal global ORCA configuration
 export NBL=75         ; # number of levels
 
 export HOST=TRIOLITH.nsc.liu.se ; # this has no importance at all, it will just become an "info" on the web-page!
-export MASTERMIND="BSC / Laurent" ; # same here, who's the person who designed/ran this simulation?
+export MASTERMIND="SMHI / Klaus" ; # same here, who's the person who designed/ran this simulation?
 
 export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2.2)" ;   #  // same here ...
 
@@ -143,11 +143,11 @@ export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
 # In what format should figures be produced ('png' recommanded, but 'svg' supported!):
 export FIG_FORM="png"
 
-# About remote HOST to send/install HTML pages to:
-export ihttp=0                ; # do we export on a remote http server (1) or keep on the local machine (0)
-export RHOST=whitehouse.gov   ; # remote host to send diagnostic page to///
-export RUSER=donald           ; # username associated to remote host (for file export)
-export RWWWD=/data/www/barakuda/ec-earth_3.2b ; # directory of the local or remote host to send the diagnostic page to
+# About remote HOST to install HTML pages to:
+ihttp=1 ; # do we export on a remote http server (1) or keep on the local machine (0)
+RHOST=misu228.misu.su.se ; # remote host to send diagnostic page to///
+RUSER=laurent ; # username associated to remote host (for file export)
+RWWWD=/data/www/barakuda/ec-earth_3.2 ; # directory of the local or remote host to send the diagnostic page to
 
 
 #########################
