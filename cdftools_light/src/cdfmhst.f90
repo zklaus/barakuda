@@ -357,7 +357,7 @@ PROGRAM cdfmhst
   END DO
   !END DO
 
-  ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', 'Created by BaraKuda (cdfmhst.f90), contact: brodeau@gmail.com')
+  ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', 'Created by BaraKuda (cdfmhst.f90) => https://github.com/brodeau/barakuda')
   ierr = NF90_CLOSE(idf_out)
 
 END PROGRAM cdfmhst

@@ -631,7 +631,7 @@ PROGRAM cdftransportiz
          
          ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'Info1', 'Reference temperature for heat transport is '//TRIM(c1)//' deg.C')
          ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'Info2', 'Reference salinity for salt and freshwater transports is '//TRIM(c2)//' PSU')
-         ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', 'Created by BaraKuda (cdftransportiz.f90), contact: brodeau@gmail.com')
+         ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', 'Created by BaraKuda (cdftransportiz.f90) => https://github.com/brodeau/barakuda')
          
          ierr = NF90_ENDDEF(idf_out)
          jt_pos = 0

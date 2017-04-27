@@ -61,8 +61,7 @@ MODULE io_ezcdf
    CHARACTER(len=400)    :: crtn, cu
 
    CHARACTER(LEN=400), PARAMETER   ::     &
-      &    cabout = 'File created by SOSIE interpolation environement,&
-      & Laurent Brodeau, 2010, (brodeau@gmail.com)'
+      &    cabout = 'File created by BaraKuda (https://github.com/brodeau/barakuda)'
 
    INTEGER :: ji, jj, jk
 
