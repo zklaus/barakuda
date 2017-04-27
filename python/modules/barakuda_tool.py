@@ -52,12 +52,15 @@ def get_sections_from_file(cfile):
     jl=0 ; l_stop=False
     while not l_stop:        
         ll = cread_lines[jl]
-        ls = ll.split() ; cc = ls[0]
+        ls = ll.split()
+        cc = ls[0]
         if cc == 'EOF':
             l_stop=True            
         elif cc[0] != '#':
-            print ls
-            if jl%2 == 0 and cc != 'EOF' and cc != 'ref_temp': list_sections.append(cc)
+            if cc != 'EOF' and cc[0:13] != 'ref_temp_sali':
+                print ls
+                list_sections.append(cc)
+                jl=jl+1 ; # to skip coordinates line
         else:
             print '  ....  '
         jl=jl+1    

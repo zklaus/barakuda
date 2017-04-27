@@ -726,15 +726,18 @@ if idfig == 'transport':
         if js == 0:
             vtime = id_in.variables['time'][:]
             (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
-        Xtrsp   = nmp.zeros((3 , nbr)) ; # time + 3 types of transport
+        Xtrsp   = nmp.zeros((4 , nbr)) ; # time + 3 types of transport
         Xtrsp[0,:] = id_in.variables['trsp_volu'][:]
         Xtrsp[1,:] = id_in.variables['trsp_heat'][:]
         Xtrsp[2,:] = id_in.variables['trsp_salt'][:]
+        Xtrsp[3,:] = id_in.variables['trsp_frwt'][:]
+        cref_temp  = id_in.variables['trsp_heat'].Tref
+        cref_sali  = id_in.variables['trsp_salt'].Sref
         id_in.close()
 
         # Plot annual+montly for AMOC at 40
         VY = nmp.zeros(nby)
-        FY = nmp.zeros((3 , nby))
+        FY = nmp.zeros((4 , nby))
         if nbm >= 12:
             VY[:], FY[:,:] = bt.monthly_2_annual(vtime, Xtrsp[:,:])
         else:
@@ -749,10 +752,14 @@ if idfig == 'transport':
 
         # Transport of heat:
         bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[1,:], FY[1,:], cfignm='transport_heat_'+csec+'_'+CONFEXP,
-                              dt=ittic, cyunit='PW', ctitle = CONFEXP+': transport of heat, '+csec,
+                              dt=ittic, cyunit='PW', ctitle = CONFEXP+': transport of heat (Tref='+cref_temp+'C), '+csec,
                               ymin=0, ymax=0, mnth_col='g', cfig_type=ff)
 
-
+        # Transport of liquid freshwater:
+        bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[3,:], FY[3,:], cfignm='transport_lfw_'+csec+'_'+CONFEXP,
+                              dt=ittic, cyunit='Sv', ctitle = CONFEXP+': transport of liquid freshwater (Sref='+cref_sali+'), '+csec,
+                              ymin=0, ymax=0, mnth_col='#738FBF', cfig_type=ff)
+        
         js = js + 1
 
 

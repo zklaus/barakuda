@@ -42,7 +42,7 @@ function build_index_html()
     ctl='<br><br><br><big><big>' ; ctr='</big></big><br><br>'
     csl='<br><br><big>' ; csr='</big><br>'
     spf='<br><br>'
-    img_l='<img style="border: 0px solid" alt="" src="' ; img_r='"> <br><br>'
+    img_l='<img style="border: 0px solid" alt="" src="' ; img_r='"> <br><br>' ; img_rs='"> <br>'
 
     cr="${CONFEXP}" ; ff="${FIG_FORM}"
 
@@ -232,12 +232,13 @@ EOF
     if [ ${i_do_trsp} -gt 0 ]; then
         # Adding transport section part:
         echo "    ${ctl} Transport through sections ${ctr}" >> index.html
-        list_section=`cat ${TRANSPORT_SECTION_FILE} | grep -v '^#' | grep '-'`
+        list_section=`cat ${TRANSPORT_SECTION_FILE} | grep -v '^#' | grep -v '^ref_temp_sali' | grep '-'`
         for cs in ${list_section}; do
             echo ${cs}
-            echo "    ${img_l}transport_vol_${cs}_${cr}.${ff}${img_r}"  >> index.html
-            echo "    ${img_l}transport_heat_${cs}_${cr}.${ff}${img_r}" >> index.html
-            echo "    <br>" >> index.html
+            echo "    ${img_l}transport_vol_${cs}_${cr}.${ff}${img_rs}"  >> index.html
+            echo "    ${img_l}transport_lfw_${cs}_${cr}.${ff}${img_rs}"  >> index.html
+            echo "    ${img_l}transport_heat_${cs}_${cr}.${ff}${img_rs}" >> index.html
+            echo "    <br><br>" >> index.html
         done
     fi
 
