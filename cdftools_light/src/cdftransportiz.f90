@@ -659,7 +659,7 @@ PROGRAM cdftransportiz
             ierr = NF90_PUT_VAR(idf_out, id_volu(0), (/ X_trsp(1,jt,1) /), start=(/jt_pos+jt/), count=(/1/))
             ierr = NF90_PUT_VAR(idf_out, id_heat(0), (/ X_trsp(2,jt,1) /), start=(/jt_pos+jt/), count=(/1/))
             ierr = NF90_PUT_VAR(idf_out, id_salt(0), (/ X_trsp(3,jt,1) /), start=(/jt_pos+jt/), count=(/1/))
-            ierr = NF90_PUT_VAR(idf_out, id_frwt(0), (/ X_trsp(3,jt,1) /), start=(/jt_pos+jt/), count=(/1/))
+            ierr = NF90_PUT_VAR(idf_out, id_frwt(0), (/ X_trsp(4,jt,1) /), start=(/jt_pos+jt/), count=(/1/))
 
          ELSE
 
@@ -667,13 +667,13 @@ PROGRAM cdftransportiz
             ierr = NF90_PUT_VAR(idf_out, id_volu(0), (/ SUM(X_trsp(1,jt,:)) /), start=(/jt_pos+jt/), count=(/1/))
             ierr = NF90_PUT_VAR(idf_out, id_heat(0), (/ SUM(X_trsp(2,jt,:)) /), start=(/jt_pos+jt/), count=(/1/))
             ierr = NF90_PUT_VAR(idf_out, id_salt(0), (/ SUM(X_trsp(3,jt,:)) /), start=(/jt_pos+jt/), count=(/1/))
-            ierr = NF90_PUT_VAR(idf_out, id_frwt(0), (/ SUM(X_trsp(3,jt,:)) /), start=(/jt_pos+jt/), count=(/1/))
+            ierr = NF90_PUT_VAR(idf_out, id_frwt(0), (/ SUM(X_trsp(4,jt,:)) /), start=(/jt_pos+jt/), count=(/1/))
 
             DO jc = 1, nclass
                ierr = NF90_PUT_VAR(idf_out, id_volu(jc), (/ X_trsp(1,jt,jc) /), start=(/jt_pos+jt/), count=(/1/))
                ierr = NF90_PUT_VAR(idf_out, id_heat(jc), (/ X_trsp(2,jt,jc) /), start=(/jt_pos+jt/), count=(/1/))
                ierr = NF90_PUT_VAR(idf_out, id_salt(jc), (/ X_trsp(3,jt,jc) /), start=(/jt_pos+jt/), count=(/1/))
-               ierr = NF90_PUT_VAR(idf_out, id_frwt(jc), (/ X_trsp(3,jt,jc) /), start=(/jt_pos+jt/), count=(/1/))
+               ierr = NF90_PUT_VAR(idf_out, id_frwt(jc), (/ X_trsp(4,jt,jc) /), start=(/jt_pos+jt/), count=(/1/))
             END DO
          END IF
 
