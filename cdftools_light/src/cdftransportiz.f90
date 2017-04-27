@@ -598,6 +598,10 @@ PROGRAM cdftransportiz
          ierr = NF90_PUT_ATT(idf_out, id_salt(0), 'units', 'kt/s')
          ierr = NF90_PUT_ATT(idf_out, id_frwt(0), 'units', 'Sv')
 
+         ierr = NF90_PUT_ATT(idf_out, id_heat(0), 'Tref', c1)
+         ierr = NF90_PUT_ATT(idf_out, id_salt(0), 'Sref', c2)
+         ierr = NF90_PUT_ATT(idf_out, id_frwt(0), 'Sref', c2)
+
          IF ( nclass > 1 ) THEN
             DO jc = 1, nclass
                WRITE(cdum,'("_",i2.2)') jc ! suffix for variable_name
@@ -617,6 +621,11 @@ PROGRAM cdftransportiz
                ierr = NF90_PUT_ATT(idf_out, id_heat(jc), 'units', 'PW')
                ierr = NF90_PUT_ATT(idf_out, id_salt(jc), 'units', 'kt/s')
                ierr = NF90_PUT_ATT(idf_out, id_frwt(jc), 'units', 'Sv')
+               
+               ierr = NF90_PUT_ATT(idf_out, id_heat(jc), 'Tref', c1)
+               ierr = NF90_PUT_ATT(idf_out, id_salt(jc), 'Sref', c2)
+               ierr = NF90_PUT_ATT(idf_out, id_frwt(jc), 'Sref', c2)
+
             END DO
          END IF
          
