@@ -39,8 +39,6 @@ PROGRAM cdftransportiz
    USE cdfio
    USE io_ezcdf
 
-
-   !! * Local variables
    IMPLICIT NONE
 
    LOGICAL, PARAMETER :: l_save_broken_lines = .FALSE.

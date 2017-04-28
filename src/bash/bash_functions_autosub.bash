@@ -31,8 +31,8 @@ function barakuda_first_last_years()
     export YEAR_INI=${Y_INI_EC}
 
     if [ ${nbfpy} -gt 1 ] && [ ! "${M_INI_EC}" = "01" ]; then
-        echo " *** barakuda_import_files => must start from $((${YEAR_INI}+1))"
-        echo "                              since monthly records would be missing!"
+        echo " *** barakuda_first_last_years => must start from $((${YEAR_INI}+1))"
+        echo "                                  since monthly records would be missing!"
         export YEAR_INI=$((${YEAR_INI}+1))
         echo ""
     fi
