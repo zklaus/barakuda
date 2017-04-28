@@ -170,7 +170,7 @@ export i_do_amoc=1
 export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to look in for max of AMOC
 
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
-export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
+export i_do_trsp=2  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2

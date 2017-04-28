@@ -459,9 +459,6 @@ class plot :
         colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
-        plt.hold(True)
-
-
         if lcontours:
             cf = plt.contourf(XF, vc, cmap = colmap, norm = pal_norm)
             for c in cf.collections: c.set_zorder(0.5)
@@ -532,7 +529,7 @@ class plot :
             fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), dpi=None)  ; #zonal
             ax = plt.axes([0.08, 0.11, 0.9, 0.82])   #, facecolor = 'gray')
 
-        plt.plot(VY, VZn*0.0, 'k', linewidth=1) ; plt.hold(True)
+        plt.plot(VY, VZn*0.0, 'k', linewidth=1)
 
         plt.plot(VY, VZn, 'k', linewidth=3., label=lab)
         if lp1: plt.plot(VY, VZ1, color=b_blu, linewidth=2., label=lab1)
@@ -810,9 +807,6 @@ class plot :
         colmap = bcm.chose_colmap(cpal)
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
-        plt.hold(True)
-
-
         if lcontours:
             cf = plt.contourf(XF1, vc, cmap = colmap, norm = pal_norm)
             for c in cf.collections: c.set_zorder(0.5)
@@ -951,7 +945,6 @@ class plot :
         pal_norm = colors.Normalize(vmin = rmin, vmax = rmax, clip = False)
 
         cf = plt.contourf(VX, zVZ, XF, vc, cmap = colmap, norm = pal_norm)
-        plt.hold(True)
         if lkcont: plt.contour(VX, zVZ, XF, vc, colors='k', linewidths=0.2)
 
         # Colorbar:

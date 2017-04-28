@@ -52,7 +52,7 @@ if [ -f ${fconfig} ]; then
     echo "Sourcing configuration file: ${fconfig} !"
     . ${fconfig}
 else
-    echo "PROBLEM: cannot find file ${fconfig} !"; exit
+    echo "ERROR: cannot find file ${fconfig} !"; exit
 fi
 echo
 
@@ -317,7 +317,7 @@ while ${lcontinue}; do
             echo; echo; echo "Meridional transport of heat and salt"
             fo=${DIAG_D}/merid_transport_T_S_${CONFEXP}.nc
             if [ ! -f ${fvt} ]; then
-                echo "PROBLEM: file ${fvt} is not here, skipping meridional transports section"
+                echo "WARNING: file ${fvt} is not here, skipping meridional transports section"
             else
                 rm -f merid_heat_trp.dat merid_salt_trp.dat
                 echo " *** CALLING: ./cdfmhst.x ${fvt} ${fo} ${jyear} &"
@@ -341,7 +341,7 @@ while ${lcontinue}; do
             fi
             if [ ${i_do_trsp} -eq 1 ]; then z1_trsp="" ; z2_trsp=""; fi
             if [ ! -f ${fvt} ]; then
-                echo "PROBLEM: file ${fvt} is not here, skipping transport section!"
+                echo "WARNING: file ${fvt} is not here, skipping transport section!"
             else
                 echo " *** CALLING: ./cdftransportiz.x ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &"
                 ./cdftransportiz.x ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &
@@ -567,7 +567,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         if [ ! ${ydum} -eq ${YEAR_END} ]; then
             echo;
             echo "###################################################################"
-            echo "PROBLEM: in ${fcompletion} last_year = ${ydum}"
+            echo "ERROR: in ${fcompletion} last_year = ${ydum}"
             echo "         and from stored files files last_year = ${YEAR_END} !"
             echo "###################################################################"
             echo
@@ -709,8 +709,8 @@ if [ ${ISTAGE} -eq 2 ]; then
             fccrl=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_TCURL.nc4
             iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
         else
-            echo; echo "PROBLEM! => you set l_clim_diag to true but no file 'last_clim' was found in:"
-            echo "            ${DIAG_D}/clim/"; echo
+            echo; echo "ERROR => you set l_clim_diag to true but no file 'last_clim' was found in:"
+            echo "               ${DIAG_D}/clim/"; echo
             exit
         fi
 
