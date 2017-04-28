@@ -43,7 +43,7 @@ PROGRAM cdftransportiz
    !! * Local variables
    IMPLICIT NONE
 
-   LOGICAL, PARAMETER :: l_save_broken_lines = .FALSE. !lolo
+   LOGICAL, PARAMETER :: l_save_broken_lines = .FALSE.
 
    INTEGER :: nclass   !: number of depth class
    INTEGER ,DIMENSION (:),ALLOCATABLE ::  imeter  !: limit beetween depth level, in m (nclass -1)
@@ -66,11 +66,12 @@ PROGRAM cdftransportiz
    REAL(4) ::  rxi0,ryj0, rxi1, ryj1
 
    REAL(8) :: &
-      &        ref_temp = 0.,   & ! reference temperature (in Celsius) for the transport of heat
-      &        ref_sali = 34.8, & ! reference salinity    (in PSU) for the transport of salt
-      &       rU, rV
-   CHARACTER(len=128) :: ctest, c0, c1='0.', c2='34.8'
-
+      &        ref_temp0 = 0.,     & ! reference temperature (in Celsius) for the transport of heat
+      &        ref_sali0 = 34.8,   & ! reference salinity    (in PSU) for the transport of salt
+      &        ref_temp, ref_sali, &
+      &        rU, rV
+   CHARACTER(len=128) :: ctest, c0, c1, c2, cref1='0.', cref2='34.8'
+   
    REAL(4) ::   ai,bi, aj,bj,d
    REAL(4) ::    rxx(jpseg),ryy(jpseg)
    REAL(4), DIMENSION(jpseg) :: gla, gphi
@@ -114,7 +115,6 @@ PROGRAM cdftransportiz
       &     idf_us=0, idv_us=0, idf_vs=0, idv_vs=0, idf_0=0, idv_0=0
 
 
-   !! LOLO:
    LOGICAL :: lfncout = .false.
    CHARACTER(LEN=256) :: cd_out = '.', cf_out
    CHARACTER(LEN=64)  :: cv_u, cv_v, cv_ueiv, cv_veiv, cv_dum
@@ -122,15 +122,14 @@ PROGRAM cdftransportiz
    INTEGER :: ierr, jt_pos, idf_out, idd_t, idv_time
    INTEGER, DIMENSION(:)    , ALLOCATABLE :: id_volu, id_heat, id_salt, id_frwt
    REAL(4), DIMENSION(:,:,:), ALLOCATABLE :: X_trsp   ! lolo
-   !! LOLO.
 
 
 
    !!  Read command line and output usage message if not compliant.
    narg= iargc()
    IF ( narg < 7  ) THEN
-      PRINT *,' Usage : cdftransportiz <CONFTAG> <nameU> <nameV> <nameUeiv> <nameVeiv> <year> <DIROUT> '
-      PRINT *, '                       "limit of level" (<ref temp.degree>)'
+      PRINT *,' Usage: cdftransportiz <CONFTAG> <nameU> <nameV> <nameUeiv> <nameVeiv> <year> <DIROUT> (<z1> <z2>)'
+      PRINT *,''
       PRINT *,'    => files are: <CONFTAG>_VT.nc <CONFTAG>_grid_U.nc <CONFTAG>_grid_V.nc'
       PRINT *,' If eddy-induced velocity is not relevant, specify "0" "0" for <nameUeiv> <nameVeiv>'
       PRINT *,' Files mesh_mask.nc must be in te current directory'
@@ -157,6 +156,8 @@ PROGRAM cdftransportiz
    nxtarg=7
    nclass = narg -nxtarg + 1
 
+
+
    leiv = .TRUE.
    IF ( (trim(cv_ueiv) == '0').AND.(trim(cv_veiv) == '0') ) THEN
       leiv = .FALSE.
@@ -169,9 +170,6 @@ PROGRAM cdftransportiz
    WRITE(cf_vt, '(a,"_VT.nc")')     trim(conf_tag)
    WRITE(cf_u,  '(a,"_grid_U.nc")') trim(conf_tag)
    WRITE(cf_v,  '(a,"_grid_V.nc")') trim(conf_tag)
-
-
-
 
    ALLOCATE (  cdepths(0:nclass), imeter(nclass -1), ilev0(nclass), ilev1(nclass) )
 
@@ -264,7 +262,12 @@ PROGRAM cdftransportiz
       !    South-to-north   (dy>0, dx=0)=>  Mx*dy (+ve for an eastward flow)
       norm_u =  idiry
       norm_v = -idirx
+
+      ! Defaults:
+      c1 = cref1           ; c2 = cref2
+      ref_temp = ref_temp0 ; ref_sali = ref_sali0
       
+      ! Should they be modified:
       READ(numin,'(a)') ctest
       IF (ctest(1:14) == 'ref_temp_sali:' ) THEN
          c0 = TRIM(ctest(14+2:))
@@ -276,8 +279,8 @@ PROGRAM cdftransportiz
       ELSE
          BACKSPACE(numin)
       END IF
-
-      PRINT *, '   => reference temperature and salinity:', REAL(ref_temp,4), REAL(ref_sali,4)
+      
+      PRINT *, '  => reference temperature and salinity:', REAL(ref_temp,4), REAL(ref_sali,4)
 
 
       ! get e3u, e3v  at all levels
@@ -392,7 +395,7 @@ PROGRAM cdftransportiz
          IF (jt == 1) THEN
 
             IF ( nclass > 3 ) THEN
-               PRINT *, 'LOLO=> cdftransportiz.f90 only supports 2 depths currently!!!'
+               PRINT *, ' ERROR => cdftransportiz.f90 only supports 2 depths currently!!!'
             END IF
 
 
@@ -545,13 +548,13 @@ PROGRAM cdftransportiz
                heatrpsum = heatrpsum+heatrp(jseg)
                saltrpsum = saltrpsum+saltrp(jseg)
             END DO   ! next segment
-            
+
             frwtrpsum = voltrpsum - saltrpsum/ref_sali               ! only valid if saltrpsum was calculated with a ref salinity of 0.!
             heatrpsum = heatrpsum - rau0*rcp*ref_temp*voltrpsum
             saltrpsum = saltrpsum -          ref_sali*voltrpsum
 
 
-            X_trsp(:,jt,jc) = (/ REAL(voltrpsum/1.e6,4), REAL(heatrpsum/1.e15,4), REAL(saltrpsum/1.e6,4), REAL(frwtrpsum/1.e6,4) /) ! lolo
+            X_trsp(:,jt,jc) = (/ REAL(voltrpsum/1.e6,4), REAL(heatrpsum/1.e15,4), REAL(saltrpsum/1.e6,4), REAL(frwtrpsum/1.e6,4) /)
 
 
          END DO ! next class
@@ -601,7 +604,7 @@ PROGRAM cdftransportiz
          ierr = NF90_PUT_ATT(idf_out, id_heat(0), 'Tref', c1)
          ierr = NF90_PUT_ATT(idf_out, id_salt(0), 'Sref', c2)
          ierr = NF90_PUT_ATT(idf_out, id_frwt(0), 'Sref', c2)
-
+         
          IF ( nclass > 1 ) THEN
             DO jc = 1, nclass
                WRITE(cdum,'("_",i2.2)') jc ! suffix for variable_name
@@ -621,18 +624,18 @@ PROGRAM cdftransportiz
                ierr = NF90_PUT_ATT(idf_out, id_heat(jc), 'units', 'PW')
                ierr = NF90_PUT_ATT(idf_out, id_salt(jc), 'units', 'kt/s')
                ierr = NF90_PUT_ATT(idf_out, id_frwt(jc), 'units', 'Sv')
-               
+
                ierr = NF90_PUT_ATT(idf_out, id_heat(jc), 'Tref', c1)
                ierr = NF90_PUT_ATT(idf_out, id_salt(jc), 'Sref', c2)
                ierr = NF90_PUT_ATT(idf_out, id_frwt(jc), 'Sref', c2)
 
             END DO
          END IF
-         
+
          ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'Info1', 'Reference temperature for heat transport is '//TRIM(c1)//' deg.C')
          ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'Info2', 'Reference salinity for salt and freshwater transports is '//TRIM(c2)//' PSU')
          ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', 'Created by BaraKuda (cdftransportiz.f90) => https://github.com/brodeau/barakuda')
-         
+
          ierr = NF90_ENDDEF(idf_out)
          jt_pos = 0
 
