@@ -85,6 +85,7 @@ II / Compile CDFTOOLS executables
  * cdfmoc.x
  * cdfpsi.x
  * cdfsigtrp.x
+ * cdficeflux.x
  * cdftransportiz.x
  * cdfvT.x
 ~~~~~~~~~~~~~~~~~~~~~~~~~

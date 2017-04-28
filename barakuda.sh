@@ -67,7 +67,7 @@ if [ ! "${ANNUAL_3D}" = "" ]; then
 fi
 
 # List of CDFTOOLS executables needed for the diagnostics:
-export L_EXEC="cdfmaxmoc.x cdfmoc.x cdfvT.x cdftransportiz.x cdficediags.x cdfmhst.x cdfsigtrp.x"
+export L_EXEC="cdfmaxmoc.x cdfmoc.x cdfvT.x cdftransportiz.x cdficeflux.x cdficediags.x cdfmhst.x cdfsigtrp.x"
 
 barakuda_setup
 
@@ -348,6 +348,28 @@ while ${lcontinue}; do
                 pid_trsp=$! ; echo
             fi
         fi
+
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Solid freshwater transport through sections due to sea-ice drift
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if [ ${i_do_ice} -gt 0] && [ ${i_do_trsp_ice} -eq 1 ]; then
+            echo; echo; echo "Solid freshwater transport through sections due to sea-ice drift"
+            if [ -z ${TRANSPORT_SECTION_FILE_ICE} ]; then
+                echo "Please specify which TRANSPORT_SECTION_FILE_ICE to use into the config file!" ; exit
+            fi
+            if [ ! -f ./transport_ice.dat ]; then
+                check_if_file ${TRANSPORT_SECTION_FILE_ICE}
+                cp ${TRANSPORT_SECTION_FILE_ICE} ./transport_ice.dat
+            fi
+            #
+            echo " *** CALLING: ./cdficeflux.x ${fj1m} ${NN_ICEF} ${NN_ICEU} ${NN_ICEV} ${NN_ICET} ${jyear} ${DIAG_D} &"
+            ./cdficeflux.x ${fj1m} ${NN_ICEF} ${NN_ICEU} ${NN_ICEV} ${NN_ICET} ${jyear} ${DIAG_D} &
+            pid_trspi=$! ; echo            
+        fi
+
+
+
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         #  Deep Mixed Volume (DMV) on a given box
@@ -458,54 +480,6 @@ while ${lcontinue}; do
 
         
         # --- end of stuffs that can be launched in bg ---
-
-
-
-        #==============================
-        # BETA STUFF !!
-        #==============================
-
-
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # Solid freshwater transport associated with sea-ice drift
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if [ ${i_do_icet} -eq 1 ]; then
-
-            echo; echo; echo "Transports of solid freshwater (sea-ice) through different sections"
-
-            if [ ! "${FILE_ICE_SUFFIX}" = "icemod" ]; then
-                echo "ERROR: cannot compute ice transport if ice file is set to ${FILE_ICE_SUFFIX} !"; exit
-            fi
-
-            check_if_file ${TRANSPORT_ICE_SECTION_FILE}
-
-            cp ${TRANSPORT_ICE_SECTION_FILE} ./transport_ice.dat
-
-            diro=${DIAG_D}/transport_sections ; mkdir -p ${diro}
-
-            echo " *** CALLING: /home/x_laubr/DEV/CDFTOOLS/bin/cdficeflux ${fj1m}"
-            /home/x_laubr/DEV/CDFTOOLS/bin/cdficeflux ${fj1m}
-
-            list_ice=`cat transport_ice.dat | grep '-'`
-
-            for sect in ${list_ice}; do
-                fo=${diro}/transport_solid_FW_${sect}_${CONFEXP}.dat
-                mv -f section_ice-trp_${sect}.dat  ${sect}.tmp
-                echo "# Time       VolTrans(Sv)     (${cyear})" >> ${fo}
-                cat ${sect}.tmp | grep -v '\#' | awk -v "Y=${jyear}" '{print Y+($1-0.5)*1./12.," ",$2}'>> ${fo}
-                cat ${sect}.tmp | grep -v '\#' | awk '{print $2}'> ${sect}_1.tmp
-                # Mean val for the current year:
-                fo=${diro}/transport_solid_FW_${sect}_${CONFEXP}_annual.dat
-                mean_val1=`cat ${sect}_1.tmp | awk '{ SUM += $1} END { printf("%.15g\n", SUM/12) }'`
-                ymid=`echo ${jyear} | awk  '{print $1+0.5}'`
-                if [ ${jyear} -eq ${YEAR_INI} ]; then
-                    echo "# Annually-averaged transports"  >> ${fo}
-                    echo "# time       VolTrans(Sv)" >> ${fo}
-                fi
-                echo "${ymid}   ${mean_val1}" >> ${fo}
-            done
-            echo; echo; echo
-        fi
 
 
         echo
@@ -624,8 +598,8 @@ if [ ${ISTAGE} -eq 2 ]; then
         if [ ! "${NN_FWF}"  = "X" ]; then DIAG_1D_LIST="${DIAG_1D_LIST} mean_fwf"; fi
     fi
     if [ ${i_do_amoc} -eq 1 ]; then DIAG_1D_LIST="${DIAG_1D_LIST} amoc";        fi
-    if [ ${i_do_trsp} -gt 0 ]; then DIAG_1D_LIST="${DIAG_1D_LIST} transport_sections" ; fi
-    if [ ${i_do_ice}  -eq 1 ]; then DIAG_1D_LIST="${DIAG_1D_LIST} seaice";       fi
+    if [ ${i_do_ice}  -eq 1 ]; then DIAG_1D_LIST="${DIAG_1D_LIST} seaice";      fi
+    if [ ${i_do_trsp} -gt 0 ] || [ ${i_do_trsp_ice} -eq 1 ]; then DIAG_1D_LIST="${DIAG_1D_LIST} transport_sections" ; fi
 
     dy=$((${YEAR_END}-${YEAR_INI}+1)) ; export YF2=$((${YEAR_END}+1))
 
