@@ -95,6 +95,8 @@ export NN_V_EIV="0" ; # 0 => ignore
 export FILE_ICE_SUFFIX="icemod" ; # in what file type extension to find ice fields
 export NN_ICEF="siconc" ; # name of ice fraction in "FILE_ICE_SUFFIX" file...
 export NN_ICET="sivolu" ; # ice thickness or rather volume...
+export NN_ICEU="sivelu" ; # ice U-velocity
+export NN_ICEV="sivelv" ; # ice V-velocity
 #
 # Surface fluxes:
 #export FILE_FLX_SUFFIX="SBC" ; # in what file type extension to find surface fluxes
@@ -132,7 +134,8 @@ export NN_ICEF_OBS="ice_cover"
 
 
 # A text file where the cross sections (to compute transports) are defined :
-export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1.dat"
+export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1.dat"        ; # set i_do_trsp=1 !
+export TRANSPORT_SECTION_FILE_ICE="${BARAKUDA_ROOT}/data/transport_ice_ORCA1.dat"  ; # set i_do_trsp_ice=1 !
 
 # For transport by sigma-class:
 export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA1.dat"
@@ -169,20 +172,23 @@ export i_do_ifs_flx=0 ; # only relevant when ece_exp=2...
 export i_do_amoc=1
 export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to look in for max of AMOC
 
+# Sea-ice diags
+export i_do_ice=1  ; # Sea-ice diags
+
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
 export i_do_trsp=2  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
 
+# Solid freshwater transport through sections due to sea-ice drift
+export i_do_trsp_ice=1 ; # must have i_do_ice=1
+
 # Meridional heat/salt transport (advective)
 export i_do_mht=1
 
 # Transport by sigma class
 export i_do_sigt=1
-
-# Sea-ice diags
-export i_do_ice=1  ; # Sea-ice diags
 
 # Budget on pre-defined (FILE_DEF_BOXES) rectangular domains:
 export i_do_bb=0   ; # Budget and other stuffs on a given rectangular box!
@@ -211,9 +217,3 @@ export i_do_ssx_box=0 ; # zoom on given boxes (+spatially-averaged values) for s
 
 # Some nerdy stuffs about the critical depth in prescribed boxes:
 export i_do_zcrit=0
-
-# Fresh-water transport associated to sea-ice transport
-#  => must compile cdficeflux.x but depends on more recent CDFTOOLS module...
-export i_do_icet=0 ; # treat sea-ice volume transport!
-export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1_ARCTIC.dat"
-

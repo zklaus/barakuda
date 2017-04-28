@@ -349,11 +349,12 @@ while ${lcontinue}; do
             fi
         fi
 
-
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Solid freshwater transport through sections due to sea-ice drift
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if [ ${i_do_ice} -gt 0] && [ ${i_do_trsp_ice} -eq 1 ]; then
+        echo "LOLO: before, i_do_ice=${i_do_ice}, i_do_trsp_ice=${i_do_trsp_ice}"
+        if [ ${i_do_ice} -gt 0 ] && [ ${i_do_trsp_ice} -eq 1 ]; then
+            echo "LOLO: in!!!"
             echo; echo; echo "Solid freshwater transport through sections due to sea-ice drift"
             if [ -z ${TRANSPORT_SECTION_FILE_ICE} ]; then
                 echo "Please specify which TRANSPORT_SECTION_FILE_ICE to use into the config file!" ; exit
@@ -367,8 +368,6 @@ while ${lcontinue}; do
             ./cdficeflux.x ${fj1m} ${NN_ICEF} ${NN_ICEU} ${NN_ICEV} ${NN_ICET} ${jyear} ${DIAG_D} &
             pid_trspi=$! ; echo            
         fi
-
-
 
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
