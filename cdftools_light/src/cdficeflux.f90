@@ -147,7 +147,7 @@ PROGRAM cdficeflux
    CHARACTER(LEN=64)  :: cv_dum
    CHARACTER(LEN=512) :: cd_out
    LOGICAL                 :: lfncout = .FALSE.
-   INTEGER :: ierr, jt_pos, idf_out, idd_t, idv_time, id_volu
+   INTEGER :: ierr, jt_pos, idf_out, idd_t, idv_time, id_frwt
 
    REAL(4), DIMENSION(:), ALLOCATABLE :: X_trsp   ! lolo
 
@@ -473,7 +473,7 @@ PROGRAM cdficeflux
       !! Time to create or append X_trsp into the netcdf file for current section
       !! -----------------------------------------------------
 
-      id_volu = 0
+      id_frwt = 0
 
       WRITE(cf_out, '(a,"/transport_ice_sect_",a,".nc")') trim(cd_out), trim(csection)
 
@@ -488,10 +488,10 @@ PROGRAM cdficeflux
          ierr = NF90_DEF_VAR(idf_out, 'time', NF90_DOUBLE,    idd_t, idv_time)
 
 
-         ierr = NF90_DEF_VAR(idf_out, 'trsp_volu', NF90_FLOAT, (/idd_t/), id_volu)
-         ierr = NF90_PUT_ATT(idf_out, id_volu, 'long_name', 'Transport of (solid) freshwater due to sea-ice drift')
-         ierr = NF90_PUT_ATT(idf_out, id_volu, 'units', 'Sv')
-         ierr = NF90_PUT_ATT(idf_out, id_volu, 'Sref', cref2)
+         ierr = NF90_DEF_VAR(idf_out, 'trsp_frwt', NF90_FLOAT, (/idd_t/), id_frwt)
+         ierr = NF90_PUT_ATT(idf_out, id_frwt, 'long_name', 'Transport of (solid) freshwater due to sea-ice drift')
+         ierr = NF90_PUT_ATT(idf_out, id_frwt, 'units', 'Sv')
+         ierr = NF90_PUT_ATT(idf_out, id_frwt, 'Sref', cref2)
          ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', &
             &   'Created by BaraKuda (cdficeflux.x) => https://github.com/brodeau/barakuda')
 
@@ -505,7 +505,7 @@ PROGRAM cdficeflux
          ierr = NF90_OPEN  (cf_out, NF90_WRITE,   idf_out)
 
          !! Need IDs of variables to append... NF90_INQ_VARID
-         ierr = NF90_INQ_VARID(idf_out, 'trsp_volu', id_volu)
+         ierr = NF90_INQ_VARID(idf_out, 'trsp_frwt', id_frwt)
 
          ! Get ID of unlimited dimension
          ierr = NF90_INQUIRE(idf_out, unlimitedDimId = idv_time)
@@ -523,7 +523,7 @@ PROGRAM cdficeflux
          ierr = NF90_PUT_VAR( idf_out, idv_time, (/ryear+1./12.*(REAL(jt)-1.+0.5)/), start=(/jt_pos+jt/), count=(/1/) )
 
          !! Default variable is the only one present (index = 1) :
-         ierr = NF90_PUT_VAR(idf_out, id_volu, (/ X_trsp(jt) /), start=(/jt_pos+jt/), count=(/1/))
+         ierr = NF90_PUT_VAR(idf_out, id_frwt, (/ X_trsp(jt) /), start=(/jt_pos+jt/), count=(/1/))
 
       END DO
 
