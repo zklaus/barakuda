@@ -1,3 +1,5 @@
+
+
 PROGRAM cdftransportiz
 
    !!---------------------------------------------------------------------
@@ -41,6 +43,14 @@ PROGRAM cdftransportiz
 
    IMPLICIT NONE
 
+   REAL(8) :: &
+      &        ref_temp0 = 0.,     & ! reference temperature (in Celsius) for the transport of heat
+      &        ref_sali0 = 34.8,   & ! reference salinity    (in PSU) for the transport of salt
+      &        ref_temp, ref_sali, &
+      &        rU, rV
+   CHARACTER(len=128) :: ctest, c0, c1, c2, cref1='0.', cref2='34.8'
+
+
    LOGICAL, PARAMETER :: l_save_broken_lines = .FALSE.
 
    INTEGER :: nclass   !: number of depth class
@@ -63,13 +73,6 @@ PROGRAM cdftransportiz
 
    REAL(4) ::  rxi0,ryj0, rxi1, ryj1
 
-   REAL(8) :: &
-      &        ref_temp0 = 0.,     & ! reference temperature (in Celsius) for the transport of heat
-      &        ref_sali0 = 34.8,   & ! reference salinity    (in PSU) for the transport of salt
-      &        ref_temp, ref_sali, &
-      &        rU, rV
-   CHARACTER(len=128) :: ctest, c0, c1, c2, cref1='0.', cref2='34.8'
-   
    REAL(4) ::   ai,bi, aj,bj,d
    REAL(4) ::    rxx(jpseg),ryy(jpseg)
    REAL(4), DIMENSION(jpseg) :: gla, gphi

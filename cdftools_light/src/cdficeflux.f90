@@ -44,6 +44,11 @@ PROGRAM cdficeflux
 
    IMPLICIT NONE
 
+   REAL(8) :: &
+      &        ref_sali0 = 34.8 ! reference salinity (in PSU)
+   CHARACTER(len=128) :: cref2='34.8'
+
+
    INTEGER(KIND=4)                             :: jseg   ! dummy loop index
    INTEGER(KIND=4)                             :: ji, jj, jk     ! dummy loop index
    INTEGER(KIND=4), DIMENSION(:),  ALLOCATABLE :: ipk, id_varout ! Netcdf output
@@ -100,11 +105,7 @@ PROGRAM cdficeflux
    REAL(KIND=4)                                :: udum, vdum     ! dummy velocity components for tests
 
    ! at every model point
-   REAL(KIND=8), DIMENSION(:,:),   ALLOCATABLE :: dwku,  dwkv    ! volume transport at each cell boundary
-   REAL(KIND=8), DIMENSION(:,:),   ALLOCATABLE :: dwkut, dwkvt   ! heat   transport at each cell boundary
-   REAL(KIND=8), DIMENSION(:,:),   ALLOCATABLE :: dwkus, dwkvs   ! salt   transport at each cell boundary
-   REAL(KIND=8), DIMENSION(:,:),   ALLOCATABLE :: dwkup, dwkvp   ! volume transport in the positive direction
-   REAL(KIND=8), DIMENSION(:,:),   ALLOCATABLE :: dwkum, dwkvm   !  volume transport in the negatibe direction
+   REAL(KIND=8), DIMENSION(:,:),   ALLOCATABLE :: dwku, dwkv, xtmp  ! volume transport at each cell boundary
 
    ! for a given section
 
@@ -204,29 +205,6 @@ PROGRAM cdficeflux
    PRINT *, '   *** Ice thickness     => ', TRIM(cv_iceH)
    PRINT *, ''
 
-
-   !CALL SetGlobalAtt(cglobal)
-
-   ! Browse command line for arguments and/or options
-   !DO WHILE (ijarg <= narg )
-   !   CALL getarg (ijarg, cldum) ; ijarg = ijarg + 1
-   !   SELECT CASE ( cldum )
-   !   CASE ('-test ')
-   !      CALL getarg (ijarg, cldum) ; ijarg = ijarg + 1 ; READ(cldum,*) udum
-   !      CALL getarg (ijarg, cldum) ; ijarg = ijarg + 1 ; READ(cldum,*) vdum
-   !      ltest = .TRUE.
-   !
-   !   CASE ('-time' )
-   !      CALL getarg (ijarg, cldum) ; ijarg = ijarg + 1 ; READ(cldum,*) jt!
-   !
-   !   CASE DEFAULT
-   !      ijarg = ijarg -1 ! re-read argument in this case
-   !      CALL getarg (ijarg, cf_icefil) ; ijarg = ijarg + 1
-   !   END SELECT
-   !END DO
-
-
-
    ce1='e1t'
    ce2='e2t'
    cvmask='tmask'
@@ -251,8 +229,8 @@ PROGRAM cdficeflux
    rdum(:,:)=0.e0
 
    ! Allocate arrays
-   ALLOCATE ( zu_i(npiglo,npjglo),  zv_i(npiglo,npjglo), zc_i(npiglo,npjglo),  zh_i(npiglo,npjglo) ) ; !LB
-   ALLOCATE ( dwku(npiglo,npjglo), dwkv(npiglo,npjglo) )
+   ALLOCATE ( zu_i(npiglo,npjglo),  zv_i(npiglo,npjglo), zc_i(npiglo,npjglo),  zh_i(npiglo,npjglo) )
+   ALLOCATE ( dwku(npiglo,npjglo), dwkv(npiglo,npjglo), xtmp(npiglo,npjglo) )
 
 
    ALLOCATE ( e1t(npiglo,npjglo) )
@@ -271,7 +249,6 @@ PROGRAM cdficeflux
 
    glamf(:,:) = getvar(cn_fmm, 'glamf', 1,npiglo, npjglo)
    gphif(:,:) = getvar(cn_fmm, 'gphif', 1,npiglo, npjglo)
-
 
 
    DO WHILE ( 1 == 1 )
@@ -297,9 +274,9 @@ PROGRAM cdficeflux
          GOTO 1111 ; ! LB
          !EXIT  ! infinite DO loop
       ENDIF
-      PRINT *, '' ;       PRINT *, ''
-      PRINT *, 'LB: doing section '//trim(csection)
-      
+      PRINT *, ''
+      PRINT *, '   cdficeflux: doing section '//trim(csection)
+
 
       DO jt = 1, npt   !LB
 
@@ -323,22 +300,23 @@ PROGRAM cdficeflux
          !! Volume of ice transport at each grid point:
          !!  => concentration * thickness * u * dy
          !!  => concentration * thickness * v * dx
-         dwku(:,:) = zh_i(:,:)*zc_i(:,:)*zu_i(:,:)*e2t(:,:)*1.d0
-         dwkv(:,:) = zh_i(:,:)*zc_i(:,:)*zv_i(:,:)*e1t(:,:)*1.d0
-         
+         xtmp(:,:) = zh_i(:,:)*zc_i(:,:)
+         dwku(:,:) = xtmp(:,:)*zu_i(:,:)*e2t(:,:)*1.d0
+         dwkv(:,:) = xtmp(:,:)*zv_i(:,:)*e1t(:,:)*1.d0
+
 
          IF ( jt == 1 ) THEN   !LB
-            
+
             READ(numin,*) iimin, iimax, ijmin, ijmax
             !! Find the broken line between P1 (iimin,ijmin) and P2 (iimax, ijmax)
             ! ... Initialization
             ii0  = iimin ; ij0  = ijmin ; ii1  = iimax ;  ij1 = ijmax
             rxi0 = ii0   ; ryj0 = ij0   ; rxi1 = ii1   ; ryj1 = ij1
-
+            
             !By defining the direction of the integration as
             idirx = SIGN(1,ii1-ii0) !positive to the east or if ii1=ii0
             idiry = SIGN(1,ij1-ij0) !positive to the north or if ij1=ij0
-
+            
             !Then dS=(e2t*idiry,-e1t*idirx)
             !This will produce the following sign convention:
             !    West-to-est line (dx>0, dy=0)=> -My*dx (-ve for a northward flow)
@@ -454,12 +432,12 @@ PROGRAM cdficeflux
 
 
          ! Now really calculate the flux for time jt!
-         
+
          dvoltrpsum   = 0.d0
 
          ! segment jseg is a line between (rxx(jseg),ryy(jseg))  and (rxx(jseg+1),ryy(jseg+1))
          DO jseg = 1, nn-1
-            
+
             ii0=rxx(jseg)
             ij0=ryy(jseg)
 
@@ -481,22 +459,10 @@ PROGRAM cdficeflux
          !! Correcting value, due to expension of ice and salinity of ice:
          dvoltrpsum = 0.92*dvoltrpsum   ; ! 1m^3 of ice makes 0.92 m^3 of water
 
-         dvoltrpsum = dvoltrpsum * ( 34.8 - 4. )/34.8  ; ! salinity of sea-ice taken as 4 PSU
+         dvoltrpsum = dvoltrpsum * ( ref_sali0 - 4. )/ref_sali0  ; ! salinity of sea-ice taken as 4 PSU
          !!                                              ! referencesalinity for Arctic: 34.8 PSU
 
          X_trsp(jt) = dvoltrpsum/1.e6  ! (Sv)
-
-         ! Ascii outputs :
-         !IF ( jt == 1 ) THEN
-         !   WRITE(numout,'(3a)') '# Transport of ice (volume) through section ', TRIM(csection), ' (Sv)' ; !LB
-         !   WRITE(numout,'(1a)') '# IMIN IMAX JMIN JMAX /  LONmin LATmin LONmax LATmax'
-         !   WRITE(numout,'(a, 4i5,"  /",4f9.2)' ) '#', iimin, iimax, ijmin, ijmax,   gla(1), gphi(1), gla(2), gphi(2)
-         !   WRITE(numout,'(a)') '# Time rec.   Sea-ice volume transport  (Sv)'
-         !END IF
-
-         !PRINT *, ' Sea-ice volume transport :', dvoltrpsum/1.e6,' Sv'
-
-         !WRITE(numout,'(i4,f9.5)') jt, dvoltrpsum/1.e6
 
 
       END DO ! loop on time steps ( jt = 1 => npt
@@ -512,22 +478,20 @@ PROGRAM cdficeflux
       WRITE(cf_out, '(a,"/transport_ice_sect_",a,".nc")') trim(cd_out), trim(csection)
 
       INQUIRE( FILE=cf_out, EXIST=lfncout )
-      
+
       IF ( .NOT. lfncout ) THEN
-         
+
          !! Creating file
          PRINT *, ' Creating file '//TRIM(cf_out)//' !!!'
          ierr = NF90_CREATE(cf_out, NF90_CLOBBER, idf_out)
          ierr = NF90_DEF_DIM(idf_out, 'time', NF90_UNLIMITED, idd_t)
          ierr = NF90_DEF_VAR(idf_out, 'time', NF90_DOUBLE,    idd_t, idv_time)
-         
-         
+
+
          ierr = NF90_DEF_VAR(idf_out, 'trsp_volu', NF90_FLOAT, (/idd_t/), id_volu)
-
-         ierr = NF90_PUT_ATT(idf_out, id_volu, 'long_name', 'TOTAL: Transport of volume')
-
+         ierr = NF90_PUT_ATT(idf_out, id_volu, 'long_name', 'Transport of (solid) freshwater due to sea-ice drift')
          ierr = NF90_PUT_ATT(idf_out, id_volu, 'units', 'Sv')
-
+         ierr = NF90_PUT_ATT(idf_out, id_volu, 'Sref', cref2)
          ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', &
             &   'Created by BaraKuda (cdficeflux.x) => https://github.com/brodeau/barakuda')
 
@@ -554,23 +518,18 @@ PROGRAM cdficeflux
       WRITE(*,'("Going to write record ",i4.4," to ",i4.4," into ",a)') jt_pos+1, jt_pos+npt, trim(cf_out)
 
       DO jt = 1, npt
-         
+
          ! Writing record jt for time vector and 1d fields:
          ierr = NF90_PUT_VAR( idf_out, idv_time, (/ryear+1./12.*(REAL(jt)-1.+0.5)/), start=(/jt_pos+jt/), count=(/1/) )
-         
+
          !! Default variable is the only one present (index = 1) :
          ierr = NF90_PUT_VAR(idf_out, id_volu, (/ X_trsp(jt) /), start=(/jt_pos+jt/), count=(/1/))
-         
+
       END DO
 
       ierr = NF90_CLOSE(idf_out)
 
 
-
-      
-          
-      !PRINT *, 'LB: done for section '//TRIM(csection)
-      !PRINT *, ''
 
    END DO ! infinite loop : gets out when input is EOF
 
@@ -580,9 +539,6 @@ PROGRAM cdficeflux
 1111 CONTINUE
 
 
-
-
-   PRINT *, 'Bye!'
 
 
 
