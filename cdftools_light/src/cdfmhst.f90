@@ -72,10 +72,10 @@ PROGRAM cdfmhst
 
   REAL(KIND=4), PARAMETER :: rpspval=9999.99
   REAL(KIND=4), DIMENSION(1) :: gdep
-
+  
   CHARACTER(LEN=256) :: cdum, ctim
   CHARACTER(LEN=256), DIMENSION(:), ALLOCATABLE   :: vcv_name_t, vcv_name_s   !: array of var name for input
-  CHARACTER(LEN=4), DIMENSION(4) :: cbasin= (/'_GLO','_atl','_pac','_ind'/)
+  CHARACTER(LEN=4),   DIMENSION(4) :: cbasin= (/ '_GLO','_atl','_pac','_ind' /)
 
   ! constants
   REAL(KIND=4),PARAMETER   ::  rau0=1000.,   rcp=4000.
@@ -199,13 +199,9 @@ PROGRAM cdfmhst
   !  Detects newmaskglo file
   INQUIRE( FILE=cf_bm, EXIST=llglo )
 
-
-  nbasins=1
-  IF ( llglo) THEN ! 5 basins
-     nbasins=5
-  ENDIF
-
-
+  nbasins=1         ! 1 basin (Global)
+  IF ( llglo )  nbasins=4 ! 4 basins (Global, Pacific, Atlantic, Inidan)
+  
   ! Allocate output variables
   ALLOCATE(vcv_name_t(nbasins), vcv_name_s(nbasins))
 
@@ -292,7 +288,6 @@ PROGRAM cdfmhst
   DO jbasin = 1, nbasins
      vcv_name_t(jbasin) = 'zomht'//TRIM(cbasin(jbasin))
      vcv_name_s(jbasin) = 'zomst'//TRIM(cbasin(jbasin))
-     !long_name='Meridional Heat Transport '//TRIM(cbasin(jbasin))
   END DO
 
 
