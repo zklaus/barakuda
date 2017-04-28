@@ -213,7 +213,8 @@ PROGRAM cdficediag
      ierr = NF90_PUT_ATT(idf_out, id_area_s, 'units', '10^6km^2')
      
      !ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'Info', 'Reference temperature for heat transport is '//trim(crt)//' deg.C')
-     ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', 'Created by BaraKuda (cdficediags.f90) => https://github.com/brodeau/barakuda')
+     ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', &
+        &   'Created by BaraKuda (cdficediags.f90) => https://github.com/brodeau/barakuda')
      
      ierr = NF90_ENDDEF(idf_out)
      jt_pos = 0

@@ -191,7 +191,8 @@ PROGRAM cdfmaxmoc
       ierr = NF90_PUT_ATT(idf_out, id_depthw_max, 'units', 'm')
 
 
-      ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', 'Created by BaraKuda (cdfmaxmoc.f90) => https://github.com/brodeau/barakuda')
+      ierr = NF90_PUT_ATT(idf_out, NF90_GLOBAL, 'About', &
+         &   'Created by BaraKuda (cdfmaxmoc.f90) => https://github.com/brodeau/barakuda')
 
       ierr = NF90_ENDDEF(idf_out)
       jt_pos = 0
