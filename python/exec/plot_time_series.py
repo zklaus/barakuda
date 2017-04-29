@@ -779,7 +779,7 @@ if idfig == 'transport':
         if l_add_ice:
             # Transport of liquid + solid freshwater:
             bp.plot("1d_multi")(VY, nmp.array([FY[3,:],FY[3,:]+FY[4,:]]), ['liquid', 'liquid+solid'], cfignm='transport_lsfw_'+csec+'_'+CONFEXP,
-                                dt=ittic, loc_legend='out', cyunit='Sv', ctitle = CONFEXP+': transport freshwater (Sref='+cref_sali+'), '+csec,
+                                dt=ittic, loc_legend='out', cyunit='Sv', ctitle = CONFEXP+': transport of freshwater (Sref='+cref_sali+'), '+csec,
                                 ymin=0, ymax=0, cfig_type=ff)
             bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[3,:]+Xtrsp[4,:], FY[3,:]+FY[4,:], cfignm='transport_fw_'+csec+'_'+CONFEXP,
                                   dt=ittic, cyunit='Sv', ctitle = CONFEXP+': transport of (liquid+solid) freshwater (Sref='+cref_sali+'), '+csec,
