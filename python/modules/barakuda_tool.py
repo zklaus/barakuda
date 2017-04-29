@@ -18,7 +18,7 @@ def chck4f(cf, script_name=''):
     if not os.path.exists(cf):
         print cmesg ; sys.exit(0)
     else:
-        print '\n   *** will open file '+cf
+        print ' *** will open file '+cf
 
 
 

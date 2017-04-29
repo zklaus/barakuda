@@ -719,14 +719,23 @@ if idfig == 'transport':
     js = 0
     for csec in list_sections:
 
-        print ' * treating section '+csec
+        print '\n * treating section '+csec
 
-        cf_in = 'transport_sect_'+csec+'.nc' ;   bt.chck4f(cf_in, script_name=csn)
+        cf_in = 'transport_sect_'+csec+'.nc' ;   bt.chck4f(cf_in, script_name=csn)                
+
+        nbtrsp = 4
+        
+        # Checking if the same section was done for sea-ice transport:
+        cf_ice = 'transport_ice_sect_'+csec+'.nc'
+        l_add_ice = os.path.exists(cf_ice)
+        if l_add_ice: nbtrsp = nbtrsp+1
+
+        # Reading ocean transports:
         id_in = Dataset(cf_in)
         if js == 0:
             vtime = id_in.variables['time'][:]
             (nby, nbm, nbr, ittic) = bt.test_nb_years(vtime, cdiag)
-        Xtrsp   = nmp.zeros((4 , nbr)) ; # time + 3 types of transport
+        Xtrsp   = nmp.zeros((nbtrsp , nbr)) ; # time + nbtrsp types of transport
         Xtrsp[0,:] = id_in.variables['trsp_volu'][:]
         Xtrsp[1,:] = id_in.variables['trsp_heat'][:]
         Xtrsp[2,:] = id_in.variables['trsp_salt'][:]
@@ -735,9 +744,20 @@ if idfig == 'transport':
         cref_sali  = id_in.variables['trsp_salt'].Sref
         id_in.close()
 
-        # Plot annual+montly for AMOC at 40
+        # Reading ice transport:
+        if l_add_ice:
+            id_ice = Dataset(cf_ice)
+            vtmp = id_ice.variables['trsp_frwt'][:]
+            if len(vtmp) != nbr:
+                print 'ERROR: '+csn+' => length of trsp_frwt in '+cf_ice+' doesnot match with that in '+cf_in+'!'
+                sys.exit(0)
+            Xtrsp[4,:] = vtmp[:]
+            id_ice.close()
+            del vtmp
+    
+
         VY = nmp.zeros(nby)
-        FY = nmp.zeros((4 , nby))
+        FY = nmp.zeros((nbtrsp , nby))
         if nbm >= 12:
             VY[:], FY[:,:] = bt.monthly_2_annual(vtime, Xtrsp[:,:])
         else:
@@ -755,10 +775,23 @@ if idfig == 'transport':
                               dt=ittic, cyunit='PW', ctitle = CONFEXP+': transport of heat (Tref='+cref_temp+'C), '+csec,
                               ymin=0, ymax=0, mnth_col='g', cfig_type=ff)
 
-        # Transport of liquid freshwater:
-        bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[3,:], FY[3,:], cfignm='transport_lfw_'+csec+'_'+CONFEXP,
-                              dt=ittic, cyunit='Sv', ctitle = CONFEXP+': transport of liquid freshwater (Sref='+cref_sali+'), '+csec,
-                              ymin=0, ymax=0, mnth_col='#738FBF', cfig_type=ff)
+        # Transport of freshwater:
+        if l_add_ice:
+            # Transport of liquid + solid freshwater:
+            bp.plot("1d_multi")(VY, nmp.array([FY[3,:],FY[3,:]+FY[4,:]]), ['liquid', 'liquid+solid'], cfignm='transport_lsfw_'+csec+'_'+CONFEXP,
+                                dt=ittic, loc_legend='out', cyunit='Sv', ctitle = CONFEXP+': transport freshwater (Sref='+cref_sali+'), '+csec,
+                                ymin=0, ymax=0, cfig_type=ff)
+            bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[3,:]+Xtrsp[4,:], FY[3,:]+FY[4,:], cfignm='transport_fw_'+csec+'_'+CONFEXP,
+                                  dt=ittic, cyunit='Sv', ctitle = CONFEXP+': transport of (liquid+solid) freshwater (Sref='+cref_sali+'), '+csec,
+                                  ymin=0, ymax=0, mnth_col='#738FBF', cfig_type=ff)
+        else:
+            # Transport of liquid freshwater only:
+            bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[3,:], FY[3,:], cfignm='transport_fw_'+csec+'_'+CONFEXP,
+                                  dt=ittic, cyunit='Sv', ctitle = CONFEXP+': transport of (liquid) freshwater (Sref='+cref_sali+'), '+csec,
+                                  ymin=0, ymax=0, mnth_col='#738FBF', cfig_type=ff)
+
+
+
         
         js = js + 1
 

@@ -187,17 +187,12 @@ function barakuda_setup()
     if [ "${script}" = "barakuda" ]; then
         # Testing if NCO is installed:
         which ncks 1>out 2>/dev/null; ca=`cat out`; rm -f out
-        if [ "${ca}" = "" ]; then echo "Install NCO!!!"; echo; exit; fi
-        
-        # Not fully supported yet:
-        ca=" => diagnostic totally beta and not fully supported yet!"
-        if [ ${i_do_icet} -gt 0 ]; then echo " *** i_do_icet ${ca}"; exit; fi
-
+        if [ "${ca}" = "" ]; then echo "Install NCO!!!"; echo; exit; fi        
         if [ ${ISTAGE} -eq 1 ]; then
             for ex in ${L_EXEC}; do check_if_file ${BARAKUDA_ROOT}/cdftools_light/bin/${ex} "Compile CDFTOOLS executables!"; done
         fi
     fi
-
+    
     echo "${NEMO_OUT_D}" > ${DIAG_D}/NEMO_output_location.info
 
     if [ -z ${NCDF_DIR} ]; then

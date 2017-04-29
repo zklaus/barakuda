@@ -9,7 +9,7 @@ imhst=0
 iamoc=0
 icrosssect=0
 itempsal=0
-ifsflx=1
+ifsflx=0
 imean2d=0
 imean3d=0
 iSflx=0
@@ -17,7 +17,7 @@ ienso=0
 imov=0
 issh=0
 iwind=0
-its=0
+its=1
 imld=0
 irnf=0
 iice=0
@@ -46,8 +46,8 @@ ihov=0
 #export EXP="a0ez" ; NC=nc ; jyear=1945
 
 CONFIG="ORCA1_L75"
-ARCH="T255_ece32_triolith"
-export EXP="SC78" ; NC=nc4 ; jyear=1993
+ARCH="T255_ece322_klaus"
+export EXP="C322" ; NC=nc4 ; jyear=1993
 
 #CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_triolith"
@@ -156,7 +156,8 @@ if [ ${its} -eq 1 ]; then
     #diag=3d_thetao ; ln -sf ${DIAG_D}/3d_${NN_T}*.nc .
     #diag=mean_zos  ; ln -sf ${DIAG_D}/mean_${NN_SSH}*.nc .
     #diag=mean_htf ; ln -sf ${DIAG_D}/mean_htf*.nc .
-    diag=mean_fwf ; ln -sf ${DIAG_D}/mean_fwf*.nc .
+    #diag=mean_fwf ; ln -sf ${DIAG_D}/mean_fwf*.nc .
+    diag=transport_sections ; ln -sf ${DIAG_D}/transport_*sect_*.nc .
     #ln -sf ${DIAG_D}/${diag}*.nc .
     CMD="python exec/plot_time_series.py ${diag}"
 fi

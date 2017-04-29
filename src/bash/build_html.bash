@@ -236,7 +236,9 @@ EOF
         for cs in ${list_section}; do
             echo ${cs}
             echo "    ${img_l}transport_vol_${cs}_${cr}.${ff}${img_rs}"  >> index.html
-            echo "    ${img_l}transport_lfw_${cs}_${cr}.${ff}${img_rs}"  >> index.html
+            echo "    ${img_l}transport_fw_${cs}_${cr}.${ff}${img_rs}"  >> index.html
+            ft="transport_lsfw_${cs}_${cr}.${ff}"
+            if [ -f ${HTML_DIR}/${ft} ]; then echo "    ${img_l}${ft}${img_rs}"    >> index.html ; fi
             echo "    ${img_l}transport_heat_${cs}_${cr}.${ff}${img_rs}" >> index.html
             echo "    <br><br>" >> index.html
         done

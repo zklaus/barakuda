@@ -166,7 +166,7 @@ class plot :
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #vert_section
-        print cfignm+'.'+cfig_type+' created!\n'
+        print '  => '+cfignm+'.'+cfig_type+' created!'
         plt.close(1)
 
         return
@@ -303,7 +303,7 @@ class plot :
 
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #2d
 
-        print cfignm+'.'+cfig_type+' created!\n'
+        print '  => '+cfignm+'.'+cfig_type+' created!'
         plt.close(1)
 
         del XFtmp, XF0
@@ -416,7 +416,7 @@ class plot :
 
         plt.savefig(cfignm+'.'+cfig_type, dpi=110, orientation='portrait', transparent=False)
 
-        print cfignm+'.'+cfig_type+' created!\n'
+        print '  => '+cfignm+'.'+cfig_type+' created!'
         plt.close(1)
 
         return
@@ -500,7 +500,7 @@ class plot :
 
         plt.savefig(cfignm+'.'+cfig_type, dpi=100, orientation='portrait', transparent=True)
 
-        print cfignm+'.'+cfig_type+' created!\n'
+        print '  => '+cfignm+'.'+cfig_type+' created!'
         plt.close(1)
 
         return
@@ -847,7 +847,7 @@ class plot :
 
         plt.savefig(cfignm+'.'+cfig_type, dpi=100, orientation='portrait', transparent=True)
 
-        print cfignm+'.'+cfig_type+' created!\n'
+        print '  => '+cfignm+'.'+cfig_type+' created!'
         plt.close(1)
 
         del Xtmp
@@ -912,7 +912,7 @@ class plot :
     
             plt.title(ctitle, **font_ttl)
             plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #trsp_sig_class
-            print cfignm+'.'+cfig_type+' created!\n'
+            print '  => '+cfignm+'.'+cfig_type+' created!'
             plt.close(1)
 
         return
@@ -962,7 +962,7 @@ class plot :
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=100, orientation='portrait', transparent=True)
-        print cfignm+'.'+cfig_type+' created!\n'
+        print '  => '+cfignm+'.'+cfig_type+' created!'
         plt.close(1)
         #
         return
@@ -1024,7 +1024,7 @@ class plot :
 
         plt.title(ctitle, **font_ttl)
         plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False) ; #vert_section
-        print cfignm+'.'+cfig_type+' created!\n'
+        print '  => '+cfignm+'.'+cfig_type+' created!'
         plt.close(1)
 
         return
@@ -1153,8 +1153,8 @@ class plot :
 
         cf_fig = cfignm+'.'+cfig_type
 
-        plt.savefig(cf_fig, dpi=DPI_DEF, orientation='portrait', transparent=l_tranparent_bg) ; #1d_mon_ann
-
+        plt.savefig(cf_fig, dpi=DPI_DEF, orientation='portrait', transparent=l_tranparent_bg)
+        print '  => '+cfignm+'.'+cfig_type+' created!'
         plt.close(1)
 
 
@@ -1268,13 +1268,7 @@ class plot :
         plt.savefig(cf_fig, dpi=DPI_DEF, orientation='portrait', transparent=l_tranparent_bg) ; #1d_multi
 
         plt.close(1)
-        print '   => Multi figure "'+cf_fig+'" created!'
-
-
-
-
-
-
+        print '  => Multi figure "'+cf_fig+'" created!'
 
 
 
