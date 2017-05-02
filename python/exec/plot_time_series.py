@@ -176,7 +176,7 @@ if idfig == 'simple':
         Fimb[0] = nmp.nan
         bp.plot("1d_mon_ann")(VY, VY, Fimb, Fimb, cfignm=cdiag+'-imb_'+CONFEXP, dt=ittic,
                               cyunit='Sv', ctitle = CONFEXP+': '+clnm,
-                              ymin=-0.8, ymax=0.8, dy=0.1, cfig_type=ff, l_add_y0=True)
+                              ymin=-0.8, ymax=0.8, dy=0.1, cfig_type=ff, y_cst_to_add=0.)
 
 
 
@@ -641,7 +641,7 @@ if idfig == 'amoc':
     # Time to plot
     bp.plot("1d_mon_ann")(vtime, VY, Xamoc[i40,:], FY, cfignm=cdiag+'_'+CONFEXP, dt=ittic,
                           cyunit=cyu, ctitle = CONFEXP+': '+r'Max. of AMOC between '+vlabels[i40],
-                          ymin=ym, ymax=yp, dy=1., i_y_jump=2, cfig_type=ff)
+                          ymin=ym, ymax=yp, dy=1., i_y_jump=2, cfig_type=ff, y_cst_to_add=10.)
 
 
     # Plot annual for AMOC at specified latitudes:
@@ -768,27 +768,27 @@ if idfig == 'transport':
         # Transport of volume:
         bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[0,:], FY[0,:], cfignm='transport_vol_'+csec+'_'+CONFEXP,
                               dt=ittic, cyunit='Sv', ctitle = CONFEXP+': transport of volume, '+csec,
-                              ymin=0, ymax=0, cfig_type=ff)
+                              ymin=0, ymax=0, cfig_type=ff, y_cst_to_add=0.)
 
         # Transport of heat:
         bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[1,:], FY[1,:], cfignm='transport_heat_'+csec+'_'+CONFEXP,
                               dt=ittic, cyunit='PW', ctitle = CONFEXP+': transport of heat (Tref='+cref_temp+'C), '+csec,
-                              ymin=0, ymax=0, mnth_col='g', cfig_type=ff)
+                              ymin=0, ymax=0, mnth_col='g', cfig_type=ff, y_cst_to_add=0.)
 
         # Transport of freshwater:
         if l_add_ice:
             # Transport of liquid + solid freshwater:
             bp.plot("1d_multi")(VY, nmp.array([FY[3,:],FY[3,:]+FY[4,:]]), ['liquid', 'liquid+solid'], cfignm='transport_lsfw_'+csec+'_'+CONFEXP,
                                 dt=ittic, loc_legend='out', cyunit='Sv', ctitle = CONFEXP+': transport of freshwater (Sref='+cref_sali+'), '+csec,
-                                ymin=0, ymax=0, cfig_type=ff)
+                                ymin=0, ymax=0, cfig_type=ff, y_cst_to_add=0.)
             bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[3,:]+Xtrsp[4,:], FY[3,:]+FY[4,:], cfignm='transport_fw_'+csec+'_'+CONFEXP,
                                   dt=ittic, cyunit='Sv', ctitle = CONFEXP+': transport of (liquid+solid) freshwater (Sref='+cref_sali+'), '+csec,
-                                  ymin=0, ymax=0, mnth_col='#738FBF', cfig_type=ff)
+                                  ymin=0, ymax=0, mnth_col='#738FBF', cfig_type=ff, y_cst_to_add=0.)
         else:
             # Transport of liquid freshwater only:
             bp.plot("1d_mon_ann")(vtime, VY, Xtrsp[3,:], FY[3,:], cfignm='transport_fw_'+csec+'_'+CONFEXP,
                                   dt=ittic, cyunit='Sv', ctitle = CONFEXP+': transport of (liquid) freshwater (Sref='+cref_sali+'), '+csec,
-                                  ymin=0, ymax=0, mnth_col='#738FBF', cfig_type=ff)
+                                  ymin=0, ymax=0, mnth_col='#738FBF', cfig_type=ff, y_cst_to_add=0.)
 
 
 

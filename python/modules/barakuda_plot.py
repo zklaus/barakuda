@@ -1080,7 +1080,7 @@ class plot :
 
     def __1d_mon_ann(self,VTm, VTy, VDm, VDy, cfignm='fig', dt=5, cyunit='', ctitle='',
                      ymin=0, ymax=0, dy=0, i_y_jump=1, mnth_col='b', plt_m03=False, plt_m09=False,
-                     cfig_type='png', l_tranparent_bg=True, fig_size=FIG_SIZE_DEF, l_add_y0=False):
+                     cfig_type='png', l_tranparent_bg=True, fig_size=FIG_SIZE_DEF, y_cst_to_add=-9999.):
 
         # if you specify ymin and ymax you can also specify y increment (for y grid) as dy
         #
@@ -1110,8 +1110,8 @@ class plot :
         if mnth_col == 'g': mnth_col = b_gre
         if mnth_col == 'b': mnth_col = b_blu
 
-        if l_add_y0:
-            plt.plot(VTm, VTm*0., 'k', label=None, linewidth=1.2)
+        if y_cst_to_add > -9000.:
+            plt.plot(VTm, VTm*0.+y_cst_to_add, 'k', label=None, linewidth=1.8)
         if l_add_monthly:
             plt.plot(VTm, VDm, mnth_col, label=r'monthly', linewidth=1)
         plt.plot(VTy, VDy, b_red, label=r'annual', linewidth=2)
@@ -1167,7 +1167,7 @@ class plot :
     def __1d_multi(self,vt, XD, vlabels, cfignm='fig', dt=5, i_t_jump=1, cyunit=None, ctitle='',
                    cfig_type='png', ymin=0, ymax=0, lzonal=False, xmin=0, xmax=0,
                    loc_legend='lower center', line_styles=[], fig_size=FIG_SIZE_DEF,
-                   l_tranparent_bg=True, cxunit=None, lmask=True, cinfo=''):
+                   l_tranparent_bg=True, cxunit=None, lmask=True, cinfo='', y_cst_to_add=-9999.):
 
         # lzonal => zonally averaged curves...
         if lzonal:
@@ -1200,7 +1200,10 @@ class plot :
             fig = plt.figure(num = 1, figsize=fig_size, facecolor='w', edgecolor='k')
             ax = plt.axes(AXES_DEF) ; #1d_multi
 
-        if lzonal: plt.plot(vt[:], XD[0,:]*0., 'k', linewidth=1)
+        if y_cst_to_add > -9000.:
+            plt.plot(vt, vt*0.+y_cst_to_add, 'k', label=None, linewidth=1.8)
+
+        if lzonal: plt.plot(vt, XD[0,:]*0., 'k', linewidth=1)
 
         
         if n0 <= 0 and nb_plt > nmax_colors:
@@ -1209,9 +1212,9 @@ class plot :
 
         for jp in range(nb_plt):
             if n0 > 0:
-                plt.plot(vt[:], XD[jp,:], line_styles[jp],   label=vlabels[jp], linewidth=2)
+                plt.plot(vt, XD[jp,:], line_styles[jp],   label=vlabels[jp], linewidth=2)
             else:
-                plt.plot(vt[:], XD[jp,:], v_dflt_colors[jp], label=vlabels[jp], linewidth=2)
+                plt.plot(vt, XD[jp,:], v_dflt_colors[jp], label=vlabels[jp], linewidth=2)
 
         #ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
 
@@ -1292,7 +1295,7 @@ class plot :
         fig = plt.figure(num = 1, figsize=fig_size, facecolor='w', edgecolor='k')
         ax = plt.axes(AXES_DEF) ; #1d
 
-        plt.plot(vt[:], VF[:], line_styles, linewidth=2)
+        plt.plot(vt, VF[:], line_styles, linewidth=2)
 
         ax.get_yaxis().get_major_formatter().set_useOffset(False) ; # Prevents from using scientific notations in axess ticks numbering
 
