@@ -1246,7 +1246,7 @@ class plot :
             # Ading info:
             yp = 0.95
             if loc_legend != '0' and l_legend_out: yp = -0.1
-            props = dict(boxstyle='round', axisbg='w') ;#, alpha=0.5)
+            props = dict(boxstyle='round', facecolor='w') ;#, alpha=0.5)
             ax.text(0.05, yp, cinfo, transform=ax.transAxes,
                     verticalalignment='top', bbox=props, fontsize=10)
 
