@@ -343,12 +343,19 @@ while ${lcontinue}; do
             if [ ! -f ${fvt} ]; then
                 echo "WARNING: file ${fvt} is not here, skipping transport section!"
             else
-                echo " *** CALLING: ./cdftransportiz.x transportiz.dat ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &"
-                ./cdftransportiz.x transportiz.dat ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &
-                pid_trsp=$! ; echo
+                # Breaking transportiz file in several files so we can go parallel!
+                rm -f transportiz_*.dat
+                break_downn_section_file.py ./transportiz.dat 2 ; # => Max. 2 sections per file
+                list=`\ls transportiz_*.dat`
+                for fs in ${list}; do
+                    echo " *** CALLING: ./cdftransportiz.x ${fs} ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &"
+                    ./cdftransportiz.x ${fs} ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &
+                    echo
+                done
             fi
         fi
 
+        
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Solid freshwater transport through sections due to sea-ice drift
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -364,9 +371,15 @@ while ${lcontinue}; do
                 cp ${TRANSPORT_SECTION_FILE_ICE} ./transport_ice.dat
             fi
             #
-            echo " *** CALLING: ./cdficeflux.x ${fj1m} ${NN_ICEF} ${NN_ICEU} ${NN_ICEV} ${NN_ICET} ${jyear} ${DIAG_D} &"
-            ./cdficeflux.x ${fj1m} ${NN_ICEF} ${NN_ICEU} ${NN_ICEV} ${NN_ICET} ${jyear} ${DIAG_D} &
-            pid_trspi=$! ; echo            
+            # Breaking transportiz file in several files so we can go parallel!
+            rm -f transport_ice_*.dat
+            break_downn_section_file.py ./transport_ice.dat 2 ; # => Max. 2 sections per file
+            list=`\ls transport_ice_*.dat`
+            for fs in ${list}; do
+                echo " *** CALLING: ./cdficeflux.x ${fs} ${fj1m} ${NN_ICEF} ${NN_ICEU} ${NN_ICEV} ${NN_ICET} ${jyear} ${DIAG_D} &"
+                ./cdficeflux.x ${fs} ${fj1m} ${NN_ICEF} ${NN_ICEU} ${NN_ICEV} ${NN_ICET} ${jyear} ${DIAG_D} &
+                echo
+            done
         fi
 
         
@@ -401,7 +414,6 @@ while ${lcontinue}; do
             pid_bbbb=$! ; echo
         fi
 
-        # pid_sigt pid_trsp pid_dmvl pid_bbbb pid_mhst
         echo " Gonna wait for level #2 to be done !"
         wait ${pid_amoc} ; # moc needs to be done to call cdfmaxmoc.x ...
         echo

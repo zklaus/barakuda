@@ -302,8 +302,8 @@ PROGRAM cdftransportiz
 
       DO jt = 1, nt !lolo
          !! -------------
-
-         PRINT *, ' * [cdftransportiz] jt = ', jt
+         
+         PRINT *, ' * [cdftransportiz] jt = ', jt, '  (', TRIM(csection),')'
 
          !! Reading 3D fields at time jt...
          CALL GETVAR_3D(idf_u, idv_u,  cf_u, trim(cv_u), nt, jt, U_3D)

@@ -70,8 +70,11 @@ cdum  = sys.argv[2]
 
 max_number_sect_per_file = int(cdum)
 
-
 if not path.exists(cf_in): print ' File: '+cf_in+' is not there!'; sys.exit(0)
+
+cnm = path.basename(cf_in)
+cout = cnm[:11]
+if cnm[:13] == 'transport_ice': cout = 'transport_ice'
 
 
 list_sn, list_co, list_ts = get_sections(cf_in)
@@ -113,7 +116,7 @@ jcum = 0
 for jf in range(nbfiles):
     clab = '%2.2i'%(jf+1)
 
-    cf_out = 'transportiz_'+clab+'.dat'
+    cf_out = cout+'_'+clab+'.dat'
     f = open(cf_out, 'wb')
 
     for jsf in range(max_number_sect_per_file):

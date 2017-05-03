@@ -48,6 +48,7 @@ PROGRAM cdficeflux
       &        ref_sali0 = 34.8 ! reference salinity (in PSU)
    CHARACTER(len=128) :: cref2='34.8'
 
+   CHARACTER(len=256) :: cf_sections
 
    INTEGER(KIND=4)                             :: jseg   ! dummy loop index
    INTEGER(KIND=4)                             :: ji, jj, jk     ! dummy loop index
@@ -125,7 +126,6 @@ PROGRAM cdficeflux
 
    CHARACTER(LEN=256) , PARAMETER              :: cn_fmm = 'mesh_mask.nc'
 
-   CHARACTER(LEN=256)                          :: cf_sections='transport_ice.dat'  ! input file containing sections !LB
    CHARACTER(LEN=256)                          :: cf_icefil, cdum      ! seaice file   (in) !LB
    CHARACTER(LEN=4)                            :: cyear
    CHARACTER(LEN=256)                          :: cv_iceF, cv_iceU, cv_iceV, cv_iceH
@@ -156,8 +156,9 @@ PROGRAM cdficeflux
 
    narg= iargc()
    ! Print usage if no argument
-   IF ( narg < 7 ) THEN
-      PRINT *,' usage : cdficeflux <ICEMOD-file> <ice_conc> <ice_veloc_u> <ice_veloc_v> <ice_volume> <year> <DIROUT>'
+   IF ( narg < 8 ) THEN
+      PRINT *,' usage : cdficeflux <file_section_ASCII> <ICEMOD-file> <ice_conc> \\'
+      PRINT *, '                   <ice_veloc_u> <ice_veloc_v> <ice_volume> <year> <DIROUT>'
       PRINT *,'      '
       PRINT *,'    PURPOSE :'
       PRINT *,'      Compute the transports of solid freshwater accross a section.'
@@ -191,13 +192,14 @@ PROGRAM cdficeflux
    jt  = 1
    ijarg  = 1
 
-   CALL getarg (1, cf_icefil)
-   CALL getarg (2, cv_iceF)
-   CALL getarg (3, cv_iceU)
-   CALL getarg (4, cv_iceV)
-   CALL getarg (5, cv_iceH)
-   CALL getarg (6, cyear)    ; READ(cyear,*) ryear
-   CALL getarg (7, cd_out)
+   CALL getarg (1, cf_sections)
+   CALL getarg (2, cf_icefil)
+   CALL getarg (3, cv_iceF)
+   CALL getarg (4, cv_iceU)
+   CALL getarg (5, cv_iceV)
+   CALL getarg (6, cv_iceH)
+   CALL getarg (7, cyear)    ; READ(cyear,*) ryear
+   CALL getarg (8, cd_out)
 
    PRINT *, '   *** Ice concentration => ', TRIM(cv_iceF)
    PRINT *, '   *** Ice U-velocity    => ', TRIM(cv_iceU)
@@ -252,7 +254,7 @@ PROGRAM cdficeflux
 
 
    DO WHILE ( 1 == 1 )
-      OPEN(numin, FILE=cf_sections, status='old')
+      OPEN(numin, FILE=TRIM(cf_sections), status='old')
       READ(numin,'(a)') cline
       ii = 0
       cldumt(:) = 'none'
