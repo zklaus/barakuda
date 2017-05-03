@@ -343,8 +343,8 @@ while ${lcontinue}; do
             if [ ! -f ${fvt} ]; then
                 echo "WARNING: file ${fvt} is not here, skipping transport section!"
             else
-                echo " *** CALLING: ./cdftransportiz.x ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &"
-                ./cdftransportiz.x ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &
+                echo " *** CALLING: ./cdftransportiz.x transportiz.dat ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &"
+                ./cdftransportiz.x transportiz.dat ${CFG3D} ${NN_U} ${NN_V} ${NN_U_EIV} ${NN_V_EIV} ${jyear} ${DIAG_D} ${z1_trsp} ${z2_trsp} &
                 pid_trsp=$! ; echo
             fi
         fi

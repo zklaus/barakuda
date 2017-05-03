@@ -51,6 +51,9 @@ PROGRAM cdftransportiz
    CHARACTER(len=128) :: ctest, c0, c1, c2, cref1='0.', cref2='34.8'
 
 
+   CHARACTER(len=256) :: cf_sections
+
+
    LOGICAL, PARAMETER :: l_save_broken_lines = .FALSE.
 
    INTEGER :: nclass   !: number of depth class
@@ -128,8 +131,9 @@ PROGRAM cdftransportiz
 
    !!  Read command line and output usage message if not compliant.
    narg= iargc()
-   IF ( narg < 7  ) THEN
-      PRINT *,' Usage: cdftransportiz <CONFTAG> <nameU> <nameV> <nameUeiv> <nameVeiv> <year> <DIROUT> (<z1> <z2>)'
+   IF ( narg < 8  ) THEN
+      PRINT *,' Usage: cdftransportiz <file_section_ASCII> <CONFTAG> <nameU> <nameV> \\'
+      PRINT *,'                       <nameUeiv> <nameVeiv> <year> <DIROUT> (<z1> <z2>)'
       PRINT *,''
       PRINT *,'    => files are: <CONFTAG>_VT.nc <CONFTAG>_grid_U.nc <CONFTAG>_grid_V.nc'
       PRINT *,' If eddy-induced velocity is not relevant, specify "0" "0" for <nameUeiv> <nameVeiv>'
@@ -146,15 +150,16 @@ PROGRAM cdftransportiz
       STOP
    ENDIF
 
-   CALL getarg (1, conf_tag)
-   CALL getarg (2, cv_u)
-   CALL getarg (3, cv_v)
-   CALL getarg (4, cv_ueiv)
-   CALL getarg (5, cv_veiv)
-   CALL getarg (6, cdum)    ; READ(cdum,*) ryear
-   CALL getarg (7, cd_out)
+   CALL getarg (1, cf_sections)
+   CALL getarg (2, conf_tag)
+   CALL getarg (3, cv_u)
+   CALL getarg (4, cv_v)
+   CALL getarg (5, cv_ueiv)
+   CALL getarg (6, cv_veiv)
+   CALL getarg (7, cdum)    ; READ(cdum,*) ryear
+   CALL getarg (8, cd_out)
 
-   nxtarg=7
+   nxtarg=8
    nclass = narg -nxtarg + 1
 
 
@@ -240,7 +245,7 @@ PROGRAM cdftransportiz
 
    DO WHILE ( lcontinue )
 
-      OPEN(numin, FILE='transportiz.dat', status='old')
+      OPEN(numin, FILE=TRIM(cf_sections), status='old')
       READ(numin,'(a)') csection
       IF (TRIM(csection) == 'EOF' ) THEN
          CLOSE(numin)
