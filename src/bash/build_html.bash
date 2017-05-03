@@ -15,13 +15,15 @@ function parse_html()
     DATE=`date +%Y-%m-%d\<SPC\>at\<SPC\>%H:%M:%S`
     c1='ERROR: variable' ; c2='not set! => update your config file!'
     if [ -z ${TITLE} ];      then echo "${c1} 'TITLE' ${c2}";      exit; fi
+    if [ -z ${CONF} ];       then echo "${c1} 'CONF' ${c2}";       exit; fi
     if [ -z ${CONFEXP} ];    then echo "${c1} 'CONFEXP' ${c2}";    exit; fi
     if [ -z ${HOST} ];       then echo "${c1} 'HOST' ${c2}";       exit; fi
     if [ -z ${EXTRA_CONF} ]; then echo "${c1} 'EXTRA_CONF' ${c2}"; exit; fi
     if [ -z ${MASTERMIND} ]; then echo "${c1} 'MASTERMIND' ${c2}"; exit; fi
-    if [ -z ${EXPREF} ];     then export EXPREF="OBS";          fi
+    if [ -z ${EXPREF} ];     then export EXPREF="OBS";                   fi
 
     PARSE_CMD="sed -e s|{TITLE}|${TITLE}|g \
+                   -e s|{CONF}|${CONF}|g \
                    -e s|{CONFEXP}|${CONFEXP}|g \
                    -e s|{DATE}|${DATE}|g \
                    -e s|{HOST}|${HOST}|g \
@@ -50,8 +52,8 @@ function build_index_html()
 
     rm -f index.html
 
-    TITLE="Ocean diagnostics for experiment \"${EXP}\""
-    if [ ${ece_exp} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
+    TITLE="Ocean diagnostics for ${CONF} experiment \"${EXP}\""
+    if [ ${ece_exp} -gt 0 ]; then TITLE="${TITLE}<br>Coupled to atmospheric model: ${AGCM_INFO}"; fi
 
     # Starting to configure HTML index file:
     parse_html ${BARAKUDA_ROOT}/src/html/conf_start.html index.html
