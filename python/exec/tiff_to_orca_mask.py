@@ -12,15 +12,30 @@ import os
 from netCDF4 import Dataset
 import datetime
 
+iconv = 1 ; # CDFTOOLS convention
+#iconv = 2 ; # NEMO convention
+
 narg = len(sys.argv)
 if narg != 2:
     print 'Usage: '+sys.argv[0]+' <mesh_mask>'; sys.exit(0)
 cf_mm = sys.argv[1]
 
-vbasins = [   'pac'   ,    'atl' ,     'ind'  ,   'soc'   ,   'arc'  ,  'wed'    ,  'lab'     ,  'med'  , 'nna'   , 'gin' , 'bar'     ]
-vbnames = [ 'Pacific' , 'Atlantic' , 'Indian' , 'Southern', 'Arctic' , 'Weddell' , 'Labrador' ,  'Med'  , 'N.Atl.', 'GIN' , 'Barents' ]
-vocesea = [ 'Ocean'   ,  'Ocean'   ,  'Ocean' ,  'Ocean'  ,  'Ocean' ,   'Sea'   ,   'Sea'    ,  'Sea'  , 'north' , 'Seas',   'Sea'   ]
-vmandat = [  True     ,   True     ,   True   ,    False  ,    False ,   False   ,   False    ,   False ,  False  ,  False,   False   ] ; # Mandatory ?
+if iconv == 1:
+    crout = 'tmask'
+    vbasins = [   'pac'   ,    'atl' ,     'ind'  ,   'soc'   ,   'arc'  ,  'wed'    ,  'lab'     ,  'med'  , 'nna'   , 'gin' , 'bar'     ]
+    vbnames = [ 'Pacific' , 'Atlantic' , 'Indian' , 'Southern', 'Arctic' , 'Weddell' , 'Labrador' ,  'Med'  , 'N.Atl.', 'GIN' , 'Barents' ]
+    vocesea = [ 'Ocean'   ,  'Ocean'   ,  'Ocean' ,  'Ocean'  ,  'Ocean' ,   'Sea'   ,   'Sea'    ,  'Sea'  , 'north' , 'Seas',   'Sea'   ]
+    vmandat = [  True     ,   True     ,   True   ,    False  ,    False ,   False   ,   False    ,   False ,  False  ,  False,   False   ] ; # Mandatory ?
+
+elif iconv == 2:
+    crout = ''
+    vbasins = [ 'glomsk',  'pacmsk',  'atlmsk'  ,  'indmsk', 'indpacmsk'  ]
+    vbnames = ['Global' , 'Pacific' , 'Atlantic' , 'Indian' , 'Indo-Pacific' ]
+    vocesea = ['Ocean'   , 'Ocean'   ,  'Ocean'   ,  'Ocean' ,  'Ocean'   ]
+    vmandat = [ True     ,  True     ,   True     ,   True   ,    True    ] ; # Mandatory ?
+else:
+    print ' Booo!'; sys.exit(0)
+
 
 # Opening mesh_mask:
 f_mm = Dataset(cf_mm)
@@ -110,7 +125,8 @@ jb = 0 ; jbt = 0
 for cb in vbasins:
 
     if vtreat[jb]:
-        id_bas  = f_out.createVariable('tmask'+cb,'f4',('y','x',))
+        #id_bas  = f_out.createVariable(crout+cb,'i1',('y','x',))
+        id_bas  = f_out.createVariable(crout+cb,'f4',('y','x',))
         id_bas.long_name = vbnames[jb]+' '+vocesea[jb]+' basin'
         id_bas[:,:] = XBASINS[jbt,:,:]*mask[:,:]
         jbt = jbt + 1
