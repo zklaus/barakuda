@@ -39,7 +39,7 @@
     <field id="emp_x_sst"    long_name="Concentration/Dilution term on SST"                                                                                              unit="kg*degC/m2/s" />
     <field id="emp_x_sss"    long_name="Concentration/Dilution term on SSS"                                                                                              unit="kg*1e-3/m2/s" />
 
-    <field id="iceconc"      long_name="ice concentration"                                            standard_name="sea_ice_area_fraction"                              unit="%"            />
+    <field id="iceconc"      long_name="ice concentration"                                            standard_name="sea_ice_area_fraction"                              unit="%" > this * 100.0 </field>
     <field id="isst"         long_name="sea surface temperature"                                      standard_name="sea_surface_temperature"                            unit="degC"         />
     <field id="isss"         long_name="sea surface salinity"                                         standard_name="sea_surface_salinity"                               unit="1e-3"         />
     <field id="qt_oce"       long_name="total flux at ocean surface"                                  standard_name="surface_downward_heat_flux_in_sea_water"            unit="W/m2"         />
@@ -56,7 +56,7 @@
     <field id="albedo"       long_name="Mean albedo over sea ice and ocean"                                                                                              unit=""             />
 
     <field id="iceage_cat"   long_name="Ice age for categories"                                       unit="days"   grid_ref="grid_T_3D_ncatice" />
-    <field id="iceconc_cat"  long_name="Ice concentration for categories"                             unit="%"      grid_ref="grid_T_3D_ncatice" />
+    <field id="iceconc_cat"  long_name="Ice concentration for categories"                             unit="%"      grid_ref="grid_T_3D_ncatice" > this * 100.0 </field>
     <field id="icethic_cat"  long_name="Ice thickness for categories"                                 unit="m"      grid_ref="grid_T_3D_ncatice" />
     <field id="snowthic_cat" long_name="Snow thicknessi for categories"                               unit="m"      grid_ref="grid_T_3D_ncatice" />
     <field id="salinity_cat" long_name="Sea-Ice Bulk salinity for categories"                         unit="g/kg"   grid_ref="grid_T_3D_ncatice" />
@@ -133,14 +133,6 @@
     <!-- diags -->
     <field id="hfxdhc"       long_name="Heat content variation in snow and ice"                       unit="W/m2" />
     <field id="hfxtur"       long_name="turbulent heat flux at the ice base"                          unit="W/m2" />
-    <!-- sbcssm variables -->
-    <field id="sst_m"    unit="degC" />
-    <field id="sss_m"    unit="psu"  />
-    <field id="ssu_m"    unit="m/s"  />
-    <field id="ssv_m"    unit="m/s"  />
-    <field id="ssh_m"    unit="m"    />
-    <field id="e3t_m"    unit="m"    />
-    <field id="frq_m"    unit="-"    />
 
   </field_group>
 
@@ -161,56 +153,6 @@
     <field id="ibgheatco"    long_name="drift in ice/snow heat content"                                unit="1e20J"      />
     <field id="ibgheatfx"    long_name="drift in ice/snow heat flux"                                   unit="W/m2"       />
 
-    <field id="sbgvoltot"    long_name="global mean snow volume"                                      unit="km3"        />
-    <field id="ibgarea"     long_name="global mean ice area"                                         unit="km2"        />
-    <field id="ibgsaline"   long_name="LOLO: WRONG global mean ice salt content"                                 unit="1e-3*km3"   />
-    <field id="ibgtemper"   long_name="LOLO: WRONG global mean ice heat content"                                 unit="1e20J"      />
-    <field id="sbgheatco"   long_name="global mean snow heat content"                                unit="1e20J"      />
-    <field id="ibgvoltot"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgarea"      long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsaline"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgtemper"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgheatco"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsaltco"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfx"       long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxbog"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxopw"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxsni"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxdyn"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxbom"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxsum"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxres"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxspr"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxsnw"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvfxsub"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfx"       long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfxbri"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfxdyn"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfxres"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfxbog"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfxopw"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfxsni"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfxbom"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfxsum"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgsfxsub"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxdhc"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxspr"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxres"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxsub"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxdyn"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxthd"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxsnw"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxsum"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxbom"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxbog"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxdif"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxopw"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxout"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibghfxin"     long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgfrcvol"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgfrcsfx"    long_name="TA MERE!!!"                                unit="1e20J"      />
-    <field id="ibgvolgrm"    long_name="TA MERE!!!"                                unit="1e20J"      />
-
     <field id="ibgvol_tot"    long_name="global mean ice volume"                                       unit="km3"        />
     <field id="sbgvol_tot"    long_name="global mean snow volume"                                      unit="km3"        />
     <field id="ibgarea_tot"   long_name="global mean ice area"                                         unit="km2"        />
@@ -218,5 +160,7 @@
     <field id="ibgheat_tot"   long_name="global mean ice heat content"                                 unit="1e20J"      />
     <field id="sbgheat_tot"   long_name="global mean snow heat content"                                unit="1e20J"      />
   </field_group>
+
+
 
 </field_definition>
