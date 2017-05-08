@@ -120,7 +120,7 @@ del rmask, msk_tmp
 # Heat fluxes
 if l_htf:
 
-    print '\n\n +++ '+cnexec+' => Starting heat flux diags!'
+    print '\n\n +++ '+cnexec+' => Starting heat flux diags! \n         => '+cf_F_in
 
     cv_qnt = vdic['NN_QNET']
     cv_qsr = vdic['NN_QSOL']

@@ -10,14 +10,14 @@ iamoc=0
 icrosssect=0
 itempsal=0
 ifsflx=0
-imean2d=0
+imean2d=1
 imean3d=0
 iSflx=0
 ienso=0
 imov=0
 issh=0
 iwind=0
-its=1
+its=0
 imld=0
 irnf=0
 iice=0
@@ -46,8 +46,8 @@ ihov=0
 #export EXP="a0ez" ; NC=nc ; jyear=1945
 
 CONFIG="ORCA1_L75"
-ARCH="T255_ece322_klaus"
-export EXP="C322" ; NC=nc4 ; jyear=1993
+ARCH="ro10"
+export EXP="ro10" ; NC=nc ; jyear=1995
 
 #CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_triolith"
