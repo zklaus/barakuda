@@ -45,9 +45,13 @@ ihov=0
 #ARCH="etienne"
 #export EXP="a0ez" ; NC=nc ; jyear=1945
 
+#CONFIG="ORCA1_L75"
+#ARCH="ro10"
+#export EXP="ro10" ; NC=nc ; jyear=1995
+
 CONFIG="ORCA1_L75"
-ARCH="ro10"
-export EXP="ro10" ; NC=nc ; jyear=1995
+ARCH="uwe"
+export EXP="SN71" ; NC=nc ; jyear=1995
 
 #CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_triolith"
