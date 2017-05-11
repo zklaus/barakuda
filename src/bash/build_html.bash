@@ -98,18 +98,24 @@ EOF
     # Climato:
     if ${l_pclim}; then
         cat >> index.html <<EOF
-    ${ctl} Diags from climatology (${CLIM_PER}) ${ctr}
-    <big> <a href="./temp_sal/index.html"> Temperature and Salinity vs OBS</a> </big>                 ${spf}
-        <big> <a href="./ssh/index.html">  Sea Surface Height </a> </big>                             ${spf}
-        <big> <a href="./sea_ice/index.html">  Arctic and Antarctic sea-ice extent vs OBS </a> </big> ${spf}
-        <big> <a href="./mld/index.html">  Mixed Layer depth in relevent regions </a> </big>          ${spf}
-        <big> <a href="./moc/index.html">  Meridional Overturning Circulation </a> </big>             ${spf}
-        <big> <a href="./wind/index.html">  Surface Wind (stress, curl, speed) </a> </big>            ${spf}
+        <div align="left" style="margin: 50px 0px 0px 0px; font-family: Trebuchet MS; font-size: 20px;width: 600px;">
+          <b>Diags from climatology (${CLIM_PER})</b>
+          <ul>
+           <li> <a href="./temp_sal/index.html"> Temperature and Salinity vs OBS</a> </li>
+           <li> <a href="./ssh/index.html"> Sea Surface Height </a>                 </li>
+           <li> <a href="./sea_ice/index.html"> Arctic and Antarctic sea-ice extent vs OBS </a> </li>
+           <li> <a href="./mld/index.html"> Mixed Layer depth in relevent regions </a> </li>
+           <li> <a href="./moc/index.html"> Meridional Overturning Circulation </a>    </li>
+           <li> <a href="./wind/index.html"> Surface Wind (stress, curl, speed) </a>   </li>
 EOF
         if [ ${i_do_sect} -eq 1 ]; then
-            echo "<big> <a href='./temp_sal/index_sections.html'> Zonal/Meridional sections of T & S vs OBS</a> </big>    ${spf}" >> index.html
+            echo "           <li> <a href='./temp_sal/index_sections.html'> Zonal/Meridional sections of T & S vs OBS</a> </li>" >> index.html
         fi
-        #
+        cat >> index.html <<EOF
+          </ul>
+        </div>
+EOF
+
         if ${lcomp_to_exp}; then
             cat >> index.html <<EOF
             ${ctl} Comparison with experiment ${EXPREF}, climatology (2004-2007) ${ctr}
