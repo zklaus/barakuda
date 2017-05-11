@@ -91,8 +91,7 @@ https://brodeau.github.io/barakuda/example/
 
            
 
-III / Create and configure your own "config_<MY_CONF>.sh"
----------------------------------------------------------
+## II / Create and configure your own "config_<MY_CONF>.sh"
 
 All setup related to your host, simulation, location of third party files is
 defined in the "config_<MY_CONF>.sh" file.
@@ -118,10 +117,10 @@ MY_CONF should always be of the form: "(e)ORCA<RES>_L<NLEV>_<blabla>.sh"
         ( with NLEV being the number of z levels )
 
 NEMO output files must be monthly averages and of the following form:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<EXP NAME>_1m_<YEAR>0101_<YEAR>1231_<GRID_TYPE>.nc(.gz)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-           (GRID_TYPE=grid_T/grid_U/grid_V/icemod) 
+
+        <EXP NAME>_1m_<YEAR>0101_<YEAR>1231_<GRID_TYPE>.nc(.gz)
+
+        (GRID_TYPE=grid_T/grid_U/grid_V/icemod) 
 
 Gzipped or not!
 
@@ -143,46 +142,43 @@ F_SST_OBS_12, F_ICE_OBS_12.
 
 
 
-IV) Create diagnostics
-----------------------
+## III) Create diagnostics
+
 
 Launch "barakuda.sh"
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./barakuda.sh -C <MY_CONF> -R <EXP>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00)
+
+    ./barakuda.sh -C <MY_CONF> -R <EXP>
+
+    (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00)
 
 Use the -h switch to see available options
 
 
 
-V) Create figures and browsable HTML page
------------------------------------------
+## IV) Create figures and browsable HTML page
 
-A/ Once the previous job has finished to run, launch
+### A/ Once the previous job has finished to run, launch
 
    * To only generate time-series plots use the "-e" switch:
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ./barakuda.sh -C <MY_CONF> -R <EXP> -e
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00 -e)
+
+        ./barakuda.sh -C <MY_CONF> -R <EXP> -e
+
+        (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00 -e)
 
    * To generate time-series + 2D climatology plots use the "-E" switch,
      provided you have built the monthly/annual climatology (based on N years of
      your simulation) out of your experiment with the "build_clim.sh" script
-     (see point V/B):     
-     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     ./barakuda.sh -C <MY_CONF> -R <EXP> -E
-     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     (see point V/B):
+     
+        ./barakuda.sh -C <MY_CONF> -R <EXP> -E
 
-B/ To be able to create the "climatology" plots (maps, sections, etc, based on a
-   monthly climatology of a few years) you will have to
+### B/ To be able to create the "climatology" plots (maps, sections, etc, based on a monthly climatology of a few years) you will have to
 
-  i) create the climatology with the "build_clim.sh" script:  
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ./build_clim.sh -C <MY_CONF> -R <EXP> -i <first_year> -e <last_year>
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         (check ./build_clim.sh -h to see the other important options...)
+i) create the climatology with the "build_clim.sh" script:  
+
+    ./build_clim.sh -C <MY_CONF> -R <EXP> -i <first_year> -e <last_year>
+
+(check ./build_clim.sh -h to see the other important options...)
 
     (ex: ./build_clim.sh -C ORCA1_L75_v36_triolith -R SL36C00 -f 10 -i 0090 -e 0099 -k 4)
       
@@ -191,10 +187,9 @@ B/ To be able to create the "climatology" plots (maps, sections, etc, based on a
        using the "-E" switch instead of "-e" (see point V/A)
 
 
-C/ To compare time-series between at least 2 (already diagnosed) experiments:
+### C/ To compare time-series between at least 2 (already diagnosed) experiments:
    
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ./compare_time-series.sh -C <MY_CONF> -R <EXP1>,<EXP2>,...,<EXPn>
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   (ex: ./compare_time-series.sh -C ORCA1_L75_v36_triolith -R SL36C00,SL36EIE )
+    ./compare_time-series.sh -C <MY_CONF> -R <EXP1>,<EXP2>,...,<EXPn>
+
+    (ex: ./compare_time-series.sh -C ORCA1_L75_v36_triolith -R SL36C00,SL36EIE )
 
