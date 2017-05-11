@@ -147,49 +147,46 @@ F_SST_OBS_12, F_ICE_OBS_12.
 
 Launch "barakuda.sh"
 
-    ./barakuda.sh -C <MY_CONF> -R <EXP>
+       ./barakuda.sh -C <MY_CONF> -R <EXP>
 
-    (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00)
+       (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00)
 
-Use the -h switch to see available options
+Use the -h switch to see available options.
 
 
 
 ## IV) Create figures and browsable HTML page
 
-### A/ Once the previous job has finished to run, launch
+* Once the previous job has finished to run, launch
 
-   * To only generate time-series plots use the "-e" switch:
+To only generate time-series plots use the "-e" switch:
 
         ./barakuda.sh -C <MY_CONF> -R <EXP> -e
 
         (ex: ./barakuda.sh -C ORCA1_L75_v36_triolith -R SL36C00 -e)
 
-   * To generate time-series + 2D climatology plots use the "-E" switch,
-     provided you have built the monthly/annual climatology (based on N years of
-     your simulation) out of your experiment with the "build_clim.sh" script
-     (see point V/B):
+To generate time-series + 2D climatology plots use the "-E" switch, provided you
+have built the monthly/annual climatology (based on N years of your simulation)
+out of your experiment with the "build_clim.sh" script (see next bullet point):
      
         ./barakuda.sh -C <MY_CONF> -R <EXP> -E
 
-### B/ To be able to create the "climatology" plots (maps, sections, etc, based on a monthly climatology of a few years) you will have to
+* To be able to create the "climatology" plots (maps, sections, etc, based on a monthly climatology of a few years) you will have to
 
-i) create the climatology with the "build_clim.sh" script:  
+i) create the climatology with the "build_clim.sh" script:
 
     ./build_clim.sh -C <MY_CONF> -R <EXP> -i <first_year> -e <last_year>
 
-(check ./build_clim.sh -h to see the other important options...)
-
-    (ex: ./build_clim.sh -C ORCA1_L75_v36_triolith -R SL36C00 -f 10 -i 0090 -e 0099 -k 4)
+Use the -h switch to see available options.
       
 
-  ii) the you can tell "barakuda.sh" to create climatology-related plots by
-       using the "-E" switch instead of "-e" (see point V/A)
+ii) the you can tell "barakuda.sh" to create climatology-related plots by using
+    the "-E" switch instead of "-e" (see point V/A)
 
 
-### C/ To compare time-series between at least 2 (already diagnosed) experiments:
+* To compare time-series between at least 2 (already diagnosed) experiments:
    
-    ./compare_time-series.sh -C <MY_CONF> -R <EXP1>,<EXP2>,...,<EXPn>
+         ./compare_time-series.sh -C <MY_CONF> -R <EXP1>,<EXP2>,...,<EXPn>
 
-    (ex: ./compare_time-series.sh -C ORCA1_L75_v36_triolith -R SL36C00,SL36EIE )
+        (ex: ./compare_time-series.sh -C ORCA1_L75_v36_triolith -R SL36C00,SL36EIE )
 
