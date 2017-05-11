@@ -41,6 +41,7 @@ function build_index_html()
     echo; echo; echo
 
     # Titles for different sections:
+    TTL_MOC="Atlantic Meridional Overturning Circulation"
     TTL_TTS="Temperature (global + regional)"
     TTL_STS="Salinity (global + regional)"
     TTL_HTF="Surface Heat flux"
@@ -79,6 +80,7 @@ function build_index_html()
           <b>Jump directly to time series for:</b>
           <ul>
 EOF
+    if [ ${i_do_amoc} -eq 1 ];   then echo "            <li> <a href=\"#MOC\">${TTL_MOC}</a> </li>" >> index.html ; fi
     if [ ${i_do_mean} -eq 1 ];   then echo "            <li> <a href=\"#TTS\">${TTL_TTS}</a> </li>" >> index.html ; fi
     if [ ${i_do_mean} -eq 1 ];   then echo "            <li> <a href=\"#STS\">${TTL_STS}</a> </li>" >> index.html ; fi
     if [ ! "${NN_QNET}" = "X" ]; then echo "            <li> <a href=\"#HTF\">${TTL_HTF}</a> </li>" >> index.html ; fi
@@ -154,14 +156,16 @@ EOF
 
 
     
-    # AMOC page:
+    # AMOC:
     cat >> index.html <<EOF
-    ${ctl} Atlantic Meridional Overturning Circulation ${ctr}
-    ${img_l}amoc_${cr}.${ff}${img_r}
-    ${img_l}amoc_${cr}_comp.${ff}${img_r}
+        <a name="MOC"/>
+        ${ctl} ${TTL_MOC} ${ctr}
+        ${img_l}amoc_${cr}.${ff}${img_r}
+        ${img_l}amoc_${cr}_comp.${ff}${img_r}
 EOF
+    ${btt} >> index.html
 
-    # Temperature page
+    # Temperature:
     cat >> index.html <<EOF
         <a name="TTS"/>
         ${ctl} ${TTL_TTS} ${ctr}
