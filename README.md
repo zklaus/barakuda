@@ -36,7 +36,8 @@ https://brodeau.github.io/barakuda/example/
   XIOS2 can be found in: src/xios2_xml/
 
 * a NEMO mesh_mask file and the the corresponding basin_mask (ocean basins).
-  (variables MM_FILE and BM_FILE into the config_<MYCONF>.sh file you use)
+  (variables MM_FILE and BM_FILE into the config_<MYCONF>.sh file you use).
+  
   To create the NEMO mesh_mask.nc just launch the relevant NEMO experiment with the
   namelist parameter nn_msh set to 1 !
 
