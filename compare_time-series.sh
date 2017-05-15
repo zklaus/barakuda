@@ -42,10 +42,15 @@ usage()
     echo "   OPTIONS:"
     echo "      -y <YYYY> => force initial year to YYYY"
     echo
+    echo "      -O <cnfg1,cnfg2,...,cnfgN> => list of ORCA configs corresponding to"
+    echo "                                    <exp1,exp2,...,expN> in case they are"
+    echo "                                    not all on the same ORCA grid"
+    echo
 #    echo "      -c <exp>  => 2D comparison diagnostics are performed against exp <exp>"
 #    echo "                   instead of a climatology"
-    echo
-    echo "      -f        => forces creation of diagnostic page eventhough treatment of output files is not finished"
+#    echo
+    echo "      -f        => forces creation of diagnostic page eventhough treatment "
+    echo "                    of output files is not finished"
     echo
     echo "      -e        => create the HTML diagnostics page on local or remote server"
     echo
@@ -54,16 +59,18 @@ usage()
     exit
 }
 
-
+CEXPS="" ; # list of experiments separated by ","
+CORCS="" ; # corresponding list of ORCA configs in case CEXPS are not on the same ORCA grid!!!
 YEAR0="" ; iforcey0=0
 
 IPREPHTML=0
 IFORCENEW=0
 
-while getopts C:R:y:feh option ; do
+while getopts C:R:O:y:feh option ; do
     case $option in
         C) CONFIG=${OPTARG};;
         R) CEXPS=${OPTARG};;
+        O) CORCS=${OPTARG};;
         y) YEAR0=${OPTARG} ; iforcey0=1 ;;
         f) IFORCENEW=1;;
         e) IPREPHTML=1;;
@@ -78,11 +85,11 @@ done
 
 if [ -z ${CONFIG} ] || [ -z ${CEXPS} ]; then usage ; exit ; fi
 
+
+
 for og in ${ORCA_LIST}; do
-    #echo " ${og} / ${ORCA_CONF}"
     ca=""; ca=`echo ${CONFIG} | grep ${og}` ; if [ "${ca}" != "" ]; then ORCA=${og}; fi
 done
-
 if [ -z ${ORCA} ]; then echo "ORCA grid of config ${CONFIG} not supported yet"; exit; fi
 
 echo
@@ -102,8 +109,21 @@ else
 fi
 echo
 
-if [ ! "${ORCA}" = "${CONF}" ]; then echo "ERROR: ORCA and CONF disagree! => ${ORCA} ${CONF}"; exit; fi
-export ORCA=${CONF}
+
+LEXPS=`echo ${CEXPS} | sed -e s/'\,'/'\ '/g -e s/'\, '/'\ '/g`
+echo; echo "Experiments to be treated: ${LEXPS}"
+nbr=`echo ${LEXPS} | wc -w` ; echo "  => number of experiments to compare = ${nbr}"
+
+
+if [ "${CORCS}" = "" ]; then
+    if [ ! "${ORCA}" = "${CONF}" ]; then echo "ERROR: ORCA and CONF disagree! => ${ORCA} ${CONF}"; exit; fi
+    export ORCA=${CONF}
+else
+    LORCS=`echo ${CORCS} | sed -e s/'\,'/'\ '/g -e s/'\, '/'\ '/g`
+    lulu
+fi
+
+
 
 # Should be set from bash_fucntions:
 PYTH="${PYTHON_HOME}/bin/python -W ignore" ; # which Python installation to use
@@ -112,17 +132,12 @@ PYBRKD_EXEC_PATH=${BARAKUDA_ROOT}/python/exec         ; # PATH to python barakud
 #-------------------
 
 
-LEXPS=`echo ${CEXPS} | sed -e s/'\,'/'\ '/g -e s/'\, '/'\ '/g`
-echo; echo "Experiments to be treated: ${LEXPS}"
-nbr=`echo ${LEXPS} | wc -w` ; echo "  => number of experiments to compare = ${nbr}"
 echo " NEMO grid = ${ORCA}";
 echo " reading config into: ${fconfig}"
 echo; echo
 
-export CONF=${CONF}
-export LIST_EXPS=${LEXPS}
-
-NEXPS="${ORCA}-`echo ${LEXPS} | sed -e 's/\ /_/g'`"
+#NEXPS="${ORCA}-`echo ${LEXPS} | sed -e 's/\ /_/g'`"
+NEXPS="`echo ${LEXPS} | sed -e 's/\ /_/g'`"
 echo " Label to be used: ${NEXPS}" ; echo
 
 BASE_NAME="comp_${NEXPS}"
@@ -132,8 +147,14 @@ DIAG_COMP_DIR=${DIAG_DIR}/comparisons/${BASE_NAME} ; rm -rf ${DIAG_COMP_DIR} ; m
 YEAR_INI=4000
 YEAR_END=0
 
-# just that they become righ arrays...
+# just that they become arrays...
 VEXPS=( ${LEXPS} ) ;  VCONFEXPS=( ${LEXPS} ) ; VDIAGS=( ${LEXPS} ) ;
+
+if [ "${CORCS}" = "" ]; then
+    VORCS=( ${LEXPS} )
+else
+    VORCS=( ${LORCS} )
+fi
 
 jr=0
 
@@ -142,9 +163,14 @@ for exp in ${LEXPS}; do
     echo; echo " EXP ${exp} "
     EXP="${exp}"
 
+    
     echo "   => ORCA = ${ORCA}"
+    if [ "${CORCS}" = "" ]; then
+        VORCS[${jr}]=${ORCA}
+    fi
 
-    CONFEXP=${ORCA}-${EXP}
+
+    CONFEXP=${VORCS[${jr}]}-${EXP}
     echo "   => CONFEXP = ${CONFEXP}"
     VCONFEXPS[${jr}]=${CONFEXP}
 
@@ -178,6 +204,19 @@ done
 echo
 echo " Global YEAR_INI = ${YEAR_INI}"
 echo " Global YEAR_END = ${YEAR_END}"
+echo
+
+#echo " VEXPS => ${VEXPS[*]} "
+#echo " VORCS => ${VORCS[*]} "
+#echo " VCONFEXPS => ${VCONFEXPS[*]} "
+#echo " VDIAGS => ${VDIAGS[*]} "
+
+export LIST_EXPS=${LEXPS}
+export LIST_CONF=${VORCS[*]}
+
+echo
+echo "LIST_EXPS = ${LIST_EXPS}"
+echo "LIST_CONF = ${LIST_CONF}"
 echo
 
 

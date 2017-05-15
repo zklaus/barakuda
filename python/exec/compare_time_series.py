@@ -28,7 +28,7 @@ itrsp  = 1
 ifwf   = 1  ; # freshwater fluxes at the surface
 
 
-venv_needed = {'LIST_EXPS','DIAG_DIR','CONF','FIG_FORMAT', 'BM_FILE', \
+venv_needed = {'LIST_EXPS','LIST_CONF','DIAG_DIR','FIG_FORMAT', 'BM_FILE', \
                'NN_SST','NN_SST','NN_SSS','NN_SSH','NN_T','NN_S','NN_MLD', \
                'TRANSPORT_SECTION_FILE','LMOCLAT','i_do_ifs_flx'}
 
@@ -49,10 +49,13 @@ nb_years = y2 - y1 + 1
 
 
 clist_exps = vdic['LIST_EXPS'].split()
+clist_conf = vdic['LIST_CONF'].split()
 clist_confexps = []
 
+je=0
 for cexp in clist_exps:
-    clist_confexps.append(vdic['CONF']+'-'+cexp)
+    clist_confexps.append(clist_conf[je]+'-'+cexp)
+    je=je+1
 
 print sys.argv[0]+': will compare following experiments: '; print clist_confexps
 print ' ... saved into '+cd_diag+'\n'
@@ -302,22 +305,29 @@ if itrsp == 1:
         for csect in list_sections:
             print '\n Treating transports through '+csect
 
-            cf_in = cd_diag+'/'+confexp+'/transport_sect_'+csect+'.nc' ; bt.chck4f(cf_in, script_name='compare_time_series.py')
-            id_in = Dataset(cf_in)
+            cf_in = cd_diag+'/'+confexp+'/transport_sect_'+csect+'.nc'
+            #bt.chck4f(cf_in, script_name='compare_time_series.py')
+            lok = os.path.exists(cf_in)
+                
+            if lok: id_in = Dataset(cf_in)
             if jsect == 0:
                 if jexp == 0:
                     vyear = nmp.zeros(nb_years)
                     Xtrsp = nmp.zeros((nbexp,nbsect,3,nb_years))
 
-                Vt_t = id_in.variables['time'][:] ; nbm = len(Vt_t) ; nby = nbm/12
-                test_nb_mnth_rec(nbm, nb_years, cdiag)
+                if lok:
+                    Vt_t = id_in.variables['time'][:]
+                    nbm = len(Vt_t) ; nby = nbm/12
+                    test_nb_mnth_rec(nbm, nb_years, cdiag)
 
             Xtrsp[jexp,jsect,:,:] = -999.
-            vyear[:nby], Xtrsp[jexp,jsect,0,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_volu'][:nbm])
-            vyear[:nby], Xtrsp[jexp,jsect,1,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_heat'][:nbm])
-            vyear[:nby], Xtrsp[jexp,jsect,2,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_salt'][:nbm])
 
-            id_in.close()
+            if lok:
+                vyear[:nby], Xtrsp[jexp,jsect,0,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_volu'][:nbm])
+                vyear[:nby], Xtrsp[jexp,jsect,1,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_heat'][:nbm])
+                vyear[:nby], Xtrsp[jexp,jsect,2,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_salt'][:nbm])
+
+            if lok: id_in.close()
 
             jsect = jsect + 1
         jexp = jexp + 1

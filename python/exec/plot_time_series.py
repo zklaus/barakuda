@@ -122,8 +122,8 @@ elif cdiag == '3d_so':
 elif cdiag == 'amoc':
     idfig = 'amoc'
     cyu  = r'Sv'
-    ym = 3.5
-    yp = 24.5
+    ym = 4.5
+    yp = 25.5
 
 elif cdiag == 'mean_mld':
     cvar  = vdic['NN_MLD']
