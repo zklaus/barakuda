@@ -265,7 +265,6 @@ if [ ${ihttp} -eq 0 ]; then
 
 else
 
-    RWWWD=${RWWWD}/COMPARISONS_time_series
     ssh ${RUSER}@${RHOST} "mkdir -p ${RWWWD}"
 
     if [ ${ihttp} -eq 1 ]; then
