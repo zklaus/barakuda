@@ -103,6 +103,13 @@ else
     CP2NC4="nccopy -k 4 -d 9"
 fi
 
+# Comes with Canopy:
+wc=`which nc3tonc4`
+if [ ! "${wc}" = "" ]; then
+    CP2NC4="nc3tonc4"
+fi
+
+
 # cdftools execs are found:
 export PATH=${BARAKUDA_ROOT}/cdftools_light/bin:${PATH}
 

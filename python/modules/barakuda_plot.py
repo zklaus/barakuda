@@ -709,58 +709,6 @@ class plot :
 
 
 
-
-
-    def __sig_transport(self,cstck, ccexp, cd_eps):
-
-        #_____________________________________________________________
-        #
-        #  cstck  : root directory containing monitoring output
-        #  crr    : CONF-EXP  (ex: ORCA2-GXXX)
-        #  cd_eps : directory to save eps output image
-        #_____________________________________________________________
-        import barakuda_orca as bo
-        
-        ccnf = bo.conf_exp(ccexp)
-
-        cf = cstck+'/'+ccnf+'/'+ccexp+'-'+'MONITOR/'+ccexp+'_TRPSIG.mtl'
-        print 'File =', cf, '\n'
-
-        xmat = __get_mat__(cf)
-        [nl,nc] =nmp.shape(xmat)
-        print nl,nc
-
-        vsigma = xmat[0,1:nc]   ; print 'vsigma =', vsigma, '\n' ; nbs = len(vsigma)
-        vyears = xmat[1:nl:2,0] ; print 'vyears =', vyears, '\n' ; nby = len(vyears)
-
-        print 'Number of years and sigma levels =', nby, 'and', nbs, '\n'
-
-        X_ds = -xmat[1:nl:2,1:nc]   # Denmark Straight
-        X_fb = -xmat[2:nl:2,1:nc]   # Faro Banks channel
-
-        X_ds = nmp.ma.masked_where(X_ds  == 0, X_ds)
-        X_fb = nmp.ma.masked_where(X_fb  == 0, X_fb)
-
-        print 'Size of X_ds =',nmp.shape(X_ds)
-        print 'Size of X_fb =',nmp.shape(X_fb)
-
-        cf_eps = cd_eps+'/tsc_DS_'+ccexp+'.png'
-        xmt=transpose(X_ds)
-
-        __LB_2D__(1, 0., 1.5, 30, 0.1, vyears, vsigma, xmt,
-                  'Transport by sigma class, Denmark Straight', cf_eps, cbunit='(Sv)')
-
-        cf_eps = cd_eps+'/tsc_FB_'+ccexp+'.eps'
-
-        xmt=transpose(X_fb)
-        __LB_2D__(1, 0., 1.5, 40, 0.1, vyears, vsigma, xmt,
-                  'Transport by sigma class, Denmark Straight', cf_eps,  cbunit='(Sv)')
-        #
-        #
-        return
-
-
-
     def __2d_box_2f(self,XF1, XF2, XMSK, rmin, rmax, dc, vcont_spec2, corca='ORCA1', lkcont=True,
                     cpal='jet', cfignm='fig', cbunit='', ctitle=' ', lforce_lim=False,
                     i_cb_subsamp=1, cfig_type='pdf', lcontours=True,
@@ -875,7 +823,7 @@ class plot :
             font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
     
             fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), dpi=None, facecolor='w', edgecolor='k') ; #trsp_sig_class
-            ax = plt.axes([0.07,  -0.025, 0.91, 0.98], axisbg = 'w')
+            ax = plt.axes([0.075,  -0.025, 0.9, 0.98], axisbg = 'w')
     
             vc = __vcontour__(rmin, rmax, dc)
     

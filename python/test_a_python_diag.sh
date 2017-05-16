@@ -4,13 +4,13 @@
 
 # Diag to test:
 # One at a time please!!!
-itrsig=0
+itrsig=1
 imhst=0
 iamoc=0
 icrosssect=0
 itempsal=0
 ifsflx=0
-imean2d=1
+imean2d=0
 imean3d=0
 iSflx=0
 ienso=0
@@ -37,9 +37,9 @@ ihov=0
 #ARCH="ece32_marenostrum"
 #export EXP="LR20" ; NC=nc4 ; jyear=2540
 
-#CONFIG="ORCA025_L75"
-#ARCH="T511_ece32_triolith"
-#export EXP="HC71" ; NC=nc ; jyear=1990
+CONFIG="ORCA025_L75"
+ARCH="uwe_oo"
+export EXP="HN71" ; NC=nc ; jyear=1990
 
 #CONFIG="ORCA025_L75"
 #ARCH="etienne"
@@ -49,9 +49,9 @@ ihov=0
 #ARCH="ro10"
 #export EXP="ro10" ; NC=nc ; jyear=1995
 
-CONFIG="ORCA1_L75"
-ARCH="uwe"
-export EXP="SN71" ; NC=nc ; jyear=1995
+#CONFIG="ORCA1_L75"
+#ARCH="uwe"
+#export EXP="SN71" ; NC=nc ; jyear=1995
 
 #CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_triolith"
