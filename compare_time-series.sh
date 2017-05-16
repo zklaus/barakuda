@@ -120,7 +120,6 @@ if [ "${CORCS}" = "" ]; then
     export ORCA=${CONF}
 else
     LORCS=`echo ${CORCS} | sed -e s/'\,'/'\ '/g -e s/'\, '/'\ '/g`
-    lulu
 fi
 
 

@@ -294,9 +294,16 @@ if itrsp == 1:
     print 'List of sections to treat: ', list_sections
     nbsect = len(list_sections)
 
-    vstuff = [ 'volume', 'heat' , 'salt' ]
-    vunit  = [ 'Sv'    , 'PW'   , 'kt/s' ]
-
+    lok_ice = nmp.zeros(nbsect, dtype=bool)
+    
+    #vstuf = [ 'volume', 'heat' , 'salt' , 'freshwater' ]
+    #vunit = [ 'Sv'    , 'PW'   , 'kt/s' ,     'Sv'     ]
+    #ivolu = 0 ; iheat = 1 ; isalt = 2 ; ifrwt = 3
+    vstuf = [ 'volume', 'heat' , 'freshwater' ]
+    vunit = [ 'Sv'    , 'PW'   ,     'Sv'     ]
+    ivolu = 0 ; iheat = 1 ; ifrwt = 2
+    
+    nbtt  = len(vstuf)
 
     jexp = 0
     for confexp in clist_confexps:
@@ -306,14 +313,19 @@ if itrsp == 1:
             print '\n Treating transports through '+csect
 
             cf_in = cd_diag+'/'+confexp+'/transport_sect_'+csect+'.nc'
-            #bt.chck4f(cf_in, script_name='compare_time_series.py')
-            lok = os.path.exists(cf_in)
+            lok   = os.path.exists(cf_in)
+
+            cf_in_ice = cd_diag+'/'+confexp+'/transport_ice_sect_'+csect+'.nc'
+            lok_ice[jsect] = os.path.exists(cf_in_ice)
+
+
+            if lok_ice[jsect]: id_in_ice = Dataset(cf_in_ice)
                 
             if lok: id_in = Dataset(cf_in)
             if jsect == 0:
                 if jexp == 0:
                     vyear = nmp.zeros(nb_years)
-                    Xtrsp = nmp.zeros((nbexp,nbsect,3,nb_years))
+                    Xtrsp = nmp.zeros((nbexp,nbsect,nbtt,nb_years))
 
                 if lok:
                     Vt_t = id_in.variables['time'][:]
@@ -323,11 +335,16 @@ if itrsp == 1:
             Xtrsp[jexp,jsect,:,:] = -999.
 
             if lok:
-                vyear[:nby], Xtrsp[jexp,jsect,0,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_volu'][:nbm])
-                vyear[:nby], Xtrsp[jexp,jsect,1,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_heat'][:nbm])
-                vyear[:nby], Xtrsp[jexp,jsect,2,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_salt'][:nbm])
+                vyear[:nby], Xtrsp[jexp,jsect,ivolu,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_volu'][:nbm])
+                vyear[:nby], Xtrsp[jexp,jsect,iheat,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_heat'][:nbm])
+                #vyear[:nby], Xtrsp[jexp,jsect,isalt,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_salt'][:nbm])
+                vyear[:nby], Xtrsp[jexp,jsect,ifrwt,:nby] = bt.monthly_2_annual(Vt_t, id_in.variables['trsp_frwt'][:nbm])
+                if lok_ice[jsect]:
+                    print '  => adding sea-ice-related contribution to freshwater transport!'
+                    vdum, Xtrsp[jexp,jsect,ifrwt,:nby] = Xtrsp[jexp,jsect,ifrwt,:nby] + bt.monthly_2_annual(Vt_t, id_in_ice.variables['trsp_frwt'][:nbm])
 
-            if lok: id_in.close()
+            if lok:     id_in.close()
+            if lok_ice[jsect]: id_in_ice.close()
 
             jsect = jsect + 1
         jexp = jexp + 1
@@ -337,11 +354,14 @@ if itrsp == 1:
     jsect=0
     for csect in list_sections:
         jstuff = 0
-        for cstuff in vstuff:
+        for cstuf in vstuf:
+
+            cex = ''
+            if cstuf == 'freshwater' and lok_ice[jsect]: cex = ' (liquid+solid)'
 
             bp.plot("1d_multi")(vyear[:], Xtrsp[:,jsect,jstuff,:], clist_exps, cfig_type=cffig,
-                                cfignm='transport_'+cstuff+'_'+csect+'_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
-                                cyunit=vunit[jstuff], ctitle = 'Transport of '+cstuff+' through section '+csect,
+                                cfignm='transport_'+cstuf+'_'+csect+'_comparison', dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
+                                cyunit=vunit[jstuff], ctitle = 'Transport of '+cstuf+cex+' through section '+csect,
                                 ymin=0, ymax=0)
 
             jstuff = jstuff + 1
