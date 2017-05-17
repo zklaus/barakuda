@@ -141,7 +141,7 @@ echo " Label to be used: ${NEXPS}" ; echo
 
 BASE_NAME="comp_${NEXPS}"
 
-DIAG_COMP_DIR=${DIAG_DIR}/comparisons/${BASE_NAME} ; rm -rf ${DIAG_COMP_DIR} ; mkdir -p ${DIAG_COMP_DIR}
+DIAG_COMP_DIR=${DIAG_DIR}/${BASE_NAME} ; rm -rf ${DIAG_COMP_DIR} ; mkdir -p ${DIAG_COMP_DIR}
 
 YEAR_INI=4000
 YEAR_END=0
