@@ -26,6 +26,9 @@ cv_S      = sys.argv[3]
 cf_out = replace(cf_nemo_T, cf_nemo_T, 'sigma0_'+cf_nemo_T)
 
 f_nemo_T = Dataset(cf_nemo_T)     # r+ => can read and write in the file... )
+
+
+sys.exit(0)
 vtime   = f_nemo_T.variables['time_counter'][:] ; cu_time = f_nemo_T.variables['time_counter'].units
 nav_lon = f_nemo_T.variables['nav_lon'][:,:]    ; cu_lon  = f_nemo_T.variables['nav_lon'].units
 nav_lat = f_nemo_T.variables['nav_lat'][:,:]    ; cu_lat  = f_nemo_T.variables['nav_lat'].units

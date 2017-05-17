@@ -109,10 +109,7 @@ if [ ! "${wc}" = "" ]; then
     CP2NC4="nc3tonc4"
 fi
 
-
-# cdftools execs are found:
-export PATH=${BARAKUDA_ROOT}/cdftools_light/bin:${PATH}
-
+export PATH=${BARAKUDA_ROOT}/cdftools_light/bin:${PYTHON_HOME}/bin:${PATH}
 
 Y1=$((${Y1}+0))
 Y2=$((${Y2}+0))
