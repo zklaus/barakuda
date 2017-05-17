@@ -35,7 +35,8 @@ if not nb_dim in [ 3 , 4 ]:
 vtime   = f_nemo_T.variables['time_counter'][:] ; cu_time = f_nemo_T.variables['time_counter'].units
 nav_lon = f_nemo_T.variables['nav_lon'][:,:]    ; cu_lon  = f_nemo_T.variables['nav_lon'].units
 nav_lat = f_nemo_T.variables['nav_lat'][:,:]    ; cu_lat  = f_nemo_T.variables['nav_lat'].units
-deptht  = f_nemo_T.variables['deptht'][:]       ; cu_dpt  = f_nemo_T.variables['deptht'].units
+if nb_dim == 4:
+    deptht  = f_nemo_T.variables['deptht'][:] ; cu_dpt  = f_nemo_T.variables['deptht'].units
 Nt = len(vtime)
 
 
@@ -76,7 +77,7 @@ for jt in range(Nt):
 
         id_lon[:,:] = nav_lon[:,:]
         id_lat[:,:] = nav_lat[:,:]
-        id_dpt[:]   = deptht[:]
+        if nb_dim == 4: id_dpt[:]   = deptht[:]
 
         if nb_dim == 4: id_sg0  = f_out.createVariable('sigma0','f4',('time_counter','deptht','y','x',))
         if nb_dim == 3: id_sg0  = f_out.createVariable('sigma0','f4',('time_counter',         'y','x',))
