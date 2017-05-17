@@ -96,6 +96,12 @@ echo "   *** IFREQ_SAV_YEARS = ${IFREQ_SAV_YEARS} "
 echo "   *** NCDF_DIR        = ${NCDF_DIR} "
 echo
 
+mkdir -p ${DIAG_D}
+barakuda_first_last_years ; # look at NEMO files to know what are first and last years available...
+echo ${IFREQ_SAV_YEARS} > ${DIAG_D}/numb_year_per_file.info
+echo ${YEAR_INI}        > ${DIAG_D}/first_year.info
+
+
 wc=`which nccopy`
 if [ "${wc}" = "" ]; then
     CP2NC4="${NCDF_DIR}/bin/nccopy -k 4 -d 9"
@@ -185,7 +191,7 @@ if [ ! $((${nby}%${IFREQ_SAV_YEARS})) -eq 0 ]; then
     echo " Number of years should be a multiple of ${IFREQ_SAV_YEARS}!"; exit
 fi
 
-if [ ${ece_exp} -gt 0 ]; then
+if [ ${ece_exp} -gt 0 ] && [ ${ece_exp} -lt 10 ] ; then
     if [ ! -d ${NEMO_OUT_D}/001 ]; then echo "ERROR: since ece_exp=${ece_exp}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; fi
 fi
 

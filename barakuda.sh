@@ -81,6 +81,7 @@ echo "   *** GRID       = ${ORCA} "
 echo "   *** EXP        = ${EXP} "
 echo "   *** CPREF      = ${CPREF} "
 echo "   *** IFREQ_SAV_YEARS = ${IFREQ_SAV_YEARS} "
+echo "   *** NCDF_DIR        = ${NCDF_DIR} "
 echo
 
 
