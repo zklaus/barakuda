@@ -101,19 +101,18 @@ barakuda_first_last_years ; # look at NEMO files to know what are first and last
 echo ${IFREQ_SAV_YEARS} > ${DIAG_D}/numb_year_per_file.info
 echo ${YEAR_INI}        > ${DIAG_D}/first_year.info
 
-
+# How to convert from nc3 to nc4?
 wc=`which nccopy`
 if [ "${wc}" = "" ]; then
     CP2NC4="${NCDF_DIR}/bin/nccopy -k 4 -d 9"
 else
     CP2NC4="nccopy -k 4 -d 9"
 fi
-
-# Comes with Canopy:
-wc=`which nc3tonc4`
+wc=`which nc3tonc4` ; # Comes with Canopy...
 if [ ! "${wc}" = "" ]; then
     CP2NC4="nc3tonc4"
 fi
+
 
 export PATH=${BARAKUDA_ROOT}/cdftools_light/bin:${PYTHON_HOME}/bin:${PATH}
 
@@ -121,7 +120,6 @@ Y1=$((${Y1}+0))
 Y2=$((${Y2}+0))
 CY1=`printf "%04d" ${Y1}`
 CY2=`printf "%04d" ${Y2}`
-
 
 mkdir -p ${CLIM_DIR}
 
