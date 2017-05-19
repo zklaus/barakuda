@@ -119,6 +119,9 @@ norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 pal_lsm = bcm.chose_colmap('blk')
 norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
+
+print ''
+
 rh = 7.5
 
 for jt in range(jt0,Nt):
@@ -126,7 +129,7 @@ for jt in range(jt0,Nt):
     ct = '%3.3i'%(jt+1)
 
     cd = str(datetime.datetime.strptime('1990 '+ct, '%Y %j'))
-    cdate = cd[:10] ; print ' *** cdate :', cdate
+    cdate = cd[:10] ; print ' *** Date :', cdate
 
     cfig = 'figs/'+cv_in+'_NEMO'+'_d'+ct+'.'+fig_type    
 
@@ -147,23 +150,26 @@ for jt in range(jt0,Nt):
     #carte = Basemap(projection='ortho',lat_0=45,lon_0=-100,resolution='h')
     #carte = Basemap(projection='ortho',lat_0=0,lon_0=-165,resolution='h')
 
-    rot = -(165 + jt)
 
-    carte = Basemap(projection='ortho',lat_0=0,lon_0=rot,resolution='h')
+    rstart = 0
+    rot = (rstart + 0.5*float(jt))%360.
+    rot = -rot
+
+    print ' *** reference longitude =', rot
+
+    carte = Basemap(projection='ortho',lat_0=30.,lon_0=rot,resolution='h')
     
     x0,y0 = carte(XLON,XLAT)
     
-    print ' *** Ploting on map:'
+    print ' *** Ploting on map...'
     cf = carte.pcolor(x0, y0, XFLD, cmap=pal_fld, norm=norm_fld)
-    print '  => done!'
-
+    print ' *** Saving figure...'
     plt.savefig(cfig, dpi=160, orientation='portrait', transparent=True)
-    print cfig+' created!\n'
+    print '  => '+cfig+' created!\n'
     plt.close(1)
 
     del XFLD, cf
 
-    #del  fig, ax, clb
 
 sys.exit(0)
 
