@@ -157,7 +157,8 @@ for jt in range(jt0,Nt):
 
     print ' *** reference longitude =', rot
 
-    carte = Basemap(projection='ortho',lat_0=30.,lon_0=rot,resolution='h')
+    #carte = Basemap(projection='ortho',lat_0=30.,lon_0=rot,resolution='h')
+    carte = Basemap(projection='ortho',lat_0=15.,lon_0=rot,resolution='h')
     
     x0,y0 = carte(XLON,XLAT)
     

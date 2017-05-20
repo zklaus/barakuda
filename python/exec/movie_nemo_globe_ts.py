@@ -36,7 +36,7 @@ long_start = 0 ; # longitude to start the movie from...
 
 latitude = 15. ; # fixed latitude to view from
 
-
+lforce_mask = False
 year_ref_ini = 1990
 
 #jt0 = 248
@@ -91,7 +91,7 @@ Nt = len(vtime)
 bt.chck4f(cf_lsm)
 id_lsm = Dataset(cf_lsm)
 #LOLO for curl => F !!!
-XMSK  = id_lsm.variables['fmask'][0,0,:,:]
+if lforce_mask: XMSK  = id_lsm.variables['fmask'][0,0,:,:]
 XLON  =  id_lsm.variables['glamf'][0,:,:]
 XLAT  =  id_lsm.variables['gphif'][0,:,:]
 id_lsm.close()
@@ -166,7 +166,7 @@ for jt in range(jt0,Nt-1):
         # Linear interpolation:     # yN = y1 + (tN-t1)*(y2-y1)/(t2-t1)
         XFLD[:,:] = XFLDt[:,:] + float(js)*dFdt
         
-        rot = (long_start + (1./float(nsts)*float(jrot)))%360.
+        rot = (long_start + (0.5/float(nsts)*float(jrot)))%360.
         rot = -rot
 
         cfig = 'figs/'+cv_in+'_NEMO'+'_d'+ct+'_'+str(js)+'.'+fig_type    
@@ -180,7 +180,7 @@ for jt in range(jt0,Nt-1):
         carte = Basemap(projection='ortho', lat_0=latitude, lon_0=rot, resolution='h')
         x0,y0 = carte(XLON,XLAT)
 
-        XFLD = nmp.ma.masked_where(XMSK[:,:] < 0.5, XFLD[:,:])
+        if lforce_mask: XFLD = nmp.ma.masked_where(XMSK[:,:] < 0.5, XFLD[:,:])
         
         print ' *** Ploting on map...'
         cf = carte.pcolor(x0, y0, XFLD, cmap=pal_fld, norm=norm_fld)
