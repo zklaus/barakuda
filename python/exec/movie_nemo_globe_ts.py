@@ -118,7 +118,7 @@ params = { 'font.family':'Ubuntu',
 mpl.rcParams.update(params)
 cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':13 }
 cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18 }
-cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':9, 'color':'0.5' }
+cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':10, 'color':'0.4' }
 
 
 # Colormaps for fields:
@@ -184,6 +184,9 @@ for jt in range(jt0,Nt-1):
         
         print ' *** Ploting on map...'
         cf = carte.pcolor(x0, y0, XFLD, cmap=pal_fld, norm=norm_fld)
+
+        ax.annotate('L. Brodeau, brodeau@gmail.com', xy=(1, 4), xytext=(890, -150), **cfont_mail)
+        
         print ' *** Saving figure...'
         plt.savefig(cfig, dpi=160, orientation='portrait', transparent=True)
         print '  => '+cfig+' created!\n'

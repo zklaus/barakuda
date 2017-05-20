@@ -136,6 +136,7 @@ for jt in range(jt0,Nt):
     fig = plt.figure(num = 1, figsize=(rh,rh), dpi=None, facecolor='b', edgecolor='k')
     ax  = plt.axes([0.005, 0.005, 0.99, 0.99], axisbg = 'k')
 
+    
     vc_fld = nmp.arange(tmin, tmax + dtemp, dtemp)
 
 
@@ -164,6 +165,10 @@ for jt in range(jt0,Nt):
     
     print ' *** Ploting on map...'
     cf = carte.pcolor(x0, y0, XFLD, cmap=pal_fld, norm=norm_fld)
+
+    #cf.set_axis_bgcolor('red')
+    #fig.patch.set_facecolor('blue')
+    
     print ' *** Saving figure...'
     plt.savefig(cfig, dpi=160, orientation='portrait', transparent=True)
     print '  => '+cfig+' created!\n'
