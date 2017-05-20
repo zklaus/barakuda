@@ -97,7 +97,7 @@ XLAT  =  id_lsm.variables['gphif'][0,:,:]
 id_lsm.close()
 
 
-(nj,ni) = nmp.shape(XMSK)
+(nj,ni) = nmp.shape(XLON)
 
 #pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
