@@ -90,17 +90,18 @@ Nt = len(vtime)
 
 bt.chck4f(cf_lsm)
 id_lsm = Dataset(cf_lsm)
-XMSK  = id_lsm.variables['tmask'][0,0,:,:] ; # t, y, x
-XLON  =  id_lsm.variables['glamf'][0,:,:] ; #LOLO for curl => F !!!
+#LOLO for curl => F !!!
+XMSK  = id_lsm.variables['fmask'][0,0,:,:]
+XLON  =  id_lsm.variables['glamf'][0,:,:]
 XLAT  =  id_lsm.variables['gphif'][0,:,:]
 id_lsm.close()
 
 
 (nj,ni) = nmp.shape(XMSK)
 
-pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
+#pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
-idx_oce = nmp.where(XMSK[:,:] > 0.5)
+#idx_oce = nmp.where(XMSK[:,:] > 0.5)
 
 
 XFLD    = nmp.zeros((nj,ni))
@@ -155,11 +156,8 @@ for jt in range(jt0,Nt-1):
     id_fld.close()
     print "  => done!"
 
-
     # sub time - step
     dFdt = (XFLDtp1[:,:] - XFLDt[:,:])/float(nsts)
-
-    
     
     for js in range(nsts):
 
@@ -179,9 +177,11 @@ for jt in range(jt0,Nt-1):
         ax  = plt.axes([0.005, 0.005, 0.99, 0.99], axisbg = 'k')
 
         print ' *** Creating new projection'
-        carte = Basemap(projection='ortho',lat_0=latitude,lon_0=rot,resolution='h')
+        carte = Basemap(projection='ortho', lat_0=latitude, lon_0=rot, resolution='h')
         x0,y0 = carte(XLON,XLAT)
-    
+
+        XFLD = nmp.ma.masked_where(XMSK[:,:] < 0.5, XFLD[:,:])
+        
         print ' *** Ploting on map...'
         cf = carte.pcolor(x0, y0, XFLD, cmap=pal_fld, norm=norm_fld)
         print ' *** Saving figure...'
