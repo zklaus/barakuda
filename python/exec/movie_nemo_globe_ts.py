@@ -30,13 +30,13 @@ import barakuda_colmap as bcm
 
 import barakuda_tool as bt
 
-nsts = 8 ; # sub time-steping for creating interpolated frames (smoother video)
+nsts = 4 ; # sub time-steping for creating interpolated frames (smoother video)
 
 long_start = 0 ; # longitude to start the movie from...
 
 latitude = 15. ; # fixed latitude to view from
 
-lforce_mask = False
+lforce_mask = True
 year_ref_ini = 1990
 
 #jt0 = 248
