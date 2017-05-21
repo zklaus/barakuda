@@ -39,8 +39,9 @@ latitude = 15. ; # fixed latitude to view from
 lforce_mask = True
 year_ref_ini = 1990
 
-#jt0 = 248
 jt0 = 0
+jtN = 0
+#jt0 = 0
 
 #CTATM = 'T255'
 CTATM = 'T1279'
@@ -50,8 +51,11 @@ cbox = 'Pac'
 fig_type='png'
 
 narg = len(sys.argv)
-if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file>'; sys.exit(0)
+if narg < 6: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file> <first record> <last record>'; sys.exit(0)
 cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3]
+
+jt0 = int(sys.argv[4])
+jtN = int(sys.argv[5])
 
 # Ice:
 #cv_ice  = 'siconc'
@@ -87,6 +91,10 @@ id_fld = Dataset(cf_in)
 vtime = id_fld.variables['time_counter'][:]
 id_fld.close()
 Nt = len(vtime)
+
+if jtN > Nt: print 'ERROR: your jtN > Nt !!!'; sys.exit(0)
+if jtN == 0: jtN = Nt
+
 
 bt.chck4f(cf_lsm)
 id_lsm = Dataset(cf_lsm)
@@ -139,7 +147,9 @@ rh = 7.5
 
 jrot = -1
 
-for jt in range(jt0,Nt-1):
+print '\n jt0, jtN =>', jt0, jtN, '\n'
+
+for jt in range(jt0,jtN):
 
     ct = '%3.3i'%(jt+1)
 
