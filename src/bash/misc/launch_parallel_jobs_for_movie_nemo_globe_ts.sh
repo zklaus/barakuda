@@ -2,11 +2,8 @@
 
 file=CHR0_1d_1990_CURL.nc4
 
-npj=20
-
-istart=150
-istop=365
-
+#npj=20 ; istart=150 ; istop=365
+npj=15 ; istart=350 ; istop=365
 
 icpt=1
 jstrt=${istart}
@@ -23,8 +20,8 @@ while [ $((${jstrt}+${npj})) -le $((${istop}+${npj})) ]; do
     csc=job_${icpt}.bash
 
     cat > ${csc} <<EOF
-
-
+#!/bin/bash
+#
 #######
 #SBATCH -w gustafson
 #SBATCH -n 1
@@ -33,19 +30,14 @@ while [ $((${jstrt}+${npj})) -le $((${istop}+${npj})) ]; do
 #SBATCH -o out_plot_globe_%J.out
 #SBATCH -e err_plot_globe%J.err
 ########
-
 export DIR_NCVIEW_CMAP=/home/Earth/lbrodeau/DEV/barakuda/src/ncview_colormaps
-
 export PYTHONWARNINGS="ignore::DeprecationWarning"
-
 ${CMD}
-
 EOF
     
     echo "sbatch ./${csc}"
-    #sbatch ./${csc}
-    sleep 1
-    
+    sbatch ./${csc}
+    sleep 1    
     jstrt=$((${jstop}))
     icpt=$((${icpt}+1))
 done
