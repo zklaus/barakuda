@@ -188,7 +188,7 @@ for jt in range(jt0,jtN):
 
 
     #if nsts > 1:
-    #    dFdt = (XFLDtp1[:,:] - XFLDt[:,:])/float(nsts)
+    #   q dFdt = (XFLDtp1[:,:] - XFLDt[:,:])/float(nsts)
 
 
 
@@ -205,8 +205,9 @@ for jt in range(jt0,jtN):
         
         print ' *** reference longitude =', rot
 
-        fig = plt.figure(num = 1, figsize=(rh,rh), dpi=None, facecolor='b', edgecolor='k')
-        ax  = plt.axes([0.005, 0.005, 0.99, 0.99], axisbg = 'k')
+        fig = plt.figure(num = 1, figsize=(rh,1.15*rh), dpi=None, facecolor='b', edgecolor='k')
+        #ax  = plt.axes([0.005, 0.005, 0.99, 0.99], axisbg = 'k')
+        ax  = plt.axes([0.005, 0.07, 0.99, 0.99], axisbg = 'k')
 
         print ' *** Creating new projection'
         carte = Basemap(projection='ortho', lat_0=latitude, lon_0=rot, resolution='h')
@@ -216,9 +217,25 @@ for jt in range(jt0,jtN):
         
         print ' *** Ploting on map...'
         cf = carte.pcolor(x0, y0, XFLD+roffset, cmap=pal_fld, norm=norm_fld)
-        cc = carte.contour(x0, y0, XLSM, [ 0.5 ], colors='k', linewidths=1.)
+        cc = carte.contour(x0, y0, XMSK, [ 0.5 ], colors='k', linewidths=1.)
 
         ax.annotate('L. Brodeau, brodeau@gmail.com', xy=(1, 4), xytext=(890, -150), **cfont_mail)
+
+        # Colorbar:
+        ax2 = plt.axes([0.055, 0.06, 0.93, 0.025])
+        clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
+        cb_labs = [] ; cpt = 0
+        for rr in vc_fld:
+            if cpt % cb_jump == 0:
+                cb_labs.append(str(int(rr)))
+            else:
+                cb_labs.append(' ')
+            cpt = cpt + 1
+        clb.ax.set_xticklabels(cb_labs)
+        clb.set_label(cunit, **cfont_clb)
+
+
+
         
         print ' *** Saving figure...'
         plt.savefig(cfig, dpi=160, orientation='portrait', transparent=True)
