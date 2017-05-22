@@ -145,7 +145,7 @@ print ''
 
 rh = 7.5
 
-jrot = -1
+jrot = -1 + jt0*nsts
 
 print '\n jt0, jtN =>', jt0, jtN, '\n'
 
