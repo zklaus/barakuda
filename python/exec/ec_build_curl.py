@@ -173,7 +173,8 @@ id_lon[:] = vlon[:]
 
 
 
-for jt in range(Nt):
+#for jt in range(Nt):
+for jt in range(8):
     
     print ' *** jt = ', jt
 
@@ -184,6 +185,17 @@ for jt in range(Nt):
 
     xcurl[1:nj-1,1:ni-1] =   ( xty[1:nj-1,2:ni]   - xty[1:nj-1,0:ni-2] ) / dlamx2 \
     - one_on_xcosphi[1:nj-1,1:ni-1]*( xtmp[2:nj,1:ni-1] -   xtmp[0:nj-2,1:ni-1] ) / dphix2
+
+
+    # If periodic East-West:
+    # Easter side:
+    xcurl[1:nj-1,ni-1] =   ( xty[1:nj-1,0]   - xty[1:nj-1,ni-2] ) / dlamx2 \
+    - one_on_xcosphi[1:nj-1,ni-1]*( xtmp[2:nj,ni-1] -   xtmp[0:nj-2,ni-1] ) / dphix2
+    # Western side:
+    xcurl[1:nj-1,0] =   ( xty[1:nj-1,1]   - xty[1:nj-1,ni-1] ) / dlamx2 \
+    - one_on_xcosphi[1:nj-1,0]*( xtmp[2:nj,0] -   xtmp[0:nj-2,0] ) / dphix2
+
+
 
     xcurl[:,:] = -1./radius_Earth * xcurl[:,:]
                                                 

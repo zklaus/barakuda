@@ -66,9 +66,17 @@ if cv_in == 'T2M':
     cpal_fld = 'ncview_nrl'
     cunit = r'$^{\circ}C$'
     cb_jump = 1
+
+if cv_in == 'CURL':
+    cfield = 'curl of 10m wind speed'
+    tmin=-0.1 ;  tmax=0.1   ;  dtemp = 0.05
+    roffset = 0.
+    cpal_fld = 'ncview_blue_red'
+    cunit = r'$s^{-1}$'
+    cb_jump = 1
     
 # curl:
-#    cpal_fld = 'ncview_blue_red'
+#    cpal_fld = 
 
 
 if cv_in == 'sosstsst':
