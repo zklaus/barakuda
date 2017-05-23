@@ -1,9 +1,9 @@
 #!/bin/bash
 
-file=CHR0_1d_1990_CURL.nc4
+file=CHR0_1d_1990_CURL.nc4 ; var=socurl
 
 #npj=20 ; istart=150 ; istop=365
-npj=10 ; istart=0 ; istop=365
+npj=73 ; istart=0 ; istop=364
 
 icpt=1
 jstrt=${istart}
@@ -13,7 +13,7 @@ while [ $((${jstrt}+${npj})) -le $((${istop}+${npj})) ]; do
 
 
     echo
-    CMD="~/DEV/barakuda/python/exec/movie_nemo_globe_ts.py ${file} socurl mesh_mask.nc ${jstrt} ${jstop}"
+    CMD="~/DEV/barakuda/python/exec/movie_nemo_globe_ts.py ${file} ${var} mesh_mask.nc ${jstrt} ${jstop}"
 
     echo ${CMD}
     
@@ -26,7 +26,7 @@ while [ $((${jstrt}+${npj})) -le $((${istop}+${npj})) ]; do
 #SBATCH -w gustafson
 #SBATCH -n 1
 #SBATCH -J PROJPLOT
-#SBATCH -t 5:50:00
+#SBATCH -t 11:50:00
 #SBATCH -o out_plot_globe_%J.out
 #SBATCH -e err_plot_globe%J.err
 ########
@@ -41,4 +41,3 @@ EOF
     jstrt=$((${jstop}))
     icpt=$((${icpt}+1))
 done
-

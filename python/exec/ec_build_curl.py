@@ -171,10 +171,7 @@ id_lat[:] = vlat[:]
 id_lon[:] = vlon[:]
 
 
-
-
-#for jt in range(Nt):
-for jt in range(8):
+for jt in range(Nt):
     
     print ' *** jt = ', jt
 
