@@ -29,6 +29,8 @@ import barakuda_colmap as bcm
 import barakuda_tool as bt
 
 nsts = 1 ; # sub time-steping for creating interpolated frames (smoother video)
+nspd = 4 ; # number of snapshots per day, 6 hourly => nspd = 4
+
 
 long_start = 0 ; # longitude to start the movie from...
 
@@ -166,14 +168,20 @@ jrot = -1 + jt0*nsts
 
 print '\n jt0, jtN =>', jt0, jtN, '\n'
 
+jday = 0
+
 for jt in range(jt0,jtN):
+    
+    cjt = '%3.3i'%(jt)
 
-    ct = '%3.3i'%(jt+1)
+    if jt % nspd == 0:
+        jday = jday + 1
+        cday = '%3.3i'%(jday)
+        cd = str(datetime.datetime.strptime('1990 '+cday, '%Y %j'))
+        cdate = cd[:10]
 
-    cd = str(datetime.datetime.strptime('1990 '+ct, '%Y %j'))
-    cdate = cd[:10] ; print ' *** Date :', cdate
-
-    print "\n *** Reading record #"+str(ct)+" of "+cv_in+" in "+cf_in
+    print '\n *** Date :', cdate
+    print " *** Reading record #"+str(cjt)+" of "+cv_in+" in "+cf_in
     id_fld = Dataset(cf_in)
     #if nsts > 1:
     #    if jt > jt0:
@@ -199,10 +207,10 @@ for jt in range(jt0,jtN):
         #if nsts > 1: XFLD[:,:] = XFLDt[:,:] + float(js)*dFdt
 
         jrot = jrot+1
-        rot = (long_start + (0.5/float(nsts)*float(jrot)))%360.
+        rot = (long_start + (0.5/float(nsts*nspd)*float(jrot)))%360.
         rot = -rot
 
-        cfig = 'figs/'+cv_in+'_IFS'+'_d'+ct+'_'+str(js)+'.'+fig_type    
+        cfig = 'figs/'+cv_in+'_IFS'+'_d'+cjt+'_'+str(js)+'.'+fig_type    
         
         print ' *** reference longitude =', rot
 
@@ -255,7 +263,7 @@ sys.exit(0)
     
 #    # Ice
 #    if not cfield in [ 'MLD', 'CURL']:
-#        print "Reading record #"+str(ct)+" of "+cv_ice+" in "+cf_ice
+#        print "Reading record #"+str(cjt)+" of "+cv_ice+" in "+cf_ice
 #        id_ice = Dataset(cf_ice)
 #        XICE  = id_ice.variables[cv_ice][jt,:,:] ; # t, y, x
 #        id_ice.close()
