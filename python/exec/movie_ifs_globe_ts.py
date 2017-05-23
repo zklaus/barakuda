@@ -65,7 +65,7 @@ if cv_in == 'T2M':
     roffset = -273.15
     cpal_fld = 'ncview_nrl'
     cunit = r'$^{\circ}C$'
-    cb_jump = 2
+    cb_jump = 1
     
 # curl:
 #    cpal_fld = 'ncview_blue_red'
@@ -205,9 +205,11 @@ for jt in range(jt0,jtN):
         
         print ' *** reference longitude =', rot
 
-        fig = plt.figure(num = 1, figsize=(rh,1.15*rh), dpi=None, facecolor='b', edgecolor='k')
+        fig = plt.figure(num = 1, figsize=(rh,1.17*rh), dpi=None, facecolor='b', edgecolor='k')
         #ax  = plt.axes([0.005, 0.005, 0.99, 0.99], axisbg = 'k')
-        ax  = plt.axes([0.005, 0.07, 0.99, 0.99], axisbg = 'k')
+        ax  = plt.axes([0.005, 0.05, 0.99, 0.99], axisbg = 'k')
+
+        plt.title('Atmosphere (IFS@'+CTATM+' coupled ORCA12): '+cfield+', '+cdate, **cfont_title)
 
         print ' *** Creating new projection'
         carte = Basemap(projection='ortho', lat_0=latitude, lon_0=rot, resolution='h')
@@ -233,9 +235,6 @@ for jt in range(jt0,jtN):
             cpt = cpt + 1
         clb.ax.set_xticklabels(cb_labs)
         clb.set_label(cunit, **cfont_clb)
-
-
-
         
         print ' *** Saving figure...'
         plt.savefig(cfig, dpi=160, orientation='portrait', transparent=True)
@@ -273,7 +272,7 @@ sys.exit(0)
 #    
 #    plt.axis([ 0, ni, 0, nj])
 #
-#    plt.title('NEMO: '+cfield+', coupled ORCA12-'+CTATM+', '+cdate, **cfont_title)
+#
 #
 #    ax2 = plt.axes([0.055, 0.067, 0.93, 0.025])
 #    clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')

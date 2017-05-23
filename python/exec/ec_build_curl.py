@@ -14,27 +14,25 @@ import string
 
 import barakuda_tool as bt
 
-
-cv_Vx='EWSS' ;# cv_Vx_i='Taux'
-cv_Vy='NSSS' ;# cv_Vy_i='Tauy'
-cv_tm='CURL'
+cv_crl='CURL'
 
 radius_Earth = 6371. ; #  km !!! Not m !!! => curl will be in XXX !!!
-
-
 to_rad = nmp.pi/180.
-
 
 #jt1=10
 #jt2=12
 
-if len(sys.argv) != 2:
-    print 'Usage: '+sys.argv[0]+' <FILE_TAU_X.nc>'
+if len(sys.argv) != 4:
+    print 'Usage: '+sys.argv[0]+' <FILE_VEC_V.nc> <name_Vx> <name_Vy>'
     sys.exit(0)
 
-cf_Vx   = sys.argv[1]
-cf_Vy = string.replace(cf_Vx, cv_Vx, cv_Vy)
-cf_crl = string.replace(cf_Vx, cv_Vx, cv_tm)
+cf_Vx = sys.argv[1]
+cv_Vx = sys.argv[2]
+cv_Vy = sys.argv[3]
+
+
+cf_Vy  = string.replace(cf_Vx, cv_Vx, cv_Vy)
+cf_crl = string.replace(cf_Vx, cv_Vx, cv_crl)
 
 
 print " cf_Vx = ", cf_Vx
@@ -42,10 +40,23 @@ print " cf_Vy = ", cf_Vy
 print " cf_crl = ", cf_crl
 print "\n"
 
+rmult = 1.
+
+if cv_Vx == 'EWSS':
+    rmult = 1000.
+    CUNIT_CRL= '???'
+    
+if cv_Vx == 'U10M':
+    rmult = 1.
+    CUNIT_CRL= 's^-1'
+
+
 
 #  TAUY
 #  ~~~~
-bt.chck4f(cf_Vy) ; f_Vy_in = Dataset(cf_Vy)
+bt.chck4f(cf_Vy)
+
+f_Vy_in = Dataset(cf_Vy)
 
 # Extracting the longitude and 1D array:
 vlon     = f_Vy_in.variables['lon'][:]
@@ -64,46 +75,45 @@ vtime     = f_Vy_in.variables['time'][:] ; cunt_time = f_Vy_in.variables['time']
 print 'TIME: ', cunt_time, '\n'
 
 # Extracting a variable, ex: "t" the 3D+T field of temperature:
-xty     = f_Vy_in.variables[cv_Vy][:,:,:]
+xty0    = f_Vy_in.variables[cv_Vy][0,:,:]
 cunt_Vy = f_Vy_in.variables[cv_Vy].units
 code_Vy = f_Vy_in.variables[cv_Vy].code
 ctab_Vy = f_Vy_in.variables[cv_Vy].table
 print cv_Vy+': ', cunt_Vy, code_Vy, ctab_Vy, '\n'
-f_Vy_in.close()
+
 
 
 
 # TAUX
 # ~~~
-bt.chck4f(cf_Vx) ; f_Vx_in = Dataset(cf_Vx)
-xtx     = f_Vx_in.variables[cv_Vx][:,:,:]
+bt.chck4f(cf_Vx)
+f_Vx_in = Dataset(cf_Vx)
+xtx0    = f_Vx_in.variables[cv_Vx][0,:,:]
 cunt_Vx = f_Vx_in.variables[cv_Vx].units
 code_Vx = f_Vx_in.variables[cv_Vx].code
 ctab_Vx = f_Vx_in.variables[cv_Vx].table
 print cv_Vx+': ', cunt_Vx, code_Vx, ctab_Vx, '\n'
-f_Vx_in.close()
+
 
 
 
 # Checking dimensions
 # ~~~~~~~~~~~~~~~~~~~
-dim_Vy = xty.shape ; dim_Vx = xtx.shape
+dim_Vy = xty0.shape ; dim_Vx = xtx0.shape
 if dim_Vy != dim_Vx:
     print 'Shape problem!!!'; print dim_Vy , dim_Vx
 
 print '\n'
-( Nt, nj, ni ) = dim_Vy
+Nt = len(vtime)
+(nj, ni) = dim_Vy
 print 'ni, nj, Nt = ', ni, nj, Nt
 
 
 
-# Building tm
+# Building Curl
 # ~~~~~~~~~~~
 
-xcurl = nmp.zeros(( Nt, nj, ni ))
-#xcurl = nmp.sqrt( xtx*xtx + xty*xty )
-
-
+xcurl = nmp.zeros(( nj, ni ))
 
 dlamx2 = 2.*(vlon[1] - vlon[0])*to_rad
 dphix2 = 2.*(vlat[0] - vlat[1])*to_rad
@@ -134,7 +144,7 @@ f_out.createDimension('time', None)
 id_lon = f_out.createVariable('lon','f4',('lon',))
 id_lat = f_out.createVariable('lat','f4',('lat',))
 id_tim = f_out.createVariable('time','f4',('time',))
-id_tm  = f_out.createVariable(cv_tm,'f4',('time','lat','lon',))
+id_crl  = f_out.createVariable(cv_crl,'f4',('time','lat','lon',))
 
 # Attributes
 id_tim.units = cunt_time
@@ -149,12 +159,12 @@ id_lon.standard_name = csnm_lon
 
 id_tim.units         = cunt_time
 
-id_tm.long_name = 'Module of surface wind stress TAUY and TAUX'
-id_tm.units = 'N/m^2'
-id_tm.code  = '???'
-id_tm.table = '128'
+id_crl.long_name = 'Curl of vector '+cv_Vx+' and '+cv_Vy
+id_crl.units = CUNIT_CRL
+id_crl.code  = '???'
+id_crl.table = '128'
 
-f_out.About = 'Created by L. Brodeau using TAUY and TAUX corresponding fields'
+f_out.About = 'Created by Barakuda using '+cv_Vx+' and '+cv_Vy+'.'
 
 # Filling variables:
 id_lat[:] = vlat[:]
@@ -164,21 +174,27 @@ id_lon[:] = vlon[:]
 
 
 for jt in range(Nt):
-
-
+    
     print ' *** jt = ', jt
 
-    xtmp[:,:] = xtx[jt,:,:] * xcosphi[:,:]
+    xty = rmult*f_Vy_in.variables[cv_Vy][jt,:,:]
+    xtx = rmult*f_Vx_in.variables[cv_Vx][jt,:,:]
 
-    xcurl[jt,1:nj-1,1:ni-1] =   ( xty[jt,1:nj-1,2:ni]   - xty[jt,1:nj-1,0:ni-2] ) / dlamx2 \
+    xtmp[:,:] = xtx[:,:] * xcosphi[:,:]
+
+    xcurl[1:nj-1,1:ni-1] =   ( xty[1:nj-1,2:ni]   - xty[1:nj-1,0:ni-2] ) / dlamx2 \
     - one_on_xcosphi[1:nj-1,1:ni-1]*( xtmp[2:nj,1:ni-1] -   xtmp[0:nj-2,1:ni-1] ) / dphix2
 
-    xcurl[jt,:,:] = -1./radius_Earth * xcurl[jt,:,:]
+    xcurl[:,:] = -1./radius_Earth * xcurl[:,:]
                                                 
     id_tim[jt]     = vtime[jt]
-    id_tm[jt,:,:]  = xcurl[jt,:,:] 
+    id_crl[jt,:,:] = xcurl[:,:] 
 
 f_out.close()
+
+f_Vx_in.close()
+f_Vy_in.close()
+
 
 print 'Bye!'
 

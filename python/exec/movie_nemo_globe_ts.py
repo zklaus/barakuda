@@ -149,7 +149,7 @@ jrot = -1 + jt0*nsts
 
 print '\n jt0, jtN =>', jt0, jtN, '\n'
 
-for jt in range(jt0,jtN):
+for jt in range(jt0,jtN+1):
 
     ct = '%3.3i'%(jt+1)
 
