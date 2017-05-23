@@ -64,21 +64,16 @@ if cv_in == 'T2M':
     tmin=-20. ;  tmax=35.   ;  dtemp = 5.
     roffset = -273.15
     cpal_fld = 'ncview_nrl'
-    cunit = r'$^{\circ}C$'
+    cunit = r'$[^{\circ}C]$'
     cb_jump = 1
 
 if cv_in == 'CURL':
-    cfield = 'curl of 10m wind speed'
-    tmin=-0.1 ;  tmax=0.1   ;  dtemp = 0.05
-    roffset = 0.
+    cfield = 'ROT(U10M)'
+    tmin=-0.1 ;  tmax=0.1   ;  dtemp = 0.025
     cpal_fld = 'ncview_blue_red'
-    cunit = r'$s^{-1}$'
+    cunit = r'$[s^{-1}]$'
     cb_jump = 1
     
-# curl:
-#    cpal_fld = 
-
-
 if cv_in == 'sosstsst':
     cfield = 'SST'
     tmin=-2. ;  tmax=28.   ;  dtemp = 1.
@@ -217,7 +212,7 @@ for jt in range(jt0,jtN):
         #ax  = plt.axes([0.005, 0.005, 0.99, 0.99], axisbg = 'k')
         ax  = plt.axes([0.005, 0.05, 0.99, 0.99], axisbg = 'k')
 
-        plt.title('Atmosphere (IFS@'+CTATM+' coupled ORCA12): '+cfield+', '+cdate, **cfont_title)
+        plt.title('Atmosphere (IFS@'+CTATM+' cpl ORCA12): '+cfield+', '+cdate, **cfont_title)
 
         print ' *** Creating new projection'
         carte = Basemap(projection='ortho', lat_0=latitude, lon_0=rot, resolution='h')
@@ -232,16 +227,17 @@ for jt in range(jt0,jtN):
         ax.annotate('L. Brodeau, brodeau@gmail.com', xy=(1, 4), xytext=(890, -150), **cfont_mail)
 
         # Colorbar:
-        ax2 = plt.axes([0.055, 0.06, 0.93, 0.025])
+        ax2 = plt.axes([0.005, 0.06, 0.99, 0.025])
         clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
-        cb_labs = [] ; cpt = 0
-        for rr in vc_fld:
-            if cpt % cb_jump == 0:
-                cb_labs.append(str(int(rr)))
-            else:
-                cb_labs.append(' ')
-            cpt = cpt + 1
-        clb.ax.set_xticklabels(cb_labs)
+        if cb_jump > 1:
+            cb_labs = [] ; cpt = 0
+            for rr in vc_fld:
+                if cpt % cb_jump == 0:
+                    cb_labs.append(str(int(rr)))
+                else:
+                    cb_labs.append(' ')
+                cpt = cpt + 1
+            clb.ax.set_xticklabels(cb_labs)
         clb.set_label(cunit, **cfont_clb)
         
         print ' *** Saving figure...'
@@ -251,7 +247,7 @@ for jt in range(jt0,jtN):
 
         del cf
 
-    if nsts > 1:del dFdt
+    #if nsts > 1:del dFdt
 
 sys.exit(0)
 

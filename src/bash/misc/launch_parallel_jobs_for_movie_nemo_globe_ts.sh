@@ -3,7 +3,7 @@
 file=CHR0_1d_1990_CURL.nc4
 
 #npj=20 ; istart=150 ; istop=365
-npj=15 ; istart=350 ; istop=365
+npj=10 ; istart=0 ; istop=365
 
 icpt=1
 jstrt=${istart}
