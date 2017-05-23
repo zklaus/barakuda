@@ -2,10 +2,8 @@
 
 #       B a r a K u d a
 #
-#  Prepare 2D maps (monthly) that will later become a GIF animation!
-#  NEMO output and observations needed
 #
-#    L. Brodeau, november 2016
+#    L. Brodeau, 2017
 
 import sys
 import os
@@ -204,7 +202,7 @@ for jt in range(jt0,jtN):
         rot = (long_start + (0.5/float(nsts)*float(jrot)))%360.
         rot = -rot
 
-        cfig = 'figs/'+cv_in+'_NEMO'+'_d'+ct+'_'+str(js)+'.'+fig_type    
+        cfig = 'figs/'+cv_in+'_IFS'+'_d'+ct+'_'+str(js)+'.'+fig_type    
         
         print ' *** reference longitude =', rot
 
@@ -275,7 +273,6 @@ sys.exit(0)
 #    cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm)
 #    
 #    plt.axis([ 0, ni, 0, nj])
-#
 #
 #
 #    ax2 = plt.axes([0.055, 0.067, 0.93, 0.025])

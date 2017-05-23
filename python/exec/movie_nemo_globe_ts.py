@@ -2,10 +2,8 @@
 
 #       B a r a K u d a
 #
-#  Prepare 2D maps (monthly) that will later become a GIF animation!
-#  NEMO output and observations needed
 #
-#    L. Brodeau, november 2016
+#    L. Brodeau, 2017
 
 import sys
 import os
