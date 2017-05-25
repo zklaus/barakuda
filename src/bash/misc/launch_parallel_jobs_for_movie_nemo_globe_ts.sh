@@ -3,7 +3,10 @@
 file=CHR0_1d_1990_CURL.nc4 ; var=socurl
 
 #npj=20 ; istart=150 ; istop=365
-npj=73 ; istart=0 ; istop=364
+#npj=73 ; istart=0 ; istop=364
+#npj=2 ; istart=69 ; istop=73
+#npj=2 ; istart=137 ; istop=146
+npj=2 ; istart=206 ; istop=219
 
 icpt=1
 jstrt=${istart}
@@ -17,14 +20,14 @@ while [ $((${jstrt}+${npj})) -le $((${istop}+${npj})) ]; do
 
     echo ${CMD}
     
-    csc=job_${icpt}.bash
+    csc=job_${icpt}.sub
 
     cat > ${csc} <<EOF
 #!/bin/bash
 #
 #######
 #SBATCH -w gustafson
-#SBATCH -n 1
+#SBATCH -n 2
 #SBATCH -J PROJPLOT
 #SBATCH -t 11:50:00
 #SBATCH -o out_plot_globe_%J.out

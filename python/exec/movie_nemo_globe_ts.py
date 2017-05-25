@@ -116,9 +116,9 @@ params = { 'font.family':'Ubuntu',
            'ytick.labelsize': int(12),
            'axes.labelsize':  int(12) }
 mpl.rcParams.update(params)
-cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':13 }
-cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18 }
-cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':10, 'color':'0.4' }
+cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':13, 'color':'white' }
+cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18, 'color':'white' }
+cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':10, 'color':'0.5'}
 
 
 # Colormaps for fields:
@@ -175,9 +175,8 @@ for jt in range(jt0,jtN):
         
         print ' *** reference longitude =', rot
 
-        fig = plt.figure(num = 1, figsize=(rh,1.17*rh), dpi=None, facecolor='b', edgecolor='k')
-        #ax  = plt.axes([0.005, 0.005, 0.99, 0.99], axisbg = 'k')
-        ax  = plt.axes([0.005, 0.05, 0.99, 0.99], axisbg = 'k')
+    	fig = plt.figure(num = 1, figsize=(rh,1.167*rh), dpi=None, facecolor='b', edgecolor='k')
+    	ax  = plt.axes([0.005, 0.05, 0.99, 0.99], axisbg = '0.35')
 
         plt.title('Ocean (NEMO@ORCA12 cpl IFS@'+CTATM+'): '+cfield+', '+cdate, **cfont_title)
 
@@ -190,7 +189,7 @@ for jt in range(jt0,jtN):
         print ' *** Ploting on map...'
         cf = carte.pcolor(x0, y0, XFLD, cmap=pal_fld, norm=norm_fld)
 
-        ax.annotate('L. Brodeau, brodeau@gmail.com', xy=(1, 4), xytext=(890, -150), **cfont_mail)
+        plt.annotate('L. Brodeau, brodeau@gmail.com', xy=(0.7, 0.1), xycoords='figure fraction', **cfont_mail)
 
         # Colorbar:
         ax2 = plt.axes([0.005, 0.06, 0.99, 0.025])
@@ -205,9 +204,12 @@ for jt in range(jt0,jtN):
                 cpt = cpt + 1
             clb.ax.set_xticklabels(cb_labs)
         clb.set_label(cunit, **cfont_clb)
+    	clb.ax.yaxis.set_tick_params(color='white') ; # set colorbar tick color    
+   	clb.outline.set_edgecolor('white') ; # set colorbar edgecolor     
+    	plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color='white') ; # set colorbar ticklabels
         
         print ' *** Saving figure...'
-        plt.savefig(cfig, dpi=160, orientation='portrait', transparent=True)
+        plt.savefig(cfig, dpi=160, orientation='portrait', facecolor='#06051F')
         print '  => '+cfig+' created!\n'
         plt.close(1)
 
@@ -215,55 +217,3 @@ for jt in range(jt0,jtN):
 
     del dFdt
 
-sys.exit(0)
-
-
-
-
-    
-#    # Ice
-#    if not cfield in [ 'MLD', 'CURL']:
-#        print "Reading record #"+str(ct)+" of "+cv_ice+" in "+cf_ice
-#        id_ice = Dataset(cf_ice)
-#        XICE  = id_ice.variables[cv_ice][jt,:,:] ; # t, y, x
-#        id_ice.close()
-#        print "Done!"
-#
-#        #XM[:,:] = XMSK[:,:] 
-#        #bt.drown(XICE, XM, k_ew=2, nb_max_inc=10, nb_smooth=10)
-#        #ci = plt.contourf(XICE[:,:], vcont_ice, cmap = pal_ice, norm = norm_ice) #
-#
-#        pice = nmp.ma.masked_where(XICE < rmin_ice, XICE)
-#        ci = plt.imshow(pice, cmap = pal_ice, norm = norm_ice) ; del pice, ci
-#        del XICE
-#
-#
-#    cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm)
-#    
-#    plt.axis([ 0, ni, 0, nj])
-#
-#
-#    ax2 = plt.axes([0.055, 0.067, 0.93, 0.025])
-#    clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
-#    #clb = plt.colorbar(cf, ticks=vc_fld, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40) #
-#    cb_labs = [] ; cpt = 0
-#    for rr in vc_fld:
-#        if cpt % cb_jump == 0:
-#            cb_labs.append(str(int(rr)))
-#        else:
-#            cb_labs.append(' ')
-#        cpt = cpt + 1
-#    clb.ax.set_xticklabels(cb_labs)
-#    clb.set_label(cunit, **cfont_clb)
-#
-#    del cf
-#
-#
-#    ax.annotate('laurent.brodeau@bsc.es', xy=(1, 4), xytext=(890, -150), **cfont_mail)
-#    
-#    plt.savefig(cfig, dpi=160, orientation='portrait', transparent=False)
-#    print cfig+' created!\n'
-#    plt.close(1)
-#
-#
-#    del cm, fig, ax, clb
