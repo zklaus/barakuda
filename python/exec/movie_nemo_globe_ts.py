@@ -188,7 +188,7 @@ for jt in range(jt0,jtN):
         
         print ' *** Ploting on map...'
         cf = carte.pcolor(x0, y0, XFLD, cmap=pal_fld, norm=norm_fld)
-        if lforce_mask: cc = carte.contour(x0, y0, XMSK, [ 0.1 ], colors='k', linewidths=0.5)
+        if lforce_mask: cc = carte.contour(x0, y0, XMSK, [ 0. ], colors='k', linewidths=0.75)
 
         plt.annotate('L. Brodeau, brodeau@gmail.com', xy=(0.7, 0.1), xycoords='figure fraction', **cfont_mail)
 
