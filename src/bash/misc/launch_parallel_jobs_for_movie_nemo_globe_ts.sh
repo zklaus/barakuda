@@ -9,10 +9,12 @@ FRQ="1d"
 
 
 #npj=20 ; istart=150 ; istop=365
-npj=73 ; istart=0 ; istop=364
+#npj=73 ; istart=0 ; istop=364
 #npj=2 ; istart=69 ; istop=73
 #npj=2 ; istart=137 ; istop=146
 #npj=2 ; istart=206 ; istop=219
+
+npj=5 ; istart=290 ; istop=365
 
 
 
