@@ -214,7 +214,7 @@ for jt in range(jt0,jtN):
         print '  => '+cfig+' created!\n'
         plt.close(1)
 
-        del cf
+        del cf, carte, x0, y0
 
     del dFdt
 
