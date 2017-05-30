@@ -671,12 +671,12 @@ function contains_string()
 }
 
 
-#lgzipped_file()
-#{
-#    lgz=false
-#    nc=`echo $1 | wc -c`
-#    ip=`expr ${nc} - 3`
-#    fc=`echo $1 | cut -c${ip}-`
-#    if [ "${fc}" = ".gz" ]; then lgz=true; fi
-#    echo ${lgz}
-#}
+sign_image()
+{
+    w_logo_desired=80 ; h_logo_desired=66 ; #h_logo_desired doesn't seem to matter!    
+    flogo=${BARAKUDA_ROOT}/src/html/logo.png
+    rw=`identify -format "%w" ${1}` ; #   rh=`identify -format "%h" ${1}`
+    rpx=$((${rw}-${w_logo_desired}))
+    composite -geometry ${w_logo_desired}x${h_logo_desired}+${rpx}+0 ${flogo} ${1} ${2}
+}
+
