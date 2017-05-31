@@ -145,24 +145,26 @@ while ${lcontinue}; do
     if [ $((${jyear}%${IFREQ_SAV_YEARS})) -eq 0 ]; then
         barakuda_check_year_is_complete  ; # lcontinue might be updated to false!
     fi    
-    echo; echo "Yeah! Year ${jyear} is saved..."; echo
-
-
+    echo; echo
+    
     CRT1M=${CPREF}${cyear}0101_${cyear}1231
-
+    
     if ${lcontinue}; then
 
+        echo "Yeah! Year ${jyear} is saved..."; echo
+
+        
         if [ ${ISTAGE} -eq 2 ]; then
             echo; echo "You cannot create figures and HTML pages yet!"
             echo " => finish treating the results first by launching barakuda.sh without the '-e' switch."
             exit
         fi
-
-        echo; echo; echo; echo
+        
+        echo; echo
         echo "*********************************************************************"
         echo "  Experiment ${EXP}: Will generate diagnostics and data for year ${cyear}..."
         echo "*********************************************************************"
-        echo ; echo
+        echo; echo
 
         barakuda_import_files
         
