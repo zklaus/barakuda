@@ -673,10 +673,9 @@ function contains_string()
 
 sign_image()
 {
-    w_logo_desired=80 ; h_logo_desired=66 ; #h_logo_desired doesn't seem to matter!    
+    w_logo_desired=40 ; h_logo_desired=33 ; #h_logo_desired doesn't seem to matter!    
     flogo=${BARAKUDA_ROOT}/src/html/logo.png
     rw=`identify -format "%w" ${1}` ; #   rh=`identify -format "%h" ${1}`
     rpx=$((${rw}-${w_logo_desired}))
     composite -geometry ${w_logo_desired}x${h_logo_desired}+${rpx}+0 ${flogo} ${1} ${2}
 }
-

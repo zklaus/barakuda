@@ -12,7 +12,7 @@
 
 ivt=1   ; # Create a climatology for VT
 iamoc=1 ; # Create a climatology for 2D lat-depth AMOC?
-ibpsi=0 ; # Create a climatology for barotropic stream function
+ibpsi=1 ; # Create a climatology for barotropic stream function
 icurl=1 ; # Create a climatology of the windstress curl
 
 export script=build_clim
