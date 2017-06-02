@@ -265,8 +265,8 @@ while [ ${jyear} -le ${Y2} ]; do
 
     if [ ${ibpsi} -eq 1 ]; then
         rm -f psi.nc
-        echo " *** CALLING: cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} V &"
-        cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} V &
+        echo " *** CALLING: cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} &"
+        cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} &
         echo
     fi
 

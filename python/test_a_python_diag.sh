@@ -4,7 +4,7 @@
 
 # Diag to test:
 # One at a time please!!!
-itrsig=1
+itrsig=0
 imhst=0
 iamoc=0
 icrosssect=0
@@ -16,6 +16,7 @@ iSflx=0
 ienso=0
 imov=0
 issh=0
+ipsi=1
 iwind=0
 its=0
 imld=0
@@ -37,9 +38,9 @@ ihov=0
 #ARCH="ece32_marenostrum"
 #export EXP="LR20" ; NC=nc4 ; jyear=2540
 
-CONFIG="ORCA025_L75"
-ARCH="uwe_oo"
-export EXP="HN71" ; NC=nc ; jyear=1990
+#CONFIG="ORCA025_L75"
+#ARCH="uwe_oo"
+#export EXP="HN71" ; NC=nc ; jyear=1990
 
 #CONFIG="ORCA025_L75"
 #ARCH="etienne"
@@ -56,6 +57,10 @@ export EXP="HN71" ; NC=nc ; jyear=1990
 #CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_triolith"
 #export EXP="LB30" ; NC=nc4 ; jyear=2010
+
+CONFIG="ORCA1_L75"
+ARCH="lolo"
+export EXP="LB3E" ; NC=nc4 ; jyear=1990
 
 
 
@@ -204,6 +209,10 @@ fi
 
 if [ ${issh} -eq 1 ]; then
     CMD="python exec/ssh.py ${y1_clim} ${y2_clim}"
+fi
+
+if [ ${ipsi} -eq 1 ]; then
+    CMD="python exec/psi.py ${y1_clim} ${y2_clim}"
 fi
 
 if [ ${iwind} -eq 1 ]; then

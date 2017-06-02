@@ -8,7 +8,6 @@ PROGRAM cdfpsi
    !!  **  Method   :  Compute the 2D fields ztrpu, ztrpv
    !!                  as the integral on the vertical of u, v on their
    !!                  respective points.
-   !!                  Then integrate from south to north : ==> psiu
    !!                  Then integrate from West to East   : ==> psiv
    !!                  (should be almost the same (if no error ))
    !!   Default (appropriate for global model): output psiu;
@@ -28,32 +27,41 @@ PROGRAM cdfpsi
    USE cdfio
    USE io_ezcdf
 
-   !! * Local variables
    IMPLICIT NONE
+
+   !INTEGER, PARAMETER :: nb_basins = 3
+   !CHARACTER(len=3), DIMENSION(3), PARAMETER :: cb_lab = (/ 'atl','pac','ind' /)
+   !CHARACTER(len=8), DIMENSION(3), PARAMETER :: cb_lgn = (/ 'Atlantic','Pacific ','Indian  ' /)
+   INTEGER, PARAMETER :: nb_basins = 2
+   CHARACTER(len=3), DIMENSION(nb_basins), PARAMETER :: cb_lab = (/ 'atl','pac' /)
+   CHARACTER(len=8), DIMENSION(nb_basins), PARAMETER :: cb_lgn = (/ 'Atlantic','Pacific' /)
+
    INTEGER   :: ji,jj,jk,jt                         !: dummy loop index
    INTEGER   :: ierr                                !: working integer
    INTEGER   :: narg, iargc                         !: command line
    INTEGER   :: npiglo,npjglo, npk, nt              !: size of the domain
    INTEGER   :: ncout
-   INTEGER, DIMENSION(1) ::  ipk, id_varout         !
+   INTEGER, DIMENSION(nb_basins) ::  ipk, id_varout         !
+   TYPE(variable), DIMENSION(nb_basins)  :: typvar         !: structure for attributes
 
    REAL(KIND=4), DIMENSION (:,:),   ALLOCATABLE ::  zmask, e1v, e2u, glamf, gphif
+   REAL(KIND=4), DIMENSION (:,:,:),   ALLOCATABLE ::  zmask_basin
    REAL(KIND=4) ,DIMENSION(:),      ALLOCATABLE ::  tim
 
-   REAL(4), DIMENSION(:,:,:), ALLOCATABLE :: E3U_3D, E3V_3D, U_3D, V_3D
+   REAL(4), DIMENSION(:,:,:), ALLOCATABLE :: E3V_3D, V_3D
 
 
-   REAL(KIND=8),   DIMENSION (:,:), ALLOCATABLE :: ztrpu, ztrpv, psiu, psiv
+   REAL(KIND=8),   DIMENSION (:,:), ALLOCATABLE ::  ztrpv, psiv
 
    CHARACTER(LEN=256) :: cfileu ,cfilev, cfileoutnc='psi.nc', ctim
    CHARACTER(LEN=256) :: cf_mm='mesh_mask.nc'
+   CHARACTER(LEN=256) :: cf_bm='new_maskglo.nc'
    CHARACTER(LEN=1)  :: coption
 
-   TYPE(variable), DIMENSION(1)  :: typvar         !: structure for attributes
 
    CHARACTER(LEN=64) :: cv_u, cv_v
 
-   INTEGER    :: istatus
+   INTEGER    :: istatus, jb
 
    INTEGER :: idf_0=0, idv_0=0,        &
       &    idf_u=0, idv_u=0, idf_v=0, idv_v=0
@@ -63,10 +71,10 @@ PROGRAM cdfpsi
    !!  Read command line and output usage message if not compliant.
    narg= iargc()
    IF ( narg == 0 ) THEN
-      PRINT *,' Usage : cdfpsi  Ufile Vfile nameU nameV <V> (optional argument)'
+      PRINT *,' Usage : cdfpsi  Ufile Vfile nameU nameV (optional argument)'
       PRINT *,' Computes the barotropic stream function as the integral of the transport'
       PRINT *,' PARTIAL CELLS VERSION'
-      PRINT *,' Files mesh_hgr.nc, mesh_zgr.nc ,mask.nc must be in te current directory'
+      PRINT *,' Files mesh_mask.nc and new_maskglo.nc must be in te current directory'
       PRINT *,' Output on psi.nc, variables sobarstf on f-points'
       PRINT *,' Default works well for a global ORCA grid. use V 3rdargument for North Atlantic'
       STOP
@@ -76,7 +84,6 @@ PROGRAM cdfpsi
    CALL getarg (2, cfilev  )
    CALL getarg (3, cv_u)
    CALL getarg (4, cv_v)
-   CALL getarg (5, coption )
 
    npiglo= getdim (cfileu,'x')
    npjglo= getdim (cfileu,'y')
@@ -85,17 +92,21 @@ PROGRAM cdfpsi
    ctim = 'none'
    nt    = getdim (cfileu,'time',cdtrue=ctim,kstatus=istatus) !LB
 
-   ! define new variables for output ( must update att.txt)
-   typvar(1)%name= 'sobarstf'
-   typvar(1)%units='m3/s'
-   typvar(1)%missing_value=0.
-   typvar(1)%valid_min= -300.e6
-   typvar(1)%valid_max= 300.e6
-   typvar(1)%long_name='Barotropic_Stream_Function'
-   typvar(1)%short_name='sobarstf'
-   typvar(1)%online_operation='N/A'
-   typvar(1)%axis='TYX'
-   ipk(1) = 1  !  2D ( X, Y , T )
+   !lolo
+   DO jb = 1, nb_basins
+      ! define new variables for output ( must update att.txt)
+      typvar(jb)%name='psi_'//TRIM(cb_lab(jb))
+      typvar(jb)%units='10^6 m^3/s'
+      typvar(jb)%missing_value=-9999.
+      typvar(jb)%valid_min= -300.e6
+      typvar(jb)%valid_max= 300.e6
+      typvar(jb)%long_name='Barotropic_Stream_Function_'//TRIM(cb_lgn(jb))
+      typvar(jb)%short_name='psi_'//TRIM(cb_lab(jb))
+      typvar(jb)%online_operation='N/A'
+      typvar(jb)%axis='TYX'
+      ipk(jb) = 1  !  2D ( X, Y , T )
+   END DO
+
 
    PRINT *, 'npiglo=', npiglo
    PRINT *, 'npjglo=', npjglo
@@ -103,17 +114,10 @@ PROGRAM cdfpsi
    PRINT *, 'nt   =', nt !LB
 
 
-   IF ( coption == 'V') PRINT *, ' Use psiv (ex. North Atlantic case)'
-
    ! Allocate arrays
-   ALLOCATE ( zmask(npiglo,npjglo) )
-   ALLOCATE ( e1v(npiglo,npjglo), e2u(npiglo,npjglo), E3U_3D(npiglo,npjglo,npk), E3V_3D(npiglo,npjglo,npk))
-   IF ( coption == 'V' ) THEN
-      ALLOCATE ( V_3D(npiglo,npjglo,npk) )
-   ELSE
-      ALLOCATE ( U_3D(npiglo,npjglo,npk) )
-   END IF
-   ALLOCATE ( ztrpu(npiglo,npjglo), psiu(npiglo,npjglo) )
+   ALLOCATE ( zmask(npiglo,npjglo), zmask_basin(npiglo,npjglo,nb_basins) )
+   ALLOCATE ( e1v(npiglo,npjglo), e2u(npiglo,npjglo), E3V_3D(npiglo,npjglo,npk))
+   ALLOCATE ( V_3D(npiglo,npjglo,npk) )
    ALLOCATE ( ztrpv(npiglo,npjglo), psiv(npiglo,npjglo))
    ALLOCATE ( glamf(npiglo,npjglo), gphif(npiglo,npjglo))
    ALLOCATE ( tim(nt) ) !LB
@@ -123,7 +127,7 @@ PROGRAM cdfpsi
 
    ! create output fileset
    ncout =create(cfileoutnc, cfileu, npiglo,npjglo,1)
-   ierr= createvar(ncout ,typvar,1, ipk,id_varout )
+   ierr= createvar(ncout ,typvar,nb_basins, ipk,id_varout )
    ierr= putheadervar(ncout, cfileu,npiglo, npjglo,1,glamf, gphif)
    tim=getvar1d(cfileu,trim(ctim),nt) !LB
    ierr=putvar1d(ncout,tim,nt,'T') !LB
@@ -136,64 +140,52 @@ PROGRAM cdfpsi
 
 
    ! get e3u, e3v  at all levels
-   CALL GETVAR_3D(idf_0, idv_0, cf_mm, 'e3u_0', 0, 0, E3U_3D) ; idf_0 = 0. ; idv_0 = 0.
    CALL GETVAR_3D(idf_0, idv_0, cf_mm, 'e3v_0', 0, 0, E3V_3D) ; idf_0 = 0. ; idv_0 = 0.
 
    ! get rid of the free-slip/no-slip condition
    WHERE ( zmask >= 2 ) zmask = 1
 
 
-   
+
    DO jt=1,nt
 
       PRINT *, ' * [cdfpsi] jt = ', jt
-      
-      IF ( coption == 'V' ) THEN
-         CALL GETVAR_3D(idf_v, idv_v, cfilev, cv_v, nt, jt, V_3D)
-      ELSE
-         CALL GETVAR_3D(idf_u, idv_u, cfileu, cv_u, nt, jt, U_3D)
-      END IF
 
-      ztrpu(:,:)= 0.d0
-      ztrpv(:,:)= 0.d0
+      CALL GETVAR_3D(idf_v, idv_v, cfilev, cv_v, nt, jt, V_3D)
 
-      DO jk = 1,npk
-         !PRINT *,'level ',jk
-         IF ( coption == 'V' ) THEN
-            !lolo zv(:,:)= getvar(cfilev, cv_v,  jk ,npiglo,npjglo,  ktime=jt) !LB
-            !loloe3v(:,:) = getvar(cf_mm, 'e3v_ps', jk,npiglo,npjglo, ldiom=.true.)
+      !! Loop over basins:
+      DO jb = 1, nb_basins
+         
+         PRINT *, ''
+         
+         IF ( jt == 1 ) THEN
+            PRINT *, ' Getting mask for basin ', TRIM(cb_lgn(jb)),' => ', TRIM(cb_lab(jb))
+            zmask_basin(:,:,jb) = getvar(cf_bm, 'tmask'//TRIM(cb_lab(jb)), 1,npiglo,npjglo) * zmask(:,:)
+         END IF
+         
+         ztrpv(:,:)= 0.d0
+         !psiv(npiglo,:)= 0.d0
+         psiv(:,:) = 0.d0
+
+         DO jk = 1,npk
             ztrpv(:,:) = ztrpv(:,:) + V_3D(:,:,jk)*e1v(:,:)*E3V_3D(:,:,jk)  ! meridional transport of each grid cell
-         ELSE
-            ! Get zonal velocity  at jk
-            !lolo zu(:,:)= getvar(cfileu, cv_u,  jk ,npiglo,npjglo,  ktime=jt) !LB
-            ! get e3v at level jk
-            !loloe3u(:,:) = getvar(cf_mm, 'e3u_ps', jk,npiglo,npjglo, ldiom=.true.)
-            ! integrates vertically
-            ztrpu(:,:) = ztrpu(:,:) + U_3D(:,:,jk)*e2u(:,:)*E3U_3D(:,:,jk)  ! zonal transport of each grid cell
-         ENDIF
-      END DO  ! loop to next level
+         END DO  ! loop to next level
 
-      IF (coption == 'V' ) THEN
-         ! integrate zonally from east to west
-         psiv(npiglo,:)= 0.0
-         DO ji=npiglo-1,1,-1
+
+         ! integrate zonally from east to west            
+         DO ji = npiglo-1, 1, -1
             psiv(ji,:) = psiv(ji+1,:) - ztrpv(ji,:)  ! psi at f point
          END DO
-         psiv(:,:) = psiv(:,:) *zmask(:,:)
-         ierr = putvar(ncout, id_varout(1) ,SNGL(psiv),   1, npiglo, npjglo, jt) !LB
+         psiv(:,:) = 1.E-6 * psiv(:,:)*zmask_basin(:,:,jb)
+         WHERE ( zmask_basin(:,:,jb) == 0. ) psiv(:,:) = -9999.
+         WHERE ( psiv(:,:) < -10000. ) psiv(:,:) = 0.
+            
+         ierr = putvar(ncout, id_varout(jb), SNGL(psiv), 1, npiglo, npjglo, jt) !LB
+            
+      END DO  ! DO jb = 1, nb_basins
 
-      ELSE
-         ! integrate from the south to the north with zonal transport
-         psiu(:,:) = 0.d0
-
-         DO jj = 2, npjglo
-            psiu(:,jj) = psiu(:,jj-1) - ztrpu(:,jj)   ! psi at f point
-         END DO
-         psiu(:,:) = (psiu(:,:) -psiu(npiglo,npjglo) ) * zmask(:,:)
-         ierr = putvar(ncout, id_varout(1) ,SNGL(psiu),   1, npiglo, npjglo, jt) !LB
-      ENDIF
-
-   END DO
+   END DO  ! DO jt=1,nt
+   
 
    istatus = closeout (ncout)
 
