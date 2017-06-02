@@ -34,7 +34,7 @@ PROGRAM cdfpsi
    !CHARACTER(len=8), DIMENSION(3), PARAMETER :: cb_lgn = (/ 'Atlantic','Pacific ','Indian  ' /)
    INTEGER, PARAMETER :: nb_basins = 2
    CHARACTER(len=3), DIMENSION(nb_basins), PARAMETER :: cb_lab = (/ 'atl','pac' /)
-   CHARACTER(len=8), DIMENSION(nb_basins), PARAMETER :: cb_lgn = (/ 'Atlantic','Pacific' /)
+   CHARACTER(len=8), DIMENSION(nb_basins), PARAMETER :: cb_lgn = (/ 'Atlantic','Pacific ' /)
 
    INTEGER   :: ji,jj,jk,jt                         !: dummy loop index
    INTEGER   :: ierr                                !: working integer
