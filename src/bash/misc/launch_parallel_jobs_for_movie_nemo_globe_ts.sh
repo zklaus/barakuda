@@ -1,31 +1,30 @@
 #!/bin/bash
 
 
-VAR=socurl ; GT=CURL; DIR_NEMO_DATA="."
+DIR_NEMO_DATA=/scratch/Earth/lbrodeau/ORCA12-T1279/CHR0/extracted_nemo
 
-FRQ="1d"
-
-
+#file=${DIR}/CHR0_1d_1990_${GRID}.nc4                                                                
 
 
-#npj=20 ; istart=150 ; istop=365
-#npj=73 ; istart=0 ; istop=364
-#npj=2 ; istart=69 ; istop=73
-#npj=2 ; istart=137 ; istop=146
-#npj=2 ; istart=206 ; istop=219
+#VAR=socurl ; file=${DIR_NEMO_DATA}/CHR0_1d_1990_CURL.nc4
+VAR=sosstsst ; file=${DIR_NEMO_DATA}/${VAR}_CHR0_1990.nc
 
-npj=5 ; istart=290 ; istop=365
+#npj=20 ; istart=1 ; istop=99
+#npj=20 ; istart=100 ; istop=199
+npj=20 ; istart=199 ; istop=300
+
+#npj=8 ; istart=300 ; istop=364
 
 
 
-file=${DIR_NEMO_DATA}/CHR0_${FRQ}_1990_${GT}.nc4
+
 
 
 icpt=1
-jstrt=${istart}
+jstrt=$((${istart}-1))
 
 while [ $((${jstrt}+${npj})) -le $((${istop}+${npj})) ]; do
-    jstop=$((${jstrt}+${npj}-1))
+    jstop=$((${jstrt}+${npj}))
 
 
     echo
@@ -54,6 +53,6 @@ EOF
     echo "sbatch ./${csc}"
     sbatch ./${csc}
     sleep 1    
-    jstrt=$((${jstop}+1))
+    jstrt=${jstop}
     icpt=$((${icpt}+1))
 done

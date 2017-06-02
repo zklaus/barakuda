@@ -66,7 +66,7 @@ if cv_in == 'socurl':
     
 if cv_in == 'sosstsst':
     cfield = 'SST'
-    tmin=-2. ;  tmax=28.   ;  dtemp = 1.
+    tmin=-2. ;  tmax=32.   ;  dtemp = 1.
     cpal_fld = 'ncview_nrl'    
     cunit = r'[$^{\circ}C$]'
     cb_jump = 2
