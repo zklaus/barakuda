@@ -279,7 +279,7 @@ else
 
         echo; echo
         echo "Diagnostic page installed on remote host ${RHOST} in ${RWWWD}/${BASE_NAME}!"
-        echo "( Also browsable on local host in `pwd` )"
+        echo "( Also browsable on local host in `pwd`/${BASE_NAME} )"
 
     else
 
