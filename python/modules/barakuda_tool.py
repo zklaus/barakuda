@@ -648,3 +648,26 @@ def test_nb_years(vt, cd):
         sys.exit(0)
     ttick = iaxe_tick(nb_y)
     return (nb_y, nb_m, nb_rec, ttick)
+
+
+
+def var_and_signs( csin ):
+    # Ex: if csin = 'Qsol+Qr-Qlat-Qsens' (or '+Qsol+Qr-Qlat-Qsens')
+    #     this function will return:
+    #     ['Qsol', 'Qr', 'Qlat', 'Qsens'] , [1.0, 1.0, -1.0, -1.0]
+    from re import split as splt
+    #
+    sgn1 = '+'
+    cvar = splt('\-|\+',csin)
+    if cvar[0] == '':
+        if csin[0] == '-': sgn1 = '-'
+        cvar = cvar[1:]
+    ccum = ''
+    for cc in cvar: ccum=ccum+'|'+cc
+    ccum = ccum+'|'
+    ctt=splt("'"+ccum+"'",csin)
+    csgn = ctt[:-1]
+    isgn = []
+    for cs in csgn: isgn.append(float(cs+'1'))
+    return cvar, isgn
+    

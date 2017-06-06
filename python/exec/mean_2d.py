@@ -78,11 +78,13 @@ l_htf = False
 if cfe_sflx in vdic['NEMO_SAVED_FILES']:
     if vdic['NN_FWF']  != 'X':
         l_fwf = True
-        cvfwf = vdic['NN_FWF'].split('+') ; print ' cvfwf => ', cvfwf ; # might be the sum of variables
+        cvfwf, isfwf = bt.var_and_signs(vdic['NN_FWF'])
+        print ' cvfwf => ', cvfwf ; # might be the sum (+/-) of variables
         
     if vdic['NN_QNET'] != 'X':
         l_htf = True
-        cvhtf = vdic['NN_QNET'].split('+') ; print ' cvhtf => ', cvhtf ; # might be the sum of variables
+        cvhtf, ishtf = bt.var_and_signs(vdic['NN_QNET'])
+        print ' cvhtf => ', cvhtf ; # might be the sum of variables
 
     cf_F_in = replace(cf_T_in, 'grid_T', cfe_sflx)
 
@@ -147,8 +149,8 @@ if l_htf:
         if  cv_qnt in list_variables[:]:
             l_qnt = True
             if jv == 0: QNT_m = nmp.zeros((Nt,nj,ni))
-            print '        * Adding '+cv_qnt+' to Qnet!'
-            QNT_m[:,:,:] = id_in.variables[cv_qnt][:,:,:] + QNT_m[:,:,:]
+            print '        * Adding '+str(ishtf[jv])+'*'+cv_qnt+' to Qnet!'
+            QNT_m[:,:,:] = id_in.variables[cv_qnt][:,:,:] + ishtf[jv]*QNT_m[:,:,:]
             jv=jv+1
 
     l_qsr = False
@@ -170,8 +172,8 @@ if l_htf:
     
         cf_out   = vdic['DIAG_D']+'/mean_htf_'+CONFEXP+'_GLO.nc'
         bnc.wrt_appnd_1d_series(vtime, vqnt, cf_out, 'Qnet',
-                                cu_t='year', cu_d='PW', cln_d ='Globally averaged net heat flux (nemo:'+cv_qnt+')',
-                                vd2=vqsr, cvar2='Qsol', cln_d2='Globally averaged net solar heat flux (nemo:'+cv_qsr+')')
+                                cu_t='year', cu_d='PW', cln_d ='Globally averaged net heat flux (nemo:'+vdic['NN_QNET']+')',
+                                vd2=vqsr, cvar2='Qsol', cln_d2='Globally averaged net solar heat flux (nemo:'+vdic['NN_QSOL']+')')
     print ' +++ '+cnexec+' => Done with heat flux diags!\n'
 
 
@@ -185,11 +187,11 @@ if l_fwf:
     print '\n\n +++ '+cnexec+' => Starting freshwater flux diags!'
 
     #cv_fwf = vdic['NN_FWF']
-    cv_emp = vdic['NN_EMP']
+    #cv_emp = vdic['NN_EMP']
     cv_prc = vdic['NN_P']
     cv_rnf = vdic['NN_RNF']
     cv_clv = vdic['NN_CLV']
-    cv_evp = vdic['NN_E']
+    #cv_evp = vdic['NN_E']
     
     id_in = Dataset(cf_F_in)
     list_variables = id_in.variables.keys()
@@ -199,20 +201,33 @@ if l_fwf:
     for cv_fwf in cvfwf:
         if not cv_fwf in list_variables[:]: print 'PROBLEM with fwf! '+cnexec+'!'; sys.exit(0)
         if jv == 0: FWF_m = nmp.zeros((Nt,nj,ni))
-        print '        * Adding '+cv_fwf+' to E-P-R!'
-        FWF_m[:,:,:] = id_in.variables[cv_fwf][:,:,:] + FWF_m[:,:,:]
+        print '        * Adding '+str(isfwf[jv])+'*'+cv_fwf+' to E-P-R!'
+        FWF_m[:,:,:] = id_in.variables[cv_fwf][:,:,:] + isfwf[jv]*FWF_m[:,:,:]
         jv=jv+1
+
+    # E (possible sum!)
+    if vdic['NN_E']  != 'X':
+        cvevp, isevp = bt.var_and_signs(vdic['NN_E'])
+        print ' cvevp => ', cvevp ; # might be the sum of variables
+        l_evp = True
+        jv=0
+        for cv_evp in cvevp:
+            if jv == 0: EVP_m = nmp.zeros((Nt,nj,ni))
+            print '        * Adding '+str(isevp[jv])+'*'+cv_evp+' to E!'
+            EVP_m[:,:,:] = id_in.variables[cv_evp][:,:,:] + isevp[jv]*EVP_m[:,:,:]
+            jv=jv+1
 
     # E - P (possible sum!)
     l_emp = False
     if vdic['NN_EMP']  != 'X':
-        cvemp = vdic['NN_EMP'].split('+') ; print ' cvemp => ', cvemp ; # might be the sum of variables
+        cvemp, isemp = bt.var_and_signs(vdic['NN_EMP'])
+        print ' cvemp => ', cvemp ; # might be the sum of variables
         l_emp = True
         jv=0
         for cv_emp in cvemp:
             if jv == 0: EMP_m = nmp.zeros((Nt,nj,ni))
-            print '        * Adding '+cv_emp+' to E-P!'
-            EMP_m[:,:,:] = id_in.variables[cv_emp][:,:,:] + EMP_m[:,:,:]
+            print '        * Adding '+str(isemp[jv])+'*'+cv_emp+' to E-P!'
+            EMP_m[:,:,:] = id_in.variables[cv_emp][:,:,:] + isemp[jv]*EMP_m[:,:,:]
             jv=jv+1
 
     # P
@@ -236,12 +251,6 @@ if l_fwf:
         CLV_m = id_in.variables[cv_clv][:,:,:]
         print '   *** Calving ('+cv_clv+') read!'
 
-    # E
-    l_evp = False
-    if  cv_evp in list_variables[:]:
-        l_evp = True
-        EVP_m = id_in.variables[cv_evp][:,:,:]
-        print '   *** Calving ('+cv_evp+') read!'
 
     id_in.close()
 
@@ -271,12 +280,12 @@ if l_fwf:
     cf_out   = vdic['DIAG_D']+'/mean_fwf_'+CONFEXP+'_GLO.nc'
 
     bnc.wrt_appnd_1d_series(vtime, vfwf, cf_out, 'EmPmR',
-                            cu_t='year', cu_d='Sv',  cln_d ='Globally averaged net freshwater flux (nemo:'+cv_fwf+')',
-                            vd2=vemp, cvar2='EmP',   cln_d2='Globally averaged Evap - Precip (nemo:'+cv_emp+')',
-                            vd3=vrnf, cvar3='R',     cln_d3='Globally averaged continental runoffs',
-                            vd4=vprc, cvar4='P',     cln_d4='Globally averaged total precip (nemo:'+cv_prc+')',
-                            vd5=vclv, cvar5='ICalv', cln_d5='Globally averaged ice calving from icebergs (nemo:'+cv_clv+')',
-                            vd6=vevp, cvar6='E',     cln_d6='Globally averaged evaporation (nemo:'+cv_evp+')')
+                            cu_t='year', cu_d='Sv',  cln_d ='Globally averaged net freshwater flux (nemo:'+vdic['NN_FWF']+')',
+                            vd2=vemp, cvar2='EmP',   cln_d2='Globally averaged Evap - Precip (nemo:'+vdic['NN_EMP']+')',
+                            vd3=vrnf, cvar3='R',     cln_d3='Globally averaged continental runoffs (nemo:'+vdic['NN_RNF']+')',
+                            vd4=vprc, cvar4='P',     cln_d4='Globally averaged total precip (nemo:'+vdic['NN_P']+')',
+                            vd5=vclv, cvar5='ICalv', cln_d5='Globally averaged ice calving from icebergs (nemo:'+vdic['NN_CLV']+')',
+                            vd6=vevp, cvar6='E',     cln_d6='Globally averaged evaporation (nemo:'+vdic['NN_E']+')')
 
     print ' +++ '+cnexec+' => Done with freshwater flux diags!\n'
 
