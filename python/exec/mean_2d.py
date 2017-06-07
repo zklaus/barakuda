@@ -74,6 +74,7 @@ id_mm.close()
 cfe_sflx = vdic['FILE_FLX_SUFFIX']
 l_fwf = False
 l_htf = False
+l_evp = False
 
 if cfe_sflx in vdic['NEMO_SAVED_FILES']:
     if vdic['NN_FWF']  != 'X':
@@ -206,6 +207,7 @@ if l_fwf:
         jv=jv+1
 
     # E (possible sum!)
+    l_evp = False
     if vdic['NN_E']  != 'X':
         cvevp, isevp = bt.var_and_signs(vdic['NN_E'])
         print ' cvevp => ', cvevp ; # might be the sum of variables
