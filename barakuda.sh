@@ -362,9 +362,7 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Solid freshwater transport through sections due to sea-ice drift
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        echo "LOLO: before, i_do_ice=${i_do_ice}, i_do_trsp_ice=${i_do_trsp_ice}"
         if [ ${i_do_ice} -gt 0 ] && [ ${i_do_trsp_ice} -eq 1 ]; then
-            echo "LOLO: in!!!"
             echo; echo; echo "Solid freshwater transport through sections due to sea-ice drift"
             if [ -z ${TRANSPORT_SECTION_FILE_ICE} ]; then
                 echo "Please specify which TRANSPORT_SECTION_FILE_ICE to use into the config file!" ; exit
@@ -540,13 +538,6 @@ if [ ${ISTAGE} -eq 2 ]; then
     y1=`cat ${DIAG_D}/first_year.info`
     y2=`cat ${DIAG_D}/last_year_done.info`
     nby=$((${y2}-${y1}+1))
-
-    if [ ${IFREQ_SAV_YEARS} -gt 1 ]; then
-        fnamelist=namelist.${cy1m}-${cy2m}
-    else
-        fnamelist=namelist.${cy2}
-    fi
-
 
     # Agreement between last year from output files and 'fcompletion' file:
     ydum=`cat ${fcompletion}`
@@ -885,8 +876,8 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     . ${BARAKUDA_ROOT}/src/bash/build_html.bash
 
-    
     wait
+
     # Building main index.html 
     build_index_html
     
@@ -911,7 +902,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         cp -L ${BARAKUDA_ROOT}/src/html/logo_ece.png ${HTML_DIR}/logo.png
     fi
     
-    mv -f index.html ${HTML_DIR}/
+    mv -f index.html namelist*.html ${HTML_DIR}/
 
     cp -r ${DIRS_2_EXP} ${HTML_DIR}/ >/dev/null 2>/dev/null
 
@@ -924,7 +915,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         ssh ${RUSER}@${RHOST} "mkdir -p ${RWWWD}"
         scp ${send_dir}.tar ${RUSER}@${RHOST}:${RWWWD}/
         ssh ${RUSER}@${RHOST} "cd ${RWWWD}/; rm -rf ${send_dir}; tar xf ${send_dir}.tar 2>/dev/null; rm -f ${send_dir}.tar; \
-            chmod -R a+r ${send_dir}; cd ${send_dir}/; source-highlight -i ${fnamelist} -s fortran -o namelist.html"
+                               chmod -R a+r ${send_dir}; cd ${send_dir}/"
         echo; echo
         echo "Diagnostic page installed on  http://${RHOST}${RWWWD}/${send_dir}/ !"
         echo "( Also browsable on local host in ${DIAG_D}/${send_dir} )"

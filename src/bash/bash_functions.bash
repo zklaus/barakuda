@@ -176,6 +176,20 @@ function barakuda_setup()
 
     export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<Y_INI_EC>|${Y_INI_EC}|g"`
     if [ ! -d ${NEMO_OUT_D} ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi
+    
+    # Where to look for NEMO namelists:
+    if [ ${ece_exp} -eq 0 ]; then
+        # NEMO standalone:
+        export NAMELIST_DIR=${NEMO_OUT_D}
+    elif [ ${ece_exp} -gt 0 ] && [ ${ece_exp} -lt 10 ]; then
+        # EC-Earth classic mode:
+        export NAMELIST_DIR=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo||g"`
+    else
+        # EC-Earth autosubmit mode TO FIX! :
+        echo; echo " WARNING ('barakuda_setup' of bash_functions.bash): don't know where to get NEMO namelists! "
+    fi
+    echo; echo " *** NAMELIST_DIR = ${NAMELIST_DIR} "; echo
+    
 
     echo; echo " * Config to be used: ${CONFIG} => ORCA grid is ${ORCA}"
     echo " * Experiment is ${EXP} "; echo " * Files are stored into ${NEMO_OUT_D}"; echo; sleep 2
