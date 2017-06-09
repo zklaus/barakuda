@@ -28,7 +28,7 @@ export NEMO_OUT_STRCT="/proj/bolinc/users/x_laubr/run/<EXP>/output/nemo"
 export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/proj/bolinc/users/x_laubr/ORCA025.L75/ORCA025.L75-I"
+export CONF_INI_DIR="/proj/bolinc/users/x_laubr/input_barakuda/ORCA025.L75_barakuda"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="/scratch/local/<JOB_ID>"
@@ -125,19 +125,21 @@ export MM_FILE=${CONF_INI_DIR}/mesh_mask_ORCA025.L75_ece3.2_2017.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA025_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
-export F_T_OBS_3D_12=${CONF_INI_DIR}/barakuda_clim/thetao_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
-export F_S_OBS_3D_12=${CONF_INI_DIR}/barakuda_clim/so_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
-export F_SST_OBS_12=${CONF_INI_DIR}/barakuda_clim/sst_1x1-ORCA025_Reynolds_mnth_1982-2005.nc4
+export NM_TS_OBS="EN4.2.0 [1990-2010]"
+export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
+export F_S_OBS_3D_12=${CONF_INI_DIR}/so_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
+export F_SST_OBS_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
 export NN_T_OBS="thetao"
 export NN_S_OBS="so"
-export NN_SST_OBS="sst"
-
-export F_ICE_OBS_12=${CONF_INI_DIR}/barakuda_clim/ice_cover_180x360-ORCA025_Hurrell_monthly_mean1980-1999.nc4
+export NN_SST_OBS="thetao"
+#
+export NM_IC_OBS="Hurrell et al 2008 [1980-1999]"
+export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA025_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_OBS="ice_cover"
 
 
 # A text file where the cross sections (to compute transports) are defined :
-export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_y1050.dat"
+export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_y1050.dat"        ; # set i_do_trsp=1 !
 export TRANSPORT_SECTION_FILE_ICE="${BARAKUDA_ROOT}/data/transport_ice_ORCA025_y1050.dat"  ; # set i_do_trsp_ice=1 !
 
 # For transport by sigma-class:
@@ -169,7 +171,7 @@ export iffmpeg_x264=0 ; # is, by chance, ffmpeg with support for x264 encoding a
 export i_do_mean=1
 
 # IFS surface fluxes of heat and freshwater
-export i_do_ifs_flx=1 ; # only relevant when ece_exp=2...
+export i_do_ifs_flx=0 ; # only relevant when ece_exp=2...
 
 # AMOC:
 export i_do_amoc=1

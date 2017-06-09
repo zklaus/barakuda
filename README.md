@@ -141,6 +141,15 @@ are needed to initialize your simulation (initial state for T & S). These are
 the following files in your Barakuda config file: F_T_OBS_3D_12, F_S_OBS_3D_12,
 F_SST_OBS_12, F_ICE_OBS_12.
 
+You can download theses climatologies for the ORCA1.L75, ORCA025.L75 & ORCA1.L46
+configurations here:
+http://misu228.misu.su.se/barakuda/input_barakuda/ORCA1.L75_barakuda.tar
+http://misu228.misu.su.se/barakuda/input_barakuda/ORCA025.L75_barakuda.tar
+http://misu228.misu.su.se/barakuda/input_barakuda/ORCA1.L46_barakuda.tar
+
+The "CONF_INI_DIR" variable in your config file should point to the location of
+the directory you created by untaring one of these 3 tar archives.
+
 
 
 ## III) Create diagnostics

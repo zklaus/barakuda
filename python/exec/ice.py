@@ -13,7 +13,8 @@ from netCDF4 import Dataset
 import barakuda_tool as bt
 import barakuda_plot as bp
 
-venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','COMP2D','F_ICE_OBS_12','NN_ICEF_OBS','NN_ICEF','NN_ICET','FILE_ICE_SUFFIX'}
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','COMP2D','NM_IC_OBS','F_ICE_OBS_12','NN_ICEF_OBS',
+               'NN_ICEF','NN_ICET','FILE_ICE_SUFFIX'}
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
 
@@ -24,6 +25,7 @@ path_fig='./'
 fig_type='png'
 
 
+cn_obs = vdic['NM_IC_OBS']
 
 narg = len(sys.argv)
 if narg < 3: print 'Usage: '+sys.argv[0]+' <year1> <year2>'; sys.exit(0)
@@ -125,13 +127,13 @@ if xclim03.max()>90.:
 if False:
     bp.plot("nproj")('spstere', 0., 1., 0.1, xlon0, xlat0, xclim090[:,:]/ratio,
                      cfignm=path_fig+'sea-ice_SP_sept_obs', cpal='ice', cbunit='(frac.)',
-                     ctitle='Ice fraction, Sept., obs.',
+                     ctitle='Ice fraction, Sept., "'+cn_obs+'"',
                      lkcont=True, cfig_type=fig_type, 
                      lforce_lim=True)
     
     bp.plot("nproj")('npol2', 0., 1., 0.1, xlon, xlat, xclim03[:,:]/ratio,
                      cfignm=path_fig+'sea-ice_NP_march_obs', cpal='ice', cbunit='(frac.)',
-                     ctitle='Ice fraction, March, obs.',
+                     ctitle='Ice fraction, March, "'+cn_obs+'"',
                      lkcont=True, cfig_type=fig_type, 
                      lforce_lim=True)
 
@@ -143,7 +145,7 @@ if False:
 # September
 # ~~~~~~~~~
 if vdic['COMP2D'] == 'OBS':
-    ctit_clim = 'Ice fraction, Sept., obs.'
+    ctit_clim = 'Ice fraction, Sept., "'+cn_obs+'"'
 else:
     ctit_clim = 'Ice fraction, Sept., '+vdic['COMP2D']
 
@@ -204,7 +206,7 @@ bp.plot("nproj")('spstere', 0., 5., 0.1, xlon0, xlat0, xnemo_thic_090[:,:],
 # ~~~~~~
 
 if vdic['COMP2D'] == 'OBS':
-    ctit_clim = 'Ice fraction, March, obs.'
+    ctit_clim = 'Ice fraction, March, "'+cn_obs+'"'
 else:
     ctit_clim = 'Ice fraction, March, '+vdic['COMP2D']
 

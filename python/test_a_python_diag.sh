@@ -10,18 +10,18 @@ iamoc=0
 icrosssect=0
 itempsal=0
 ifsflx=0
-imean2d=1
+imean2d=0
 imean3d=0
 iSflx=0
 ienso=0
-imov=0
+imov=1
 issh=0
 ipsi=0
 iwind=0
 its=0
 imld=0
 irnf=0
-iice=0
+iice=1
 iemp=0
 icmip5=0
 ihov=0
@@ -161,6 +161,14 @@ if [ ${itempsal} -eq 1 ]; then
     echo ; echo " CMD = ${CMD} "; echo
 fi
 
+if [ ${iice} -eq 1 ]; then
+    if [ ! -f ${DIAG_D}/clim/last_clim ]; then echo "Boooo!"; exit; fi
+    CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
+    iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
+    CMD="python exec/ice.py ${iclyear}"
+    echo ; echo " CMD = ${CMD} "; echo
+fi
+
 if [ ${its} -eq 1 ]; then
     #diag=3d_thetao ; ln -sf ${DIAG_D}/3d_${NN_T}*.nc .
     #diag=mean_zos  ; ln -sf ${DIAG_D}/mean_${NN_SSH}*.nc .
@@ -200,11 +208,10 @@ fi
 
 if [ ${imov} -eq 1 ]; then
     #for cv in sst mld sss; do
-    cv="ice"
-    #python exec/prepare_movies.py ${ft} ${jyear} ${cv}
-    python ./prepare_movies.py ${ft} ${jyear} ${cv}
+    #cv=sst
+    cv=sss
+    CMD="python exec/prepare_movies.py ${ft} ${jyear} ${cv}"
     #done
-    exit
 fi
 
 if [ ${issh} -eq 1 ]; then

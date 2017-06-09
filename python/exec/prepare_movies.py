@@ -16,13 +16,12 @@ from netCDF4 import Dataset
 import barakuda_tool as bt
 import barakuda_plot as bp
 
-
-venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','NN_SST','NN_T','NN_SSS','NN_S','NN_MLD','FILE_ICE_SUFFIX','NN_ICEF',
-               'F_T_OBS_3D_12','F_S_OBS_3D_12','F_SST_OBS_12','NN_SST_OBS','NN_T_OBS','NN_S_OBS'}
+venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','NN_SST','NN_T','NN_SSS','NN_S','NN_MLD',
+               'FILE_ICE_SUFFIX','NN_ICEF',
+               'NM_TS_OBS','F_T_OBS_3D_12','F_S_OBS_3D_12','F_SST_OBS_12','NN_SST_OBS','NN_T_OBS','NN_S_OBS'}
+# 'NM_IC_OBS'
 
 vdic = bt.check_env_var(sys.argv[0], venv_needed)
-
-print ' ORCA = ', vdic['ORCA'][:7]
 
 CONFEXP = vdic['ORCA']+'-'+vdic['EXP']
 
@@ -34,6 +33,8 @@ mmin=0.   ;  mmax=1500. ;  dmld  = 50.
 fig_type='png'
 
 
+cn_obs_ts = vdic['NM_TS_OBS']
+#cn_obs_ic = vdic['NM_TS_OBS']
 
 narg = len(sys.argv)
 if narg < 4:
@@ -73,9 +74,17 @@ if cvar == 'sss':
 
 # 2D SST obs :
 if cvar == 'sst':
+    cv_sst_obs = vdic['NN_SST_OBS']
     bt.chck4f(vdic['F_SST_OBS_12'])
     id_clim_sst = Dataset(vdic['F_SST_OBS_12'])
-    Vclim  = id_clim_sst.variables[vdic['NN_SST_OBS']][:,:,:]; print '(has ',Vclim.shape[0],' time snapshots)\n'
+    nb_dim = len(id_clim_sst.variables[cv_sst_obs].dimensions)
+    if nb_dim == 3:
+        Vclim  = id_clim_sst.variables[cv_sst_obs][:,:,:]; print '(has ',Vclim.shape[0],' time snapshots)\n'
+    elif nb_dim == 4:
+        Vclim  = id_clim_sst.variables[cv_sst_obs][:,0,:,:]; print '(has ',Vclim.shape[0],' time snapshots)\n'
+    else:
+        print 'ERROR (prepare_movies.py): shape of '+cv_sst_obs+' in '+vdic['F_SST_OBS_12']+' is problematic!'
+        sys.exit(0)
     id_clim_sst.close()
 
 # Sea-ice concentration :
@@ -175,7 +184,7 @@ for jt in range(nt):
                       corca=vdic['ORCA'], lkcont=False, cpal='RdBu_r',
                       cfignm=path_fig+'/'+cv+'_'+cdate,
                       cbunit='K', cfig_type=fig_type, lat_min=-77., lat_max=75.,
-                      ctitle='SST (NEMO - obs), '+CONFEXP+' ('+cdatet+')',
+                      ctitle='SST (NEMO - "'+cn_obs_ts+'"), '+CONFEXP+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
 
     if cvar == 'sss':
@@ -184,7 +193,7 @@ for jt in range(nt):
                       corca=vdic['ORCA'], lkcont=False, cpal='PiYG_r',
                       cfignm=path_fig+'/'+cv+'_'+cdate,
                       cbunit='PSU', cfig_type=fig_type, lat_min=-77., lat_max=75.,
-                      ctitle='SSS (NEMO - obs), '+CONFEXP+' ('+cdatet+')',
+                      ctitle='SSS (NEMO - "'+cn_obs_ts+'"), '+CONFEXP+' ('+cdatet+')',
                       lforce_lim=True, i_cb_subsamp=2, lpix=lpix)
 
     if cvar == 'mld':

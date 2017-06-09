@@ -28,7 +28,7 @@ export NEMO_OUT_STRCT="/proj/bolinc/users/x_laubr/run/<EXP>/output/nemo"
 export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/proj/bolinc/users/x_laubr/ORCA1/ORCA1-I/barakuda_clim"
+export CONF_INI_DIR="/proj/bolinc/users/x_laubr/input_barakuda/ORCA1.L75_barakuda"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="/scratch/local/<JOB_ID>"
@@ -125,13 +125,23 @@ export MM_FILE=/proj/bolinc/users/x_laubr/ORCA1/ec-earth3.2/mesh_mask.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
-export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export F_S_OBS_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export F_SST_OBS_12=${CONF_INI_DIR}/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc4
+#export NM_TS_OBS="WOA_2009"
+#export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
+#export F_S_OBS_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
+#export F_SST_OBS_12=${CONF_INI_DIR}/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc4
+#export NN_T_OBS="thetao"
+#export NN_S_OBS="so"
+#export NN_SST_OBS="tos"
+#
+export NM_TS_OBS="EN4.2.0 [1990-2010]"
+export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
+export F_S_OBS_3D_12=${CONF_INI_DIR}/so_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
+export F_SST_OBS_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
 export NN_T_OBS="thetao"
 export NN_S_OBS="so"
-export NN_SST_OBS="tos"
-
+export NN_SST_OBS="thetao"
+#
+export NM_IC_OBS="Hurrell et al 2008 [1980-1999]"
 export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_OBS="ice_cover"
 
