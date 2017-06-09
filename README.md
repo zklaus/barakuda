@@ -109,10 +109,11 @@ Note: if a given "config_<MY_CONF>.sh" exists both in "${BARAKUDA_ROOT}/configs"
 and the "work directory", Barakuda will always refer to "config_<MY_CONF>.sh"
 present in the "work directory".
 
-IMPORTANT: Always refer to the most relevant '${BARAKUDA_ROOT}/configs/config_*_TEMPLATE.sh' file
-to design or re-adjust yours! These are symbolic links pointing to the last
-officially supported and most up-to-date config files.  It should be
-sufficiently well commented for you to be able to adjust your own config file.
+IMPORTANT: Always refer to the most relevant
+'${BARAKUDA_ROOT}/configs/config_*_TEMPLATE.sh' file to design or re-adjust
+yours! These are symbolic links pointing to the last officially supported and
+most up-to-date config files.  It should be sufficiently well commented for you
+to be able to adjust your own config file.
 
 MY_CONF should always be of the form: "(e)ORCA<RES>_L<NLEV>_<blabla>.sh"
         ( with NLEV being the number of z levels )
@@ -141,11 +142,10 @@ are needed to initialize your simulation (initial state for T & S). These are
 the following files in your Barakuda config file: F_T_OBS_3D_12, F_S_OBS_3D_12,
 F_SST_OBS_12, F_ICE_OBS_12.
 
-You can download theses climatologies for the ORCA1.L75, ORCA025.L75 & ORCA1.L46
-configurations here:
+Alternatively, you can download these climatologies for the ORCA1.L75 and
+ORCA025.L75 configurations here:
 http://misu228.misu.su.se/barakuda/input_barakuda/ORCA1.L75_barakuda.tar
 http://misu228.misu.su.se/barakuda/input_barakuda/ORCA025.L75_barakuda.tar
-http://misu228.misu.su.se/barakuda/input_barakuda/ORCA1.L46_barakuda.tar
 
 The "CONF_INI_DIR" variable in your config file should point to the location of
 the directory you created by untaring one of these 3 tar archives.
