@@ -121,7 +121,7 @@ export NN_WNDM="windsp"      ; # name of surface wind  speed module in "FILE_FLX
 ################################################################################################
 
 # Land-sea mask and basins files:
-export MM_FILE=/proj/bolinc/users/x_laubr/ORCA1/ec-earth3.2/mesh_mask.nc4
+export MM_FILE=${CONF_INI_DIR}/mesh_mask.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):

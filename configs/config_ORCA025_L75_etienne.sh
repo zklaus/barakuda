@@ -30,7 +30,7 @@ export NEMO_OUT_STRCT="/scratch/Earth/etourign/barakuda/<EXP>"
 export DIAG_DIR="/scratch/Earth/${USER}/barakuda/${CONF}_ece3"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/esnas/obs/barakuda/ORCA025.L75"
+export CONF_INI_DIR="/esnas/obs/barakuda/ORCA025.L75_barakuda"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="/scratch/Earth/${USER}"
@@ -97,9 +97,15 @@ export NN_V_EIV="0" ; # 0 => ignore
 export FILE_ICE_SUFFIX="grid_T" ; # in what file type extension to find ice fields
 export NN_ICEF="siconc" ; # name of ice fraction in "FILE_ICE_SUFFIX" file...
 export NN_ICET="sithic" ; # ice thickness or rather volume...
+export NN_ICEU="sivelu" ; # ice U-velocity
+export NN_ICEV="sivelv" ; # ice V-velocity
 #
 # Surface fluxes:
 export FILE_FLX_SUFFIX="grid_T" ; # in what file type extension to find surface fluxes
+####                           # => mind that $FILE_FLX_SUFFIX must be also in NEMO_SAVED_FILES (above)
+#### Note: in fields marked with *+/-* you can use a sum or substraction of variables (no space allowed!)
+####       ex: NN_EMP="evap_ao_cea+subl_ai_cea-precip"
+####           NN_QNET="qsr+qnsol"
 # ++ Surface freswater fluxes:
 export NN_FWF="X"        ; # name of net freshwater flux (E-P-R) in "FILE_FLX_SUFFIX" file...
 export NN_EMP="X"        ; # name of E-P in "FILE_FLX_SUFFIX" file...
@@ -121,19 +127,22 @@ export MM_FILE=${CONF_INI_DIR}/mesh_mask_ORCA025.L75_ece3.2_2017.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA025_ece3.2_2017.nc4
 
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
-export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
-export F_S_OBS_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
-export F_SST_OBS_12=${CONF_INI_DIR}/sst_1x1-ORCA025_Reynolds_mnth_1982-2005.nc4
+export NM_TS_OBS="EN4.2.0 [1990-2010]"
+export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
+export F_S_OBS_3D_12=${CONF_INI_DIR}/so_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
+export F_SST_OBS_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
 export NN_T_OBS="thetao"
 export NN_S_OBS="so"
-export NN_SST_OBS="sst"
-
+export NN_SST_OBS="thetao"
+#
+export NM_IC_OBS="Hurrell et al 2008 [1980-1999]"
 export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA025_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_OBS="ice_cover"
 
 
 # A text file where the cross sections (to compute transports) are defined :
-export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_y1050.dat"
+export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_y1050.dat"        ; # set i_do_trsp=1 !
+export TRANSPORT_SECTION_FILE_ICE="${BARAKUDA_ROOT}/data/transport_ice_ORCA025_y1050.dat"  ; # set i_do_trsp_ice=1 !
 
 # For transport by sigma-class:
 export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA025_y1050.dat"
@@ -170,20 +179,23 @@ export i_do_ifs_flx=0 ; # only relevant when ece_exp=2...
 export i_do_amoc=1
 export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to look in for max of AMOC
 
+# Sea-ice diags
+export i_do_ice=1  ; # Sea-ice diags
+
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
 export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
 
+# Solid freshwater transport through sections due to sea-ice drift
+export i_do_trsp_ice=0 ; # must have i_do_ice=1
+
 # Meridional heat/salt transport (advective)
 export i_do_mht=1
 
 # Transport by sigma class
 export i_do_sigt=1
-
-# Sea-ice diags
-export i_do_ice=1  ; # Sea-ice diags
 
 # Budget on pre-defined (FILE_DEF_BOXES) rectangular domains:
 export i_do_bb=0   ; # Budget and other stuffs on a given rectangular box!
@@ -212,9 +224,3 @@ export i_do_ssx_box=0 ; # zoom on given boxes (+spatially-averaged values) for s
 
 # Some nerdy stuffs about the critical depth in prescribed boxes:
 export i_do_zcrit=0
-
-# Fresh-water transport associated to sea-ice transport
-#  => must compile cdficeflux.x but depends on more recent CDFTOOLS module...
-export i_do_icet=0 ; # treat sea-ice volume transport!
-export TRANSPORT_ICE_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_ARCTIC.dat"
-
