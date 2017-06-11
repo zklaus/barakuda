@@ -49,8 +49,9 @@ export ece_exp=0 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #
 export Y_INI_EC=1990 ;    # initial year if ec-earth experiment...
 export TRES_IFS=XXX  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
-export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
+
+export ATMO_INFO="IFS T159" ; # Name of atmospheric model or forcing used (ex: COREv2, DFS5.2, IFS T255, ect...)
 
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"

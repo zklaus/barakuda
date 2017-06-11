@@ -52,8 +52,9 @@ export Y_INI_EC=1950 ;    # initial year,  only needed if ece_exp /= 0  !!!
 export M_INI_EC=02   ;    # initial month, only needed if ece_exp >= 10 !!!
 export NCHNKS_Y=4    ;    # number of chunks per year if ece_exp >= 10 (only needed if NCHNKS_Y >= 2 !)
 export TRES_IFS=XXX  ;    # spectral resolution for IFS (only needed if ece_exp=2), ex: T255 => TRES_IFS=255
-export AGCM_INFO="IFS T${TRES_IFS}" ; #        ''
 ###--- end EC-Earth IFS relate section ---
+
+export ATMO_INFO="???" ; # Name of atmospheric model or forcing used (ex: COREv2, DFS5.2, IFS T255, ect...)
 
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"

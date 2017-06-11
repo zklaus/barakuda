@@ -43,8 +43,9 @@ export ece_run=2 ; # 0 => not an EC-Earth run, it's a "pure" ocean-only NEMO run
 #
 export Y_INI_EC=1990 ;    # initial year if ec-earth run...
 export TRES_IFS=255  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
-export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
+
+export ATMO_INFO="IFS T${TRES_IFS}" ; # Name of atmospheric model or forcing used (ex: COREv2, DFS5.2, IFS T255, ect...)
 
 # List of suffixed of files that have been saved by NEMO and that are needed for the diags:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod SBC"

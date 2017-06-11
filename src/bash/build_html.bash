@@ -68,7 +68,9 @@ function build_index_html()
 
     TITLE="Ocean diagnostics for ${CONF} experiment \"${EXP}\""
     if [ ${ece_exp} -eq 2 ] || [ ${ece_exp} -eq 12 ]; then
-        TITLE=+"<br>Coupled to atmospheric model: ${AGCM_INFO}"
+        TITLE+="<br>Coupled to atmospheric model: ${ATMO_INFO}"
+    else
+        TITLE+="<br>Ocean-only forced simulation: ${ATMO_INFO}"
     fi
 
     # Starting to configure HTML index file:
