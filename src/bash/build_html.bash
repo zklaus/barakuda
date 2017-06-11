@@ -67,26 +67,28 @@ function build_index_html()
     rm -f index.html
 
     TITLE="Ocean diagnostics for ${CONF} experiment \"${EXP}\""
-    if [ ${ece_exp} -gt 0 ]; then TITLE="${TITLE}<br>Coupled to atmospheric model: ${AGCM_INFO}"; fi
+    if [ ${ece_exp} -eq 2 ] || [ ${ece_exp} -eq 12 ]; then
+        TITLE=+"<br>Coupled to atmospheric model: ${AGCM_INFO}"
+    fi
 
     # Starting to configure HTML index file:
     parse_html ${BARAKUDA_ROOT}/src/html/conf_start.html index.html
 
 
     # Adding link to namelist: (NAMELIST_DIR is defined into barakuda_setup of bash_functions.bash)
-    if [ ${ece_exp} -gt 0 ] && [ ${ece_exp} -lt 10 ]; then
-        fnamelist1=${NAMELIST_DIR}/namelist_cfg
-        fnamelist2=${NAMELIST_DIR}/namelist_ref
-        if [ -f ${fnamelist1} ] && [ -f ${fnamelist2} ]; then
-            echo ; echo " *** Yeah! Found the namelists !"
-            # Script "pygmentize" comes with the "Pygments" python package, comes by default with Canopy...
-            wc=`which pygmentize`
-            if [ "${wc}" = "" ]; then
-                echo "    => WARNING: you need to install the 'Pygments' python package (script 'pygmentize') !!!"
-            else
-                pygmentize -O full,style=emacs -l fortran -f html -o namelist_cfg.html ${fnamelist1}
-                pygmentize -O full,style=emacs -l fortran -f html -o namelist_ref.html ${fnamelist2}
-                cat >> index.html <<EOF
+    #if [ ${ece_exp} -gt 0 ] && [ ${ece_exp} -lt 10 ]; then
+    fnamelist1=${NAMELIST_DIR}/namelist_cfg
+    fnamelist2=${NAMELIST_DIR}/namelist_ref
+    if [ -f ${fnamelist1} ] && [ -f ${fnamelist2} ]; then
+        echo ; echo " *** Yeah! Found the namelists !"
+        # Script "pygmentize" comes with the "Pygments" python package, comes by default with Canopy...
+        wc=`which pygmentize`
+        if [ "${wc}" = "" ]; then
+            echo "    => WARNING: you need to install the 'Pygments' python package (script 'pygmentize') !!!"
+        else
+            pygmentize -O full,style=emacs -l fortran -f html -o namelist_cfg.html ${fnamelist1}
+            pygmentize -O full,style=emacs -l fortran -f html -o namelist_ref.html ${fnamelist2}
+            cat >> index.html <<EOF
         <div align="left" style="margin: 50px 0px 0px 0px; font-family: Trebuchet MS; font-size: 20px;width: 600px;">
            <b>Check the namelists out:</b>
            <ul>
@@ -95,7 +97,6 @@ function build_index_html()
            </ul>
         </div>
 EOF
-            fi
         fi
         echo
     fi

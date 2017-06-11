@@ -173,7 +173,7 @@ function barakuda_setup()
     fi
     
     mkdir -p ${DIAG_D} ${TMP_DIR}
-
+    
     export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<Y_INI_EC>|${Y_INI_EC}|g"`
     if [ ! -d ${NEMO_OUT_D} ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi
     
@@ -186,7 +186,7 @@ function barakuda_setup()
         export NAMELIST_DIR=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo||g"`
     else
         # EC-Earth autosubmit mode TO FIX! :
-        echo; echo " WARNING ('barakuda_setup' of bash_functions.bash): don't know where to get NEMO namelists! "
+        echo; echo " WARNING ('barakuda_setup' of bash_functions.bash): don't know where to look for NEMO namelists!"
     fi
     echo; echo " *** NAMELIST_DIR = ${NAMELIST_DIR} "; echo
     
