@@ -865,12 +865,13 @@ if [ ${ISTAGE} -eq 2 ]; then
     mv -f ./merid_transport/*.${FIG_FORM} ${HTML_DIR}/ >/dev/null 2>/dev/null
     mv -f ${DIAG_D}/movies/movie_*.mp4    ${HTML_DIR}/ >/dev/null 2>/dev/null
     
-    cd ${HTML_DIR}/
-    list=`\ls *.png`
-    for ff in ${list}; do
-        sign_image ${ff} n_${ff}
-        mv -f n_${ff} ${ff}
-    done
+    # Sign with logo?
+    #cd ${HTML_DIR}/
+    #list=`\ls *.png`
+    #for ff in ${list}; do
+    #    sign_image ${ff} n_${ff}
+    #    mv -f n_${ff} ${ff}
+    #done
     
     cd ${DIAG_D}/
 
