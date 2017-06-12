@@ -69,7 +69,7 @@ roffset = 0.
 
 if cv_in == 'T2M':
     cfield = 'T2M'
-    tmin=-20. ;  tmax=40.   ;  dtemp = 5.
+    tmin=-15. ;  tmax=40.   ;  dtemp = 5.
     roffset = -273.15
     cpal_fld = 'ncview_nrl'
     cunit = r'$[^{\circ}C]$'
@@ -79,6 +79,14 @@ if cv_in == 'CURL':
     cfield = 'ROT(U10M)'
     tmin=-0.1 ;  tmax=0.1   ;  dtemp = 0.025
     cpal_fld = 'ncview_blue_red'
+    cunit = r'$[s^{-1}]$'
+    cb_jump = 1
+    
+if cv_in == 'wspd10m':
+    cfield = 'Wind speed @10m'
+    tmin=0. ;  tmax=28.   ;  dtemp = 2.
+    #cpal_fld = 'gist_stern'
+    cpal_fld = 'gnuplot'
     cunit = r'$[s^{-1}]$'
     cb_jump = 1
     
@@ -220,7 +228,8 @@ for jt in range(jt0,jtN):
     cf = carte.pcolor(x0, y0, XFLD+roffset, cmap=pal_fld, norm=norm_fld)
     cc = carte.contour(x0, y0, XMSK, [ 0.5 ], colors='k', linewidths=1.)
 
-    plt.annotate('L. Brodeau, brodeau@gmail.com', xy=(0.7, 0.1), xycoords='figure fraction', **cfont_mail)
+    #plt.annotate('L. Brodeau, brodeau@gmail.com', xy=(0.7, 0.1), xycoords='figure fraction', **cfont_mail)
+    plt.annotate('laurent.brodeau@bsc.es', xy=(0.7, 0.1), xycoords='figure fraction', **cfont_mail)
 
     # Colorbar:
     ax2 = plt.axes([0.005, 0.06, 0.99, 0.025])
