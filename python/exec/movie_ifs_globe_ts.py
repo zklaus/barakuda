@@ -69,7 +69,7 @@ roffset = 0.
 
 if cv_in == 'T2M':
     cfield = 'T2M'
-    tmin=-20. ;  tmax=35.   ;  dtemp = 5.
+    tmin=-20. ;  tmax=40.   ;  dtemp = 5.
     roffset = -273.15
     cpal_fld = 'ncview_nrl'
     cunit = r'$[^{\circ}C]$'
