@@ -40,7 +40,6 @@ year_ref_ini = 1990
 
 jt0 = 0
 jtN = 0
-#jt0 = 0
 
 #CTATM = 'T255'
 CTATM = 'T1279'
@@ -83,10 +82,11 @@ if cv_in == 'CURL':
     cb_jump = 1
     
 if cv_in == 'wspd10m':
-    cfield = 'Wind speed @10m'
+    cfield = 'Wind@10m'
     tmin=0. ;  tmax=28.   ;  dtemp = 2.
     #cpal_fld = 'gist_stern'
-    cpal_fld = 'gnuplot'
+    #cpal_fld = 'gnuplot'
+    cpal_fld = 'CMRmap'
     cunit = r'$[s^{-1}]$'
     cb_jump = 1
     

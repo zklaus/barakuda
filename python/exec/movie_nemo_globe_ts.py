@@ -57,10 +57,17 @@ jtN = int(sys.argv[5])
 
 roffset = 0.
 
-if cv_in == 'socurl':
+if cv_in == 'curl_ssu':
     cfield = 'RV(SSU)'
     tmin=-40. ;  tmax=40.   ;  dtemp = 5.
     cpal_fld = 'ncview_blue_red'    
+    cunit = r'$[10^{-6}s^{-1}]$'
+    cb_jump = 1
+    
+if cv_in == 'mod_ssu':
+    cfield = 'Surface Current'
+    tmin=0. ;  tmax=3.   ;  dtemp = 0.25
+    cpal_fld = 'ncview_hotres'
     cunit = r'$[10^{-6}s^{-1}]$'
     cb_jump = 1
     
