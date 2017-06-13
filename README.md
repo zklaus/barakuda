@@ -148,7 +148,7 @@ http://misu228.misu.su.se/barakuda/input_barakuda/ORCA1.L75_barakuda.tar
 http://misu228.misu.su.se/barakuda/input_barakuda/ORCA025.L75_barakuda.tar
 
 The "CONF_INI_DIR" variable in your config file should point to the location of
-the directory you created by untaring one of these 3 tar archives.
+the directory you created by untaring one of these tar archives.
 
 
 
