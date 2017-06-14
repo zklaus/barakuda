@@ -688,8 +688,9 @@ if [ ${ISTAGE} -eq 2 ]; then
             fccrl=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_TCURL.nc4
             iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
         else
-            echo; echo "ERROR => you set l_clim_diag to true but no file 'last_clim' was found in:"
-            echo "               ${DIAG_D}/clim/"; echo
+            echo; echo "ERROR => you set l_clim_diag to true (probably by using '-E') but no file 'last_clim' was found in:"
+            echo "               ${DIAG_D}/clim/"
+            echo "               => then use '-e' instead!"; echo
             exit
         fi
 
