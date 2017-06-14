@@ -36,16 +36,32 @@ print ' *** Opening image '+cf_nc
 pic = Image.open(cf_im)
 
 
-print nmp.shape(pic)
 
-#sys.exit(0)
-#xtmp = nmp.flipud( nmp.array(pic) )
 
-(ny,nx,nrgb) = nmp.shape(pic)
+lcolor = False ; # if false it is a 
+
+vshape_pic = nmp.shape(pic)
+
+if len(vshape_pic) == 3:
+    (ny,nx,nrgb) = vshape_pic
+    if nrgb != 3: print ' Problem #1 with your image, not what we expected!' ; sys.exit(0)
+    lcolor = True    ;  # RGB color picture => 3 2D array
+    print "\n It's a RGB color picture!\n"
+    
+elif len(vshape_pic) == 2:
+    lcolor = False   ;  # grey-scale picture (true black and white) => 1 2D array
+    (ny,nx) = vshape_pic
+    nrgb = 1
+    print "\n It's a grey-scale B&W picture!\n"
+else:
+    print ' Problem #2 with your image, not what we expected!' ; sys.exit(0)
+
+
+
+
+print " *** shape of pic: ", (ny,nx)
 
 xpic = nmp.array(pic)
-
-if nrgb != 3: print ' ERROR: we expect 3 colors! RGB!'; sys.exit(0)
 
 
 if l_fake_coor:
@@ -72,26 +88,33 @@ f_out.createDimension(cdim_x, nx)
 f_out.createDimension(cdim_y, ny)
 
 if l_fake_coor:
-    id_lon  = f_out.createVariable('lon' ,'f4',(cdim_x,))
-    id_lat  = f_out.createVariable('lat' ,'f4',(cdim_y,))
+    id_lon  = f_out.createVariable('lon0','f4',(cdim_x,))
+    id_lat  = f_out.createVariable('lat0','f4',(cdim_y,))
     id_lon[:] = vlon[:]
     id_lat[:] = vlat[:]
 
 
 
+if lcolor:
+    
+    id_red  = f_out.createVariable('red','f4',(cdim_y,cdim_x,))
+    id_red.long_name = 'Red (of RGB)'
 
-id_red  = f_out.createVariable('red','f4',(cdim_y,cdim_x,))
-id_red.long_name = 'Red (of RGB)'
+    id_green  = f_out.createVariable('green','f4',(cdim_y,cdim_x,))
+    id_green.long_name = 'Green (of RGB)'
 
-id_green  = f_out.createVariable('green','f4',(cdim_y,cdim_x,))
-id_green.long_name = 'Green (of RGB)'
+    id_blue  = f_out.createVariable('blue','f4',(cdim_y,cdim_x,))
+    id_blue.long_name = 'Blue (of RGB)'
 
-id_blue  = f_out.createVariable('blue','f4',(cdim_y,cdim_x,))
-id_blue.long_name = 'Blue (of RGB)'
+    id_red[:,:]   = nmp.flipud(xpic[:,:,0])
+    id_green[:,:] = nmp.flipud(xpic[:,:,1])
+    id_blue[:,:]  = nmp.flipud(xpic[:,:,2])
 
-id_red[:,:]   = nmp.flipud(xpic[:,:,0])
-id_green[:,:] = nmp.flipud(xpic[:,:,1])
-id_blue[:,:]  = nmp.flipud(xpic[:,:,2])
+else:
+    id_bw  = f_out.createVariable('bw','f4',(cdim_y,cdim_x,))
+    id_bw.long_name = 'Grey scale'
+    id_bw[:,:]   = nmp.flipud(xpic[:,:])
+
 
 f_out.About  = 'Image '+cf_im+' converted to netcdf.'
 f_out.Author = 'Generated with image_to_netcdf.py of BARAKUDA (https://github.com/brodeau/barakuda)'
