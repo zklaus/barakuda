@@ -47,7 +47,7 @@ PROGRAM cdficediag
   INTEGER    :: istatus
 
   !! LOLO:
-  LOGICAL :: lfncout = .false.
+  LOGICAL :: lfncout = .FALSE., l_in_percent = .FALSE.
   CHARACTER(LEN=256) :: cd_out = '.', cf_out
   CHARACTER(LEN=64)  :: cv_u, cv_v, cv_ueiv, cv_veiv, cv_dum
   REAL :: ryear
@@ -114,7 +114,6 @@ PROGRAM cdficediag
 
   ALLOCATE ( vvolu_n(nt), varea_n(nt), vvolu_s(nt), varea_s(nt) )
 
-
   DO jt = 1, nt
 
      PRINT *, ' * [cdficediags] jt = ', jt
@@ -124,12 +123,16 @@ PROGRAM cdficediag
      END IF
      riceldfra(:,:)= getvar(cf_ice, 'ice_frac',  1 ,npiglo,npjglo, ktime=jt)
      
-     !LB:
+     IF ( jt == 1 ) THEN
+        ! Is fraction in percent rather than fraction ?
+        IF ( MAXVAL( zmask*riceldfra ) > 30. ) l_in_percent = .TRUE.
+     END IF
+     IF ( l_in_percent ) riceldfra = 0.01 * riceldfra
+     
      WHERE ( zmask == 0. )
         ricethick = 0.
         riceldfra = 0.
      END WHERE
-     !LB.
 
      ! North : ff > 0
      zvoln=SUM( ricethick (:,:)* e1(:,:) * e2(:,:) * riceldfra (:,:) * zmask (:,:) , (ff > 0 ) )
