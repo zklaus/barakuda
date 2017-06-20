@@ -45,6 +45,8 @@ bt.chck4f(cf_in)
 
 f_in = Dataset(cf_in)
 
+list_var = f_in.variables.keys()
+
 Ndim = len(f_in.variables[cv_lon].dimensions)
 
 cunt_lon = f_in.variables[cv_lon].units
@@ -58,15 +60,15 @@ if Ndim == 1:
 
 elif Ndim == 2:
     # We suppose it is NEMO nav_lon and nav_lat...
-    xlon = = f_in.variables[cv_lon][:,:]
-    xlat = = f_in.variables[cv_lat][:,:]
+    xlon = f_in.variables[cv_lon][:,:]
+    xlat = f_in.variables[cv_lat][:,:]
     (nj0,ni0) = nmp.shape(xlon)
     vlon = nmp.zeros(ni0)
     vlat = nmp.zeros(nj0)
     vlon[:] = xlon[nj0/8,:]
-    ji_lat0 = nmp.argmax(xlat[nj-1,:])
-    vlat[:] = xlon[:,ji_lat0]
-
+    ji_lat0 = nmp.argmax(xlat[nj0-1,:])
+    vlat[:] = xlat[:,ji_lat0]
+    del xlon, xlat, nj0, ni0
 else:
     print ' ERROR (mk_zonal_average.py) => weird shape for your longitude array!'
     sys.exit(0)
@@ -76,14 +78,17 @@ print 'LATITUDE: ', cunt_lat
 
 
 
-
-# Extracting time 1D array:
-vtime     = f_in.variables['time'][:] ; cunt_time = f_in.variables['time'].units
+for cvt in [ 'time', 'time_counter' ]: 
+    if cvt in list_var:
+        vtime     = f_in.variables[cvt][:]
+        cunt_time = f_in.variables[cvt].units
 print 'TIME: ', cunt_time, '\n'
 
 # Field !!!
 #rmv    = f_in.variables[cv_in]._FillValue
-xfield = f_in.variables[cv_in][:,:,:]
+xfield      = f_in.variables[cv_in][:,:,:]
+cunit_field = f_in.variables[cv_in].units
+clgnm_field = f_in.variables[cv_in].long_name
 
 #print 'Missing value for '+cv_in+' is : ', rmv, '\n'
 
@@ -123,40 +128,6 @@ for jt in range(Nt):
 
 
 
-
-print '\n Creating ascii file!'
-
-cf_out = 'zonal_'+cv_in+'_'+cn_file+'.dat'
-
-f = open(cf_out, 'w')
-
-f.write('# created with '+sys.argv[0]+' from file '+cf_in+'\n')
-
-
-for jj in range(nj):
-
-    mean_val = nmp.mean(VZ[:,jj])
-    
-
-    # Writing latitudes:
-    f.write(str(vlat[jj]))
-
-    # time-averaged column first if relevant
-    if Nt > 1:
-        f.write('   '+str(mean_val))
-
-    # snapshot column
-    for jt in range(Nt):
-        f.write('   '+str(VZ[jt,jj]) )
-
-    f.write('\n')            
-
-
-print ' ASCII file '+cf_out+' created!\n' ; print '\n'
-        
-
-
-
 print '\n Creating netcdf file!'
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -171,34 +142,33 @@ f_out.createDimension('time', None)
 # Variables
 id_lat = f_out.createVariable('lat','f4',('lat',))
 id_tim = f_out.createVariable('time','f4',('time',))
-id_f1  = f_out.createVariable(cv_in,'f4',('time','lat',))
-id_f2  = f_out.createVariable(cv_in+'_anom','f4',('time','lat',))
 
-# Attributes
-#id_tim.units = cunt_time
-#
-#id_lat.long_name     = clnm_lat
-#id_lat.units         = cunt_lat
-#id_lat.standard_name = csnm_lat
-#
-#id_tim.units         = cunt_time
-#
-#
-#id_f1.long_name = clnm_flx
-#id_f1.units = cunit
-#id_f1.code  = cvin_code
-#id_f1.table = cvin_table
-#
+id_f1  = f_out.createVariable(cv_in,'f4',('time','lat',))
+id_f1.units     = cunit_field
+id_f1.long_name = clgnm_field
+
+id_f2  = f_out.createVariable(cv_in+'_mean','f4',('lat',))
+id_f2.units     = cunit_field
+id_f2.long_name = clgnm_field
+
+id_f3  = f_out.createVariable(cv_in+'_anom','f4',('time','lat',))
+
 f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
 
 # Filling variables:
 id_lat[:] = vlat[:]
 
+Z_time_mean = nmp.mean(VZ[:,:], axis=0)
 
 for jt in range(Nt):
     id_tim[jt] = vtime[jt]
     id_f1[jt,:] = VZ[jt,:]
-    id_f2[jt,:] = VZ[jt,:] - nmp.mean(VZ[:,:], axis=0)
+    id_f3[jt,:] = VZ[jt,:] - Z_time_mean
+
+id_f2[:] = Z_time_mean[:]
 
 f_out.close()
         
+
+print '\n *** Wrote file '+cf_out+' !\n'
+
