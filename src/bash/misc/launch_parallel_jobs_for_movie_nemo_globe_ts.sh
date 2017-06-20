@@ -11,11 +11,12 @@ DIR_NEMO_DATA=/scratch/Earth/lbrodeau/ORCA12-T1279/CHR0/extracted_nemo
 VAR=mod_ssu ; file=${DIR_NEMO_DATA}/CHR0_1d_1990_CURL.nc4
 
 
-npj=20 ; istart=1 ; istop=99
-#npj=20 ; istart=100 ; istop=199
-#npj=20 ; istart=199 ; istop=300
-
-#npj=8 ; istart=300 ; istop=364
+#npj=20 ; istart=1 ; istop=99
+#npj=20 ; istart=101 ; istop=199
+#npj=20 ; istart=201 ; istop=299
+npj=4 ; istart=351 ; istop=364
+#npj=44 ; istart=320 ; istop=364
+#npj=8 ; istart=301 ; istop=364
 
 
 

@@ -40,17 +40,42 @@ print "\n"
 
 
 
-bt.chck4f(cf_in) ; f_in = Dataset(cf_in)
+bt.chck4f(cf_in)
 
-# Extracting the longitude and 1D array:
-vlon     = f_in.variables[cv_lon][:]
+
+f_in = Dataset(cf_in)
+
+Ndim = len(f_in.variables[cv_lon].dimensions)
+
 cunt_lon = f_in.variables[cv_lon].units
-print 'LONGITUDE: ', cunt_lon
-
-# Extracting the latitude 1D array:
-vlat     = f_in.variables[cv_lat][:]
 cunt_lat = f_in.variables[cv_lat].units
+
+if Ndim == 1:
+    # Extracting the longitude and 1D array:
+    vlon     = f_in.variables[cv_lon][:]
+    # Extracting the latitude 1D array:
+    vlat     = f_in.variables[cv_lat][:]
+
+elif Ndim == 2:
+    # We suppose it is NEMO nav_lon and nav_lat...
+    xlon = = f_in.variables[cv_lon][:,:]
+    xlat = = f_in.variables[cv_lat][:,:]
+    (nj0,ni0) = nmp.shape(xlon)
+    vlon = nmp.zeros(ni0)
+    vlat = nmp.zeros(nj0)
+    vlon[:] = xlon[nj0/8,:]
+    ji_lat0 = nmp.argmax(xlat[nj-1,:])
+    vlat[:] = xlon[:,ji_lat0]
+
+else:
+    print ' ERROR (mk_zonal_average.py) => weird shape for your longitude array!'
+    sys.exit(0)
+
+print 'LONGITUDE: ', cunt_lon
 print 'LATITUDE: ', cunt_lat
+
+
+
 
 # Extracting time 1D array:
 vtime     = f_in.variables['time'][:] ; cunt_time = f_in.variables['time'].units
