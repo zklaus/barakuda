@@ -10,14 +10,24 @@ from string import replace as rplc
 
 import barakuda_tool as bt
 
-rmv = -9999.
+rmv    = -9999.
 
-if len(sys.argv) != 3:
-    print 'Usage: '+sys.argv[0]+' <FILE_lat-lon.nc> <variable>'
+# Defaults:
+cv_lon = 'lon'
+cv_lon = 'lat'
+
+narg = len(sys.argv)
+if not narg in [ 3 , 5]:
+    print 'Usage: '+sys.argv[0]+' <FILE_lat-lon.nc> <variable> (<name_longitude> <name_latitude>)'
     sys.exit(0)
 
 cf_in  = sys.argv[1]
 cv_in  = sys.argv[2]
+
+if narg == 5:
+    cv_lon = sys.argv[3]
+    cv_lat = sys.argv[4]
+
 
 cn_file, cn_ext = splitext(cf_in)
 
@@ -33,13 +43,13 @@ print "\n"
 bt.chck4f(cf_in) ; f_in = Dataset(cf_in)
 
 # Extracting the longitude and 1D array:
-vlon     = f_in.variables['lon'][:]
-cunt_lon = f_in.variables['lon'].units
+vlon     = f_in.variables[cv_lon][:]
+cunt_lon = f_in.variables[cv_lon].units
 print 'LONGITUDE: ', cunt_lon
 
-# Extracting the longitude 1D array:
-vlat     = f_in.variables['lat'][:]
-cunt_lat = f_in.variables['lat'].units
+# Extracting the latitude 1D array:
+vlat     = f_in.variables[cv_lat][:]
+cunt_lat = f_in.variables[cv_lat].units
 print 'LATITUDE: ', cunt_lat
 
 # Extracting time 1D array:
@@ -55,21 +65,21 @@ xfield = f_in.variables[cv_in][:,:,:]
 f_in.close()
 
 
-nt = len(vtime)
-print ' nt = '+str(nt)
+Nt = len(vtime)
+print ' Nt = '+str(Nt)
 
 
 
 
 # Checking dimensions
 # ~~~~~~~~~~~~~~~~~~~
-[ nt, nj, ni ] = xfield.shape
-print ' DIMENSION =>  ni, nj, nt = ', ni, nj, nt
+[ Nt, nj, ni ] = xfield.shape
+print ' DIMENSION =>  ni, nj, Nt = ', ni, nj, Nt
 
 
-VZ = nmp.zeros((nt,nj))
+VZ = nmp.zeros((Nt,nj))
 
-for jt in range(nt):
+for jt in range(Nt):
 
     cjt  = '%3.3d' %(jt+1)
 
@@ -107,11 +117,11 @@ for jj in range(nj):
     f.write(str(vlat[jj]))
 
     # time-averaged column first if relevant
-    if nt > 1:
+    if Nt > 1:
         f.write('   '+str(mean_val))
 
     # snapshot column
-    for jt in range(nt):
+    for jt in range(Nt):
         f.write('   '+str(VZ[jt,jj]) )
 
     f.write('\n')            
@@ -160,7 +170,7 @@ f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/bar
 id_lat[:] = vlat[:]
 
 
-for jt in range(nt):
+for jt in range(Nt):
     id_tim[jt] = vtime[jt]
     id_f1[jt,:] = VZ[jt,:]
     id_f2[jt,:] = VZ[jt,:] - nmp.mean(VZ[:,:], axis=0)

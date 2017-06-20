@@ -65,10 +65,10 @@ if cv_in == 'curl_ssu':
     cb_jump = 1
     
 if cv_in == 'mod_ssu':
-    cfield = 'Surface Current'
+    cfield = 'Surf. Current'
     tmin=0. ;  tmax=3.   ;  dtemp = 0.25
     cpal_fld = 'ncview_hotres'
-    cunit = r'$[10^{-6}s^{-1}]$'
+    cunit = r'$[m/s]$'
     cb_jump = 1
     
 if cv_in == 'sosstsst':
@@ -185,7 +185,7 @@ for jt in range(jt0,jtN):
     	fig = plt.figure(num = 1, figsize=(rh,1.167*rh), dpi=None, facecolor='b', edgecolor='k')
     	ax  = plt.axes([0.005, 0.05, 0.99, 0.99], axisbg = '0.35')
 
-        plt.title('Ocean (NEMO@ORCA12 cpl IFS@'+CTATM+'): '+cfield+', '+cdate, **cfont_title)
+        plt.title('Ocean (NEMO@ORCA12 + IFS@'+CTATM+'): '+cfield+', '+cdate, **cfont_title)
 
         print ' *** Creating new projection'
         carte = Basemap(projection='ortho', lat_0=latitude, lon_0=rot, resolution='h')
