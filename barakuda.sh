@@ -681,7 +681,7 @@ if [ ${ISTAGE} -eq 2 ]; then
             export CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
             ftcli=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_grid_T.nc4
             ficli=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_${FILE_ICE_SUFFIX}.nc4
-            fcsbc=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_SBC.nc4
+            fcsbc=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_${FILE_FLX_SUFFIX}.nc4
             fclvt=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_VT.nc4
             fcmoc=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_MOC.nc4
             fcpsi=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_PSI.nc4
@@ -702,6 +702,19 @@ if [ ${ISTAGE} -eq 2 ]; then
             echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
             echo
             echo "  => for years ${CLIM_PER}" ; echo "  => using ${ftcli}"
+
+            
+            # lolo, doing some zonally-averaged diags...
+            if [ ! "${NN_QSOL}" = "X" ] && [ -f ${fcsbc} ]; then
+                fo="${DIAG_D}/clim/zonal_${NN_QSOL}_mclim_${CONFEXP}_${CLIM_PER}_${FILE_FLX_SUFFIX}.nc"
+                if [ ! -f ${fo} ]; then
+                    echo "mk_zonal_average.py ${fcsbc} ${NN_QSOL} nav_lon nav_lat"
+                    mk_zonal_average.py ${fcsbc} ${NN_QSOL} nav_lon nav_lat
+                    echo
+                fi
+              # => must compare what's in ${fo} to OBS.!
+            fi
+            
 
             list_comp_2d="OBS"
             l_pclim=true
@@ -947,4 +960,3 @@ fi
 rm -rf ${TMP_DIR} 2>/dev/null ; #debug
 
 echo
-

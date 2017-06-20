@@ -3,10 +3,10 @@
 # L. Brodeau, June 2012
 
 import sys
-from os.path import splitext
+from os.path import splitext,basename,dirname
 import numpy as nmp
 from netCDF4 import Dataset
-from string import replace as rplc
+from string import replace
 
 import barakuda_tool as bt
 
@@ -28,21 +28,13 @@ if narg == 5:
     cv_lon = sys.argv[3]
     cv_lat = sys.argv[4]
 
-
 cn_file, cn_ext = splitext(cf_in)
-
-print cn_ext
-
-cn_file = rplc(cn_file, cv_in+'_', '')
-print cn_file
-
-print "\n"
+cn_file = replace(cn_file, cv_in+'_', '')
+cf_out = dirname(cf_in)+'/zonal_'+cv_in+'_'+basename(cn_file)+'.nc'
 
 
 
 bt.chck4f(cf_in)
-
-
 f_in = Dataset(cf_in)
 
 list_var = f_in.variables.keys()
@@ -128,10 +120,10 @@ for jt in range(Nt):
 
 
 
-print '\n Creating netcdf file!'
+print '\n Creating netcdf file! ()'
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-cf_out = 'zonal_'+cv_in+'_'+cn_file+'.nc'
+
 
 f_out = Dataset(cf_out, 'w',format='NETCDF3_CLASSIC')
 
