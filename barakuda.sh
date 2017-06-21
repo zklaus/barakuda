@@ -704,12 +704,12 @@ if [ ${ISTAGE} -eq 2 ]; then
             echo "  => for years ${CLIM_PER}" ; echo "  => using ${ftcli}"
 
             
-            # lolo, doing some zonally-averaged diags...
+            # Doing some zonally-averaged diags...
             if [ ! "${NN_QSOL}" = "X" ] && [ -f ${fcsbc} ]; then
                 fo="${DIAG_D}/clim/zonal_${NN_QSOL}_mclim_${CONFEXP}_${CLIM_PER}_${FILE_FLX_SUFFIX}.nc"
                 if [ ! -f ${fo} ]; then
-                    echo "mk_zonal_average.py ${fcsbc} ${NN_QSOL} nav_lon nav_lat"
-                    mk_zonal_average.py ${fcsbc} ${NN_QSOL} nav_lon nav_lat
+                    echo "mk_zonal_average.py ${fcsbc} ${NN_QSOL} ${MM_FILE} tmask nav_lon nav_lat"
+                    mk_zonal_average.py ${fcsbc} ${NN_QSOL} ${MM_FILE} tmask nav_lon nav_lat
                     echo
                 fi
               # => must compare what's in ${fo} to OBS.!
