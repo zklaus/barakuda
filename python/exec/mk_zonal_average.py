@@ -10,28 +10,43 @@ from string import replace
 
 import barakuda_tool as bt
 
-rmv    = -9999.
-
 # Defaults:
 cv_lon = 'lon'
 cv_lon = 'lat'
 
 narg = len(sys.argv)
-if not narg in [ 3 , 5]:
-    print 'Usage: '+sys.argv[0]+' <FILE_lat-lon.nc> <variable> (<name_longitude> <name_latitude>)'
+if not narg in [ 5 , 7]:
+    print 'Usage: '+sys.argv[0]+' <FILE_lat-lon.nc> <variable> <mesh_mask.nc> <mask_name> (<name_longitude> <name_latitude>)'
     sys.exit(0)
 
 cf_in  = sys.argv[1]
 cv_in  = sys.argv[2]
 
+cf_msk  = sys.argv[3]
+cv_msk  = sys.argv[4]
+
 if narg == 5:
-    cv_lon = sys.argv[3]
-    cv_lat = sys.argv[4]
+    cv_lon = sys.argv[5]
+    cv_lat = sys.argv[6]
 
 cn_file, cn_ext = splitext(cf_in)
 cn_file = replace(cn_file, cv_in+'_', '')
 cf_out = dirname(cf_in)+'/zonal_'+cv_in+'_'+basename(cn_file)+'.nc'
 
+
+bt.chck4f(cf_msk)
+f_msk = Dataset(cf_msk)
+Ndim = len(f_msk.variables[cv_msk].dimensions)
+if   Ndim == 4:
+    xmsk = f_msk.variables[cv_msk][0,0,:,:]
+elif Ndim == 3:
+    xmsk = f_msk.variables[cv_msk][0,:,:]
+elif Ndim == 2:
+    xmsk = f_msk.variables[cv_msk][:,:]
+else:
+    print ' ERROR (mk_zonal_average.py) => weird shape for your mask array!'
+    sys.exit(0)    
+f_msk.close()
 
 
 bt.chck4f(cf_in)
@@ -77,12 +92,9 @@ for cvt in [ 'time', 'time_counter' ]:
 print 'TIME: ', cunt_time, '\n'
 
 # Field !!!
-#rmv    = f_in.variables[cv_in]._FillValue
 xfield      = f_in.variables[cv_in][:,:,:]
 cunit_field = f_in.variables[cv_in].units
 clgnm_field = f_in.variables[cv_in].long_name
-
-#print 'Missing value for '+cv_in+' is : ', rmv, '\n'
 
 f_in.close()
 
@@ -99,33 +111,30 @@ print ' Nt = '+str(Nt)
 print ' DIMENSION =>  ni, nj, Nt = ', ni, nj, Nt
 
 
-VZ = nmp.zeros((Nt,nj))
 
-for jt in range(Nt):
+Fzonal = bt.mk_zonal(xfield, xmsk)
 
-    cjt  = '%3.3d' %(jt+1)
-
-    # Zonally-averaging:
-    for jj in range(nj):
-    
-        cpt = 0
-    
-        for ji in range(ni):
-            val = xfield[jt,jj,ji]
-            if val != rmv:
-                cpt = cpt + 1
-                VZ[jt,jj] = VZ[jt,jj] + val
-
-        if cpt >= 1 : VZ[jt,jj] = VZ[jt,jj]/cpt
-
-
-
-print '\n Creating netcdf file! ()'
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Fzonal = nmp.zeros((Nt,nj))
+#for jt in range(Nt):
+#
+#    cjt  = '%3.3d' %(jt+1)
+#
+#    # Zonally-averaging:
+#    for jj in range(nj):
+#    
+#        cpt = 0
+#    
+#        for ji in range(ni):
+#            val = xfield[jt,jj,ji]
+#            if val != rmv:
+#                cpt = cpt + 1
+#                Fzonal[jt,jj] = Fzonal[jt,jj] + val
+#
+#        if cpt >= 1 : Fzonal[jt,jj] = Fzonal[jt,jj]/cpt
 
 
 
-f_out = Dataset(cf_out, 'w',format='NETCDF3_CLASSIC')
+f_out = Dataset(cf_out, 'w',format='NETCDF4')
 
 # Dimensions:
 f_out.createDimension('lat', nj)
@@ -150,12 +159,12 @@ f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/bar
 # Filling variables:
 id_lat[:] = vlat[:]
 
-Z_time_mean = nmp.mean(VZ[:,:], axis=0)
+Z_time_mean = nmp.mean(Fzonal[:,:], axis=0)
 
 for jt in range(Nt):
     id_tim[jt] = vtime[jt]
-    id_f1[jt,:] = VZ[jt,:]
-    id_f3[jt,:] = VZ[jt,:] - Z_time_mean
+    id_f1[jt,:] = Fzonal[jt,:]
+    id_f3[jt,:] = Fzonal[jt,:] - Z_time_mean
 
 id_f2[:] = Z_time_mean[:]
 
