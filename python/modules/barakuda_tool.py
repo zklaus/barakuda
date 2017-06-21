@@ -532,6 +532,7 @@ def extend_domain(ZZ, ext_east_deg, skp_west_deg=0):
 
 
 def mk_zonal(XF, XMSK):
+    #
     vshp = nmp.shape(XF)
     ndim = len(vshp)
     if ndim == 3:
@@ -550,19 +551,19 @@ def mk_zonal(XF, XMSK):
     #
     VZ = nmp.zeros((Nt,ny))
     #
+    vweights = nmp.zeros(ny)
+    for jy in range(ny): vweights[jy] = nmp.sum(XMSK[jy,:])
+    idx0 = nmp.where(vweights == 0.)
+    vweights[idx0] = 1.E12
+    #
     for jt in range(Nt):        
         for jy in range(ny):
-            icpt = 0
-            for jx in range(nx):
-                rr = XF[jy,jx]
-                if rr > -9999.+0.1 and XMSK[jy,jx] > 0.5:
-                    icpt = icpt + 1
-                    VZ[jt,jy] = VZ[jt,jy] + rr
-            if icpt > 0 : VZ[jt,jy] = VZ[jt,jy]/float(icpt)
+            if ndim == 3: rmean = nmp.sum(XF[jt,jy,:]*XMSK[jy,:])/vweights[jy]
+            if ndim == 2: rmean = nmp.sum(XF[   jy,:]*XMSK[jy,:])/vweights[jy]
+            VZ[jt,jy] = rmean
+            VZ[jt,idx0] = nmp.nan
     if ndim == 3: return VZ
     if ndim == 2: return VZ[0,:]
-
-
 
 
 

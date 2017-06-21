@@ -25,14 +25,18 @@ cv_in  = sys.argv[2]
 cf_msk  = sys.argv[3]
 cv_msk  = sys.argv[4]
 
-if narg == 5:
+if narg == 7:
     cv_lon = sys.argv[5]
     cv_lat = sys.argv[6]
 
+print ''
+
 cn_file, cn_ext = splitext(cf_in)
 cn_file = replace(cn_file, cv_in+'_', '')
-cf_out = dirname(cf_in)+'/zonal_'+cv_in+'_'+basename(cn_file)+'.nc'
-
+cpath='.'
+if dirname(cf_in) != '': cpath=dirname(cf_in)
+cf_out = cpath+'/zonal_'+cv_in+'_'+basename(cn_file)+'.nc'
+#print ' *[mk_zonal_average.py]* file to write: ', cf_out ; sys.exit(0)
 
 bt.chck4f(cf_msk)
 f_msk = Dataset(cf_msk)
@@ -47,7 +51,6 @@ else:
     print ' ERROR (mk_zonal_average.py) => weird shape for your mask array!'
     sys.exit(0)    
 f_msk.close()
-
 
 bt.chck4f(cf_in)
 f_in = Dataset(cf_in)
@@ -80,16 +83,11 @@ else:
     print ' ERROR (mk_zonal_average.py) => weird shape for your longitude array!'
     sys.exit(0)
 
-print 'LONGITUDE: ', cunt_lon
-print 'LATITUDE: ', cunt_lat
-
-
-
 for cvt in [ 'time', 'time_counter' ]: 
     if cvt in list_var:
         vtime     = f_in.variables[cvt][:]
         cunt_time = f_in.variables[cvt].units
-print 'TIME: ', cunt_time, '\n'
+#print 'TIME: ', cunt_time, '\n'
 
 # Field !!!
 xfield      = f_in.variables[cv_in][:,:,:]
@@ -100,41 +98,19 @@ f_in.close()
 
 
 Nt = len(vtime)
-print ' Nt = '+str(Nt)
-
-
+#print ' Nt = '+str(Nt)
 
 
 # Checking dimensions
 # ~~~~~~~~~~~~~~~~~~~
 [ Nt, nj, ni ] = xfield.shape
-print ' DIMENSION =>  ni, nj, Nt = ', ni, nj, Nt
-
-
+print ' *[mk_zonal_average.py]* dimension of "'+cv_in+'" => ', ni, nj, Nt
 
 Fzonal = bt.mk_zonal(xfield, xmsk)
 
-#Fzonal = nmp.zeros((Nt,nj))
-#for jt in range(Nt):
-#
-#    cjt  = '%3.3d' %(jt+1)
-#
-#    # Zonally-averaging:
-#    for jj in range(nj):
-#    
-#        cpt = 0
-#    
-#        for ji in range(ni):
-#            val = xfield[jt,jj,ji]
-#            if val != rmv:
-#                cpt = cpt + 1
-#                Fzonal[jt,jj] = Fzonal[jt,jj] + val
-#
-#        if cpt >= 1 : Fzonal[jt,jj] = Fzonal[jt,jj]/cpt
-
-
-
-f_out = Dataset(cf_out, 'w',format='NETCDF4')
+# Output netCDF file:
+#######################
+f_out = Dataset(cf_out, 'w',format='NETCDF3_CLASSIC')
 
 # Dimensions:
 f_out.createDimension('lat', nj)
@@ -171,5 +147,5 @@ id_f2[:] = Z_time_mean[:]
 f_out.close()
         
 
-print '\n *** Wrote file '+cf_out+' !\n'
+print ' *[mk_zonal_average.py]* Wrote file '+cf_out+' !\n'
 
