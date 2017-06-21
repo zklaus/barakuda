@@ -532,6 +532,15 @@ def extend_domain(ZZ, ext_east_deg, skp_west_deg=0):
 
 
 def mk_zonal(XF, XMSK):
+    #**************************************************************************************
+    # Computes the zonal average of field XF, ignoring points where XMSK==0.
+    #
+    # INPUT:
+    #        * XF:   2D [ny,nx] or 2D+time [ny,nx,Nt] array of input field
+    #        * XMSK: 2D [ny,nx] array, 1 on points to consider, 0 on points to exclude
+    # RETURNS:
+    #        * VZ:   1D [ny] array of zonally-averaged XF
+    #**************************************************************************************
     #
     vshp = nmp.shape(XF)
     ndim = len(vshp)
