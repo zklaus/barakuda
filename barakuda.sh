@@ -706,13 +706,21 @@ if [ ${ISTAGE} -eq 2 ]; then
             
             # Doing some zonally-averaged diags...
             if [ ! "${NN_QSOL}" = "X" ] && [ -f ${fcsbc} ]; then
-                fo="${DIAG_D}/clim/zonal_${NN_QSOL}_mclim_${CONFEXP}_${CLIM_PER}_${FILE_FLX_SUFFIX}.nc"
-                if [ ! -f ${fo} ]; then
+                fm=`echo ${fcsbc} | sed -e "s|mclim_|zonal_mclim_|g"`
+                if [ ! -f ${fm} ]; then
                     echo "mk_zonal_average.py ${fcsbc} ${NN_QSOL} ${MM_FILE} tmask nav_lon nav_lat"
                     mk_zonal_average.py ${fcsbc} ${NN_QSOL} ${MM_FILE} tmask nav_lon nav_lat
                     echo
                 fi
-              # => must compare what's in ${fo} to OBS.!
+                vobs="radsw"
+                fobs="${BARAKUDA_ROOT}/data/obs/${vobs}_monthly_clim_1980-2005_NOCS2.nc4"
+                fo=`echo ${fobs} | sed -e "s|${vobs}_monthly_|zonal_${vobs}_monthly_|g"`
+                if [ ! -f ${fo} ]; then
+                    echo "mk_zonal_average.py ${fobs} ${vobs} value -9999."
+                    mk_zonal_average.py ${fobs} ${vobs} value -9999.
+                    echo
+                fi
+              # => must compare what's in ${fm} to OBS (fo).!
             fi
             
 

@@ -12,7 +12,7 @@ import barakuda_tool as bt
 
 # Defaults:
 cv_lon = 'lon'
-cv_lon = 'lat'
+cv_lat = 'lat'
 
 narg = len(sys.argv)
 if not narg in [ 5 , 7]:
@@ -32,25 +32,36 @@ if narg == 7:
 print ''
 
 cn_file, cn_ext = splitext(cf_in)
-cn_file = replace(cn_file, cv_in+'_', '')
-cpath='.'
+#cn_file = replace(cn_file, cv_in+'_', '')
+cpath = '.'
 if dirname(cf_in) != '': cpath=dirname(cf_in)
-cf_out = cpath+'/zonal_'+cv_in+'_'+basename(cn_file)+'.nc'
+cf_out = cpath+'/zonal_'+basename(cn_file)+'.nc'
 #print ' *[mk_zonal_average.py]* file to write: ', cf_out ; sys.exit(0)
 
-bt.chck4f(cf_msk)
-f_msk = Dataset(cf_msk)
-Ndim = len(f_msk.variables[cv_msk].dimensions)
-if   Ndim == 4:
-    xmsk = f_msk.variables[cv_msk][0,0,:,:]
-elif Ndim == 3:
-    xmsk = f_msk.variables[cv_msk][0,:,:]
-elif Ndim == 2:
-    xmsk = f_msk.variables[cv_msk][:,:]
+l_msk_from_val = False
+if cf_msk in [ 'value', 'val', 'Value' ]:
+    l_msk_from_val = True
+    rmv = float(cv_msk)
+    print ' *[mk_zonal_average.py]* mask is where '+cv_in+' == '+str(rmv)
+
+
 else:
-    print ' ERROR (mk_zonal_average.py) => weird shape for your mask array!'
-    sys.exit(0)    
-f_msk.close()
+    bt.chck4f(cf_msk)
+    f_msk = Dataset(cf_msk)
+    Ndim = len(f_msk.variables[cv_msk].dimensions)
+    if   Ndim == 4:
+        xmsk = f_msk.variables[cv_msk][0,0,:,:]
+    elif Ndim == 3:
+        xmsk = f_msk.variables[cv_msk][0,:,:]
+    elif Ndim == 2:
+        xmsk = f_msk.variables[cv_msk][:,:]
+    else:
+        print ' ERROR (mk_zonal_average.py) => weird shape for your mask array!'
+        sys.exit(0)    
+    f_msk.close()
+
+
+
 
 bt.chck4f(cf_in)
 f_in = Dataset(cf_in)
@@ -103,9 +114,20 @@ Nt = len(vtime)
 
 # Checking dimensions
 # ~~~~~~~~~~~~~~~~~~~
-[ Nt, nj, ni ] = xfield.shape
+( Nt, nj, ni ) = xfield.shape
 print ' *[mk_zonal_average.py]* dimension of "'+cv_in+'" => ', ni, nj, Nt
 
+
+
+if l_msk_from_val:
+    xmsk = nmp.zeros((nj,ni))
+    idx1 = nmp.where(xfield[0,:,:] > rmv + 1.E-6)
+    xmsk[idx1] = 1.
+    idx0 = nmp.where(xfield[0,:,:] < rmv - 1.E-6)
+    xmsk[idx1] = 1.
+
+
+# ZONAL MEAN:
 Fzonal = bt.mk_zonal(xfield, xmsk)
 
 # Output netCDF file:
