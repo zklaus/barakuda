@@ -131,7 +131,7 @@ EOF
     if ${l_pclim}; then
         cat >> index.html <<EOF
         <div align="left" style="margin: 50px 0px 0px 0px; font-family: Trebuchet MS; font-size: 20px;width: 600px;">
-          <b>Diags from climatology (${CLIM_PER})</b>
+          <b>Diagnostics from climatology (${CLIM_PER})</b>
           <ul>
            <li> <a href="./temp_sal/index.html"> Temperature and Salinity vs OBS</a> </li>
            <li> <a href="./ssh/index.html"> Sea Surface Height </a>                 </li>
@@ -139,6 +139,7 @@ EOF
            <li> <a href="./mld/index.html"> Mixed Layer depth in relevent regions </a> </li>
            <li> <a href="./moc/index.html"> Meridional Overturning Circulation </a>    </li>
            <li> <a href="./wind/index.html"> Surface Wind (stress, curl, speed) </a>   </li>
+           <li> <a href="./sfluxes/index.html"> Zonally-averaged surface fluxes </a>   </li>
 EOF
         if [ ${i_do_sect} -eq 1 ]; then
             echo "           <li> <a href='./temp_sal/index_sections.html'> Zonal/Meridional sections of T & S vs OBS</a> </li>" >> index.html

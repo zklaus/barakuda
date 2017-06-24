@@ -14,10 +14,11 @@ imean2d=0
 imean3d=0
 iSflx=0
 ienso=0
-imov=1
+imov=0
 issh=0
 ipsi=0
 iwind=0
+isfluxes=1
 its=0
 imld=0
 irnf=0
@@ -60,7 +61,7 @@ ihov=0
 
 CONFIG="ORCA1_L75"
 ARCH="lolo"
-export EXP="LB3E" ; NC=nc4 ; jyear=1990
+export EXP="AMOC" ; NC=nc4 ; jyear=1990
 
 
 
@@ -224,6 +225,10 @@ fi
 
 if [ ${iwind} -eq 1 ]; then
     CMD="python exec/wind.py ${y1_clim} ${y2_clim}"
+fi
+
+if [ ${isfluxes} -eq 1 ]; then
+    CMD="python exec/sfluxes.py ${y1_clim} ${y2_clim}"
 fi
 
 

@@ -334,7 +334,7 @@ if lfig0:
 
     ctt = CONFEXP+': Mean Annual Zonal Anomaly of SST / "'+cname_obs+'", ('+cy1+'-'+cy2+')'
 
-    vzc[:] = bt.mk_zonal(SSTnemo_annual[:,:] - SSTobs_annual[:,:], imask[0,:,:])
+    vzc[:] = bt.mk_zonal(SSTnemo_annual[:,:] - SSTobs_annual[:,:], XMSK=imask[0,:,:])
     # Only at the end of all the experiments we do 2d plotting:
     bp.plot("zonal")(vlat, vzc, cfignm=path_fig+'1d_zonal_temp_anom_vs_'+CC, zmin=-5., zmax=5., dz=1.,
                      xmin=-75., xmax=65., czunit=r'$^{\circ}$C', cfig_type=fig_type,
@@ -342,7 +342,7 @@ if lfig0:
 
     ctt = CONFEXP+': Mean Annual Zonal Anomaly of SSS / "'+cname_obs+'", ('+cy1+'-'+cy2+')'
 
-    vzc[:] = bt.mk_zonal(SSSnemo_annual[:,:] - Sobs_annual[0,:,:], imask[0,:,:])
+    vzc[:] = bt.mk_zonal(SSSnemo_annual[:,:] - Sobs_annual[0,:,:], XMSK=imask[0,:,:])
     # Only at the end of all the experiments we do 2d plotting:
     bp.plot("zonal")(vlat, vzc, cfignm=path_fig+'1d_zonal_sali_anom_vs_'+CC , zmin=-2.5, zmax=2.5, dz=0.5,
                      xmin=-75., xmax=65., czunit='PSU', cfig_type=fig_type,

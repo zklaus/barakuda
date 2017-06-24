@@ -506,54 +506,59 @@ class plot :
         return
 
 
-    def __zonal(self,VY, VZn, VZ1=[0.], VZ2=[0.], VZ3=[0.],
+
+
+
+    def __zonal(self,VYn, VZn, VY1=[0.],VZ1=[0.], VY2=[0.],VZ2=[0.], VY3=[0.],VZ3=[0.],
                 cfignm='fig_zonal', zmin=-100., zmax=100., dz=25., i_z_jump=1,
-                xmin=-90., xmax=90., cfig_type='png', cxunit=r'Latitude ($^{\circ}$N)',
+                xmin=-90., xmax=90., dx=15., cfig_type='png', cxunit=r'Latitude ($^{\circ}$N)',
                 czunit='', ctitle='', lab='', lab1='', lab2='', lab3='', box_legend=(0.6, 0.75),
-                lnarrow=False):
+                loc_legend='lower center', fig_size=FIG_SIZE_DEF):
 
         font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
 
-        ny = len(VY)
-        if len(VZn) != ny: print 'ERROR: plot_zonal.barakuda_plot => VY and VZn do not agree in size'; sys.exit(0)
+        ny = len(VYn)
+        if len(VZn) != ny: print 'ERROR: plot_zonal.barakuda_plot => VYn and VZn do not agree in size'; sys.exit(0)
 
         lp1=False ; lp2=False ; lp3=False
-        if len(VZ1) == ny: lp1=True
-        if len(VZ2) == ny: lp2=True
-        if len(VZ3) == ny: lp3=True
+        if len(VZ1) > 1 and len(VZ1)==len(VY1): lp1=True
+        if len(VZ2) > 1 and len(VZ2)==len(VY2): lp2=True
+        if len(VZ3) > 1 and len(VZ3)==len(VY3): lp3=True
 
-        if lnarrow:
-            fig = plt.figure(num = 1, figsize=(WDTH_DEF/2. , HGHT_DEF), dpi=None)  ; #zonal
-            ax  = plt.axes([0.14 , 0.12, 0.85, 0.82])   #, axisbg = 'gray')
-        else:
-            fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), dpi=None)  ; #zonal
-            ax = plt.axes([0.08, 0.11, 0.9, 0.82])   #, axisbg = 'gray')
+        if fig_size==FIG_SIZE_DEF: fig_size = (fig_size[0], 1.5*fig_size[1]) # extend height if == to default
 
-        plt.plot(VY, VZn*0.0, 'k', linewidth=1)
+        # Do we put the legend outside of the plot?
+        l_legend_out = False ; y_leg = 0.
+        if loc_legend == 'out':
+            l_legend_out = True
+            y_leg = 0.1 ; # Figure needs to be vertically extended in that case
+            fig_size = (fig_size[0],(1.+y_leg)*fig_size[1])
 
-        plt.plot(VY, VZn, 'k', linewidth=3., label=lab)
-        if lp1: plt.plot(VY, VZ1, color=b_blu, linewidth=2., label=lab1)
-        if lp2: plt.plot(VY, VZ2, color=b_red, linewidth=2., label=lab2)
-        if lp3: plt.plot(VY, VZ3, color=b_gre, linewidth=2., label=lab3)
+        fig = plt.figure(num = 1, figsize=fig_size, facecolor='w', edgecolor='k')
+        ax  = plt.axes([0.08, 0.075, 0.9, 0.85])
 
-        plt.legend(bbox_to_anchor=box_legend, shadow=False, fancybox=True)
+        plt.plot(VYn, VZn*0.0, 'k', linewidth=1)
+
+        plt.plot(VYn, VZn, 'k', linewidth=3., label=lab)
+        if lp1: plt.plot(VY1, VZ1, color=b_red, linewidth=2., label=lab1)
+        if lp2: plt.plot(VY2, VZ2, color=b_blu, linewidth=2., label=lab2)
+        if lp3: plt.plot(VY3, VZ3, color=b_gre, linewidth=2., label=lab3)
 
         # X-axis
-        __nice_x_axis__(ax, plt, xmin, xmax, 15., cunit=cxunit, cfont=font_xylb, dx_minor=0)
+        __nice_latitude_axis__(ax, plt, xmin, xmax, dx, axt='x')
 
         # Y-axis:
         __nice_y_axis__(ax, plt, zmin, zmax, dz, i_sbsmp=i_z_jump, cunit=czunit, cfont=font_xylb, dy_minor=0)
 
+        # Legend:
+        __fancy_legend__(ax, plt, loc_leg=loc_legend, ylg=y_leg, leg_out=l_legend_out, ncol=1)
+
         plt.title(ctitle, **font_ttl)
 
-        plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False)  ; #zonal
-
+        plt.savefig(cfignm+'.'+cfig_type, dpi=DPI_DEF, orientation='portrait', transparent=False)
         plt.close(1)
 
         return
-
-
-
 
 
 
@@ -1200,19 +1205,8 @@ class plot :
             props = dict(boxstyle='round', facecolor='w') ;#, alpha=0.5)
             ax.text(0.05, yp, cinfo, transform=ax.transAxes,
                     verticalalignment='top', bbox=props, fontsize=10)
-
-        if loc_legend != '0':
-            if l_legend_out:
-                # Shrink Y axis's height by % on the bottom
-                box = ax.get_position()
-                ax.set_position([box.x0, box.y0 + box.height*y_leg, box.width, box.height*(1.-y_leg)])
-                plt.legend(bbox_to_anchor=(0.95, -0.075), ncol=nb_col, shadow=True, fancybox=True) ; #lolo
-            else:
-                plt.legend(loc=loc_legend, ncol=nb_col, shadow=True, fancybox=True)
-
-
-            
-            
+        
+        __fancy_legend__(ax, plt, loc_leg=loc_legend, ylg=y_leg, leg_out=l_legend_out, ncol=nb_col)
 
         cf_fig = cfignm+'.'+cfig_type
 
@@ -1847,3 +1841,15 @@ def __suitable_axis_dx__(hmin, hmax, nb_val=20, lsym0=False):
             hmin = -hmax
 
     return hmin, hmax, dh
+
+
+
+def __fancy_legend__(ax_hndl, plt_hndl, loc_leg='0', ylg=0, leg_out=False, ncol=1):
+    if loc_leg != '0':
+        if leg_out:
+            # Shrink Y axis's height by % on the bottom
+            box = ax_hndl.get_position()
+            ax_hndl.set_position([box.x0, box.y0 + box.height*ylg, box.width, box.height*(1.-ylg)])
+            plt_hndl.legend(bbox_to_anchor=(0.95, -0.075), ncol=ncol, shadow=True, fancybox=True) ; #lolo
+        else:
+            plt_hndl.legend(loc=loc_leg, ncol=ncol, shadow=True, fancybox=True)

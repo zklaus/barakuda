@@ -531,13 +531,16 @@ def extend_domain(ZZ, ext_east_deg, skp_west_deg=0):
 
 
 
-def mk_zonal(XF, XMSK):
+def mk_zonal(XF, XMSK=[0.], r_mask_from_val=-9999.):
     #**************************************************************************************
     # Computes the zonal average of field XF, ignoring points where XMSK==0.
     #
     # INPUT:
     #        * XF:   2D [ny,nx] or 2D+time [ny,nx,Nt] array of input field
+    #  "   opt:
     #        * XMSK: 2D [ny,nx] array, 1 on points to consider, 0 on points to exclude
+    #        * r_mask_from_val: instead of providing the 2D mask provide the flag value
+    #                           where mask should be 0
     # RETURNS:
     #        * VZ:   1D [ny] array of zonally-averaged XF
     #**************************************************************************************
@@ -553,10 +556,22 @@ def mk_zonal(XF, XMSK):
         print ' ERROR (mk_zonal of barakuda_tool.py): dimension of your field is weird!'
         sys.exit(0)
     #
-    (n2,n1) = XMSK.shape
-    if n2 != ny or n1 != nx:
-        print 'ERROR: mk_zonal.barakuda_tool.py => XF and XMSK do not agree in size!'
-        sys.exit(0)
+    if len(nmp.shape(XMSK)) == 2:
+        (n2,n1) = XMSK.shape
+        if n2 != ny or n1 != nx:
+            print 'ERROR: mk_zonal.barakuda_tool.py => XF and XMSK do not agree in size!'
+            sys.exit(0)
+    else:
+        # Need to build the mask
+        xtmp = nmp.zeros((ny,nx))
+        if ndim == 3: xtmp = XF[0,:,:]
+        if ndim == 2: xtmp = XF[  :,:]
+        XMSK = nmp.zeros((ny,nx))
+        idx1 = nmp.where(xtmp > r_mask_from_val + 1.E-6)
+        XMSK[idx1] = 1.
+        idx1 = nmp.where(xtmp < r_mask_from_val - 1.E-6)
+        XMSK[idx1] = 1.
+        del xtmp
     #
     VZ = nmp.zeros((Nt,ny))
     #

@@ -16,7 +16,10 @@ cv_lat = 'lat'
 
 narg = len(sys.argv)
 if not narg in [ 5 , 7]:
-    print 'Usage: '+sys.argv[0]+' <FILE_lat-lon.nc> <variable> <mesh_mask.nc> <mask_name> (<name_longitude> <name_latitude>)'
+    print '\nUsage: '+basename(sys.argv[0])+' <FILE_lat-lon.nc> <variable> <mesh_mask.nc> <mask_name> (<name_longitude> <name_latitude>)'
+    print '   * If you do not have a mask file, use a special value of field <variable> to be'
+    print '     considered as a mask. Example: '
+    print '       '+basename(sys.argv[0])+' <FILE_lat-lon.nc> <variable> value -9999.\n'
     sys.exit(0)
 
 cf_in  = sys.argv[1]
@@ -118,17 +121,12 @@ Nt = len(vtime)
 print ' *[mk_zonal_average.py]* dimension of "'+cv_in+'" => ', ni, nj, Nt
 
 
+# ZONAL MEAN:
 
 if l_msk_from_val:
-    xmsk = nmp.zeros((nj,ni))
-    idx1 = nmp.where(xfield[0,:,:] > rmv + 1.E-6)
-    xmsk[idx1] = 1.
-    idx0 = nmp.where(xfield[0,:,:] < rmv - 1.E-6)
-    xmsk[idx1] = 1.
-
-
-# ZONAL MEAN:
-Fzonal = bt.mk_zonal(xfield, xmsk)
+    Fzonal = bt.mk_zonal(xfield, r_mask_from_val=rmv)
+else:
+    Fzonal = bt.mk_zonal(xfield, XMSK=xmsk)
 
 # Output netCDF file:
 #######################

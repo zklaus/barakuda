@@ -125,15 +125,8 @@ export NN_WNDM="windsp"      ; # name of surface wind  speed module in "FILE_FLX
 export MM_FILE=${CONF_INI_DIR}/mesh_mask.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
 
+# OBSERVATIONS / REFERENCES
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
-#export NM_TS_OBS="WOA_2009"
-#export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-#export F_S_OBS_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-#export F_SST_OBS_12=${CONF_INI_DIR}/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc4
-#export NN_T_OBS="thetao"
-#export NN_S_OBS="so"
-#export NN_SST_OBS="tos"
-#
 export NM_TS_OBS="EN4.2.0 [1990-2010]"
 export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
 export F_S_OBS_3D_12=${CONF_INI_DIR}/so_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
@@ -142,9 +135,15 @@ export NN_T_OBS="thetao"
 export NN_S_OBS="so"
 export NN_SST_OBS="thetao"
 #
+# Sea-ice:
 export NM_IC_OBS="Hurrell et al 2008 [1980-1999]"
 export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_OBS="ice_cover"
+#
+# Surface Heat fluxes:
+export NM_QSOL_OBS="NOCS 2.0 [1980-2005]"
+export F_QSOL_OBS_12=${BARAKUDA_ROOT}/data/obs/radsw_monthly_clim_1980-2005_NOCS2.nc4
+export NN_QSOL_OBS="radsw"
 
 
 # A text file where the cross sections (to compute transports) are defined :
