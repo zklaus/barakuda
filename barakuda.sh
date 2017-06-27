@@ -34,8 +34,8 @@ while getopts C:R:f:y:c:FeEh option ; do
         F) export LFORCEDIAG=true ;;
         e) export ISTAGE=2 ;;
         E) export ISTAGE=2 ; export l_clim_diag=true ;;
-        h)  barakuda_usage ;;
-        \?) barakuda_usage ;;
+        h)  barakuda_usage; exit ;;
+        \?) barakuda_usage; exit ;;
     esac
 done
 
