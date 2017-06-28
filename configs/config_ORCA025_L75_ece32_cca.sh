@@ -34,7 +34,7 @@ export CONF_INI_DIR="$SCRATCH/ECE-DATA/input_barakuda/ORCA025.L75_barakuda"
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="$SCRATCH"
 
-export PYTHON_HOME="/usr/local/apps/python/2.7.5-01" ; # HOME to python distribution with matplotlib and basemap !
+export PYTHON_HOME="/usr/local/apps/python/2.7.12-01/" ; # HOME to python distribution with matplotlib and basemap !
 
 export DIR_NCVIEW_CMAP="${BARAKUDA_ROOT}/src/ncview_colormaps"
 
