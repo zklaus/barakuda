@@ -48,6 +48,8 @@ export ece_exp=2 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
 export Y_INI_EC=1990 ;    # initial year if ece_exp /= 0 !!!
+export M_INI_EC="01" ;    # initial month, only needed if ece_exp >= 10 !!!
+export NCHNKS_Y=1    ;    # number of chunks per year if ece_exp >= 10 (only needed if NCHNKS_Y >= 2 !)
 export TRES_IFS=255  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
 ###--- end EC-Earth IFS relate section ---
 
