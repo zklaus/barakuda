@@ -41,6 +41,7 @@ done
 
 barakuda_check
 
+# Time to source the config file:
 if [ -f ./config_${CONFIG}.sh ]; then
     # sourcing local configuration file if present:
     fconfig=./config_${CONFIG}.sh
@@ -56,10 +57,15 @@ else
 fi
 echo
 
+
+
+
 # If auto-submit experiment (ece_exp=10) then overides a few functions with:
 if [ ${ece_exp} -ge 10 ]; then
+    echo "Sourcing ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash"
     . ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash
 fi
+
 
 # If 3D fieds are annual averaged then overides a few functions with:
 if [ ! "${ANNUAL_3D}" = "" ]; then
@@ -96,7 +102,6 @@ fi
 
 cyear_ini=`printf "%04d" ${YEAR_INI}`
 cyear_end=`printf "%04d" ${YEAR_END}`
-
 
 # For proper python executables and scripts to be found:
 export PATH=${PYBRKD_EXEC_PATH}:${BARAKUDA_ROOT}/src/bash:${PYTHON_HOME}/bin:${PATH}
@@ -147,7 +152,8 @@ while ${lcontinue}; do
     fi    
     echo; echo
     
-    CRT1M=${CPREF}${cyear}0101_${cyear}1231
+    export CRT1M=${CPREF}${cyear}${cmmdd1}_${cyear}${cmmdd2}
+    if ${l_y2_j}; then export CRT1M=${CPREF}${cyear}${cmmdd1}_`printf "%04d" $((${jyear}+1))`${cmmdd2} ; fi
     
     if ${lcontinue}; then
 

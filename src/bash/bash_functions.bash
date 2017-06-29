@@ -34,6 +34,14 @@ function barakuda_usage()
 
 function barakuda_init()
 {
+    # Some defaults (don't modify, they should be modified according to what's in your config_<CONFIG>.sh file...)      
+    export NCHNKS_Y=1
+    export Y_INI_EC="1990" ; # initial year                                                                             
+    export M_INI_EC="01"   ; # initial month                                                                            
+    export cmmdd1="0101"
+    export cmmdd2="1231"
+    export l_y2_j=false    ; # if 1-year long NEMO files end sometime in year+1 instead of year!
+    
     # Supported ORCA grids:
     export ORCA_LIST="ORCA025.L75 ORCA1.L75 ORCA1.L46 ORCA1.L42 ORCA2.L31"
 
@@ -174,7 +182,7 @@ function barakuda_setup()
     
     mkdir -p ${DIAG_D} ${TMP_DIR}
     
-    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<Y_INI_EC>|${Y_INI_EC}|g"`
+    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<Y_INI_EC>|${Y_INI_EC}|g" -e "s|<M_INI_EC>|${M_INI_EC}|g"`
     if [ ! -d ${NEMO_OUT_D} ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi
     
     # Where to look for NEMO namelists:
@@ -351,7 +359,7 @@ function barakuda_check_year_is_complete()
     cy1m=`printf "%04d" $((${jy1}-${IFREQ_SAV_YEARS}))` ; cy2m=`printf "%04d" $((${jy2}-${IFREQ_SAV_YEARS}))`
     export i_get_file=1
     echo " *** (${cyear} => from ${cy1} to ${cy2})"
-    export TTAG=${cy1}0101_${cy2}1231 # calendar-related part of the file name
+    export TTAG=${cy1}${cmmdd1}_${cy2}${cmmdd2} # calendar-related part of the file name
     # Testing if the current year-group has been done
     for ft in ${NEMO_SAVED_FILES}; do
         if ${lcontinue}; then
@@ -417,7 +425,7 @@ function barakuda_import_files()
                         while [ ${jy} -lt ${IFREQ_SAV_YEARS} ]; do
                             im1=$((${jy}*12+1)) ;  im2=$((${im1}+11))
                             jytc=$((${jy}+${jy1})) ; cjytc=`printf "%04d" ${jytc}`
-                            ftc="./${CPREF}${cjytc}0101_${cjytc}1231_${gt}.nc" ; # file to create!
+                            ftc="./${CPREF}${cjytc}${cmmdd1}_${cjytc}${cmmdd2}_${gt}.nc" ; # file to create!
                             if [ ! -f ${ftc} ]; then
                                 echo "Extracting file ${ftc} from ${ftd}, month records: ${im1}=>${im2}"
                                 echo "=> ncks -a -O -F -d time_counter,${im1},${im2} ${ftd} -o ${ftc}"
@@ -438,7 +446,7 @@ function barakuda_import_files()
             if [ ! -f ./${CRT1M}_${cgrid_test}.nc ]; then
                 echo "${CRT1M}_${cgrid_test}.nc is missing !!!"
                 jy1=$((${jyear}-${jyear}%${IFREQ_SAV_YEARS})) ; jy2=$((${jy1}+${IFREQ_SAV_YEARS}-1))
-                cy1=`printf "%04d" ${jy1}` ; cy2=`printf "%04d" ${jy2}`; TTAG=${cy1}0101_${cy2}1231
+                cy1=`printf "%04d" ${jy1}` ; cy2=`printf "%04d" ${jy2}`; TTAG=${cy1}${cmmdd1}_${cy2}${cmmdd2}
                 CROUT=${CPREF}${TTAG}
                 echo "Should re-import files ${CROUT}* cause something went wrong...."; echo
                 i_get_file=1

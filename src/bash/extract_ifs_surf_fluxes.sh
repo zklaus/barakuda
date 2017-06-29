@@ -50,6 +50,7 @@
 cmsg="ERROR: $0 => global variable"
 if [ -z ${EXP} ]; then echo "${cmsg} EXP is unknown!"; exit ; fi
 if [ -z ${Y_INI_EC} ]; then echo "${cmsg} Y_INI_EC is unknown!"; exit ; fi
+if [ -z ${M_INI_EC} ]; then echo "${cmsg} M_INI_EC is unknown!"; exit ; fi
 if [ -z ${cyear} ]; then echo "${cmsg} cyear is unknown!"; exit ; fi
 if [ -z ${NEMO_OUT_D} ]; then echo "${cmsg} NEMO_OUT_D is unknown!"; exit ; fi
 if [ -z ${DIAG_D} ]; then echo "${cmsg} DIAG_D is unknown!"; exit ; fi
