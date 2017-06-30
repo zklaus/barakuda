@@ -216,7 +216,7 @@ while [ ${jyear} -le ${Y2} ]; do
         barakuda_check_year_is_complete  ; # lcontinue might be updated to false!
     fi
 
-    CRT1M=${CPRMN}${cyear}0101_${cyear}1231
+    CRT1M=${CPRMN}${cyear}${cmmdd1}_${cyear}${cmmdd2}
 
     barakuda_import_files
 
@@ -319,8 +319,8 @@ for suff in ${SUFF_FOR_MONTHLY}; do
             ((jm++))
             if [ -f ./${CRT1M}_${suff}.nc ]; then
                 echo; ls ; echo
-                echo "ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*0101_*1231_${suff}.nc -o mean_m${cm}_${suff}.nc"
-                ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*0101_*1231_${suff}.nc -o mean_m${cm}_${suff}.nc &
+                echo "ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*${cmmdd1}_*${cmmdd2}_${suff}.nc -o mean_m${cm}_${suff}.nc"
+                ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*${cmmdd1}_*${cmmdd2}_${suff}.nc -o mean_m${cm}_${suff}.nc &
                 echo
             fi
         done
@@ -364,7 +364,7 @@ for suff in ${SUFF_FOR_ANNUAL}; do
 done ; # loop along annual files suffixes
 wait
 
-rm -f ${CPRMN}*0101_*1231_*.nc ${CPRAN}*0101_*1231_*.nc
+rm -f ${CPRMN}*${cmmdd1}_*${cmmdd2}_*.nc ${CPRAN}*${cmmdd1}_*${cmmdd2}_*.nc
 
 
 
