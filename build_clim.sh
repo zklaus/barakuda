@@ -36,8 +36,8 @@ while getopts R:f:i:e:C:h option ; do
         i) export Y1=${OPTARG} ;;
         e) export Y2=${OPTARG} ;;
         C) export CONFIG=${OPTARG};;
-        h)  usage;;
-        \?) usage ;;
+        h)  build_clim_usage ; exit ;;
+        \?) build_clim_usage ; exit ;;
     esac
 done
 

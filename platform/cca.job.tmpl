@@ -1,0 +1,36 @@
+#! /usr/bin/env bash
+
+#PBS -N b_<EXPID>_<DIAG>
+#PBS -q nf
+#PBS -l EC_billing_account=<ACCOUNT>
+#PBS -l EC_total_tasks=1
+#PBS -l EC_threads_per_task=12
+#PBS -l EC_hyperthreads=1
+#PBS -l walltime=05:00:00
+#PBS -j oe
+#PBS -o <OUT>/log/barakuda_<EXPID>_<DIAG>.out
+
+##PBS -l EC_memory_per_task=24GB
+
+# -------- CONFIG
+module unload PrgEnv-cray
+module unload PrgEnv-intel
+module unload PrgEnv-gnu
+module unload python
+
+module load PrgEnv-intel
+
+module load cray-snplauncher
+module load nco netcdf
+
+module load python/2.7.12-01
+
+set -e
+
+mkdir <OUT>/log || true
+
+cd <BARAKUDA_TOPDIR>
+ 
+export OMP_NUM_THREADS=$EC_threads_per_task
+
+mpiexec -n 1 <CMD>

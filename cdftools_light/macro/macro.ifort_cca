@@ -1,0 +1,11 @@
+# Makefile for CDFTOOLS
+# --------------------------------------------------------------
+
+NCDF_DIR=/opt/cray/netcdf-hdf5parallel/4.4.0/intel/150
+
+NCDF= -I$(NCDF_DIR)/include -L$(NCDF_DIR)/lib -lnetcdf -lnetcdff
+
+F90=ifort
+
+FFLAGS= -O3 -module ./mod $(NCDF)
+
