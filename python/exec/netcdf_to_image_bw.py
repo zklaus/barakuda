@@ -17,13 +17,19 @@ l_fake_coor = True
 
 
 narg = len(sys.argv)
-if narg != 4:
-    print 'Usage: '+sys.argv[0]+' <netcdf_file.nc> <netcdf_variable> <image_extension (jpg,png,bmp,...)>'; sys.exit(0)
+if narg not in [4, 5]:
+    print 'Usage: '+sys.argv[0]+' <netcdf_file.nc> <netcdf_variable> <image_extension (jpg,png,bmp,...)> (mutiple to field)'; sys.exit(0)
 
 cf_nc = sys.argv[1]
 cv_nc = sys.argv[2]
 ciext = sys.argv[3]
 
+imult = 1
+if narg == 5: imult = int(sys.argv[4])
+
+
+print imult
+    
 cfname, cncext = os.path.splitext(cf_nc)
 
 
@@ -38,7 +44,7 @@ print ' *** Will create image '+cf_im
 
 # Reading data array:
 f_nc = Dataset(cf_nc)
-xfield  = f_nc.variables[cv_nc][:,:]
+xfield  = imult*f_nc.variables[cv_nc][:,:]
 f_nc.close()
 
 
