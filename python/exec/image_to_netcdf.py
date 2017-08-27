@@ -18,10 +18,15 @@ l_fake_coor = True
 
 
 narg = len(sys.argv)
-if narg != 2:
-    print 'Usage: '+sys.argv[0]+' <image>'; sys.exit(0)
+if not narg in [2, 3]:
+    print 'Usage: '+sys.argv[0]+' <image> (<field divider for field>)'; sys.exit(0)
 
 cf_im = sys.argv[1]
+
+idiv = 1
+if narg == 3: idiv = int(sys.argv[2])
+
+print idiv
 
 cfname, cfext = os.path.splitext(cf_im)
 
@@ -113,7 +118,7 @@ if lcolor:
 else:
     id_bw  = f_out.createVariable('bw','f4',(cdim_y,cdim_x,))
     id_bw.long_name = 'Grey scale'
-    id_bw[:,:]   = nmp.flipud(xpic[:,:])
+    id_bw[:,:]   = nmp.flipud(xpic[:,:]) / idiv
 
 
 f_out.About  = 'Image '+cf_im+' converted to netcdf.'
