@@ -1,0 +1,6 @@
+# Install 'libnetcdff-dev'
+#
+NCDF_DIR= /projects/acad/ecearth/opt/netcdf/4.4.1.1_ivy_2016.2.181/
+NCDF= -I$(NCDF_DIR)/include -L$(NCDF_DIR)/lib -lnetcdff -lnetcdf
+F90= ifort
+FFLAGS= -O3 -module ./mod $(NCDF)
