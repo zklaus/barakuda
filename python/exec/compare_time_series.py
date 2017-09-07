@@ -271,7 +271,7 @@ if iice == 1:
                 cmnth = '%2.2i'%(vmnth[jdiag]+1)
                 bp.plot("1d_multi")(Vt, Xf, clist_exps, cfig_type=cffig,
                                     cfignm=cdiag+'_m'+str(cmnth)+'_comparison_'+cpole, dt=ittic, loc_legend=DEFAULT_LEGEND_LOC,
-                                    cyunit=vunit[jdiag], ctitle = vname[jdiag]+', '+cpole, ymin=0, ymax=0)
+                                    cyunit=vunit[jvar], ctitle = vname[jdiag]+', '+cpole, ymin=0, ymax=0)
 
                 ipole = ipole + 1
 

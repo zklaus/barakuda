@@ -63,7 +63,7 @@ xplot[:,3] = xplot[:,1] - xplot[:,2] ; # anomaly for 11-month running mean
 
 ittic = bt.iaxe_tick(Nm/12)
 
-bp.plot("oscillation_index")( vtime, xplot[:,3], ymax=0.2, dy=0.05,
+bp.plot("oscillation_index")( vtime, xplot[:,3], ymax=0.3, dy=0.05,
                               tmin=vt_m[0], tmax=vt_m[-1], dt=ittic,
                               cfignm=cname, cfig_type=fig_form,
                               cyunit=r'SST anomaly ($^{\circ}$C)',

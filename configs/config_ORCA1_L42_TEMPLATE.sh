@@ -1,1 +1,0 @@
-config_ORCA1_L42_ece22_triolith.sh

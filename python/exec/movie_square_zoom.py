@@ -119,7 +119,7 @@ for jt in range(jt0,Nt):
     cd = str(datetime.datetime.strptime('1990 '+ct, '%Y %j'))
     cdate = cd[:10] ; print ' *** cdate :', cdate
 
-    cfig = 'figs/'+cv_in+'_NEMO'+'_d'+ct+'.'+fig_type    
+    cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_d'+ct+'.'+fig_type    
 
     fig = plt.figure(num = 1, figsize=(rh,rh), dpi=None, facecolor='w', edgecolor='k')
     ax  = plt.axes([0.065, 0.05, 0.9, 1.], axisbg = 'k')

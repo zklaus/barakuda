@@ -1,16 +1,12 @@
 #!/bin/bash
 
-PRESET="veryslow"
-#PRESET="slow"
+#PRESET="veryslow"
+PRESET="slow"
 #PRESET="ultrafast"
 
-CRF=20
-#CRF=0
+CRF=21
 
 TYPE="mp4"
-#TYPE="webm"
-#TYPE="mov"
-
 
 if [ "$4" = "" ]; then
     echo "USAGE: `basename $0` <begining_files> <format (jpg,png,...)> <height video (pixels)> <fps>"
@@ -27,7 +23,6 @@ if [ "${TYPE}" = "mp4" ]; then
     info="x264_${3}px"
 elif [ "${TYPE}" = "webm" ]; then
     VC="-c:v libvpx"
-    #VC="-c:v libvpx -pix_fmt yuva420p -metadata:s:v:0 alpha_mode=\"1\""
     info="vpx_${3}px"
 elif [ "${TYPE}" = "mov" ]; then
     VC="-c:v h264_nvenc"
@@ -49,4 +44,3 @@ ffmpeg -f image2 -framerate ${FPS} \
 
 echo ; echo ; echo
 exit 0
-

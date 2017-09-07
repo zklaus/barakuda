@@ -34,13 +34,14 @@ while getopts C:R:f:y:c:FeEh option ; do
         F) export LFORCEDIAG=true ;;
         e) export ISTAGE=2 ;;
         E) export ISTAGE=2 ; export l_clim_diag=true ;;
-        h)  barakuda_usage ;;
-        \?) barakuda_usage ;;
+        h)  barakuda_usage; exit ;;
+        \?) barakuda_usage; exit ;;
     esac
 done
 
 barakuda_check
 
+# Time to source the config file:
 if [ -f ./config_${CONFIG}.sh ]; then
     # sourcing local configuration file if present:
     fconfig=./config_${CONFIG}.sh
@@ -56,10 +57,15 @@ else
 fi
 echo
 
+
+
+
 # If auto-submit experiment (ece_exp=10) then overides a few functions with:
 if [ ${ece_exp} -ge 10 ]; then
+    echo "Sourcing ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash"
     . ${BARAKUDA_ROOT}/src/bash/bash_functions_autosub.bash
 fi
+
 
 # If 3D fieds are annual averaged then overides a few functions with:
 if [ ! "${ANNUAL_3D}" = "" ]; then
@@ -96,7 +102,6 @@ fi
 
 cyear_ini=`printf "%04d" ${YEAR_INI}`
 cyear_end=`printf "%04d" ${YEAR_END}`
-
 
 # For proper python executables and scripts to be found:
 export PATH=${PYBRKD_EXEC_PATH}:${BARAKUDA_ROOT}/src/bash:${PYTHON_HOME}/bin:${PATH}
@@ -145,24 +150,27 @@ while ${lcontinue}; do
     if [ $((${jyear}%${IFREQ_SAV_YEARS})) -eq 0 ]; then
         barakuda_check_year_is_complete  ; # lcontinue might be updated to false!
     fi    
-    echo; echo "Yeah! Year ${jyear} is saved..."; echo
-
-
-    CRT1M=${CPREF}${cyear}0101_${cyear}1231
-
+    echo; echo
+    
+    export CRT1M=${CPREF}${cyear}${cmmdd1}_${cyear}${cmmdd2}
+    if ${l_y2_j}; then export CRT1M=${CPREF}${cyear}${cmmdd1}_`printf "%04d" $((${jyear}+1))`${cmmdd2} ; fi
+    
     if ${lcontinue}; then
 
+        echo "Yeah! Year ${jyear} is saved..."; echo
+
+        
         if [ ${ISTAGE} -eq 2 ]; then
             echo; echo "You cannot create figures and HTML pages yet!"
             echo " => finish treating the results first by launching barakuda.sh without the '-e' switch."
             exit
         fi
-
-        echo; echo; echo; echo
+        
+        echo; echo
         echo "*********************************************************************"
         echo "  Experiment ${EXP}: Will generate diagnostics and data for year ${cyear}..."
         echo "*********************************************************************"
-        echo ; echo
+        echo; echo
 
         barakuda_import_files
         
@@ -360,9 +368,7 @@ while ${lcontinue}; do
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Solid freshwater transport through sections due to sea-ice drift
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        echo "LOLO: before, i_do_ice=${i_do_ice}, i_do_trsp_ice=${i_do_trsp_ice}"
         if [ ${i_do_ice} -gt 0 ] && [ ${i_do_trsp_ice} -eq 1 ]; then
-            echo "LOLO: in!!!"
             echo; echo; echo "Solid freshwater transport through sections due to sea-ice drift"
             if [ -z ${TRANSPORT_SECTION_FILE_ICE} ]; then
                 echo "Please specify which TRANSPORT_SECTION_FILE_ICE to use into the config file!" ; exit
@@ -539,13 +545,6 @@ if [ ${ISTAGE} -eq 2 ]; then
     y2=`cat ${DIAG_D}/last_year_done.info`
     nby=$((${y2}-${y1}+1))
 
-    if [ ${IFREQ_SAV_YEARS} -gt 1 ]; then
-        fnamelist=namelist.${cy1m}-${cy2m}
-    else
-        fnamelist=namelist.${cy2}
-    fi
-
-
     # Agreement between last year from output files and 'fcompletion' file:
     ydum=`cat ${fcompletion}`
     if [ -z ${YEARN} ]; then
@@ -688,15 +687,16 @@ if [ ${ISTAGE} -eq 2 ]; then
             export CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
             ftcli=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_grid_T.nc4
             ficli=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_${FILE_ICE_SUFFIX}.nc4
-            fcsbc=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_SBC.nc4
+            fcsbc=${DIAG_D}/clim/mclim_${CONFEXP}_${CLIM_PER}_${FILE_FLX_SUFFIX}.nc4
             fclvt=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_VT.nc4
             fcmoc=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_MOC.nc4
             fcpsi=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_PSI.nc4
             fccrl=${DIAG_D}/clim/aclim_${CONFEXP}_${CLIM_PER}_TCURL.nc4
             iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
         else
-            echo; echo "ERROR => you set l_clim_diag to true but no file 'last_clim' was found in:"
-            echo "               ${DIAG_D}/clim/"; echo
+            echo; echo "ERROR => you set l_clim_diag to true (probably by using '-E') but no file 'last_clim' was found in:"
+            echo "               ${DIAG_D}/clim/"
+            echo "               => then use '-e' instead!"; echo
             exit
         fi
 
@@ -810,6 +810,25 @@ if [ ${ISTAGE} -eq 2 ]; then
             fi
             
 
+            # Zonally-averaged surface heat fluxes
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ lolo
+            if [ -f ${fcsbc} ]; then
+                echo; echo; echo " Zonally-averaged surface heat fluxes"
+                if [ -x ${NN_QSOL} ]; then echo "ERROR: define variable NN_QSOL in ${fconfig}! ('X' if not present in NEMO output)"; exit; fi
+                export DIRS_2_EXP="${DIRS_2_EXP} sfluxes"
+                cd ${DIAG_D}/
+                rm -rf sfluxes; mkdir sfluxes; cd sfluxes/
+                echo " *** CALLING: sfluxes.py ${iclyear}"; echo
+                sfluxes.py ${iclyear} &
+                cd ../ ;  echo
+            else
+                echo
+                echo "WARNING: did not find file ${fcsbc} !!!"
+                echo "         or did not find ${NN_QSOL} into ${fcsbc} !!!!"
+                echo
+            fi
+            
+
             ##################################################
             # Diags that imply a comparison against "COMP2D" #
             ##################################################
@@ -872,10 +891,20 @@ if [ ${ISTAGE} -eq 2 ]; then
     mv -f ./merid_transport/*.${FIG_FORM} ${HTML_DIR}/ >/dev/null 2>/dev/null
     mv -f ${DIAG_D}/movies/movie_*.mp4    ${HTML_DIR}/ >/dev/null 2>/dev/null
     
+    # Sign with logo?
+    #cd ${HTML_DIR}/
+    #list=`\ls *.png`
+    #for ff in ${list}; do
+    #    sign_image ${ff} n_${ff}
+    #    mv -f n_${ff} ${ff}
+    #done
+    
+    cd ${DIAG_D}/
+
     . ${BARAKUDA_ROOT}/src/bash/build_html.bash
 
-    
     wait
+
     # Building main index.html 
     build_index_html
     
@@ -900,7 +929,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         cp -L ${BARAKUDA_ROOT}/src/html/logo_ece.png ${HTML_DIR}/logo.png
     fi
     
-    mv -f index.html ${HTML_DIR}/
+    mv -f index.html namelist*.html ${HTML_DIR}/
 
     cp -r ${DIRS_2_EXP} ${HTML_DIR}/ >/dev/null 2>/dev/null
 
@@ -913,7 +942,7 @@ if [ ${ISTAGE} -eq 2 ]; then
         ssh ${RUSER}@${RHOST} "mkdir -p ${RWWWD}"
         scp ${send_dir}.tar ${RUSER}@${RHOST}:${RWWWD}/
         ssh ${RUSER}@${RHOST} "cd ${RWWWD}/; rm -rf ${send_dir}; tar xf ${send_dir}.tar 2>/dev/null; rm -f ${send_dir}.tar; \
-            chmod -R a+r ${send_dir}; cd ${send_dir}/; source-highlight -i ${fnamelist} -s fortran -o namelist.html"
+                               chmod -R a+r ${send_dir}; cd ${send_dir}/"
         echo; echo
         echo "Diagnostic page installed on  http://${RHOST}${RWWWD}/${send_dir}/ !"
         echo "( Also browsable on local host in ${DIAG_D}/${send_dir} )"
@@ -943,4 +972,3 @@ fi
 rm -rf ${TMP_DIR} 2>/dev/null ; #debug
 
 echo
-

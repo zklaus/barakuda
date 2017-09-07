@@ -228,7 +228,7 @@ ${PYTH} ${PYBRKD_EXEC_PATH}/compare_time_series.py ${YEAR_INI} ${YEAR_END}
 # Starting to configure HTML index file:
 if [ "${EXTRA_CONF}" = "" ]; then echo "Problem, variable EXTRA_CONF is not set!" ; exit; fi
 TITLE="Ocean diagnostics<br>Comparison of experiments: \"${VEXPS[*]}\"<br>Configurations: \"${LIST_CONF}\""
-#if [ ${ece_exp} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${AGCM_INFO}"; fi
+#if [ ${ece_exp} -gt 0 ]; then TITLE="${TITLE}<br>Atmospheric model: ${ATMO_INFO}"; fi
 
 export CONFEXP="Comparison"
 
@@ -279,7 +279,7 @@ else
 
         echo; echo
         echo "Diagnostic page installed on remote host ${RHOST} in ${RWWWD}/${BASE_NAME}!"
-        echo "( Also browsable on local host in `pwd` )"
+        echo "( Also browsable on local host in `pwd`/${BASE_NAME} )"
 
     else
 

@@ -28,7 +28,7 @@ export NEMO_OUT_STRCT="/proj/bolinc/users/x_laubr/run/<EXP>/output/nemo"
 export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/proj/bolinc/users/x_laubr/ORCA1/ORCA1-I/barakuda_clim"
+export CONF_INI_DIR="/proj/bolinc/users/x_laubr/input_barakuda/ORCA1.L75_barakuda"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="/scratch/local/<JOB_ID>"
@@ -48,9 +48,12 @@ export ece_exp=2 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
 export Y_INI_EC=1990 ;    # initial year if ece_exp /= 0 !!!
+export M_INI_EC="01" ;    # initial month, only needed if ece_exp >= 10 !!!
+export NCHNKS_Y=1    ;    # number of chunks per year if ece_exp >= 10 (only needed if NCHNKS_Y >= 2 !)
 export TRES_IFS=255  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
-export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
+
+export ATMO_INFO="IFS T${TRES_IFS}" ; # Name of atmospheric model or forcing used (ex: COREv2, DFS5.2, IFS T255, ect...)
 
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod SBC"
@@ -99,17 +102,21 @@ export NN_ICEU="sivelu" ; # ice U-velocity
 export NN_ICEV="sivelv" ; # ice V-velocity
 #
 # Surface fluxes:
-export FILE_FLX_SUFFIX="SBC" ; # in what file type extension to find surface fluxes
+export FILE_FLX_SUFFIX="SBC" ; # in what file type extension to find surface fluxes (normally: "SBC")
+####                           # => mind that $FILE_FLX_SUFFIX must be also in NEMO_SAVED_FILES (above)
+#### Note: in fields marked with *+/-* you can use a sum or substraction of variables (no space allowed!)
+####       ex: NN_EMP="evap_ao_cea+subl_ai_cea-precip"
+####           NN_QNET="qsr+qnsol"
 # ++ Surface freswater fluxes:
-export NN_FWF="wfo"        ; # name of net freshwater flux (E-P-R) in "FILE_FLX_SUFFIX" file...
-export NN_EMP="X"            ; # name of E-P in "FILE_FLX_SUFFIX" file...
-export NN_P="precip"         ; # name of total precipitation (solid+liquid) in "FILE_FLX_SUFFIX" file...
-export NN_RNF="runoffs"      ; # name of continental runoffs in "FILE_FLX_SUFFIX" file...
-export NN_CLV="calving"      ; # calving from icebergs in "FILE_FLX_SUFFIX" file...
-export NN_E="evap_ao_cea"    ; # name of total evaporation in "FILE_FLX_SUFFIX" file...
+export NN_FWF="wfo"       ; # *+/-* name of net freshwater flux (E-P-R) in "FILE_FLX_SUFFIX" file...
+export NN_EMP="evap_ao_cea+subl_ai_cea-precip" ; # *+/-* name of E-P in "FILE_FLX_SUFFIX" file...
+export NN_P="precip"      ; # name of total precipitation (solid+liquid) in "FILE_FLX_SUFFIX" file...
+export NN_RNF="runoffs"   ; # name of continental runoffs in "FILE_FLX_SUFFIX" file...
+export NN_CLV="calving"   ; # calving from icebergs in "FILE_FLX_SUFFIX" file...
+export NN_E="evap_ao_cea+subl_ai_cea" ; # *+/-* name of total evaporation in "FILE_FLX_SUFFIX" file...
 # ++ Surface heat fluxes:
-export NN_QNET="qt"          ; # name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
-export NN_QSOL="qsr"         ; # name of net surface solar flux in "FILE_FLX_SUFFIX" file...
+export NN_QNET="qt_oce"   ; # *+/-* name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
+export NN_QSOL="rsntds"   ; # name of net surface solar flux in "FILE_FLX_SUFFIX" file...
 # ++ Wind-stress module:
 export NN_TAUM="taum"        ; # name of surface wind stress module in "FILE_FLX_SUFFIX" file...
 export NN_WNDM="windsp"      ; # name of surface wind  speed module in "FILE_FLX_SUFFIX" file...
@@ -117,19 +124,28 @@ export NN_WNDM="windsp"      ; # name of surface wind  speed module in "FILE_FLX
 ################################################################################################
 
 # Land-sea mask and basins files:
-export MM_FILE=/proj/bolinc/users/x_laubr/ORCA1/ec-earth3.2/mesh_mask.nc4
+export MM_FILE=${CONF_INI_DIR}/mesh_mask.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
 
+# OBSERVATIONS / REFERENCES
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
-export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export F_S_OBS_3D_12=${CONF_INI_DIR}/so_1degx1deg-ORCA1.L75_WOA2009_monthly_LB_20160223.nc4
-export F_SST_OBS_12=${CONF_INI_DIR}/tos_180x360-ORCA1_Reynolds_monthly_mean1982-2005.nc4
+export NM_TS_OBS="EN4.2.0 [1990-2010]"
+export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
+export F_S_OBS_3D_12=${CONF_INI_DIR}/so_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
+export F_SST_OBS_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
 export NN_T_OBS="thetao"
 export NN_S_OBS="so"
-export NN_SST_OBS="tos"
-
+export NN_SST_OBS="thetao"
+#
+# Sea-ice:
+export NM_IC_OBS="Hurrell et al 2008 [1980-1999]"
 export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_OBS="ice_cover"
+#
+# Surface Heat fluxes:
+export NM_QSOL_OBS="NOCS 2.0 [1980-2005]"
+export F_QSOL_OBS_12=${BARAKUDA_ROOT}/data/obs/radsw_monthly_clim_1980-2005_NOCS2.nc4
+export NN_QSOL_OBS="radsw"
 
 
 # A text file where the cross sections (to compute transports) are defined :
@@ -175,7 +191,7 @@ export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to loo
 export i_do_ice=1  ; # Sea-ice diags
 
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
-export i_do_trsp=2  ; # transport of mass, heat and salt through specified sections
+export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2

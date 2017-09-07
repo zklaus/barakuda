@@ -12,7 +12,7 @@
 
 ivt=1   ; # Create a climatology for VT
 iamoc=1 ; # Create a climatology for 2D lat-depth AMOC?
-ibpsi=0 ; # Create a climatology for barotropic stream function
+ibpsi=1 ; # Create a climatology for barotropic stream function
 icurl=1 ; # Create a climatology of the windstress curl
 
 export script=build_clim
@@ -36,8 +36,8 @@ while getopts R:f:i:e:C:h option ; do
         i) export Y1=${OPTARG} ;;
         e) export Y2=${OPTARG} ;;
         C) export CONFIG=${OPTARG};;
-        h)  usage;;
-        \?) usage ;;
+        h)  build_clim_usage ; exit ;;
+        \?) build_clim_usage ; exit ;;
     esac
 done
 
@@ -216,7 +216,7 @@ while [ ${jyear} -le ${Y2} ]; do
         barakuda_check_year_is_complete  ; # lcontinue might be updated to false!
     fi
 
-    CRT1M=${CPRMN}${cyear}0101_${cyear}1231
+    CRT1M=${CPRMN}${cyear}${cmmdd1}_${cyear}${cmmdd2}
 
     barakuda_import_files
 
@@ -265,8 +265,8 @@ while [ ${jyear} -le ${Y2} ]; do
 
     if [ ${ibpsi} -eq 1 ]; then
         rm -f psi.nc
-        echo " *** CALLING: cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} V &"
-        cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} V &
+        echo " *** CALLING: cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} &"
+        cdfpsi.x ${fu3d} ${fv3d} ${NN_U} ${NN_V} &
         echo
     fi
 
@@ -319,8 +319,8 @@ for suff in ${SUFF_FOR_MONTHLY}; do
             ((jm++))
             if [ -f ./${CRT1M}_${suff}.nc ]; then
                 echo; ls ; echo
-                echo "ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*0101_*1231_${suff}.nc -o mean_m${cm}_${suff}.nc"
-                ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*0101_*1231_${suff}.nc -o mean_m${cm}_${suff}.nc &
+                echo "ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*${cmmdd1}_*${cmmdd2}_${suff}.nc -o mean_m${cm}_${suff}.nc"
+                ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*${cmmdd1}_*${cmmdd2}_${suff}.nc -o mean_m${cm}_${suff}.nc &
                 echo
             fi
         done
@@ -364,7 +364,7 @@ for suff in ${SUFF_FOR_ANNUAL}; do
 done ; # loop along annual files suffixes
 wait
 
-rm -f ${CPRMN}*0101_*1231_*.nc ${CPRAN}*0101_*1231_*.nc
+rm -f ${CPRMN}*${cmmdd1}_*${cmmdd2}_*.nc ${CPRAN}*${cmmdd1}_*${cmmdd2}_*.nc
 
 
 

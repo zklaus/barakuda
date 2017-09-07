@@ -4,7 +4,7 @@
 #
 #         Configuration file for
 #
-# OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2 on 75 levels
+# OCEAN MONITORING for NEMO v3.6 of EC-Earth 3.2.2 on 75 levels
 #
 #        Machine: triolith.nsc.liu.se
 #
@@ -18,17 +18,17 @@ export NBL=75           ; # number of levels
 export HOST=TRIOLITH.nsc.liu.se ; # this has no importance at all, it will just become an "info" on the web-page!
 export MASTERMIND="SMHI / Uwe and Klaus" ; # same here, who's the person who designed/ran this simulation?
 
-export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2b)" ;   #  // same here ...
+export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2.2)" ;   #  // same here ...
 
 # Path / directory structure in which to find NEMO output file (you can use
 # <ORCA> and <EXP> as substitute to your ORCA grid and experiment (EXP) name):
 export NEMO_OUT_STRCT="/proj/bolinc/users/x_laubr/run/<EXP>/output/nemo"
 
 # Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
-export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/${CONF}_ece32"
+export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/proj/bolinc/users/x_laubr/ORCA025.L75/ORCA025.L75-I"
+export CONF_INI_DIR="/proj/bolinc/users/x_laubr/input_barakuda/ORCA025.L75_barakuda"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="/scratch/local/<JOB_ID>"
@@ -48,12 +48,15 @@ export ece_exp=2 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
 export Y_INI_EC=1990 ;    # initial year if ece_exp /= 0 !!!
+export M_INI_EC="01" ;    # initial month, only needed if ece_exp >= 10 !!!
+export NCHNKS_Y=1    ;    # number of chunks per year if ece_exp >= 10 (only needed if NCHNKS_Y >= 2 !)
 export TRES_IFS=511  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
-export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
 
+export ATMO_INFO="IFS T${TRES_IFS}" ; # Name of atmospheric model or forcing used (ex: COREv2, DFS5.2, IFS T255, ect...)
+
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
-export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
+export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod SBC"
 
 export TSTAMP="1m"   ; # output time-frequency stamp as in NEMO output files...
 
@@ -99,19 +102,23 @@ export NN_ICEU="sivelu" ; # ice U-velocity
 export NN_ICEV="sivelv" ; # ice V-velocity
 #
 # Surface fluxes:
-export FILE_FLX_SUFFIX="grid_T" ; # in what file type extension to find surface fluxes
+export FILE_FLX_SUFFIX="SBC" ; # in what file type extension to find surface fluxes (normally: "SBC")
+####                           # => mind that $FILE_FLX_SUFFIX must be also in NEMO_SAVED_FILES (above)
+#### Note: in fields marked with *+/-* you can use a sum or substraction of variables (no space allowed!)
+####       ex: NN_EMP="evap_ao_cea+subl_ai_cea-precip"
+####           NN_QNET="qsr+qnsol"
 # ++ Surface freswater fluxes:
-export NN_FWF="wfo"        ; # name of net freshwater flux (E-P-R) in "FILE_FLX_SUFFIX" file...
-export NN_EMP="X"        ; # name of E-P in "FILE_FLX_SUFFIX" file...
-export NN_P="X"          ; # name of total precipitation (solid+liquid) in "FILE_FLX_SUFFIX" file...
-export NN_RNF="friver"   ; # name of continental runoffs in "FILE_FLX_SUFFIX" file...
-export NN_CLV="X"        ; # calving from icebergs in "FILE_FLX_SUFFIX" file...
-export NN_E="X"          ; # name of total evaporation in "FILE_FLX_SUFFIX" file...
+export NN_FWF="wfo"       ; # *+/-* name of net freshwater flux (E-P-R) in "FILE_FLX_SUFFIX" file...
+export NN_EMP="evap_ao_cea+subl_ai_cea-precip" ; # *+/-* name of E-P in "FILE_FLX_SUFFIX" file...
+export NN_P="precip"      ; # name of total precipitation (solid+liquid) in "FILE_FLX_SUFFIX" file...
+export NN_RNF="runoffs"   ; # name of continental runoffs in "FILE_FLX_SUFFIX" file...
+export NN_CLV="calving"   ; # calving from icebergs in "FILE_FLX_SUFFIX" file...
+export NN_E="evap_ao_cea+subl_ai_cea" ; # *+/-* name of total evaporation in "FILE_FLX_SUFFIX" file...
 # ++ Surface heat fluxes:
-export NN_QNET="X"       ; # name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
-export NN_QSOL="rsntds"  ; # name of net surface solar flux in "FILE_FLX_SUFFIX" file...
+export NN_QNET="qt_oce"   ; # *+/-* name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
+export NN_QSOL="rsntds"   ; # name of net surface solar flux in "FILE_FLX_SUFFIX" file...
 # ++ Wind-stress module:
-export NN_TAUM="X"         ; # name of Wind-stress module in "FILE_FLX_SUFFIX" file...
+export NN_TAUM="taum"        ; # name of surface wind stress module in "FILE_FLX_SUFFIX" file...
 export NN_WNDM="windsp"      ; # name of surface wind  speed module in "FILE_FLX_SUFFIX" file...
 #
 ################################################################################################
@@ -120,20 +127,29 @@ export NN_WNDM="windsp"      ; # name of surface wind  speed module in "FILE_FLX
 export MM_FILE=${CONF_INI_DIR}/mesh_mask_ORCA025.L75_ece3.2_2017.nc4
 export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA025_ece3.2_2017.nc4
 
+# OBSERVATIONS / REFERENCES
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
-export F_T_OBS_3D_12=${CONF_INI_DIR}/barakuda_clim/thetao_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
-export F_S_OBS_3D_12=${CONF_INI_DIR}/barakuda_clim/so_1degx1deg-ORCA025.L75_WOA2009_monthly.nc4
-export F_SST_OBS_12=${CONF_INI_DIR}/barakuda_clim/sst_1x1-ORCA025_Reynolds_mnth_1982-2005.nc4
+export NM_TS_OBS="EN4.2.0 [1990-2010]"
+export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
+export F_S_OBS_3D_12=${CONF_INI_DIR}/so_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
+export F_SST_OBS_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
 export NN_T_OBS="thetao"
 export NN_S_OBS="so"
-export NN_SST_OBS="sst"
-
-export F_ICE_OBS_12=${CONF_INI_DIR}/barakuda_clim/ice_cover_180x360-ORCA025_Hurrell_monthly_mean1980-1999.nc4
+export NN_SST_OBS="thetao"
+#
+# Sea-ice:
+export NM_IC_OBS="Hurrell et al 2008 [1980-1999]"
+export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA025_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_OBS="ice_cover"
+#
+# Surface Heat fluxes:
+export NM_QSOL_OBS="NOCS 2.0 [1980-2005]"
+export F_QSOL_OBS_12=${BARAKUDA_ROOT}/data/obs/radsw_monthly_clim_1980-2005_NOCS2.nc4
+export NN_QSOL_OBS="radsw"
 
 
 # A text file where the cross sections (to compute transports) are defined :
-export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_y1050.dat"
+export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_y1050.dat"        ; # set i_do_trsp=1 !
 export TRANSPORT_SECTION_FILE_ICE="${BARAKUDA_ROOT}/data/transport_ice_ORCA025_y1050.dat"  ; # set i_do_trsp_ice=1 !
 
 # For transport by sigma-class:
@@ -165,7 +181,7 @@ export iffmpeg_x264=0 ; # is, by chance, ffmpeg with support for x264 encoding a
 export i_do_mean=1
 
 # IFS surface fluxes of heat and freshwater
-export i_do_ifs_flx=1 ; # only relevant when ece_exp=2...
+export i_do_ifs_flx=0 ; # only relevant when ece_exp=2...
 
 # AMOC:
 export i_do_amoc=1

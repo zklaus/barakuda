@@ -41,11 +41,6 @@ print ' nj, ni =>', nj, ni
 
 imask = (255*mask).astype(nmp.uint8)
 
-ximage = Image.fromarray(nmp.flipud(imask))
-
-
-#ximage.show()
-
 # Then save it:
 result = Image.fromarray(nmp.flipud(imask))
 result.save(cf_bmp)

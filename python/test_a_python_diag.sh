@@ -4,7 +4,7 @@
 
 # Diag to test:
 # One at a time please!!!
-itrsig=1
+itrsig=0
 imhst=0
 iamoc=0
 icrosssect=0
@@ -16,11 +16,13 @@ iSflx=0
 ienso=0
 imov=0
 issh=0
+ipsi=0
 iwind=0
+isfluxes=1
 its=0
 imld=0
 irnf=0
-iice=0
+iice=1
 iemp=0
 icmip5=0
 ihov=0
@@ -37,9 +39,9 @@ ihov=0
 #ARCH="ece32_marenostrum"
 #export EXP="LR20" ; NC=nc4 ; jyear=2540
 
-CONFIG="ORCA025_L75"
-ARCH="uwe_oo"
-export EXP="HN71" ; NC=nc ; jyear=1990
+#CONFIG="ORCA025_L75"
+#ARCH="uwe_oo"
+#export EXP="HN71" ; NC=nc ; jyear=1990
 
 #CONFIG="ORCA025_L75"
 #ARCH="etienne"
@@ -56,6 +58,10 @@ export EXP="HN71" ; NC=nc ; jyear=1990
 #CONFIG="ORCA1_L75"
 #ARCH="T159_ece32_triolith"
 #export EXP="LB30" ; NC=nc4 ; jyear=2010
+
+CONFIG="ORCA1_L75"
+ARCH="lolo"
+export EXP="AMOC" ; NC=nc4 ; jyear=1990
 
 
 
@@ -156,6 +162,14 @@ if [ ${itempsal} -eq 1 ]; then
     echo ; echo " CMD = ${CMD} "; echo
 fi
 
+if [ ${iice} -eq 1 ]; then
+    if [ ! -f ${DIAG_D}/clim/last_clim ]; then echo "Boooo!"; exit; fi
+    CLIM_PER=`cat ${DIAG_D}/clim/last_clim`
+    iclyear=`echo ${CLIM_PER} | sed -e s/'-'/' '/g`
+    CMD="python exec/ice.py ${iclyear}"
+    echo ; echo " CMD = ${CMD} "; echo
+fi
+
 if [ ${its} -eq 1 ]; then
     #diag=3d_thetao ; ln -sf ${DIAG_D}/3d_${NN_T}*.nc .
     #diag=mean_zos  ; ln -sf ${DIAG_D}/mean_${NN_SSH}*.nc .
@@ -195,19 +209,26 @@ fi
 
 if [ ${imov} -eq 1 ]; then
     #for cv in sst mld sss; do
-    cv="ice"
-    #python exec/prepare_movies.py ${ft} ${jyear} ${cv}
-    python ./prepare_movies.py ${ft} ${jyear} ${cv}
+    #cv=sst
+    cv=sss
+    CMD="python exec/prepare_movies.py ${ft} ${jyear} ${cv}"
     #done
-    exit
 fi
 
 if [ ${issh} -eq 1 ]; then
     CMD="python exec/ssh.py ${y1_clim} ${y2_clim}"
 fi
 
+if [ ${ipsi} -eq 1 ]; then
+    CMD="python exec/psi.py ${y1_clim} ${y2_clim}"
+fi
+
 if [ ${iwind} -eq 1 ]; then
     CMD="python exec/wind.py ${y1_clim} ${y2_clim}"
+fi
+
+if [ ${isfluxes} -eq 1 ]; then
+    CMD="python exec/sfluxes.py ${y1_clim} ${y2_clim}"
 fi
 
 

@@ -51,7 +51,6 @@ export ece_exp=2 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #
 export Y_INI_EC=1990 ;    # initial year if ece_exp /= 0 !!!
 export TRES_IFS=255  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
-export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
 
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:

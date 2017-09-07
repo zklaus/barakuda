@@ -49,8 +49,9 @@ export ece_exp=0 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #
 export Y_INI_EC=1990 ;    # initial year if ec-earth experiment...
 export TRES_IFS=XXX  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
-export AGCM_INFO="IFS T${TRES_IFS}"
 ###--- end EC-Earth IFS relate section ---
+
+export ATMO_INFO="IFS T159" ; # Name of atmospheric model or forcing used (ex: COREv2, DFS5.2, IFS T255, ect...)
 
 # List of suffix of files that have been saved by NEMO and contain MONTHLY averages:
 export NEMO_SAVED_FILES="grid_T grid_U grid_V icemod"
@@ -100,15 +101,19 @@ export NN_ICEV="X" ; # ice V-velocity
 #
 # Surface fluxes:
 export FILE_FLX_SUFFIX="grid_T" ; # in what file type extension to find surface fluxes
+####                           # => mind that $FILE_FLX_SUFFIX must be also in NEMO_SAVED_FILES (above)
+#### Note: in fields marked with *+/-* you can use a sum or substraction of variables (no space allowed!)
+####       ex: NN_EMP="evap_ao_cea+subl_ai_cea-precip"
+####           NN_QNET="qsr+qnsol"
 # ++ Surface freswater fluxes:
-export NN_FWF="sowaflup"       ; # name of net freshwater flux (E-P-R) in "FILE_FLX_SUFFIX" file...
-export NN_EMP="X"              ; # name of E-P in "FILE_FLX_SUFFIX" file...
+export NN_FWF="sowaflup"       ; # *+/-* name of net freshwater flux (E-P-R) in "FILE_FLX_SUFFIX" file...
+export NN_EMP="X"              ; # *+/-* name of E-P in "FILE_FLX_SUFFIX" file...
 export NN_P="X"                ; # name of total precipitation (solid+liquid) in "FILE_FLX_SUFFIX" file...
 export NN_RNF="sorunoff"       ; # name of continental runoffs in "FILE_FLX_SUFFIX" file...
 export NN_CLV="X"              ; # calving from icebergs in "FILE_FLX_SUFFIX" file...
-export NN_E="X"                ; # name of total evaporation in "FILE_FLX_SUFFIX" file...
+export NN_E="X"                ; # *+/-* name of total evaporation in "FILE_FLX_SUFFIX" file...
 # ++ Surface heat fluxes:
-export NN_QNET="sohefldo"      ; # name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
+export NN_QNET="sohefldo"      ; # *+/-* name of total net surface heat flux in "FILE_FLX_SUFFIX" file...
 export NN_QSOL="soshfldo"      ; # name of net surface solar flux in "FILE_FLX_SUFFIX" file...
 # ++ Wind-stress module:
 export NN_TAUM="X"             ; # name of Wind-stress module in "FILE_FLX_SUFFIX" file...
@@ -158,8 +163,8 @@ export RWWWD=/data/www/barakuda/CMIP5 ; # directory of the local or remote host 
 #########################
 
 # Movies of SST and SSS compared to OBS:
-export i_do_movi=0
-export iffmpeg_x264=1 ; # is, by chance, ffmpeg with support for x264 encoding available on your stystem?
+export i_do_movi=1
+export iffmpeg_x264=0 ; # is, by chance, ffmpeg with support for x264 encoding available on your stystem? => 1 !
 
 # Basic 3D and surface averages:
 export i_do_mean=1
@@ -175,7 +180,7 @@ export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to loo
 export i_do_ice=1  ; # Sea-ice diags
 
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
-export i_do_trsp=2  ; # transport of mass, heat and salt through specified sections
+export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2

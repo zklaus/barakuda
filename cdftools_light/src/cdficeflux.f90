@@ -141,8 +141,9 @@ PROGRAM cdficeflux
    CHARACTER(LEN=20) :: ce1, ce2, cvmask
 
 
-   LOGICAL                 :: ltest   = .FALSE.   ! flag for test case
-   LOGICAL                 :: lchk    = .FALSE.   ! flag for missing files
+   LOGICAL                 :: ltest    = .FALSE.   ! flag for test case
+   LOGICAL                 :: lchk     = .FALSE.   ! flag for missing files
+   LOGICAL                 :: lconc_pc = .FALSE.  ! ice concentration is in percent!
 
    CHARACTER(LEN=64)  :: cv_dum
    CHARACTER(LEN=512) :: cd_out
@@ -297,7 +298,10 @@ PROGRAM cdficeflux
          zh_i (:,:) = getvar(cf_icefil, cv_iceF, 1, npiglo, npjglo, ktime=jt) ; ! LB
          !LB2JM: add all the ice variables into modcdfnames?
 
-
+         !LB: testing if concentration is a fraction or a percentage:
+         IF ( (jt==1).AND.(MAXVAL(zc_i (npiglo/2,:)) > 2.) ) lconc_pc = .TRUE.
+         IF (lconc_pc) zc_i(:,:) = 0.01*zc_i(:,:)
+         
          !LB:
          !! Volume of ice transport at each grid point:
          !!  => concentration * thickness * u * dy

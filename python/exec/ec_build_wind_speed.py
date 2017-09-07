@@ -14,13 +14,7 @@ import string
 
 import barakuda_tool as bt
 
-cv_crl='CURL'
-
-radius_Earth = 6371. ; #  km !!! Not m !!! => curl will be in XXX !!!
-to_rad = nmp.pi/180.
-
-#jt1=10
-#jt2=12
+cv_wmod='wspd10m'
 
 if len(sys.argv) != 4:
     print 'Usage: '+sys.argv[0]+' <FILE_VEC_V.nc> <name_Vx> <name_Vy>'
@@ -31,29 +25,29 @@ cv_Vx = sys.argv[2]
 cv_Vy = sys.argv[3]
 
 
-cf_Vy  = string.replace(cf_Vx, cv_Vx, cv_Vy)
-cf_crl = string.replace(cf_Vx, cv_Vx, cv_crl)
+cf_Vy   = string.replace(cf_Vx, cv_Vx, cv_Vy)
+cf_wmod = string.replace(cf_Vx, cv_Vx, cv_wmod)
 
 
 print " cf_Vx = ", cf_Vx
 print " cf_Vy = ", cf_Vy
-print " cf_crl = ", cf_crl
+print " cf_wmod = ", cf_wmod
 print "\n"
 
 rmult = 1.
 
 if cv_Vx == 'EWSS':
     rmult = 1000.
-    CUNIT_CRL= '???'
+    CUNIT_WMOD= '???'
     
 if cv_Vx == 'U10M':
     rmult = 1.
-    CUNIT_CRL= 's^-1'
+    CUNIT_WMOD= 's^-1'
 
 
 
-#  TAUY
-#  ~~~~
+#  U
+#  ~
 bt.chck4f(cf_Vy)
 
 f_Vy_in = Dataset(cf_Vy)
@@ -84,7 +78,7 @@ print cv_Vy+': ', cunt_Vy, code_Vy, ctab_Vy, '\n'
 
 
 
-# TAUX
+# V
 # ~~~
 bt.chck4f(cf_Vx)
 f_Vx_in = Dataset(cf_Vx)
@@ -113,27 +107,12 @@ print 'ni, nj, Nt = ', ni, nj, Nt
 # Building Curl
 # ~~~~~~~~~~~
 
-xcurl = nmp.zeros(( nj, ni ))
-
-dlamx2 = 2.*(vlon[1] - vlon[0])*to_rad
-dphix2 = 2.*(vlat[0] - vlat[1])*to_rad
-
-xcosphi = nmp.zeros(( nj, ni ))
-one_on_xcosphi = nmp.zeros(( nj, ni ))
-for ji in range(ni):
-    xcosphi[:,ji] = nmp.cos(vlat[:]*to_rad)
-
-one_on_xcosphi[:,:] = 1./xcosphi[:,:]
-
-print ' dlamx2, dphix2 = ', dlamx2, dphix2
-
-
-xtmp = nmp.zeros(( nj, ni ))
+xwmod = nmp.zeros(( nj, ni ))
 
 
 # Creating output file
 # ~~~~~~~~~~~~~~~~~~~~
-f_out = Dataset(cf_crl, 'w', format='NETCDF3_CLASSIC')
+f_out = Dataset(cf_wmod, 'w', format='NETCDF3_CLASSIC')
 
 # Dimensions:
 f_out.createDimension('lon', ni)
@@ -144,7 +123,7 @@ f_out.createDimension('time', None)
 id_lon = f_out.createVariable('lon','f4',('lon',))
 id_lat = f_out.createVariable('lat','f4',('lat',))
 id_tim = f_out.createVariable('time','f4',('time',))
-id_crl  = f_out.createVariable(cv_crl,'f4',('time','lat','lon',))
+id_wmod  = f_out.createVariable(cv_wmod,'f4',('time','lat','lon',))
 
 # Attributes
 id_tim.units = cunt_time
@@ -159,10 +138,10 @@ id_lon.standard_name = csnm_lon
 
 id_tim.units         = cunt_time
 
-id_crl.long_name = 'Curl of vector '+cv_Vx+' and '+cv_Vy
-id_crl.units = CUNIT_CRL
-id_crl.code  = '???'
-id_crl.table = '128'
+id_wmod.long_name = 'Curl of vector '+cv_Vx+' and '+cv_Vy
+id_wmod.units = CUNIT_WMOD
+id_wmod.code  = '???'
+id_wmod.table = '128'
 
 f_out.About = 'Created by Barakuda using '+cv_Vx+' and '+cv_Vy+'.'
 
@@ -178,26 +157,10 @@ for jt in range(Nt):
     xty = rmult*f_Vy_in.variables[cv_Vy][jt,:,:]
     xtx = rmult*f_Vx_in.variables[cv_Vx][jt,:,:]
 
-    xtmp[:,:] = xtx[:,:] * xcosphi[:,:]
+    xwmod[:,:]      = nmp.sqrt(xtx*xtx + xty*xty)
 
-    xcurl[1:nj-1,1:ni-1] =   ( xty[1:nj-1,2:ni]   - xty[1:nj-1,0:ni-2] ) / dlamx2 \
-    - one_on_xcosphi[1:nj-1,1:ni-1]*( xtmp[2:nj,1:ni-1] -   xtmp[0:nj-2,1:ni-1] ) / dphix2
-
-
-    # If periodic East-West:
-    # Easter side:
-    xcurl[1:nj-1,ni-1] =   ( xty[1:nj-1,0]   - xty[1:nj-1,ni-2] ) / dlamx2 \
-    - one_on_xcosphi[1:nj-1,ni-1]*( xtmp[2:nj,ni-1] -   xtmp[0:nj-2,ni-1] ) / dphix2
-    # Western side:
-    xcurl[1:nj-1,0] =   ( xty[1:nj-1,1]   - xty[1:nj-1,ni-1] ) / dlamx2 \
-    - one_on_xcosphi[1:nj-1,0]*( xtmp[2:nj,0] -   xtmp[0:nj-2,0] ) / dphix2
-
-
-
-    xcurl[:,:] = -1./radius_Earth * xcurl[:,:]
-                                                
-    id_tim[jt]     = vtime[jt]
-    id_crl[jt,:,:] = xcurl[:,:] 
+    id_tim[jt]      = vtime[jt]
+    id_wmod[jt,:,:] = xwmod[:,:] 
 
 f_out.close()
 

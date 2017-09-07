@@ -12,7 +12,6 @@ from netCDF4 import Dataset
 
 import barakuda_tool as bt
 import barakuda_plot as bp
-import barakuda_physics as bphys
 
 venv_needed = {'ORCA','EXP','DIAG_D','MM_FILE','NN_SSH'}
 

@@ -531,36 +531,63 @@ def extend_domain(ZZ, ext_east_deg, skp_west_deg=0):
 
 
 
-def mk_zonal(XF, XMSK):
-
-    [ ny , nx ] = XF.shape
-    [ n2 , n1 ] = XMSK.shape
-    if n2 != ny or n1 != nx:
-        print 'ERROR: mk_zonal.barakuda_tool.py => XF and XMSK do not agree in size!'
+def mk_zonal(XF, XMSK=[0.], r_mask_from_val=-9999.):
+    #**************************************************************************************
+    # Computes the zonal average of field XF, ignoring points where XMSK==0.
+    #
+    # INPUT:
+    #        * XF:   2D [ny,nx] or 2D+time [ny,nx,Nt] array of input field
+    #  "   opt:
+    #        * XMSK: 2D [ny,nx] array, 1 on points to consider, 0 on points to exclude
+    #        * r_mask_from_val: instead of providing the 2D mask provide the flag value
+    #                           where mask should be 0
+    # RETURNS:
+    #        * VZ:   1D [ny] array of zonally-averaged XF
+    #**************************************************************************************
+    #
+    vshp = nmp.shape(XF)
+    ndim = len(vshp)
+    if ndim == 3:
+        ( Nt, ny, nx ) = vshp
+    elif ndim == 2:
+        (     ny, nx ) = vshp
+        Nt = 1
+    else:
+        print ' ERROR (mk_zonal of barakuda_tool.py): dimension of your field is weird!'
         sys.exit(0)
-
-    # Finding incides of non-masked values:
-    #idx_ok = nmp.nonzero(XF)
-    #Xtmp = nmp.copy(XF) ; Xtmp[:,:] = -9999.
-    #Xtmp[idx_ok] = XF[idx_ok]
-
-    VZ = nmp.zeros(ny)
-
-    for jy in range(ny):
-        cpt = 0
-        for jx in range(nx):
-
-            rr = XF[jy,jx]
-
-            if rr > -9999.+0.1 and XMSK[jy,jx] > 0.5:
-                cpt = cpt + 1
-                VZ[jy] = VZ[jy] + rr
-
-        if cpt > 0 : VZ[jy] = VZ[jy]/cpt
-    return VZ
-
-
-
+    #
+    if len(nmp.shape(XMSK)) == 2:
+        (n2,n1) = XMSK.shape
+        if n2 != ny or n1 != nx:
+            print 'ERROR: mk_zonal.barakuda_tool.py => XF and XMSK do not agree in size!'
+            sys.exit(0)
+    else:
+        # Need to build the mask
+        xtmp = nmp.zeros((ny,nx))
+        if ndim == 3: xtmp = XF[0,:,:]
+        if ndim == 2: xtmp = XF[  :,:]
+        XMSK = nmp.zeros((ny,nx))
+        idx1 = nmp.where(xtmp > r_mask_from_val + 1.E-6)
+        XMSK[idx1] = 1.
+        idx1 = nmp.where(xtmp < r_mask_from_val - 1.E-6)
+        XMSK[idx1] = 1.
+        del xtmp
+    #
+    VZ = nmp.zeros((Nt,ny))
+    #
+    vweights = nmp.zeros(ny)
+    for jy in range(ny): vweights[jy] = nmp.sum(XMSK[jy,:])
+    idx0 = nmp.where(vweights == 0.)
+    vweights[idx0] = 1.E12
+    #
+    for jt in range(Nt):        
+        for jy in range(ny):
+            if ndim == 3: rmean = nmp.sum(XF[jt,jy,:]*XMSK[jy,:])/vweights[jy]
+            if ndim == 2: rmean = nmp.sum(XF[   jy,:]*XMSK[jy,:])/vweights[jy]
+            VZ[jt,jy] = rmean
+            VZ[jt,idx0] = nmp.nan
+    if ndim == 3: return VZ
+    if ndim == 2: return VZ[0,:]
 
 
 
@@ -648,3 +675,29 @@ def test_nb_years(vt, cd):
         sys.exit(0)
     ttick = iaxe_tick(nb_y)
     return (nb_y, nb_m, nb_rec, ttick)
+
+
+
+def var_and_signs( csin ):
+    # Ex: if csin = 'Qsol+Qr-Qlat-Qsens' (or '+Qsol+Qr-Qlat-Qsens')
+    #     this function will return:
+    #     ['Qsol', 'Qr', 'Qlat', 'Qsens'] , [1.0, 1.0, -1.0, -1.0]
+    from re import split as splt
+    #
+    sgn1 = '+'
+    cvar = splt('\-|\+',csin)
+    if cvar[0] == '':
+        if csin[0] == '-': sgn1 = '-'
+        cvar = cvar[1:]
+    ccum = ''
+    for cc in cvar: ccum=ccum+'|'+cc
+    ccum = ccum+'|'
+    ctt=splt("'"+ccum+"'",csin)
+    csgn = ctt[:-1]
+    isgn = []
+    for cs in csgn: isgn.append(float(cs+'1'))
+    return cvar, isgn
+    
+
+
+

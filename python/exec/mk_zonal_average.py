@@ -3,130 +3,133 @@
 # L. Brodeau, June 2012
 
 import sys
-from os.path import splitext
+from os.path import splitext,basename,dirname
 import numpy as nmp
 from netCDF4 import Dataset
-from string import replace as rplc
+from string import replace
 
 import barakuda_tool as bt
 
-rmv = -9999.
+# Defaults:
+cv_lon = 'lon'
+cv_lat = 'lat'
 
-if len(sys.argv) != 3:
-    print 'Usage: '+sys.argv[0]+' <FILE_lat-lon.nc> <variable>'
+narg = len(sys.argv)
+if not narg in [ 5 , 7]:
+    print '\nUsage: '+basename(sys.argv[0])+' <FILE_lat-lon.nc> <variable> <mesh_mask.nc> <mask_name> (<name_longitude> <name_latitude>)'
+    print '   * If you do not have a mask file, use a special value of field <variable> to be'
+    print '     considered as a mask. Example: '
+    print '       '+basename(sys.argv[0])+' <FILE_lat-lon.nc> <variable> value -9999.\n'
     sys.exit(0)
 
 cf_in  = sys.argv[1]
 cv_in  = sys.argv[2]
 
+cf_msk  = sys.argv[3]
+cv_msk  = sys.argv[4]
+
+if narg == 7:
+    cv_lon = sys.argv[5]
+    cv_lat = sys.argv[6]
+
+print ''
+
 cn_file, cn_ext = splitext(cf_in)
+#cn_file = replace(cn_file, cv_in+'_', '')
+cpath = '.'
+if dirname(cf_in) != '': cpath=dirname(cf_in)
+cf_out = cpath+'/zonal_'+basename(cn_file)+'.nc'
+#print ' *[mk_zonal_average.py]* file to write: ', cf_out ; sys.exit(0)
 
-print cn_ext
-
-cn_file = rplc(cn_file, cv_in+'_', '')
-print cn_file
-
-print "\n"
-
+l_msk_from_val = False
+if cf_msk in [ 'value', 'val', 'Value' ]:
+    l_msk_from_val = True
+    rmv = float(cv_msk)
+    print ' *[mk_zonal_average.py]* mask is where '+cv_in+' == '+str(rmv)
 
 
-bt.chck4f(cf_in) ; f_in = Dataset(cf_in)
+else:
+    bt.chck4f(cf_msk)
+    f_msk = Dataset(cf_msk)
+    Ndim = len(f_msk.variables[cv_msk].dimensions)
+    if   Ndim == 4:
+        xmsk = f_msk.variables[cv_msk][0,0,:,:]
+    elif Ndim == 3:
+        xmsk = f_msk.variables[cv_msk][0,:,:]
+    elif Ndim == 2:
+        xmsk = f_msk.variables[cv_msk][:,:]
+    else:
+        print ' ERROR (mk_zonal_average.py) => weird shape for your mask array!'
+        sys.exit(0)    
+    f_msk.close()
 
-# Extracting the longitude and 1D array:
-vlon     = f_in.variables['lon'][:]
-cunt_lon = f_in.variables['lon'].units
-print 'LONGITUDE: ', cunt_lon
 
-# Extracting the longitude 1D array:
-vlat     = f_in.variables['lat'][:]
-cunt_lat = f_in.variables['lat'].units
-print 'LATITUDE: ', cunt_lat
 
-# Extracting time 1D array:
-vtime     = f_in.variables['time'][:] ; cunt_time = f_in.variables['time'].units
-print 'TIME: ', cunt_time, '\n'
+
+bt.chck4f(cf_in)
+f_in = Dataset(cf_in)
+
+list_var = f_in.variables.keys()
+
+Ndim = len(f_in.variables[cv_lon].dimensions)
+
+cunt_lon = f_in.variables[cv_lon].units
+cunt_lat = f_in.variables[cv_lat].units
+
+if Ndim == 1:
+    # Extracting the longitude and 1D array:
+    vlon     = f_in.variables[cv_lon][:]
+    # Extracting the latitude 1D array:
+    vlat     = f_in.variables[cv_lat][:]
+
+elif Ndim == 2:
+    # We suppose it is NEMO nav_lon and nav_lat...
+    xlon = f_in.variables[cv_lon][:,:]
+    xlat = f_in.variables[cv_lat][:,:]
+    (nj0,ni0) = nmp.shape(xlon)
+    vlon = nmp.zeros(ni0)
+    vlat = nmp.zeros(nj0)
+    vlon[:] = xlon[nj0/8,:]
+    ji_lat0 = nmp.argmax(xlat[nj0-1,:])
+    vlat[:] = xlat[:,ji_lat0]
+    del xlon, xlat, nj0, ni0
+else:
+    print ' ERROR (mk_zonal_average.py) => weird shape for your longitude array!'
+    sys.exit(0)
+
+for cvt in [ 'time', 'time_counter' ]: 
+    if cvt in list_var:
+        vtime     = f_in.variables[cvt][:]
+        cunt_time = f_in.variables[cvt].units
+#print 'TIME: ', cunt_time, '\n'
 
 # Field !!!
-#rmv    = f_in.variables[cv_in]._FillValue
-xfield = f_in.variables[cv_in][:,:,:]
-
-#print 'Missing value for '+cv_in+' is : ', rmv, '\n'
+xfield      = f_in.variables[cv_in][:,:,:]
+cunit_field = f_in.variables[cv_in].units
+clgnm_field = f_in.variables[cv_in].long_name
 
 f_in.close()
 
 
-nt = len(vtime)
-print ' nt = '+str(nt)
-
-
+Nt = len(vtime)
+#print ' Nt = '+str(Nt)
 
 
 # Checking dimensions
 # ~~~~~~~~~~~~~~~~~~~
-[ nt, nj, ni ] = xfield.shape
-print ' DIMENSION =>  ni, nj, nt = ', ni, nj, nt
+( Nt, nj, ni ) = xfield.shape
+print ' *[mk_zonal_average.py]* dimension of "'+cv_in+'" => ', ni, nj, Nt
 
 
-VZ = nmp.zeros((nt,nj))
+# ZONAL MEAN:
 
-for jt in range(nt):
+if l_msk_from_val:
+    Fzonal = bt.mk_zonal(xfield, r_mask_from_val=rmv)
+else:
+    Fzonal = bt.mk_zonal(xfield, XMSK=xmsk)
 
-    cjt  = '%3.3d' %(jt+1)
-
-    # Zonally-averaging:
-    for jj in range(nj):
-    
-        cpt = 0
-    
-        for ji in range(ni):
-            val = xfield[jt,jj,ji]
-            if val != rmv:
-                cpt = cpt + 1
-                VZ[jt,jj] = VZ[jt,jj] + val
-
-        if cpt >= 1 : VZ[jt,jj] = VZ[jt,jj]/cpt
-
-
-
-
-print '\n Creating ascii file!'
-
-cf_out = 'zonal_'+cv_in+'_'+cn_file+'.dat'
-
-f = open(cf_out, 'w')
-
-f.write('# created with '+sys.argv[0]+' from file '+cf_in+'\n')
-
-
-for jj in range(nj):
-
-    mean_val = nmp.mean(VZ[:,jj])
-    
-
-    # Writing latitudes:
-    f.write(str(vlat[jj]))
-
-    # time-averaged column first if relevant
-    if nt > 1:
-        f.write('   '+str(mean_val))
-
-    # snapshot column
-    for jt in range(nt):
-        f.write('   '+str(VZ[jt,jj]) )
-
-    f.write('\n')            
-
-
-print ' ASCII file '+cf_out+' created!\n' ; print '\n'
-        
-
-
-
-print '\n Creating netcdf file!'
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-cf_out = 'zonal_'+cv_in+'_'+cn_file+'.nc'
-
+# Output netCDF file:
+#######################
 f_out = Dataset(cf_out, 'w',format='NETCDF3_CLASSIC')
 
 # Dimensions:
@@ -136,34 +139,33 @@ f_out.createDimension('time', None)
 # Variables
 id_lat = f_out.createVariable('lat','f4',('lat',))
 id_tim = f_out.createVariable('time','f4',('time',))
-id_f1  = f_out.createVariable(cv_in,'f4',('time','lat',))
-id_f2  = f_out.createVariable(cv_in+'_anom','f4',('time','lat',))
 
-# Attributes
-#id_tim.units = cunt_time
-#
-#id_lat.long_name     = clnm_lat
-#id_lat.units         = cunt_lat
-#id_lat.standard_name = csnm_lat
-#
-#id_tim.units         = cunt_time
-#
-#
-#id_f1.long_name = clnm_flx
-#id_f1.units = cunit
-#id_f1.code  = cvin_code
-#id_f1.table = cvin_table
-#
+id_f1  = f_out.createVariable(cv_in,'f4',('time','lat',))
+id_f1.units     = cunit_field
+id_f1.long_name = clgnm_field
+
+id_f2  = f_out.createVariable(cv_in+'_mean','f4',('lat',))
+id_f2.units     = cunit_field
+id_f2.long_name = clgnm_field
+
+id_f3  = f_out.createVariable(cv_in+'_anom','f4',('time','lat',))
+
 f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
 
 # Filling variables:
 id_lat[:] = vlat[:]
 
+Z_time_mean = nmp.mean(Fzonal[:,:], axis=0)
 
-for jt in range(nt):
+for jt in range(Nt):
     id_tim[jt] = vtime[jt]
-    id_f1[jt,:] = VZ[jt,:]
-    id_f2[jt,:] = VZ[jt,:] - nmp.mean(VZ[:,:], axis=0)
+    id_f1[jt,:] = Fzonal[jt,:]
+    id_f3[jt,:] = Fzonal[jt,:] - Z_time_mean
+
+id_f2[:] = Z_time_mean[:]
 
 f_out.close()
         
+
+print ' *[mk_zonal_average.py]* Wrote file '+cf_out+' !\n'
+
