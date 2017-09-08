@@ -1,8 +1,8 @@
 NCDF_DIR=/projects/acad/ecearth/opt/software/netCDF-Fortran/4.4.4-foss-2016b
 
-NCDF= -I$(NCDFF_DIR)/include -L$(NCDFF_DIR)/lib -lnetcdff
+NCDF= -I$(NCDF_DIR)/include -L$(NCDFF_DIR)/lib -lnetcdff
 
 F90=gfortran
 
-FFLAGS= -O2 -I./mod $(NCDF) 
+FFLAGS= -O2 -I./mod  $(NCDF) 
 
