@@ -28,7 +28,7 @@ export NEMO_OUT_STRCT="/SCRATCH/acad/ecearth/${USER}/run/<EXP>/output/nemo"
 export DIAG_DIR="/SCRATCH/acad/ecearth/${USER}/barakuda/${CONF}_ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/home/acad/ucl-elic/$USER/ec-earth3.2_config_files/barakuda_clim/"
+export CONF_INI_DIR="/home/acad/ucl-elic/fmasson/ec-earth3.2_config_files/barakuda_clim/"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="/SCRATCH/ucl-elic/${USER}/TMP/"
