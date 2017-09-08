@@ -25,7 +25,7 @@ export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2)" ;   #  // same here ...
 export NEMO_OUT_STRCT="/SCRATCH/acad/ecearth/${USER}/run/<EXP>/output/nemo"
 
 # Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
-export DIAG_DIR="${STORE_DIR}/barakuda/${CONF}_ece32"
+export DIAG_DIR="/SCRATCH/acad/ecearth/${USER}/barakuda/${CONF}_ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
 export CONF_INI_DIR="/home/acad/ucl-elic/$USER/ec-earth3.2_config_files/barakuda_clim/"
