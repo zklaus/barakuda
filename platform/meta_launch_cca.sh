@@ -75,7 +75,7 @@ shift $((OPTIND-1))
 
 
 # -------- Checks before submitting
-
+cd ..
 [[ -z $ECE3_BARAKUDA_TOPDIR ]] && export ECE3_BARAKUDA_TOPDIR=$PWD
 
 # Display available configs:
