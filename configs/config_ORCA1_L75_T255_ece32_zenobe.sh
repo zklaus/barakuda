@@ -153,7 +153,7 @@ export FIG_FORM="png"
 export ihttp=1                ; # do we export on a remote http server (1) or keep on the local machine (0)
 export RHOST=elixir%gwelic   ; # remote host to send diagnostic page to///
 export RUSER=fmasson           ; # username associated to remote host (for file export)
-export RWWWD=/elic/ftp/fmasson/TMP/ ; # directory of the local or remote host to send the diagnostic page to
+export RWWWD=/elic/ftp/$USER/TMP/ ; # directory of the local or remote host to send the diagnostic page to
 
 
 #########################
