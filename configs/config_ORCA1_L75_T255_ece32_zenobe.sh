@@ -31,7 +31,7 @@ export DIAG_DIR="/SCRATCH/acad/ecearth/${USER}/barakuda/${CONF}_ece32"
 export CONF_INI_DIR="/home/acad/ucl-elic/fmasson/ec-earth3.2_config_files/barakuda_clim/"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
-export SCRATCH="/SCRATCH/ucl-elic/${USER}/TMP/"
+export SCRATCH="/SCRATCH/acad/ecearth/${USER}/TMP/"
 
 export PYTHON_HOME="/projects/acad/ecearth/opt/software/Python/2.7.12-foss-2016b/" ; # HOME to python distribution with matplotlib and basemap !
 
