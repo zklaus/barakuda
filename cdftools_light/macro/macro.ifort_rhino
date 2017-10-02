@@ -1,0 +1,12 @@
+# Makefile for CDFTOOLS
+# --------------------------------------------------------------
+
+NCDF_DIR=/nfs/home/users/severijn/
+
+NCDF= -I$(NCDF_DIR)/include -L$(NCDF_DIR)/lib -lnetcdf -lnetcdff
+
+F90=ifort
+
+#FFLAGS= -O3 -module ./mod $(NCDF)
+FFLAGS= -O0 -fpe0 -CB -traceback -module ./mod $(NCDF)
+

@@ -61,9 +61,10 @@ PROGRAM cdfmoc
    LOGICAL    :: llglo = .false., & !: indicator for presence of new_maskglo.nc file
       &        leiv  = .FALSE.    !: weather to use Eddy Induced velocity from GM90
 
-   INTEGER    :: istatus
-
+   INTEGER :: istatus
    INTEGER :: idf_0, idv_0, idf_v, idv_v, idf_veiv, idv_veiv
+   LOGICAL :: lmv               ! to check on missing values
+   REAL(4) :: missing_value
 
    ! constants
 
@@ -228,15 +229,19 @@ PROGRAM cdfmoc
    CALL GETVAR_3D(idf_0, idv_0, cf_mm, 'e3v_0', 0, 0, e3v) ; idf_0 = 0. ; idv_0 = 0.
 
 
-
-
+   ! retrieve missing_value if defined
+   CALL CHECK_4_MISS(cf_v, trim(cv_v), lmv, missing_value)
 
    DO jt = 1, nt !LB
 
       PRINT *, ' * [cdfmoc] jt = ', jt
 
+      ! read data and set missing values to 0
       CALL GETVAR_3D(idf_v, idv_v,  cf_v, trim(cv_v), nt, jt, V_3D)
-
+      IF (lmv) THEN
+        WHERE(V_3D == missing_value) V_3D = 0.0
+      ENDIF
+        
       IF ( leiv ) CALL GETVAR_3D(idf_veiv, idv_veiv,  cf_v, trim(cv_veiv), nt, jt, Veiv_3D)
 
 

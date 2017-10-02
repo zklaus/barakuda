@@ -14,17 +14,17 @@
 #  be submitted and has all the options we want.
 #
 #---------------------------------------------------------------------------
-# OPTIONAL SETTINGS
-# 
-#   - if you have (in your ~/.user_bashrc or ~/.bashrc or similar):
+# HOW-TO
+#     you have to first "cd <location of barakuda package>/platform" and
+#     then:
 #
-#       export ECE3_BARAKUDA_TOPDIR=<location of barakuda package>
+#       ./meta_launch_cca.sh -C ......
 #
-#     then you can call this script from anywhere. If not, you have to first
-#     "cd  <location of barakuda package>".
+#---------------------------------------------------------------------------
+# OPTIONAL SETTING
 #
-#
-#   - you can overwrite the default hpc account for running barakuda with
+#   - you can overwrite the default hpc account for running barakuda with (in
+#     your ~/.user_bashrc or ~/.bashrc):
 #   
 #       export ECE3_POSTPROC_ACCOUNT=<hpc account to use>
 #
@@ -48,12 +48,22 @@ usage() {
     echo
     echo "Options are:"
     echo
-    echo "   -a ACCOUNT    : specify a different special project for accounting (default: $ECE3_POSTPROC_ACCOUNT)"
+    echo "   -a ACCOUNT    : specify a different special project for accounting (default: \$ECE3_POSTPROC_ACCOUNT)"
     echo "   -i YEAR_START : first year to build climatolgy. Climatology is built if set."
     echo "   -e YEAR_END   :  last year to build climatolgy. Climatology is built if set."
     echo
     exit
 }
+
+# -------- Checks before submitting
+[[ -z $ECE3_BARAKUDA_TOPDIR ]] && cd .. && ECE3_BARAKUDA_TOPDIR=$PWD
+cd $ECE3_BARAKUDA_TOPDIR
+
+# Available configs:
+list_conf=$(\ls ${ECE3_BARAKUDA_TOPDIR}/configs/config_*.sh | sed -e "s|${ECE3_BARAKUDA_TOPDIR}/configs\/config_||g" -e s/'.sh'/''/g)
+
+# User configs, potentially in the directory from which barakuda.sh is called:
+list_conf+=" $(\ls ./config_*.sh 2>/dev/null | sed -e "s|.\/config_||g" -e s/'.sh'/''/g)"
 
 # -------- Options
 account=$ECE3_POSTPROC_ACCOUNT  # default account if exists
@@ -73,17 +83,8 @@ shift $((OPTIND-1))
 
 [[ -n $y1 &&  -n $y2 ]] && climato=1 # generate climato, and compare with it
 
-
-# -------- Checks before submitting
-
-[[ -z $ECE3_BARAKUDA_TOPDIR ]] && export ECE3_BARAKUDA_TOPDIR=$PWD
-
-# Display available configs:
-list_conf=$(\ls ${ECE3_BARAKUDA_TOPDIR}/configs/config_*.sh | sed -e "s|${ECE3_BARAKUDA_TOPDIR}/configs\/config_||g" -e s/'.sh'/''/g)
-# User configs, potentially in the directory from which barakuda.sh is called:
-list_conf+=" $(\ls ./config_*.sh 2>/dev/null | sed -e "s|.\/config_||g" -e s/'.sh'/''/g)"
-
 [[ -z $conf ]] && usage
+[[ ! ${list_conf} =~ ${conf} ]] && { echo ; echo "!!!! UNKNOWN CONF: $conf !!!!!"; usage;}
 [[ -z $exp ]] && usage
 
 
