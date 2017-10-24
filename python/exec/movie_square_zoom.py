@@ -5,7 +5,7 @@
 #  Prepare 2D maps (monthly) that will later become a GIF animation!
 #  NEMO output and observations needed
 #
-#    L. Brodeau, november 2016
+#    L. Brodeau, May 2017
 
 import sys
 import os
