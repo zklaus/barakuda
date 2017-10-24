@@ -28,7 +28,8 @@ import barakuda_colmap as bcm
 
 import barakuda_tool as bt
 
-nsts = 4 ; # sub time-steping for creating interpolated frames (smoother video)
+#nsts = 4 ; # sub time-steping for creating interpolated frames (smoother video)
+nsts = 1 ; # sub time-steping for creating interpolated frames (smoother video)
 
 long_start = 0 ; # longitude to start the movie from...
 
@@ -161,7 +162,7 @@ for jt in range(jt0,jtN):
 
     if nsts==1:
         XFLD = id_fld.variables[cv_in][jt,:,:]
-    else
+    else:
         if jt > jt0:
             XFLDt[:,:]  = XFLDtp1[:,:]
         else:
@@ -231,4 +232,3 @@ for jt in range(jt0,jtN):
         del cf, carte, x0, y0
 
     del dFdt
-
