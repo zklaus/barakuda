@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #PRESET="veryslow"
-PRESET="slow"
+#PRESET="slow"
+PRESET="medium"
 #PRESET="ultrafast"
 
 CRF=21
