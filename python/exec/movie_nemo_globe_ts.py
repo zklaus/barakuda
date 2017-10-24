@@ -76,7 +76,7 @@ if cv_in == 'sosstsst':
     cfield = 'SST'
     tmin=-2. ;  tmax=32.   ;  dtemp = 1.
     cpal_fld = 'ncview_nrl'    
-    cunit = r'[$^{\circ}C$]'
+    cunit = r'$^{\circ}C$'
     cb_jump = 2
     
 elif cv_in == 'somxl010':
