@@ -112,8 +112,9 @@ id_lsm.close()
 
 
 XFLD    = nmp.zeros((nj,ni))
-XFLDt   = nmp.zeros((nj,ni))
-XFLDtp1 = nmp.zeros((nj,ni))
+if nsts>1:
+    XFLDt   = nmp.zeros((nj,ni))
+    XFLDtp1 = nmp.zeros((nj,ni))
 
 
 params = { 'font.family':'Ubuntu',
@@ -157,23 +158,28 @@ for jt in range(jt0,jtN):
 
     print "\n *** Reading record #"+str(ct)+" of "+cv_in+" in "+cf_in
     id_fld = Dataset(cf_in)
-    if jt > jt0:
-        XFLDt[:,:]  = XFLDtp1[:,:]
-    else:
-        XFLDt = id_fld.variables[cv_in][jt,:,:]
-    XFLDtp1  = id_fld.variables[cv_in][jt+1,:,:]
+
+    if nsts==1:
+        XFLD = id_fld.variables[cv_in][jt,:,:]
+    else
+        if jt > jt0:
+            XFLDt[:,:]  = XFLDtp1[:,:]
+        else:
+            XFLDt = id_fld.variables[cv_in][jt,:,:]
+        XFLDtp1  = id_fld.variables[cv_in][jt+1,:,:]
+
     id_fld.close()
     print "  => done!"
 
     # sub time - step
-    dFdt = (XFLDtp1[:,:] - XFLDt[:,:])/float(nsts)
+    if nsts>1: dFdt = (XFLDtp1[:,:] - XFLDt[:,:])/float(nsts)
     
     for js in range(nsts):
 
         jrot = jrot+1
         
         # Linear interpolation:     # yN = y1 + (tN-t1)*(y2-y1)/(t2-t1)
-        XFLD[:,:] = XFLDt[:,:] + float(js)*dFdt
+        if nsts>1: XFLD[:,:] = XFLDt[:,:] + float(js)*dFdt
         
         rot = (long_start + (0.5/float(nsts)*float(jrot)))%360.
         rot = -rot
@@ -217,7 +223,8 @@ for jt in range(jt0,jtN):
     	plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color='white') ; # set colorbar ticklabels
         
         print ' *** Saving figure...'
-        plt.savefig(cfig, dpi=160, orientation='portrait', facecolor='#06051F')
+        #plt.savefig(cfig, dpi=160, orientation='portrait', facecolor='#06051F')
+        plt.savefig(cfig, dpi=160, orientation='portrait', facecolor='k')
         print '  => '+cfig+' created!\n'
         plt.close(1)
 
