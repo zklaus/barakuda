@@ -231,4 +231,4 @@ for jt in range(jt0,jtN):
 
         del cf, carte, x0, y0
 
-    del dFdt
+    if nsts>1: del dFdt
