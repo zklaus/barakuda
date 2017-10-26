@@ -67,7 +67,7 @@ if l_do_ice:
 
 if cv_in == 'sosstsst':
     cfield = 'SST'
-    tmin=5. ;  tmax=18.   ;  dtemp = 1.
+    tmin=6. ;  tmax=16.   ;  dtemp = 1.
     cpal_fld = 'ncview_nrl'    
     cunit = r'SST ($^{\circ}$C)'
     cb_jump = 1
@@ -121,7 +121,7 @@ if l_do_ice:
     pal_ice = bcm.chose_colmap(cpal_ice)
     norm_ice = colors.Normalize(vmin = rmin_ice, vmax = 1, clip = False)
 
-pal_lsm = bcm.chose_colmap('blk')
+pal_lsm = bcm.chose_colmap('land')
 norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 rh = 16.

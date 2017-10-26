@@ -10,7 +10,7 @@ import sys
 import numpy as nmp
 
 # List of Barakuda home-made colormaps:
-list_barakuda = [ 'blk', 'cb1', 'eke', 'bathy', 'mld', 'jetblanc', 'amoc',
+list_barakuda = [ 'blk', 'land', 'cb1', 'eke', 'bathy', 'mld', 'jetblanc', 'amoc',
                   'sst1', 'sst2', 'sst3', 'ice', 'blanc', 'rms',
                   'sigtr', 'bbr', 'bbr2', 'bbr0', 'bbr_cold', 'bbr_warm',
                   'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask' ]
@@ -178,6 +178,12 @@ class brkd_cmap:
             M = nmp.array( [
                 [ 0. , 0., 0. ], # black
                 [ 0. , 0., 0. ]  # black
+                ] )
+            
+        elif cname == 'land':
+            M = nmp.array( [
+                [ 0.4 , 0.4, 0.4 ],
+                [ 0.4 , 0.4, 0.4 ]
                 ] )
 
         elif cname == 'cb1':
