@@ -38,7 +38,7 @@ color_top = 'k'
 
 l_do_ice = False
 
-year_ref_ini = 2010
+year_ref_ini = 2013
 
 #jt0 = 248
 jt0 = 0
@@ -109,7 +109,7 @@ params = { 'font.family':'Ubuntu',
            'axes.labelsize':  int(16) }
 mpl.rcParams.update(params)
 cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':18, 'color':color_top }
-cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':28, 'color':color_top }
+cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':20, 'color':'w' }
 cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':16, 'color':'0.7'}
 
 
@@ -128,12 +128,15 @@ rh = 16.
 
 for jt in range(jt0,Nt):
 
-    ct = '%3.3i'%(jt+1)
+    ch = '%2.2i'%((jt+1)%24)
+    cd = '%3.3i'%(1+(jt+1)/24)
 
-    cd = str(datetime.datetime.strptime('1990 '+ct, '%Y %j'))
-    cdate = cd[:10] ; print ' *** cdate :', cdate
+    ct = str(datetime.datetime.strptime(str(year_ref_ini)+' '+cd+' '+ch, '%Y %j %H'))    
+    #print ' ct = ', ct
+    cday  = ct[:10]   ; print ' *** cday  :', cday
+    chour = ct[11:13] ; print ' *** chour :', chour
 
-    cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_d'+ct+'.'+fig_type    
+    cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_'+cday+'_'+chour+'.'+fig_type    
 
     fig = plt.figure(num = 1, figsize=(rh,rh*(9./16.)), dpi=None, facecolor='w', edgecolor='0.5')
 
@@ -143,7 +146,7 @@ for jt in range(jt0,Nt):
     vc_fld = nmp.arange(tmin, tmax + dtemp, dtemp)
 
 
-    print "Reading record #"+str(ct)+" of "+cv_in+" in "+cf_in
+    print "Reading record #"+str(jt)+" of "+cv_in+" in "+cf_in
     id_fld = Dataset(cf_in)
     XFLD  = id_fld.variables[cv_in][jt,j1:j2,i1:i2] ; # t, y, x
     id_fld.close()
@@ -158,7 +161,7 @@ for jt in range(jt0,Nt):
     
     # Ice
     if not cfield == 'MLD' and l_do_ice:
-        print "Reading record #"+str(ct)+" of "+cv_ice+" in "+cf_ice
+        print "Reading record #"+str(jt)+" of "+cv_ice+" in "+cf_ice
         id_ice = Dataset(cf_ice)
         XICE  = id_ice.variables[cv_ice][jt,:,:] ; # t, y, x
         id_ice.close()
@@ -177,7 +180,7 @@ for jt in range(jt0,Nt):
     
     plt.axis([ 0, ni, 0, nj])
 
-    plt.title('NEMO: '+cfield+', coupled '+CNEMO+', '+cdate, **cfont_title)
+    #plt.title('NEMO: '+cfield+', coupled '+CNEMO+', '+cday+' '+chour+':00', **cfont_title)
 
 
 
@@ -199,6 +202,8 @@ for jt in range(jt0,Nt):
         
     del cf
 
+
+    ax.annotate('Date: '+cday+' '+chour+':00', xy=(1, 4), xytext=(nx_res-nx_res*0.22, 95), **cfont_title)
 
     ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(nx_res-nx_res*0.2, 20), **cfont_mail)
     
