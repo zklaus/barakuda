@@ -33,6 +33,9 @@ import barakuda_tool as bt
 
 CNEMO = 'NATL60'
 
+#color_top = 'white'
+color_top = 'k'
+
 l_do_ice = False
 
 year_ref_ini = 2010
@@ -66,8 +69,8 @@ if cv_in == 'sosstsst':
     cfield = 'SST'
     tmin=5. ;  tmax=18.   ;  dtemp = 1.
     cpal_fld = 'ncview_nrl'    
-    cunit = r'$^{\circ}C$'
-    cb_jump = 2
+    cunit = r'SST ($^{\circ}$C)'
+    cb_jump = 1
     
 elif cv_in == 'somxl010':
     cfield == 'MLD'
@@ -99,15 +102,15 @@ idx_oce = nmp.where(XMSK[:,:] > 0.5)
 
 
 params = { 'font.family':'Ubuntu',
-           'font.size':       int(12),
-           'legend.fontsize': int(12),
-           'xtick.labelsize': int(12),
-           'ytick.labelsize': int(12),
-           'axes.labelsize':  int(12) }
+           'font.size':       int(16),
+           'legend.fontsize': int(16),
+           'xtick.labelsize': int(16),
+           'ytick.labelsize': int(16),
+           'axes.labelsize':  int(16) }
 mpl.rcParams.update(params)
-cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':13, 'color':'white' }
-cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18, 'color':'white' }
-cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':10, 'color':'0.5'}
+cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':18, 'color':color_top }
+cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':28, 'color':color_top }
+cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':16, 'color':'0.7'}
 
 
 # Colormaps for fields:
@@ -178,9 +181,9 @@ for jt in range(jt0,Nt):
 
 
 
-    ax2 = plt.axes([0.055, 0.067, 0.93, 0.025])
+    #ax2 = plt.axes([0.055, 0.067, 0.93, 0.025])
+    ax2 = plt.axes([0.3, 0.08, 0.4, 0.025])
     clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
-    #clb = plt.colorbar(cf, ticks=vc_fld, orientation='horizontal', drawedges=False, pad=0.07, shrink=1., aspect=40) #
     cb_labs = [] ; cpt = 0
     for rr in vc_fld:
         if cpt % cb_jump == 0:
@@ -190,14 +193,14 @@ for jt in range(jt0,Nt):
         cpt = cpt + 1
     clb.ax.set_xticklabels(cb_labs)
     clb.set_label(cunit, **cfont_clb)
-    clb.ax.yaxis.set_tick_params(color='white') ; # set colorbar tick color    
-    #clb.outline.set_edgecolor('white') ; # set colorbar edgecolor         
-    plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color='white') ; # set colorbar ticklabels
+    clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color    
+    clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor         
+    plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
         
     del cf
 
 
-    ax.annotate('laurent.brodeau@bsc.es', xy=(1, 4), xytext=(890, -150), **cfont_mail)
+    ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(nx_res-nx_res*0.2, 20), **cfont_mail)
     
     plt.savefig(cfig, dpi=120, orientation='portrait', facecolor='k')
     print cfig+' created!\n'
