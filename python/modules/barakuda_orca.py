@@ -17,13 +17,12 @@ def get_basin_info( cf_bm ):
     return l_b_names, l_b_lgnms
 
 
-def lon_reorg_orca(ZZ, corca, ilon_ext):
+def lon_reorg_orca(ZZ, xlong_2d, ilon_ext=0):
     #
     #
     # IN:
     # ===
     # ZZ       : array to  longitude, 3D, 2D field or 1D longitude vector
-    # corca    : ORCA conf
     # ilon_ext : longitude extention in degrees
     #
     # OUT:
@@ -32,17 +31,19 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
     #
     import barakuda_tool as bt
     #
-    # jx_junc : ji when lon become positive!
-    if   corca[:5] == 'ORCA2':
-        jx_junc = 141
-    elif corca[:5] == 'ORCA1' and corca[5] != '2':
-        jx_junc = 288
-    elif corca[:6] == 'eORCA1' and corca[6] != '2':
-        jx_junc = 288
-    elif corca[:7] == 'ORCA025':
-        jx_junc = 1150
-    else:
-        print 'ERROR: lon_reorg_orca.barakuda_orca => '+corca+' not supported yet!'; sys.exit(0)
+    if len(nmp.shape(xlong_2d)) != 2:
+        print 'util_orca.lon_reorg_orca: ERROR => longitude array "xlong_2d" must be 2D !'; sys.exit(0)
+    #
+    (nj,ni) = nmp.shape(xlong_2d)
+    #
+    lfound_junc = False
+    ji=0
+    while ( not lfound_junc and ji < ni-1):
+        if xlong_2d[100,ji] > 170. and xlong_2d[100,ji+1] <170.:
+            jx_junc = ji + 1
+            lfound_junc = True
+        ji = ji + 1
+    print "  *** barakuda_orca.lon_reorg_orca >> Junction is at ji = ", jx_junc
 
     jx_oo = 2  # orca longitude overlap...
 
