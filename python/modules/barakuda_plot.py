@@ -211,8 +211,8 @@ class plot :
 
         if lforce_lim: __force_min_and_max__(rmin, rmax, XFtmp)
 
-        XMSK0 = bo.lon_reorg_orca(XMSK,corca, ilon_ext)
-        XF0   = bo.lon_reorg_orca(XFtmp,  corca, ilon_ext)
+        XMSK0 = bo.lon_reorg_orca(XMSK,  VX, ilon_ext=ilon_ext)
+        XF0   = bo.lon_reorg_orca(XFtmp, VX, ilon_ext=ilon_ext)
 
         if i_lat_lon == 1:
             [ny, nx] = nmp.shape(XF0)
