@@ -17,7 +17,7 @@ def get_basin_info( cf_bm ):
     return l_b_names, l_b_lgnms
 
 
-def lon_reorg_orca(ZZ, xlong_2d, ilon_ext=0):
+def lon_reorg_orca(ZZ, xlong_2d, ilon_ext=0, v_junc_i_p=170., v_junc_i_m=-170.):
     #
     #
     # IN:
@@ -39,7 +39,7 @@ def lon_reorg_orca(ZZ, xlong_2d, ilon_ext=0):
     lfound_junc = False
     ji=0
     while ( not lfound_junc and ji < ni-1):
-        if xlong_2d[100,ji] > 170. and xlong_2d[100,ji+1] <170.:
+        if xlong_2d[100,ji] > v_junc_i_p and xlong_2d[100,ji+1] <v_junc_i_m:
             jx_junc = ji + 1
             lfound_junc = True
         ji = ji + 1
@@ -127,6 +127,10 @@ def lon_reorg_orca(ZZ, xlong_2d, ilon_ext=0):
     del ZZx
 
     return ZZx_ext
+
+
+
+
 
 
 
