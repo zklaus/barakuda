@@ -17,7 +17,7 @@ def get_basin_info( cf_bm ):
     return l_b_names, l_b_lgnms
 
 
-def lon_reorg_orca(ZZ, Xlong, ilon_ext=0, v_junc_i_p=170., v_junc_i_m=-170.):
+def lon_reorg_orca(ZZ, Xlong, ilon_ext=0, v_jx_jump_p=170., v_jx_jump_m=-170.):
     #
     #
     # IN:
@@ -44,14 +44,24 @@ def lon_reorg_orca(ZZ, Xlong, ilon_ext=0, v_junc_i_p=170., v_junc_i_m=-170.):
     if idim_lon == 2: vlon[:] = Xlong[nj/3,:]
     if idim_lon == 1: vlon[:] = Xlong[:]
     #
-    lfound_junc = False
+    lfound_jx_jump = False
     ji=0
-    while ( not lfound_junc and ji < ni-1):
-        if vlon[ji] > v_junc_i_p and vlon[ji+1] <v_junc_i_m:
-            jx_junc = ji + 1
-            lfound_junc = True
+    while ( not lfound_jx_jump and ji < ni-1):
+        if vlon[ji] > v_jx_jump_p and vlon[ji+1] < v_jx_jump_m:
+            jx_jump = ji + 1
+            lfound_jx_jump = True
         ji = ji + 1
-    print "  *** barakuda_orca.lon_reorg_orca >> Junction is at ji = ", jx_junc
+    print "  *** barakuda_orca.lon_reorg_orca >> Longitude jump at ji = ", jx_jump
+    #
+    lfound_jx_zero = False
+    ji=0
+    while ( not lfound_jx_zero and ji < ni-1):
+        if vlon[ji] < 0. and vlon[ji+1] > 0.:
+            jx_zero = ji + 1
+            lfound_jx_zero = True
+        ji = ji + 1
+    print "  *** barakuda_orca.lon_reorg_orca >> Longitude zero at ji = ", jx_zero
+    #
     del vlon
     
     jx_oo = 2  # orca longitude overlap...
@@ -67,10 +77,10 @@ def lon_reorg_orca(ZZ, Xlong, ilon_ext=0, v_junc_i_p=170., v_junc_i_m=-170.):
         ZZx  = nmp.zeros((nr, nz, ny, nx0))
         ZZx_ext  = nmp.zeros((nr, nz, ny, (nx0+ilon_ext)))
         #
-        for jx in range(jx_junc,nx):
-            ZZx[:,:,:,jx-jx_junc] = ZZ[:,:,:,jx]
-        for jx in range(jx_oo,jx_junc):
-            ZZx[:,:,:,jx+(nx-jx_junc)-jx_oo] = ZZ[:,:,:,jx]
+        for jx in range(jx_zero,nx):
+            ZZx[:,:,:,jx-jx_zero] = ZZ[:,:,:,jx]
+        for jx in range(jx_oo,jx_zero):
+            ZZx[:,:,:,jx+(nx-jx_zero)-jx_oo] = ZZ[:,:,:,jx]
         #
         if ilon_ext == 0: ZZx_ext[:,:,:,:] = ZZx[:,:,:,:]
     #
@@ -83,10 +93,10 @@ def lon_reorg_orca(ZZ, Xlong, ilon_ext=0, v_junc_i_p=170., v_junc_i_m=-170.):
         ZZx  = nmp.zeros(nx0*ny*nz) ;  ZZx.shape = [nz, ny, nx0]
         ZZx_ext  = nmp.zeros((nx0+ilon_ext)*ny*nz) ;  ZZx_ext.shape = [nz, ny, (nx0+ilon_ext)]
         #
-        for jx in range(jx_junc,nx):
-            ZZx[:,:,jx-jx_junc] = ZZ[:,:,jx]
-        for jx in range(jx_oo,jx_junc):
-            ZZx[:,:,jx+(nx-jx_junc)-jx_oo] = ZZ[:,:,jx]
+        for jx in range(jx_zero,nx):
+            ZZx[:,:,jx-jx_zero] = ZZ[:,:,jx]
+        for jx in range(jx_oo,jx_zero):
+            ZZx[:,:,jx+(nx-jx_zero)-jx_oo] = ZZ[:,:,jx]
         #
         if ilon_ext == 0: ZZx_ext[:,:,:] = ZZx[:,:,:]
     #
@@ -99,10 +109,10 @@ def lon_reorg_orca(ZZ, Xlong, ilon_ext=0, v_junc_i_p=170., v_junc_i_m=-170.):
         ZZx  = nmp.zeros(nx0*ny) ;  ZZx.shape = [ny, nx0]
         ZZx_ext  = nmp.zeros((nx0+ilon_ext)*ny) ;  ZZx_ext.shape = [ny, (nx0+ilon_ext)]
         #
-        for jx in range(jx_junc,nx):
-            ZZx[:,jx-jx_junc] = ZZ[:,jx]
-        for jx in range(jx_oo,jx_junc):
-            ZZx[:,jx+(nx-jx_junc)-jx_oo] = ZZ[:,jx]
+        for jx in range(jx_zero,nx):
+            ZZx[:,jx-jx_zero] = ZZ[:,jx]
+        for jx in range(jx_oo,jx_zero):
+            ZZx[:,jx+(nx-jx_zero)-jx_oo] = ZZ[:,jx]
         #
         if ilon_ext == 0: ZZx_ext[:,:] = ZZx[:,:]
     #
@@ -115,14 +125,14 @@ def lon_reorg_orca(ZZ, Xlong, ilon_ext=0, v_junc_i_p=170., v_junc_i_m=-170.):
         ZZx  = nmp.zeros(nx0) ;  ZZx.shape = [nx0]
         ZZx_ext  = nmp.zeros(nx0+ilon_ext) ;  ZZx_ext.shape = [nx0+ilon_ext]
         #
-        for jx in range(jx_junc,nx):
-            ZZx[jx-jx_junc] = ZZ[jx]
-            #print jx-jx_junc, 'prend', jx, '    ', vlon[jx]
+        for jx in range(jx_zero,nx):
+            ZZx[jx-jx_zero] = ZZ[jx]
+            #print jx-jx_zero, 'prend', jx, '    ', vlon[jx]
             #
         #print ''
-        for jx in range(jx_oo,jx_junc):
-            ZZx[jx+(nx-jx_junc)-jx_oo] = ZZ[jx]
-            #print jx+(nx-jx_junc)-jx_oo, 'prend', jx, '    ', vlon[jx]
+        for jx in range(jx_oo,jx_zero):
+            ZZx[jx+(nx-jx_zero)-jx_oo] = ZZ[jx]
+            #print jx+(nx-jx_zero)-jx_oo, 'prend', jx, '    ', vlon[jx]
         #
         if ilon_ext == 0: ZZx_ext[:] = ZZx[:]
         #iwa = nmp.where(vlon0 < 0.) ; vlon0[iwa] = vlon0[iwa] + 360.
