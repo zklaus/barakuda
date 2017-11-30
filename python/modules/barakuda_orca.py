@@ -17,38 +17,45 @@ def get_basin_info( cf_bm ):
     return l_b_names, l_b_lgnms
 
 
-def lon_reorg_orca(ZZ, xlong_2d, ilon_ext=0, v_junc_i_p=170., v_junc_i_m=-170.):
+def lon_reorg_orca(ZZ, Xlong, ilon_ext=0, v_junc_i_p=170., v_junc_i_m=-170.):
     #
     #
     # IN:
     # ===
-    # ZZ       : array to  longitude, 3D, 2D field or 1D longitude vector
-    # ilon_ext : longitude extention in degrees
+    # ZZ       : 1D, 2D, or 3D array to treat
+    # Xlong    : 1D or 2D array containing the longitude, must be consistent with the shape of ZZ !
+    # ilon_ext : longitude extention of the map you want (in degrees)
     #
     # OUT:
     # ====
-    # ZZx     : re-organized array, the x dimension is now nx-2
+    # ZZx     : re-organized array, mind the possibility of modified x dimension !
     #
     import barakuda_tool as bt
     #
-    if len(nmp.shape(xlong_2d)) != 2:
-        print 'util_orca.lon_reorg_orca: ERROR => longitude array "xlong_2d" must be 2D !'; sys.exit(0)
+    idim_lon = len(nmp.shape(Xlong))
+    if idim_lon not in [ 1 , 2 ]:
+        print 'util_orca.lon_reorg_orca: ERROR => longitude array "Xlong" must be 1D or 2D !'; sys.exit(0)
     #
-    (nj,ni) = nmp.shape(xlong_2d)
+    if idim_lon == 2: (nj,ni) = nmp.shape(Xlong)
+    if idim_lon == 1:      ni = len(Xlong)
+    #
+    vlon = nmp.zeros(ni)
+    #
+    if idim_lon == 2: vlon[:] = Xlong[nj/3,:]
+    if idim_lon == 1: vlon[:] = Xlong[:]
     #
     lfound_junc = False
     ji=0
     while ( not lfound_junc and ji < ni-1):
-        if xlong_2d[100,ji] > v_junc_i_p and xlong_2d[100,ji+1] <v_junc_i_m:
+        if vlon[ji] > v_junc_i_p and vlon[ji+1] <v_junc_i_m:
             jx_junc = ji + 1
             lfound_junc = True
         ji = ji + 1
     print "  *** barakuda_orca.lon_reorg_orca >> Junction is at ji = ", jx_junc
-
+    del vlon
+    
     jx_oo = 2  # orca longitude overlap...
-
     vdim = ZZ.shape
-
     ndim = len(vdim)
 
     if ndim < 1 or ndim > 4:
