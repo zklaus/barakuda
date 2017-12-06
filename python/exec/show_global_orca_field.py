@@ -17,6 +17,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import matplotlib.font_manager as font_manager
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -34,11 +35,15 @@ nx_exclude_south = 200 ; #               ''            south...
 
 lon_reorg = True
 l_show_colorbar = False
-color_top = 'k'
 
-nx_res = 1600
+color_text_colorbar = 'w'
+color_top = 'k'
+color_continents='#9C5536'
+
+
+#nx_res = 1600
 #nx_res = 1920 ; # number of pixels you want in the final image...
-#nx_res = 4800 ; # full res in our case!!!
+nx_res = 4680 ; # full res in our case!!!
 rDPI=100.
 rh = float(nx_res)/rDPI
 
@@ -62,13 +67,15 @@ cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; jt=int(sys.argv[3])-1
 
 if cv_in == 'tap':
     cfield = 'TAP'
-    tmin=0. ;  tmax=1200.   ;  dtemp = 10.
+    tmin=0. ;  tmax=600.   ;  dtemp = 10.    
     #cpal_fld = 'ncview_hotres'
-    cpal_fld = 'hot_r'
-    cunit = r'$W$'
-    cb_jump = 2
+    #cpal_fld = 'hot_r'
+    cpal_fld = 'tap' ; log_ctrl=0.1  ; # 0 if you want no log involved in the colorscale...    
+    cunit = '(MW)'
+    cb_jump = 4
 elif cv_in == 'sosstsst':
     cfield = 'SST'
+    log_ctrl=0  ; # 0 if you want no log involved in the colorscale...
     tmin=-2. ;  tmax=32.   ;  dtemp = 2.
     #cpal_fld = 'ncview_hotres'
     #cpal_fld = 'hot_r'
@@ -101,24 +108,39 @@ id_mm.close()
 
 #idx_oce = nmp.where(XMSK[:,:] > 0.5)
 
+font_corr = float(nx_res)/1200.
 
 
-
-params = { 'font.family':'Ubuntu',
-           'font.size':       int(12),
-           'legend.fontsize': int(12),
-           'xtick.labelsize': int(12),
-           'ytick.labelsize': int(12),
-           'axes.labelsize':  int(12) }
+params = { 'font.family':'Helvetica Neue',
+           'font.weight':    'light',
+           'font.size':       int(12*font_corr),
+           'legend.fontsize': int(12*font_corr),
+           'xtick.labelsize': int(12*font_corr),
+           'ytick.labelsize': int(12*font_corr),
+           'axes.labelsize':  int(12*font_corr) }
 mpl.rcParams.update(params)
-cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':13, 'color':'white' }
-cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':18, 'color':'white' }
-cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':10, 'color':'0.5'}
+
+
+#path = '/home/laurent/.fonts/OSX_conv_LinuX/HelveticaNeue.ttf'
+#prop = font_manager.FontProperties(fname=path)
+#prop.set_weight = 'light'
+#mpl.rcParams['font.family'] = prop.get_name()
+#mpl.rcParams['font.weight'] = 'light'
+
+#cfont_clb   = { 'fontweight':'ultra-light', 'fontsize':int(13*font_corr), 'color':'white' }
+#cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(18*font_corr), 'color':'white' }
+#cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(10*font_corr), 'color':'0.5'}
+
+
+
 
 
 # Colormaps for fields:
-pal_fld = bcm.chose_colmap(cpal_fld)
+pal_fld = bcm.chose_colmap(cpal_fld, log_ctrl=log_ctrl)
 norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
+
+vc_fld = nmp.arange(tmin, tmax + dtemp, dtemp)
+
 
 #pal_ice = bcm.chose_colmap(cpal_ice)
 #norm_ice = colors.Normalize(vmin = rmin_ice, vmax = 1, clip = False)
@@ -126,7 +148,7 @@ norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 #pal_mm = bcm.chose_colmap('blk')
 #norm_mm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
-vc_fld = nmp.arange(tmin, tmax + dtemp, dtemp)
+
 
 print ''
 
@@ -146,10 +168,10 @@ print "  => done!"
 
 
 if lon_reorg:
-    XLAT = bo.lon_reorg_orca(XLATo, XLONo, ilon_ext=40)
-    XFLD = bo.lon_reorg_orca(XFLDo, XLONo, ilon_ext=40)
-    XLON = bo.lon_reorg_orca(XLONo, XLONo, ilon_ext=40)
-    if l_force_mask: XMSK = bo.lon_reorg_orca(XMSKo, XLONo, ilon_ext=40)
+    XLAT = bo.lon_reorg_orca(XLATo, XLONo, ilon_ext=30)
+    XFLD = bo.lon_reorg_orca(XFLDo, XLONo, ilon_ext=30)
+    XLON = bo.lon_reorg_orca(XLONo, XLONo, ilon_ext=30)
+    if l_force_mask: XMSK = bo.lon_reorg_orca(XMSKo, XLONo, ilon_ext=30)
     print "shape old XLON =>", nmp.shape(XLONo)
     print "shape new XLON =>", nmp.shape(XLON)
     #idn = nmp.where( XLONa < 0. )
@@ -171,20 +193,50 @@ del XLATo,XLONo,XFLDo,XMSKo
 
 (nj,ni) = nmp.shape(XLON)
 
-bnc.write_2d_mask('zshow.nc', XFLD, xlon=XLON, xlat=XLAT, name='tap')
+#lolo: bnc.write_2d_mask('zshow.nc', XFLD, xlon=XLON, xlat=XLAT, name='tap')
 
 pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
 
 # No proj :
+#pal_lsm = bcm.chose_colmap('terre')
 pal_lsm = bcm.chose_colmap('land')
 norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 
 
+# Creating colorbar in a dfferent image:
+fig = plt.figure(num = 2, figsize=(rh,rh/18.), dpi=None) #, facecolor='w', edgecolor='0.5')
+ax2 = plt.axes([0., 0., 1., 1.], axisbg = None)
+ax2 = plt.axes([0.2, 0.5, 0.6, 0.4])
+clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
+cb_labs = [] ; cpt = 0
+for rr in vc_fld:
+    if cpt % cb_jump == 0:
+        cb_labs.append(str(int(rr)))
+    else:
+        cb_labs.append(' ')
+    cpt = cpt + 1
+clb.ax.set_xticklabels(cb_labs)
+clb.set_label(cunit, color=color_text_colorbar)
+clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color    
+clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor         
+plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
 
-fig = plt.figure(num = 1, figsize=(rh,rh*float(nj)/float(ni)), dpi=None, facecolor='w', edgecolor='0.5')
+cbytick_obj = plt.getp(clb.ax.axes, 'xticklabels')                #tricky
+plt.setp(cbytick_obj, color=color_text_colorbar)
+
+#for l in clb.ax.xaxis.get_ticklabels():
+#    l.set_family("Fixed")
+
+
+plt.savefig('colorbar.svg', dpi=rDPI, orientation='portrait', transparent=True)
+
+
+
+
+fig = plt.figure(num = 1, figsize=(rh,rh*float(nj)/float(ni)), dpi=None) #, facecolor='w', edgecolor='0.5')
 
 #ax  = plt.axes([0.065, 0.05, 0.9, 1.], axisbg = '0.5')
 ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
@@ -196,15 +248,14 @@ ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
 
 
 
-
-cf = plt.imshow(XFLD[:,:], cmap = pal_fld, norm = norm_fld)
+cf = plt.imshow(XFLD[:,:] , cmap = pal_fld, norm = norm_fld)
 
 cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm)
 plt.axis([ 0, ni, 0, nj])
 
 
 if l_show_colorbar:
-    ax2 = plt.axes([0.3, 0.08, 0.4, 0.025])
+    ax2 = plt.axes([0.2, 0.08, 0.6, 0.025])
     clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
     cb_labs = [] ; cpt = 0
     for rr in vc_fld:
@@ -226,9 +277,14 @@ del cf
 
 #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(nx_res-nx_res*0.2, 20), **cfont_mail)
 
-plt.savefig('figure01.png', dpi=rDPI, orientation='portrait', facecolor='k')
+plt.savefig('figure01.png', dpi=rDPI, orientation='portrait', transparent=True) ; #facecolor='k')
 
 
+
+
+
+
+#lulu
 
 
 

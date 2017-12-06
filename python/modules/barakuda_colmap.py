@@ -10,7 +10,7 @@ import sys
 import numpy as nmp
 
 # List of Barakuda home-made colormaps:
-list_barakuda = [ 'blk', 'land', 'cb1', 'eke', 'bathy', 'mld', 'tap', 'jetblanc', 'amoc',
+list_barakuda = [ 'blk', 'land', 'terre', 'cb1', 'eke', 'bathy', 'mld', 'tap', 'jetblanc', 'amoc',
                   'sst1', 'sst2', 'sst3', 'ice', 'blanc', 'rms',
                   'sigtr', 'bbr', 'bbr2', 'bbr0', 'bbr_cold', 'bbr_warm',
                   'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask' ]
@@ -19,21 +19,21 @@ list_barakuda = [ 'blk', 'land', 'cb1', 'eke', 'bathy', 'mld', 'tap', 'jetblanc'
 
 l_debug = False
 
-def chose_colmap( cname ):
+def chose_colmap( cname, log_ctrl=0 ):
 
     # 1st is it a ncview colormap ?
     if cname[:7] == 'ncview_':
         M = ncview_cmap_to_array( cname )
-        ColorMap = __build_colormap__(M)
+        ColorMap = __build_colormap__(M, log_ctrl=log_ctrl)
 
         # Maybe a barakuda colormap ?
     elif cname in list_barakuda or ( cname[-2:] == '_r' and cname[:-2] in list_barakuda):
         if l_debug: print '\n *** Getting Barakuda colormap "'+cname+'" !'
         x = brkd_cmap(cname)
-        ColorMap = x.clrmp()
-
+        ColorMap = x.clrmp(log_ctrl=log_ctrl)
     else:
         # Then it must be a Matplotlib colormap:
+        if log_ctrl > 0: print 'WARNING: cannot use LOG colormap with Matplotlib colormaps...'
         from matplotlib.pylab import cm
         import matplotlib.pyplot as mp
         list = mp.colormaps()
@@ -165,7 +165,7 @@ class brkd_cmap:
     def __init__(self, name):
         self.name = name
 
-    def clrmp(self):
+    def clrmp(self, log_ctrl=0):
 
         cname = self.name
 
@@ -184,6 +184,12 @@ class brkd_cmap:
             M = nmp.array( [
                 [ 0.4 , 0.4, 0.4 ],
                 [ 0.4 , 0.4, 0.4 ]
+            ] )
+
+        elif cname == 'terre':
+            M = nmp.array( [
+                [ 156./255.,85./255.,54./255. ],
+                [ 156./255.,85./255.,54./255. ],
             ] )
 
         elif cname == 'cb1':
@@ -228,13 +234,12 @@ class brkd_cmap:
 
         elif cname == 'tap':
             M = nmp.array( [
-                #[ 1.0 , 1.0 , 1.0 ], # white
                 [232./255.,254./255.,255./255.], # very pale blue
                 [ 0.1 , 0.5 , 1.0 ], # light blue
-                [255./255.,166./255.,198./255.], # pink
+                #[255./255.,166./255.,198./255.], # pink
                 [ 1.0 , 1.0 , 0.0 ], # yellow
-                [ 1.0 , 0.0 , 0.0 ], # red
-                [ 0.2 , 0.3 , 0.1 ] # dark redish brown
+                [ 1.0 , 0.0 , 0.0 ],  # red
+                [ 112./255.,4./255.,4./255. ] # dark redish brown
             ] )
 
         elif cname == 'jetblanc':
@@ -453,9 +458,9 @@ class brkd_cmap:
 
         if lrev:
             # reverse colormap:
-            my_cmap = __build_colormap__(M[::-1,:])
+            my_cmap = __build_colormap__(M[::-1,:], log_ctrl=log_ctrl)
         else:
-            my_cmap = __build_colormap__(M)
+            my_cmap = __build_colormap__(M, log_ctrl=log_ctrl)
 
         return my_cmap
 
