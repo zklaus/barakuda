@@ -53,8 +53,8 @@ cf_mm = '/data/gcm_output/NEMO/ORCA12.L75/ORCA12.L75-I/mesh_mask.nc4' ; # NEMO m
 fig_type='png'
 
 narg = len(sys.argv)
-if narg < 3: print 'Usage: '+sys.argv[0]+' <file> <variable>'; sys.exit(0)
-cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; #cf_lsm=sys.argv[3]
+if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <# snapshot>'; sys.exit(0)
+cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; jt=int(sys.argv[3])-1
 
 
 
@@ -140,7 +140,7 @@ vproj = [ 'ortho' ]
 #cdate = cd[:10] ; print ' *** Date :', cdate
 
 id_fld = Dataset(cf_in)
-XFLDo = id_fld.variables[cv_in][0,j1:j2,:]
+XFLDo = id_fld.variables[cv_in][jt,j1:j2,:]
 id_fld.close()
 print "  => done!"
 
