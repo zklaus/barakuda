@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#PRESET="veryslow"
+PRESET="veryslow"
 #PRESET="slow"
 PRESET="medium"
 #PRESET="ultrafast"
@@ -8,7 +8,7 @@ PRESET="medium"
 FPS=12
 
 #CRF=20
-CRF=16
+CRF=18
 #CRF=0
 
 TYPE="mp4"
