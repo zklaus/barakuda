@@ -25,25 +25,43 @@ warnings.filterwarnings("ignore")
 import barakuda_orca   as bo
 import barakuda_ncio   as bnc
 import barakuda_colmap as bcm
+import barakuda_plot   as bp
 
 import barakuda_tool as bt
 
+ldebug = False
+
+l_add_lon_lat = False
+l_draw_lat_lon_only = True
 
 l_force_mask = True
-nx_exclude_north = 300 ; # nb points to exclude at the north...
-nx_exclude_south = 200 ; #               ''            south...
+ny_exclude_north = 350 ; # nb points to exclude at the north...
+ny_exclude_south = 150 ; #               ''            south...
+nx_exclude_west  = 300 ; #               ''            west
 
 lon_reorg = True
 l_show_colorbar = False
 
-color_text_colorbar = 'w'
-color_top = 'k'
-color_continents='#9C5536'
+color_text_colorbar = 'k'
+color_stff_colorbar = 'k'
+#color_continents    = '#9C5536'
+#color_continents    = '#EDD0AB'
+color_continents    = '0.75'
 
 
-#nx_res = 1600
+
+cpal_fld = 'tap1'
+#cpal_fld = 'tap2'
+
+log_ctrl=0.1  ; # 0 if you want no log involved in the colorscale...
+#b: log_ctrl=0.05  ; # 0 if you want no log involved in the colorscale...    
+
+
+ilon_ext = 35 ; # Map extension on the RHS in degrees....
+
+nx_res = 1600
 #nx_res = 1920 ; # number of pixels you want in the final image...
-nx_res = 4680 ; # full res in our case!!!
+#nx_res = 4680 ; # full res in our case!!!
 rDPI=100.
 rh = float(nx_res)/rDPI
 
@@ -56,6 +74,7 @@ latitude  = 0. ; # fixed latitude to view from
 cf_mm = '/data/gcm_output/NEMO/ORCA12.L75/ORCA12.L75-I/mesh_mask.nc4' ; # NEMO mesh_mask file...
 
 fig_type='png'
+if l_draw_lat_lon_only: fig_type='svg'
 
 narg = len(sys.argv)
 if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <# snapshot>'; sys.exit(0)
@@ -70,7 +89,7 @@ if cv_in == 'tap':
     tmin=0. ;  tmax=600.   ;  dtemp = 10.    
     #cpal_fld = 'ncview_hotres'
     #cpal_fld = 'hot_r'
-    cpal_fld = 'tap' ; log_ctrl=0.1  ; # 0 if you want no log involved in the colorscale...    
+    #cpal_fld = 'tap1' ; log_ctrl=0.1  ; # 0 if you want no log involved in the colorscale...    
     cunit = '(MW)'
     cb_jump = 4
 elif cv_in == 'sosstsst':
@@ -79,14 +98,13 @@ elif cv_in == 'sosstsst':
     tmin=-2. ;  tmax=32.   ;  dtemp = 2.
     #cpal_fld = 'ncview_hotres'
     #cpal_fld = 'hot_r'
-    cpal_fld = 'tap'
     cunit = r'deg.C'
     cb_jump = 2
 
 
 
 
-j1=nx_exclude_north
+j1=ny_exclude_north
 
     
 bt.chck4f(cf_in)
@@ -95,8 +113,8 @@ bt.chck4f(cf_mm)
 id_mm = Dataset(cf_mm)
 XLONo  =  id_mm.variables['glamt'][0,:,:]
 (njo,nio) = nmp.shape(XLONo)
-j1=nx_exclude_south
-j2=njo-nx_exclude_north
+j1=ny_exclude_south
+j2=njo-ny_exclude_north
 del XLONo
 XLONo  =  id_mm.variables['glamt'][0,j1:j2,:]
 XLATo  =  id_mm.variables['gphit'][0,j1:j2,:]
@@ -113,11 +131,11 @@ font_corr = float(nx_res)/1200.
 
 params = { 'font.family':'Helvetica Neue',
            'font.weight':    'light',
-           'font.size':       int(12*font_corr),
-           'legend.fontsize': int(12*font_corr),
-           'xtick.labelsize': int(12*font_corr),
-           'ytick.labelsize': int(12*font_corr),
-           'axes.labelsize':  int(12*font_corr) }
+           'font.size':       int(14*font_corr),
+           'legend.fontsize': int(14*font_corr),
+           'xtick.labelsize': int(14*font_corr),
+           'ytick.labelsize': int(14*font_corr),
+           'axes.labelsize':  int(14*font_corr) }
 mpl.rcParams.update(params)
 
 
@@ -168,10 +186,10 @@ print "  => done!"
 
 
 if lon_reorg:
-    XLAT = bo.lon_reorg_orca(XLATo, XLONo, ilon_ext=30)
-    XFLD = bo.lon_reorg_orca(XFLDo, XLONo, ilon_ext=30)
-    XLON = bo.lon_reorg_orca(XLONo, XLONo, ilon_ext=30)
-    if l_force_mask: XMSK = bo.lon_reorg_orca(XMSKo, XLONo, ilon_ext=30)
+    XLAT = bo.lon_reorg_orca(XLATo, XLONo, ilon_ext=ilon_ext)
+    XFLD = bo.lon_reorg_orca(XFLDo, XLONo, ilon_ext=ilon_ext)
+    XLON = bo.lon_reorg_orca(XLONo, XLONo, ilon_ext=ilon_ext)
+    if l_force_mask: XMSK = bo.lon_reorg_orca(XMSKo, XLONo, ilon_ext=ilon_ext)
     print "shape old XLON =>", nmp.shape(XLONo)
     print "shape new XLON =>", nmp.shape(XLON)
     #idn = nmp.where( XLONa < 0. )
@@ -191,18 +209,21 @@ else:
 
 del XLATo,XLONo,XFLDo,XMSKo
 
+
+# Do we remove some RHS points:
+XLON = XLON[:,nx_exclude_west:]
+XLAT = XLAT[:,nx_exclude_west:]
+XMSK = XMSK[:,nx_exclude_west:]
+XFLD = XFLD[:,nx_exclude_west:]
+
+
 (nj,ni) = nmp.shape(XLON)
 
 #lolo: bnc.write_2d_mask('zshow.nc', XFLD, xlon=XLON, xlat=XLAT, name='tap')
 
-pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
 
-# No proj :
-#pal_lsm = bcm.chose_colmap('terre')
-pal_lsm = bcm.chose_colmap('land')
-norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 
 
@@ -220,9 +241,9 @@ for rr in vc_fld:
     cpt = cpt + 1
 clb.ax.set_xticklabels(cb_labs)
 clb.set_label(cunit, color=color_text_colorbar)
-clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color    
-clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor         
-plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
+clb.ax.yaxis.set_tick_params(color=color_stff_colorbar) ; # set colorbar tick color    
+clb.outline.set_edgecolor(color_stff_colorbar) ; # set colorbar edgecolor         
+plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_stff_colorbar) ; # set colorbar ticklabels
 
 cbytick_obj = plt.getp(clb.ax.axes, 'xticklabels')                #tricky
 plt.setp(cbytick_obj, color=color_text_colorbar)
@@ -231,29 +252,57 @@ plt.setp(cbytick_obj, color=color_text_colorbar)
 #    l.set_family("Fixed")
 
 
-plt.savefig('colorbar.svg', dpi=rDPI, orientation='portrait', transparent=True)
+plt.savefig('colorbar_p'+cpal_fld+'_cc'+color_continents+'.svg', dpi=rDPI, orientation='portrait', transparent=True)
 
 
 
 
-fig = plt.figure(num = 1, figsize=(rh,rh*float(nj)/float(ni)), dpi=None) #, facecolor='w', edgecolor='0.5')
-
-#ax  = plt.axes([0.065, 0.05, 0.9, 1.], axisbg = '0.5')
-ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
+##################################################
 
 
+fig = plt.figure(num = 1, figsize=(rh,rh*float(nj)/float(ni)), dpi=None) #, facecolor='r', edgecolor='0.5') #, facecolor='w', edgecolor='0.5')
 
-
-
+ax  = plt.axes([0., 0., 1., 1.], axisbg = color_continents)
+if ldebug: ax  = plt.axes([0.1, 0.1, 0.8, 0.8], axisbg = 'w')
 
 
 
-cf = plt.imshow(XFLD[:,:] , cmap = pal_fld, norm = norm_fld)
+if l_add_lon_lat or l_draw_lat_lon_only:
+    VX = nmp.zeros(ni) ; VY = nmp.zeros(nj)
+    VX[:] = XLON[100,:]
+    dlong  = abs(VX[11] - VX[10])
+    VX0 = nmp.arange(nx_exclude_west,ni+nx_exclude_west)  # lulu????
+    VX = VX0*dlong + dlong/2.
+    print VX,'\n'
 
-cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm)
-plt.axis([ 0, ni, 0, nj])
+    VY[:] = XLAT[:,nmp.argmax(XLAT[nj-1,:])]
+    print VY,'\n'
+
+    if not l_draw_lat_lon_only:
+        cf = plt.pcolormesh(VX, VY, XFLD, cmap = pal_fld, norm = norm_fld)
+        # Masking:
+        pal_lsm = bcm.chose_colmap('terre')
+        pal_lsm = bcm.chose_colmap('land')
+        norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
+        pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
+        cm = plt.pcolormesh(VX, VY, pmsk, cmap = pal_lsm, norm = norm_lsm)
+
+    
+    [vvx, vvy, clon, clat] = bp.__name_coor_ticks__(lon_ext=ilon_ext);
+    plt.yticks(vvy,clat) ; plt.xticks(vvx,clon)
+    plt.axis([ min(VX), 360.+ilon_ext-2., min(VY), max(VY)])
+
+    
+else:
+    # Masking:
+    idx_land = nmp.where(XMSK[:,:] < 0.2)
+    XFLD[idx_land] = nmp.nan
+    cf = plt.imshow(XFLD[:,:] , cmap = pal_fld, norm = norm_fld)
+    plt.axis([ 0, ni, 0, nj])
 
 
+
+    
 if l_show_colorbar:
     ax2 = plt.axes([0.2, 0.08, 0.6, 0.025])
     clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
@@ -266,87 +315,18 @@ if l_show_colorbar:
         cpt = cpt + 1
     clb.ax.set_xticklabels(cb_labs)
     clb.set_label(cunit, **cfont_clb)
-    clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color    
-    clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor         
-    plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
+    clb.ax.yaxis.set_tick_params(color=color_stff_colorbar) ; # set colorbar tick color    
+    clb.outline.set_edgecolor(color_stff_colorbar) ; # set colorbar edgecolor         
+    plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_stff_colorbar) ; # set colorbar ticklabels
         
-del cf
-    
+#del cf   
 
 #ax.annotate('Date: '+cday+' '+chour+':00', xy=(1, 4), xytext=(nx_res-nx_res*0.22, 95), **cfont_title)
 
 #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(nx_res-nx_res*0.2, 20), **cfont_mail)
 
-plt.savefig('figure01.png', dpi=rDPI, orientation='portrait', transparent=True) ; #facecolor='k')
+plt.savefig('figure01_p'+cpal_fld+'_cc'+color_continents+'.'+fig_type, dpi=rDPI, orientation='portrait') #, transparent=True) ; #facecolor='k')
 
 
 
-
-
-
-#lulu
-
-
-
-
-
-sys.exit(0)
-
-    
-for cproj in vproj:
-
-    cfig = 'figs/'+cv_in+'_NEMO'+'_'+cproj+'.'+fig_type
-
-    print ' *** reference longitude =', longitude
-
-    #fig = plt.figure(num = 1, figsize=(rh,1.167*rh), dpi=None, facecolor='b', edgecolor='k')
-    #ax  = plt.axes([0.005, 0.05, 0.99, 0.99], axisbg = '0.35')
-    fig = plt.figure(num = 1, figsize=(rh,0.7*rh), dpi=None, facecolor='b', edgecolor='k')
-    ax  = plt.axes([0.05, 0.05, 0.99, 0.99], axisbg = '0.35')
-
-    plt.title('ORCA12: '+cfield, **cfont_title)
-
-    print ' *** Creating projection '+cproj
-    if cproj == 'ortho':
-        carte = Basemap(projection=cproj, lat_0=latitude, lon_0=longitude, resolution='h')
-    else:
-        carte = Basemap(projection=cproj, lon_0=longitude, resolution='c')
-
-    x0,y0 = carte(XLON,XLAT)
-
-    #if l_force_mask: XFLD = nmp.ma.masked_where(XMSK[:,:] < 0.5, XFLD[:,:])
-
-    print ' *** Ploting on map...'
-    cf = carte.pcolor(x0, y0, XFLD, cmap=pal_fld, norm=norm_fld)
-
-    carte.drawcoastlines()
-    carte.fillcontinents(color='grey')
-    #carte.drawmapboundary()
-    #carte.drawmeridians(nmp.arange(-180,180,20), labels=[0,0,0,1])
-    #carte.drawparallels(nmp.arange( -90, 90,10), labels=[1,0,0,0])
-
-    plt.annotate('L. Brodeau, brodeau@gmail.com', xy=(0.7, 0.1), xycoords='figure fraction', **cfont_mail)
-
-    # Colorbar:
-    ax2 = plt.axes([0.005, 0.06, 0.99, 0.025])
-    clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
-    if cb_jump > 1:
-        cb_labs = [] ; cpt = 0
-        for rr in vc_fld:
-            if cpt % cb_jump == 0:
-                cb_labs.append(str(int(rr)))
-            else:
-                cb_labs.append(' ')
-            cpt = cpt + 1
-    clb.ax.set_xticklabels(cb_labs)
-    clb.set_label(cunit, **cfont_clb)
-    clb.ax.yaxis.set_tick_params(color='white') ; # set colorbar tick color
-    clb.outline.set_edgecolor('white') ; # set colorbar edgecolor
-    plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color='white') ; # set colorbar ticklabels
-
-    print ' *** Saving figure...'
-    #plt.savefig(cfig, dpi=160, orientation='portrait', facecolor='#06051F')
-    plt.savefig(cfig, dpi=100, orientation='portrait', facecolor='k')
-    print '  => '+cfig+' created!\n'
-    plt.close(1)
 

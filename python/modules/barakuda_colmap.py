@@ -10,7 +10,7 @@ import sys
 import numpy as nmp
 
 # List of Barakuda home-made colormaps:
-list_barakuda = [ 'blk', 'land', 'terre', 'cb1', 'eke', 'bathy', 'mld', 'tap', 'jetblanc', 'amoc',
+list_barakuda = [ 'blk', 'land', 'terre', 'cb1', 'eke', 'bathy', 'mld', 'tap1', 'tap2', 'jetblanc', 'amoc',
                   'sst1', 'sst2', 'sst3', 'ice', 'blanc', 'rms',
                   'sigtr', 'bbr', 'bbr2', 'bbr0', 'bbr_cold', 'bbr_warm',
                   'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask' ]
@@ -182,8 +182,8 @@ class brkd_cmap:
 
         elif cname == 'land':
             M = nmp.array( [
-                [ 0.4 , 0.4, 0.4 ],
-                [ 0.4 , 0.4, 0.4 ]
+                [ 0.75 , 0.75, 0.75 ],
+                [ 0.75 , 0.75, 0.75 ]
             ] )
 
         elif cname == 'terre':
@@ -232,10 +232,28 @@ class brkd_cmap:
                 [ 0.2 , 0.3 , 0.1 ] # dark redish brown
             ] )
 
-        elif cname == 'tap':
+        elif cname == 'tap1':
             M = nmp.array( [
-                [232./255.,254./255.,255./255.], # very pale blue
-                [ 0.1 , 0.5 , 1.0 ], # light blue
+                [232./255.,254./255.,255./255.], # light blue 1
+                #[23./255.,170./255.,1.], #light blue 2
+                #[132./255.,207./255.,197./255.], # light blue 3
+                ##[166./255.,204./255.,255./255.], # light blue 4
+                [ 0.1 , 0.5 , 1.0 ], #  blue 1
+                #[32./255.,55./255.,145./255.], # blue 2
+                #[255./255.,166./255.,198./255.], # pink
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.0 , 0.0 ],  # red
+                [ 112./255.,4./255.,4./255. ] # dark redish brown
+            ] )
+
+        elif cname == 'tap2':
+            M = nmp.array( [
+                [232./255.,254./255.,255./255.], # light blue 1
+                #[23./255.,170./255.,1.], #light blue 2
+                #[132./255.,207./255.,197./255.], # light blue 3
+                ##[166./255.,204./255.,255./255.], # light blue 4
+                #[ 0.1 , 0.5 , 1.0 ], #  blue 1
+                [32./255.,55./255.,145./255.], # blue 2
                 #[255./255.,166./255.,198./255.], # pink
                 [ 1.0 , 1.0 , 0.0 ], # yellow
                 [ 1.0 , 0.0 , 0.0 ],  # red
