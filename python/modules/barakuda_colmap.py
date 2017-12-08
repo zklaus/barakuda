@@ -229,21 +229,16 @@ class brkd_cmap:
                 [ 0.2 , 1.0 , 0.0 ], # light green
                 [ 1.0 , 1.0 , 0.0 ], # yellow
                 [ 1.0 , 0.0 , 0.0 ], # red
-                [ 0.2 , 0.3 , 0.1 ] # dark redish brown
+                [ 60./255.,0.,0. ] # uber dark redish brown
             ] )
 
         elif cname == 'tap1':
             M = nmp.array( [
                 [232./255.,254./255.,255./255.], # light blue 1
-                #[23./255.,170./255.,1.], #light blue 2
-                #[132./255.,207./255.,197./255.], # light blue 3
-                ##[166./255.,204./255.,255./255.], # light blue 4
                 [ 0.1 , 0.5 , 1.0 ], #  blue 1
-                #[32./255.,55./255.,145./255.], # blue 2
-                #[255./255.,166./255.,198./255.], # pink
                 [ 1.0 , 1.0 , 0.0 ], # yellow
-                [ 1.0 , 0.0 , 0.0 ],  # red
-                [ 112./255.,4./255.,4./255. ] # dark redish brown
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 60./255.,0.,0. ]   # uber dark redish brown
             ] )
 
         elif cname == 'tap2':
