@@ -32,7 +32,7 @@ import barakuda_tool as bt
 ldebug = False
 
 l_add_lon_lat = False
-l_draw_lat_lon_only = True
+l_draw_lat_lon_only = False
 
 l_force_mask = True
 ny_exclude_north = 350 ; # nb points to exclude at the north...
@@ -59,11 +59,11 @@ log_ctrl=0.1  ; # 0 if you want no log involved in the colorscale...
 
 ilon_ext = 35 ; # Map extension on the RHS in degrees....
 
-nx_res = 1600
+#nx_res = 1600
 #nx_res = 1920 ; # number of pixels you want in the final image...
-#nx_res = 4680 ; # full res in our case!!!
+nx_res = -1 ; # trigers full res!!!
 rDPI=100.
-rh = float(nx_res)/rDPI
+
 
 longitude = 50. ; #
 latitude  = 0. ; # fixed latitude to view from
@@ -124,19 +124,7 @@ id_mm.close()
 
 
 
-#idx_oce = nmp.where(XMSK[:,:] > 0.5)
 
-font_corr = float(nx_res)/1200.
-
-
-params = { 'font.family':'Helvetica Neue',
-           'font.weight':    'light',
-           'font.size':       int(14*font_corr),
-           'legend.fontsize': int(14*font_corr),
-           'xtick.labelsize': int(14*font_corr),
-           'ytick.labelsize': int(14*font_corr),
-           'axes.labelsize':  int(14*font_corr) }
-mpl.rcParams.update(params)
 
 
 #path = '/home/laurent/.fonts/OSX_conv_LinuX/HelveticaNeue.ttf'
@@ -190,8 +178,8 @@ if lon_reorg:
     XFLD = bo.lon_reorg_orca(XFLDo, XLONo, ilon_ext=ilon_ext)
     XLON = bo.lon_reorg_orca(XLONo, XLONo, ilon_ext=ilon_ext)
     if l_force_mask: XMSK = bo.lon_reorg_orca(XMSKo, XLONo, ilon_ext=ilon_ext)
-    print "shape old XLON =>", nmp.shape(XLONo)
-    print "shape new XLON =>", nmp.shape(XLON)
+    print "shape original XLON =>", nmp.shape(XLONo)
+    print "shape intermediate XLON =>", nmp.shape(XLON)    
     #idn = nmp.where( XLONa < 0. )
     #XLONa[idn] = XLONa[idn] + 360.
     #bnc.write_2d_mask('zshowa.nc', XFLDa, xlon=XLONa, xlat=XLATa, name='tap')
@@ -219,9 +207,35 @@ XFLD = XFLD[:,nx_exclude_west:]
 
 (nj,ni) = nmp.shape(XLON)
 
+
+print "shape final XLON =>", (nj,ni)
+
+
+if nx_res == -1: nx_res = ni
+
 #lolo: bnc.write_2d_mask('zshow.nc', XFLD, xlon=XLON, xlat=XLAT, name='tap')
 
 
+
+
+
+
+
+
+# Time for figure...
+
+font_corr = float(nx_res)/1200.
+
+rh = float(nx_res)/rDPI
+
+params = { 'font.family':'Helvetica Neue',
+           'font.weight':    'light',
+           'font.size':       int(14*font_corr),
+           'legend.fontsize': int(14*font_corr),
+           'xtick.labelsize': int(14*font_corr),
+           'ytick.labelsize': int(14*font_corr),
+           'axes.labelsize':  int(14*font_corr) }
+mpl.rcParams.update(params)
 
 
 
