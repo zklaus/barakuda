@@ -122,8 +122,8 @@ params = { 'font.family':'Helvetica Neue',
            'axes.labelsize':  int(22*rfact_zoom**0.2) }
 mpl.rcParams.update(params)
 cfont_clb   = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(22*rfact_zoom**0.2), 'color':color_top }
-cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(20*rfact_zoom**0.2), 'color':'w' }
-cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(16*rfact_zoom**0.2), 'color':'0.7'}
+cfont_date = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(22*rfact_zoom**0.2), 'color':'w' }
+cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14*rfact_zoom**0.2), 'color':'0.8'}
 
 
 # Colormaps for fields:
@@ -134,7 +134,7 @@ if l_do_ice:
     pal_ice = bcm.chose_colmap(cpal_ice)
     norm_ice = colors.Normalize(vmin = rmin_ice, vmax = 1, clip = False)
 
-pal_lsm = bcm.chose_colmap('land')
+pal_lsm = bcm.chose_colmap('land_dark')
 norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 rh = 16.
@@ -219,8 +219,8 @@ for jt in range(jt0,Nt):
 
     x_annot = nxr-nxr*0.22*rfact_zoom**0.2
     y_annot = 95
-    ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_annot, 130), **cfont_title)
-    ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_annot, 55), **cfont_mail)
+    ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_annot,    150), **cfont_date)
+    ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_annot+200, 50), **cfont_mail)
     
     plt.savefig(cfig, dpi=120, orientation='portrait', facecolor='k')
     print cfig+' created!\n'
