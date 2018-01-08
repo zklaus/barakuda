@@ -43,13 +43,23 @@ year_ref_ini = 2013
 #jt0 = 248
 jt0 = 0
 
+
 ny_res = 1080
 nx_res = 1920
 
-cbox = 'Biscay' ; i1 = 2880 ; j1 = 1060
+yx_ratio = float(ny_res)/float(nx_res)
 
-i2 = i1 + nx_res
-j2 = j1 + ny_res
+
+#cbox = 'Biscay' ; i1 = 2880 ; j1 = 1060 ; rfact_zoom = 1.
+cbox = 'NAtlt' ; i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36
+
+
+nxr = int(1./rfact_zoom*nx_res)
+nyr = int(1./rfact_zoom*ny_res)
+#nyr = int(yx_ratio*nxr)
+
+i2 = i1 + nxr
+j2 = j1 + nyr
 
 fig_type='png'
 
@@ -67,7 +77,8 @@ if l_do_ice:
 
 if cv_in == 'sosstsst':
     cfield = 'SST'
-    tmin=6. ;  tmax=16.   ;  dtemp = 1.
+    #tmin=6. ;  tmax=16.   ;  dtemp = 1.
+    tmin=0. ;  tmax=25.   ;  dtemp = 1.
     cpal_fld = 'ncview_nrl'    
     cunit = r'SST ($^{\circ}$C)'
     cb_jump = 1
@@ -101,16 +112,18 @@ pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 idx_oce = nmp.where(XMSK[:,:] > 0.5)
 
 
-params = { 'font.family':'Ubuntu',
-           'font.size':       int(16),
-           'legend.fontsize': int(16),
-           'xtick.labelsize': int(16),
-           'ytick.labelsize': int(16),
-           'axes.labelsize':  int(16) }
+#params = { 'font.family':'Ubuntu',
+params = { 'font.family':'Helvetica Neue',
+           'font.weight':    'normal',
+           'font.size':       int(22*rfact_zoom**0.2),
+           'legend.fontsize': int(22*rfact_zoom**0.2),
+           'xtick.labelsize': int(22*rfact_zoom**0.2),
+           'ytick.labelsize': int(22*rfact_zoom**0.2),
+           'axes.labelsize':  int(22*rfact_zoom**0.2) }
 mpl.rcParams.update(params)
-cfont_clb   = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':18, 'color':color_top }
-cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':20, 'color':'w' }
-cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':16, 'color':'0.7'}
+cfont_clb   = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(22*rfact_zoom**0.2), 'color':color_top }
+cfont_title = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(20*rfact_zoom**0.2), 'color':'w' }
+cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(16*rfact_zoom**0.2), 'color':'0.7'}
 
 
 # Colormaps for fields:
@@ -138,7 +151,8 @@ for jt in range(jt0,Nt):
 
     cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_'+cday+'_'+chour+'.'+fig_type    
 
-    fig = plt.figure(num = 1, figsize=(rh,rh*(9./16.)), dpi=None, facecolor='w', edgecolor='0.5')
+    #fig = plt.figure(num = 1, figsize=(rh,rh*(9./16.)), dpi=None, facecolor='w', edgecolor='0.5')
+    fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio), dpi=None, facecolor='w', edgecolor='0.5')
 
     #ax  = plt.axes([0.065, 0.05, 0.9, 1.], axisbg = '0.5')
     ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
@@ -184,8 +198,8 @@ for jt in range(jt0,Nt):
 
 
 
-    #ax2 = plt.axes([0.055, 0.067, 0.93, 0.025])
-    ax2 = plt.axes([0.3, 0.08, 0.4, 0.025])
+    #ax2 = plt.axes([0.3, 0.08, 0.4, 0.025])
+    ax2 = plt.axes([0.22, 0.08, 0.56, 0.025])
     clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
     cb_labs = [] ; cpt = 0
     for rr in vc_fld:
@@ -203,9 +217,10 @@ for jt in range(jt0,Nt):
     del cf
 
 
-    ax.annotate('Date: '+cday+' '+chour+':00', xy=(1, 4), xytext=(nx_res-nx_res*0.22, 95), **cfont_title)
-
-    ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(nx_res-nx_res*0.2, 20), **cfont_mail)
+    x_annot = nxr-nxr*0.22*rfact_zoom**0.2
+    y_annot = 95
+    ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_annot, 130), **cfont_title)
+    ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_annot, 55), **cfont_mail)
     
     plt.savefig(cfig, dpi=120, orientation='portrait', facecolor='k')
     print cfig+' created!\n'
