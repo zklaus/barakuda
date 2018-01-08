@@ -121,9 +121,10 @@ params = { 'font.family':'Helvetica Neue',
            'ytick.labelsize': int(22*rfact_zoom**0.2),
            'axes.labelsize':  int(22*rfact_zoom**0.2) }
 mpl.rcParams.update(params)
-cfont_clb   = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(22*rfact_zoom**0.2), 'color':color_top }
+cfont_clb  = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(22*rfact_zoom**0.2), 'color':color_top }
 cfont_date = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(22*rfact_zoom**0.2), 'color':'w' }
-cfont_mail  = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14*rfact_zoom**0.2), 'color':'0.8'}
+cfont_mail = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14*rfact_zoom**0.2), 'color':'0.8'}
+cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(80*rfact_zoom**0.2), 'color':'w' }
 
 
 # Colormaps for fields:
@@ -221,6 +222,9 @@ for jt in range(jt0,Nt):
     y_annot = 95
     ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_annot,    150), **cfont_date)
     ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_annot+200, 50), **cfont_mail)
+
+    ax.annotate('NATL60', xy=(1, 4), xytext=(int(0.025*nxr), int(0.7*nyr)), **cfont_titl)
+
     
     plt.savefig(cfig, dpi=120, orientation='portrait', facecolor='k')
     print cfig+' created!\n'
