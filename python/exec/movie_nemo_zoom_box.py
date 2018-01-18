@@ -44,22 +44,31 @@ year_ref_ini = 2013
 jt0 = 0
 
 
-ny_res = 1080
-nx_res = 1920
+
+
+i2=0
+j2=0
+
+#cbox = 'Biscay' ; i1 = 2880 ; j1 = 1060 ; rfact_zoom = 1. ; ny_res = 1080 ; nx_res = 1920
+#cbox = 'NAtlt' ; i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36  ; ny_res = 1080 ; nx_res = 1920
+
+cbox = 'Med+NorthSea' ; i1 = 4086 ; j1 = 603 ; i2 = 5421 ; j2 = 3119 ; rfact_zoom = 0.3319
+
+if i2>0 and j2>0:
+    nx_res = i2-i1
+    ny_res = j2-j1
+else:
+    i2 = i1 + nxr
+    j2 = j1 + nyr
+
+print ' i1,i2,j1,j2 =>', i1,i2,j1,j2
 
 yx_ratio = float(ny_res)/float(nx_res)
-
-
-#cbox = 'Biscay' ; i1 = 2880 ; j1 = 1060 ; rfact_zoom = 1.
-cbox = 'NAtlt' ; i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36
-
-
 nxr = int(1./rfact_zoom*nx_res)
 nyr = int(1./rfact_zoom*ny_res)
-#nyr = int(yx_ratio*nxr)
 
-i2 = i1 + nxr
-j2 = j1 + nyr
+
+
 
 fig_type='png'
 
@@ -77,12 +86,18 @@ if l_do_ice:
 
 if cv_in == 'sosstsst':
     cfield = 'SST'
-    #tmin=6. ;  tmax=16.   ;  dtemp = 1.
     tmin=0. ;  tmax=25.   ;  dtemp = 1.
     cpal_fld = 'ncview_nrl'    
     cunit = r'SST ($^{\circ}$C)'
     cb_jump = 1
-    
+
+if cv_in == 'sossheig':
+    cfield = 'SSH'
+    tmin=-0.3 ;  tmax=0.3   ;  dtemp = 0.1
+    cpal_fld = 'ncview_jaisnc'    
+    cunit = r'SSH (m)'
+    cb_jump = 1
+
 elif cv_in == 'somxl010':
     cfield == 'MLD'
     tmin=50. ;  tmax=1500. ;  dtemp = 50.
@@ -138,7 +153,7 @@ if l_do_ice:
 pal_lsm = bcm.chose_colmap('land_dark')
 norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
-rh = 16.
+rh = 16.*rfact_zoom
 
 for jt in range(jt0,Nt):
 
@@ -200,16 +215,23 @@ for jt in range(jt0,Nt):
 
 
     #ax2 = plt.axes([0.3, 0.08, 0.4, 0.025])
-    ax2 = plt.axes([0.22, 0.08, 0.56, 0.025])
+
+    if yx_ratio > 1.:
+        ax2 = plt.axes([0.01, 0.08, 0.98, 0.025])
+    else:
+        ax2 = plt.axes([0.22, 0.08, 0.56, 0.025])
+        
     clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
-    cb_labs = [] ; cpt = 0
-    for rr in vc_fld:
-        if cpt % cb_jump == 0:
-            cb_labs.append(str(int(rr)))
-        else:
-            cb_labs.append(' ')
-        cpt = cpt + 1
-    clb.ax.set_xticklabels(cb_labs)
+    if cb_jump > 1:
+        cb_labs = [] ; cpt = 0
+        for rr in vc_fld:
+            if cpt % cb_jump == 0:
+                if dtemp >= 1.: cb_labs.append(str(int(rr)))
+                if dtemp <  1.: cb_labs.append(str(rr))
+            else:
+                cb_labs.append(' ')
+            cpt = cpt + 1
+        clb.ax.set_xticklabels(cb_labs)    
     clb.set_label(cunit, **cfont_clb)
     clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color    
     clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor         
