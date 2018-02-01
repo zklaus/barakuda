@@ -46,6 +46,27 @@ def check_env_var(cnm, list):
     return env_var_dic
 
 
+
+
+
+def round_to_multiple_of(x, prec=2, base=0.5):
+    ## Round to non-integer values, such as 0.5 !
+    return round(base * round(float(x)/base),prec)
+
+def int_as_multiple_of(x, base=5):
+    # Closest integer multiple of base:
+    return int(base * round(float(x)/base))
+
+
+def lon_180_180(x):
+    rsign = 1.
+    if 180.-x < 0.: rsign=-1.
+    return rsign*min(x,abs(x-360.))
+
+
+
+
+
 def get_sections_from_file(cfile):
     list_sections = []
     f = open(cfile, 'r') ; cread_lines = f.readlines() ; f.close()
