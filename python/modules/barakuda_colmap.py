@@ -10,7 +10,7 @@ import sys
 import numpy as nmp
 
 # List of Barakuda home-made colormaps:
-list_barakuda = [ 'blk', 'cb1', 'eke', 'bathy', 'mld', 'jetblanc', 'amoc',
+list_barakuda = [ 'blk', 'land', 'land_dark', 'terre', 'cb1', 'eke', 'bathy', 'mld', 'tap1', 'tap2', 'jetblanc', 'amoc',
                   'sst1', 'sst2', 'sst3', 'ice', 'blanc', 'rms',
                   'sigtr', 'bbr', 'bbr2', 'bbr0', 'bbr_cold', 'bbr_warm',
                   'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask' ]
@@ -19,21 +19,21 @@ list_barakuda = [ 'blk', 'cb1', 'eke', 'bathy', 'mld', 'jetblanc', 'amoc',
 
 l_debug = False
 
-def chose_colmap( cname ):
+def chose_colmap( cname, log_ctrl=0 ):
 
     # 1st is it a ncview colormap ?
-    if cname[:7] == 'ncview_':        
+    if cname[:7] == 'ncview_':
         M = ncview_cmap_to_array( cname )
-        ColorMap = __build_colormap__(M)
-        
+        ColorMap = __build_colormap__(M, log_ctrl=log_ctrl)
+
         # Maybe a barakuda colormap ?
     elif cname in list_barakuda or ( cname[-2:] == '_r' and cname[:-2] in list_barakuda):
         if l_debug: print '\n *** Getting Barakuda colormap "'+cname+'" !'
         x = brkd_cmap(cname)
-        ColorMap = x.clrmp()
-        
+        ColorMap = x.clrmp(log_ctrl=log_ctrl)
     else:
         # Then it must be a Matplotlib colormap:
+        if log_ctrl > 0: print 'WARNING: cannot use LOG colormap with Matplotlib colormaps...'
         from matplotlib.pylab import cm
         import matplotlib.pyplot as mp
         list = mp.colormaps()
@@ -59,14 +59,14 @@ def ncview_cmap_to_array( cname ):
     #
     # cname: "ncview_" +  name of the NCVIEW colormap as in the NCVIEW header colormap files  [string]
     #   example : 'ncview_rainbow'
-    #      
+    #
     #
     # The environment variable 'DIR_NCVIEW_CMAP' must be set!
-    #    => path to the directory containing the NCVIEW header colormap files  
+    #    => path to the directory containing the NCVIEW header colormap files
     #    => ex: colormap 'rainbow' is defined in header file 'colormaps_rainbow.h''
     #
     ##########################################################################################
-    
+
     import os
     import re
 
@@ -77,7 +77,7 @@ def ncview_cmap_to_array( cname ):
 
     if cname[:7] != 'ncview_' : print ' ERROR: a ncview colormap should begin with "ncview_" !'; sys.exit(0)
     ncview_name = cname[7:]
-    
+
     cf_ncview_cmap = dir_ncview_cmap+'/colormaps_'+ncview_name+'.h'
     if not os.path.exists(cf_ncview_cmap):
         print 'ERROR: NCVIEW colormap '+cf_ncview_cmap+' not found!' ; sys.exit(0)
@@ -95,12 +95,12 @@ def ncview_cmap_to_array( cname ):
         ll = re.sub(r'{', ',', ll)
         ll = re.sub(r'}', ',', ll)
         ls = re.split(',',ll)
-    
+
         if lstarted:
             for ve in ls[:-1]: vec.append(float(ve)) ; # [:-1] is to ommit the ',' at the end
-    
+
         if ls[0] == 'staticintcmap_'+ncview_name+'[]=':
-            lstarted = True        
+            lstarted = True
             for ve in ls[1:-1]: vec.append(float(ve)) ; # [:-1] is to ommit the ',' at the end
 
     ctmp = []
@@ -161,24 +161,42 @@ def __build_colormap__(MC, log_ctrl=0):
 
 
 class brkd_cmap:
-    
+
     def __init__(self, name):
         self.name = name
 
-    def clrmp(self):
+    def clrmp(self, log_ctrl=0):
 
         cname = self.name
 
-        lrev = False        
+        lrev = False
         if cname[-2:] == '_r':
             lrev = True
             cname = cname[:-2]
-        
+
         if cname == 'blk':
             M = nmp.array( [
                 [ 0. , 0., 0. ], # black
                 [ 0. , 0., 0. ]  # black
-                ] )
+            ] )
+
+        elif cname == 'land':
+            M = nmp.array( [
+                [ 0.75 , 0.75, 0.75 ],
+                [ 0.75 , 0.75, 0.75 ]
+            ] )
+
+        elif cname == 'land_dark':
+            M = nmp.array( [
+                [ 0.5 , 0.5, 0.5 ],
+                [ 0.5 , 0.5, 0.5 ]
+            ] )
+
+        elif cname == 'terre':
+            M = nmp.array( [
+                [ 156./255.,85./255.,54./255. ],
+                [ 156./255.,85./255.,54./255. ],
+            ] )
 
         elif cname == 'cb1':
             M = nmp.array( [
@@ -187,7 +205,7 @@ class brkd_cmap:
                 [ 65,182,196  ],
                 [ 44,127,184  ],
                 [ 37,52,148  ]
-                ] ) / 255.
+            ] ) / 255.
 
         elif cname == 'eke':
             M = nmp.array( [
@@ -197,7 +215,7 @@ class brkd_cmap:
                 [ 1.  , 1.0 , 0.0  ], # yellow
                 [ 1.  , 0.0 , 0.0  ], # red
                 [0.2  , 0.27, 0.07 ] # brown
-                ] )
+            ] )
 
         elif cname == 'bathy':
             M = nmp.array( [
@@ -207,7 +225,7 @@ class brkd_cmap:
                 [ 1.  , 1.0 , 0.0  ], # yellow
                 [ 1.  , 0.0 , 0.0  ], # red
                 [0.2  , 0.27, 0.07 ] # brown
-                ] )
+            ] )
 
         elif cname == 'mld':
             M = nmp.array( [
@@ -217,9 +235,32 @@ class brkd_cmap:
                 [ 0.2 , 1.0 , 0.0 ], # light green
                 [ 1.0 , 1.0 , 0.0 ], # yellow
                 [ 1.0 , 0.0 , 0.0 ], # red
-                [ 0.2 , 0.3 , 0.1 ] # dark redish brown
-                ] )
-        
+                [ 60./255.,0.,0. ] # uber dark redish brown
+            ] )
+
+        elif cname == 'tap1':
+            M = nmp.array( [
+                [232./255.,254./255.,255./255.], # light blue 1
+                [ 0.1 , 0.5 , 1.0 ], #  blue 1
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.0 , 0.0 ], # red
+                [ 60./255.,0.,0. ]   # uber dark redish brown
+            ] )
+
+        elif cname == 'tap2':
+            M = nmp.array( [
+                [232./255.,254./255.,255./255.], # light blue 1
+                #[23./255.,170./255.,1.], #light blue 2
+                #[132./255.,207./255.,197./255.], # light blue 3
+                ##[166./255.,204./255.,255./255.], # light blue 4
+                #[ 0.1 , 0.5 , 1.0 ], #  blue 1
+                [32./255.,55./255.,145./255.], # blue 2
+                #[255./255.,166./255.,198./255.], # pink
+                [ 1.0 , 1.0 , 0.0 ], # yellow
+                [ 1.0 , 0.0 , 0.0 ],  # red
+                [ 112./255.,4./255.,4./255. ] # dark redish brown
+            ] )
+
         elif cname == 'jetblanc':
             M = nmp.array( [
                 [ 0.6 , 0.0 , 0.8 ], # violet
@@ -229,8 +270,8 @@ class brkd_cmap:
                 [ 1.0 , 1.0 , 0.0 ], # yellow
                 [ 1.0 , 0.0 , 0.0 ], # red
                 [ 0.2 , 0.3 , 0.1 ]  # dark redish brown
-                ] )
-        
+            ] )
+
         elif cname == 'amoc':
             M = nmp.array( [
                 [ 0.4 , 0.0 , 0.6 ], # violet
@@ -242,8 +283,8 @@ class brkd_cmap:
                 [ 1.0 , 1.0 , 0.0 ], # yellow
                 [ 1.0 , 0.0 , 0.0 ], # red
                 [ 0.2 , 0.3 , 0.1 ] # dark read
-                ] )
-        
+            ] )
+
         elif cname == 'sst1':
             M = nmp.array( [
                 [ 1.0 , 1.0 , 1.0 ], # white
@@ -254,8 +295,8 @@ class brkd_cmap:
                 [ 1.0 , 1.0 , 0.0 ], # yellow
                 [ 1.0 , 0.0 , 0.0 ], # red
                 [ 0.2 , 0.3 , 0.1 ] # dark read
-                ] )
-            
+            ] )
+
         elif cname == 'sst2':
             M = nmp.array( [
                 [ 1.0 , 1.0 , 1.0 ], # white
@@ -266,7 +307,7 @@ class brkd_cmap:
                 [ 1.0 , 1.0 , 0.0 ], # yellow
                 [ 1.0 , 0.0 , 0.0 ], # red
                 [ 0.2 , 0.3 , 0.1 ] # dark read
-                ] )
+            ] )
 
         elif cname == 'sst3':
             M = nmp.array( [
@@ -277,22 +318,22 @@ class brkd_cmap:
                 [ 1.0 , 1.0 , 0.0 ], # yellow
                 [ 1.0 , 0.0 , 0.0 ], # red
                 [ 0.2 , 0.3 , 0.1 ] # dark read
-                ] )
-            
+            ] )
+
         elif cname == 'ice':
             M = nmp.array( [
                 [  0. , 0.  , 0.3 ], # dark blue
                 [ 0.6 , 0.6 , 0.8 ], # light grey
                 [ 0.95 , 0.95 , 0.95 ],  # white
                 [ 1.0 , 1.0 , 1.0 ]  # white
-                ] )
-        
+            ] )
+
         elif cname == 'blanc':
             M = nmp.array( [
                 [ 1.0 , 1.0 , 1.0 ],  # white
                 [ 1.0 , 1.0 , 1.0 ]  # white
-                ] )
-            
+            ] )
+
         elif cname == 'rms':
             M = nmp.array( [
                 [ 1.0 , 1.0 , 1.0 ],
@@ -301,7 +342,7 @@ class brkd_cmap:
                 [ 1.0 , 1.0 , 0.0 ],
                 [ 1.0 , 0.0 , 0.0 ],
                 [ 0.2 , 0.3 , 0.1 ]
-                ] )
+            ] )
 
         elif cname == 'sigtr':
             M = nmp.array( [
@@ -317,8 +358,8 @@ class brkd_cmap:
                 [ 1.0 , 0.0 , 0.0 ], # red
                 [ 0.6 , 0.0 , 0.0 ], # red
                 [ 0.2 , 0.3 , 0.1 ]  # dark red
-                ] )
-            
+            ] )
+
         elif cname == 'bbr':
             M = nmp.array( [
                 [ 0.  , 0. , 0.2 ],
@@ -327,8 +368,8 @@ class brkd_cmap:
                 [ 1.  , 1. , 1.  ],
                 [ 1.  , 0. , 0.  ],
                 [ 0.6 , 0. , 0.  ]
-                ] )
-            
+            ] )
+
         elif cname == 'bbr2':
             M = nmp.array( [
                 [ 0.  , 1. , 1.  ], # cyan
@@ -337,8 +378,8 @@ class brkd_cmap:
                 [ 1.  , 1. , 1.  ],
                 [ 1.  , 0. , 0.  ],
                 [ 1.  , 1. , 0.  ]  # jaune
-                ] )
-            
+            ] )
+
         elif cname == 'bbr0':
             M = nmp.array( [
                 [ 0.  , 1. , 1.  ], # cyan
@@ -346,8 +387,8 @@ class brkd_cmap:
                 [ 1.  , 1. , 1.  ],
                 [ 1.  , 0. , 0.  ],
                 [ 1.  , 1. , 0.  ]  # jaune
-                ] )
-            
+            ] )
+
         elif cname == 'bbr_cold':
             M = nmp.array( [
                 [ 0.  , 1. , 1.  ], # cyan
@@ -357,8 +398,8 @@ class brkd_cmap:
                 [ 1.  , 1. , 1.  ],
                 [ 1.  , 1. , 1.  ],
                 [ 0.7  , 0. , 0.  ] # Dark red
-                ] )
-            
+            ] )
+
         elif cname == 'bbr_warm':
             M = nmp.array( [
                 [ 19./255.  , 7./255. , 129./255  ], # dark blue
@@ -367,8 +408,8 @@ class brkd_cmap:
                 [ 0.9  , 0.1 , 0.1  ],
                 [ 0.7  , 0. , 0.  ], # Dark red
                 [ 1.  , 1. , 0.  ],  # jaune
-                ] )
-            
+            ] )
+
         elif cname == 'cold0':
             M = nmp.array( [
                 [ 177./255.  , 250./255. , 122./255. ],   # greenish
@@ -377,8 +418,8 @@ class brkd_cmap:
                 [ 0.  , 0. , 1.  ], # true blue
                 [ 177./255.  , 189./255. , 250./255. ], # light blue
                 [ 1.  , 1. , 1.  ],
-                ] )
-            
+            ] )
+
         elif cname == 'warm0':
             M = nmp.array( [
                 [ 1.  , 1. , 1.  ],
@@ -387,20 +428,20 @@ class brkd_cmap:
                 [ 244./255.  , 78./255. , 255./255.  ], # pink
                 [ 1.  , 0. , 0.  ], # true red
                 [ 139./255.  , 5./255. , 5./255.  ] # dark red
-                ] )
-            
+            ] )
+
         elif cname == 'graylb':
             M = nmp.array( [
                 [ 1.  , 1. , 1. ],
                 [ 0.1  , 0.1 , 0.1 ]
-                ] )
-            
+            ] )
+
         elif cname == 'graylb2':
             M = nmp.array( [
                 [ 0.6  , 0.6 , 0.6 ],
                 [ 1.  , 1. , 1. ]
-                ] )
-            
+            ] )
+
         elif cname == 'sigma':
             M = nmp.array( [
                 [ 1.0 , 1.0 , 1.0 ], # white
@@ -410,7 +451,7 @@ class brkd_cmap:
                 [ 0.1 , 0.5 , 1.0 ], # light blue
                 [ 0.0 , 0.0 , 0.4 ], # dark blue
                 [ 0.6 , 0.0 , 0.8 ]  # violet
-                ] )
+            ] )
 
         elif cname == 'sigma0':
             M = nmp.array( [
@@ -422,13 +463,13 @@ class brkd_cmap:
                 [ 0.0 , 0.0 , 0.4 ], # dark blue
                 [ 0.6 , 0.0 , 0.8 ], # violet
                 [ 1.0 , 1.0 , 1.0 ]  # white
-                ] )
-            
+            ] )
+
         elif cname == 'mask':
             M = nmp.array( [
                 [ 0.5 , 0.5 , 0.5 ], # gray
                 [ 0.5 , 0.5 , 0.5 ]  # gray
-                ] )
+            ] )
 
         else:
             print 'ERROR: (''barakuda_colmap.py) => unknown "barakuda" colormap: '+cname
@@ -436,10 +477,10 @@ class brkd_cmap:
 
         if lrev:
             # reverse colormap:
-            my_cmap = __build_colormap__(M[::-1,:])
+            my_cmap = __build_colormap__(M[::-1,:], log_ctrl=log_ctrl)
         else:
-            my_cmap = __build_colormap__(M)
-             
+            my_cmap = __build_colormap__(M, log_ctrl=log_ctrl)
+
         return my_cmap
 
 #=======================================================================

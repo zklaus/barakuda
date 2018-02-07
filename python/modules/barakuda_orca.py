@@ -17,37 +17,55 @@ def get_basin_info( cf_bm ):
     return l_b_names, l_b_lgnms
 
 
-def lon_reorg_orca(ZZ, corca, ilon_ext):
+def lon_reorg_orca(ZZ, Xlong, ilon_ext=0, v_jx_jump_p=170., v_jx_jump_m=-170.):
     #
     #
     # IN:
     # ===
-    # ZZ       : array to  longitude, 3D, 2D field or 1D longitude vector
-    # corca    : ORCA conf
-    # ilon_ext : longitude extention in degrees
+    # ZZ       : 1D, 2D, or 3D array to treat
+    # Xlong    : 1D or 2D array containing the longitude, must be consistent with the shape of ZZ !
+    # ilon_ext : longitude extention of the map you want (in degrees)
     #
     # OUT:
     # ====
-    # ZZx     : re-organized array, the x dimension is now nx-2
+    # ZZx     : re-organized array, mind the possibility of modified x dimension !
     #
     import barakuda_tool as bt
     #
-    # jx_junc : ji when lon become positive!
-    if   corca[:5] == 'ORCA2':
-        jx_junc = 141
-    elif corca[:5] == 'ORCA1' and corca[5] != '2':
-        jx_junc = 288
-    elif corca[:6] == 'eORCA1' and corca[6] != '2':
-        jx_junc = 288
-    elif corca[:7] == 'ORCA025':
-        jx_junc = 1150
-    else:
-        print 'ERROR: lon_reorg_orca.barakuda_orca => '+corca+' not supported yet!'; sys.exit(0)
-
+    idim_lon = len(nmp.shape(Xlong))
+    if idim_lon not in [ 1 , 2 ]:
+        print 'util_orca.lon_reorg_orca: ERROR => longitude array "Xlong" must be 1D or 2D !'; sys.exit(0)
+    #
+    if idim_lon == 2: (nj,ni) = nmp.shape(Xlong)
+    if idim_lon == 1:      ni = len(Xlong)
+    #
+    vlon = nmp.zeros(ni)
+    #
+    if idim_lon == 2: vlon[:] = Xlong[nj/3,:]
+    if idim_lon == 1: vlon[:] = Xlong[:]
+    #
+    lfound_jx_jump = False
+    ji=0
+    while ( not lfound_jx_jump and ji < ni-1):
+        if vlon[ji] > v_jx_jump_p and vlon[ji+1] < v_jx_jump_m:
+            jx_jump = ji + 1
+            lfound_jx_jump = True
+        ji = ji + 1
+    print "  *** barakuda_orca.lon_reorg_orca >> Longitude jump at ji = ", jx_jump
+    #
+    lfound_jx_zero = False
+    ji=0
+    while ( not lfound_jx_zero and ji < ni-1):
+        if vlon[ji] < 0. and vlon[ji+1] > 0.:
+            jx_zero = ji + 1
+            lfound_jx_zero = True
+        ji = ji + 1
+    print "  *** barakuda_orca.lon_reorg_orca >> Longitude zero at ji = ", jx_zero
+    #
+    del vlon
+    
     jx_oo = 2  # orca longitude overlap...
-
     vdim = ZZ.shape
-
     ndim = len(vdim)
 
     if ndim < 1 or ndim > 4:
@@ -59,10 +77,10 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
         ZZx  = nmp.zeros((nr, nz, ny, nx0))
         ZZx_ext  = nmp.zeros((nr, nz, ny, (nx0+ilon_ext)))
         #
-        for jx in range(jx_junc,nx):
-            ZZx[:,:,:,jx-jx_junc] = ZZ[:,:,:,jx]
-        for jx in range(jx_oo,jx_junc):
-            ZZx[:,:,:,jx+(nx-jx_junc)-jx_oo] = ZZ[:,:,:,jx]
+        for jx in range(jx_zero,nx):
+            ZZx[:,:,:,jx-jx_zero] = ZZ[:,:,:,jx]
+        for jx in range(jx_oo,jx_zero):
+            ZZx[:,:,:,jx+(nx-jx_zero)-jx_oo] = ZZ[:,:,:,jx]
         #
         if ilon_ext == 0: ZZx_ext[:,:,:,:] = ZZx[:,:,:,:]
     #
@@ -75,10 +93,10 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
         ZZx  = nmp.zeros(nx0*ny*nz) ;  ZZx.shape = [nz, ny, nx0]
         ZZx_ext  = nmp.zeros((nx0+ilon_ext)*ny*nz) ;  ZZx_ext.shape = [nz, ny, (nx0+ilon_ext)]
         #
-        for jx in range(jx_junc,nx):
-            ZZx[:,:,jx-jx_junc] = ZZ[:,:,jx]
-        for jx in range(jx_oo,jx_junc):
-            ZZx[:,:,jx+(nx-jx_junc)-jx_oo] = ZZ[:,:,jx]
+        for jx in range(jx_zero,nx):
+            ZZx[:,:,jx-jx_zero] = ZZ[:,:,jx]
+        for jx in range(jx_oo,jx_zero):
+            ZZx[:,:,jx+(nx-jx_zero)-jx_oo] = ZZ[:,:,jx]
         #
         if ilon_ext == 0: ZZx_ext[:,:,:] = ZZx[:,:,:]
     #
@@ -91,10 +109,10 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
         ZZx  = nmp.zeros(nx0*ny) ;  ZZx.shape = [ny, nx0]
         ZZx_ext  = nmp.zeros((nx0+ilon_ext)*ny) ;  ZZx_ext.shape = [ny, (nx0+ilon_ext)]
         #
-        for jx in range(jx_junc,nx):
-            ZZx[:,jx-jx_junc] = ZZ[:,jx]
-        for jx in range(jx_oo,jx_junc):
-            ZZx[:,jx+(nx-jx_junc)-jx_oo] = ZZ[:,jx]
+        for jx in range(jx_zero,nx):
+            ZZx[:,jx-jx_zero] = ZZ[:,jx]
+        for jx in range(jx_oo,jx_zero):
+            ZZx[:,jx+(nx-jx_zero)-jx_oo] = ZZ[:,jx]
         #
         if ilon_ext == 0: ZZx_ext[:,:] = ZZx[:,:]
     #
@@ -107,14 +125,14 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
         ZZx  = nmp.zeros(nx0) ;  ZZx.shape = [nx0]
         ZZx_ext  = nmp.zeros(nx0+ilon_ext) ;  ZZx_ext.shape = [nx0+ilon_ext]
         #
-        for jx in range(jx_junc,nx):
-            ZZx[jx-jx_junc] = ZZ[jx]
-            #print jx-jx_junc, 'prend', jx, '    ', vlon[jx]
+        for jx in range(jx_zero,nx):
+            ZZx[jx-jx_zero] = ZZ[jx]
+            #print jx-jx_zero, 'prend', jx, '    ', vlon[jx]
             #
         #print ''
-        for jx in range(jx_oo,jx_junc):
-            ZZx[jx+(nx-jx_junc)-jx_oo] = ZZ[jx]
-            #print jx+(nx-jx_junc)-jx_oo, 'prend', jx, '    ', vlon[jx]
+        for jx in range(jx_oo,jx_zero):
+            ZZx[jx+(nx-jx_zero)-jx_oo] = ZZ[jx]
+            #print jx+(nx-jx_zero)-jx_oo, 'prend', jx, '    ', vlon[jx]
         #
         if ilon_ext == 0: ZZx_ext[:] = ZZx[:]
         #iwa = nmp.where(vlon0 < 0.) ; vlon0[iwa] = vlon0[iwa] + 360.
@@ -126,6 +144,10 @@ def lon_reorg_orca(ZZ, corca, ilon_ext):
     del ZZx
 
     return ZZx_ext
+
+
+
+
 
 
 

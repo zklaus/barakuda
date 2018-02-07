@@ -14,15 +14,15 @@ imean2d=0
 imean3d=0
 iSflx=0
 ienso=0
-imov=0
+imov=1
 issh=0
 ipsi=0
 iwind=0
-isfluxes=1
+isfluxes=0
 its=0
 imld=0
 irnf=0
-iice=1
+iice=0
 iemp=0
 icmip5=0
 ihov=0
@@ -66,6 +66,10 @@ export EXP="AMOC" ; NC=nc4 ; jyear=1990
 
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
+
+
+echo "${BARAKUDA_ROOT}/configs/config_${CONFIG}_${ARCH}.sh"
+
 
 . ${BARAKUDA_ROOT}/src/bash/bash_functions.bash
 . ${BARAKUDA_ROOT}/configs/config_${CONFIG}_${ARCH}.sh
