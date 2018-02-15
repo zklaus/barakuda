@@ -666,7 +666,7 @@ if idfig == 'ice':
     vlab_sum = [ 'Arctic (Sept.)'   , 'Antarctic (March)' ]
     vlab_win = [ 'Arctic (March)'   , 'Antarctic (Sept.)' ]
 
-    # montly sea-ice volume and extent, Arctic and Antarctic...
+    # montly sea-ice volume and area, Arctic and Antarctic...
     cf_in = 'seaice_diags.nc' ;  bt.chck4f(cf_in, script_name=csn)
     id_in = Dataset(cf_in)
     vtime = id_in.variables['time'][:]
@@ -687,29 +687,29 @@ if idfig == 'ice':
     vtime_y, FY = bt.monthly_2_annual(vtime[:], vvolu_n[:])
 
     # End local summer
-    Xplt[0,:] = varea_n[8::12] ; # extent Arctic september
-    Xplt[1,:] = varea_s[2::12] ; # extent Antarctic march
-    bp.plot("1d_multi")(vtime_y, Xplt, vlab_sum, cfignm='seaice_extent_summer_'+CONFEXP, dt=ittic,
-                        cyunit=cyua, ctitle = CONFEXP+': '+r'Sea-Ice extent, end of local summer',
+    Xplt[0,:] = varea_n[8::12] ; # area Arctic september
+    Xplt[1,:] = varea_s[2::12] ; # area Antarctic march
+    bp.plot("1d_multi")(vtime_y, Xplt, vlab_sum, cfignm='seaice_area_summer_'+CONFEXP, dt=ittic,
+                        cyunit=cyua, ctitle = CONFEXP+': '+r'Sea-ice area, end of local summer',
                         loc_legend='out', ymin=0., ymax=0., cfig_type=ff)
 
     Xplt[0,:] = vvolu_n[8::12] ; # volume Arctic september
     Xplt[1,:] = vvolu_s[2::12] ; # volume Antarctic march
     bp.plot("1d_multi")(vtime_y, Xplt, vlab_sum, cfignm='seaice_volume_summer_'+CONFEXP, dt=ittic,
-                        cyunit=cyuv, ctitle = CONFEXP+': '+r'Sea-Ice volume, end of local summer',
+                        cyunit=cyuv, ctitle = CONFEXP+': '+r'Sea-ice volume, end of local summer',
                         loc_legend='out', ymin=0., ymax=0., cfig_type=ff)
 
     # End of local winter
-    Xplt[0,:] = varea_n[2::12] ; # extent Arctic march
-    Xplt[1,:] = varea_s[8::12] ; # extent Antarctic september
-    bp.plot("1d_multi")(vtime_y, Xplt, vlab_win, cfignm='seaice_extent_winter_'+CONFEXP, dt=ittic,
-                        cyunit=cyua, ctitle = CONFEXP+': '+r'Sea-Ice extent, end of local winter',
+    Xplt[0,:] = varea_n[2::12] ; # area Arctic march
+    Xplt[1,:] = varea_s[8::12] ; # area Antarctic september
+    bp.plot("1d_multi")(vtime_y, Xplt, vlab_win, cfignm='seaice_area_winter_'+CONFEXP, dt=ittic,
+                        cyunit=cyua, ctitle = CONFEXP+': '+r'Sea-ice area, end of local winter',
                         loc_legend='out', ymin=0., ymax=0., cfig_type=ff)
 
     Xplt[0,:] = vvolu_n[2::12] ; # volume Arctic march
     Xplt[1,:] = vvolu_s[8::12] ; # volume Antarctic september
     bp.plot("1d_multi")(vtime_y, Xplt, vlab_win, cfignm='seaice_volume_winter_'+CONFEXP, dt=ittic,
-                        cyunit=cyuv, ctitle = CONFEXP+': '+r'Sea-Ice volume, end of local winter',
+                        cyunit=cyuv, ctitle = CONFEXP+': '+r'Sea-ice volume, end of local winter',
                         loc_legend='out', ymin=0., ymax=0., cfig_type=ff)
 
 

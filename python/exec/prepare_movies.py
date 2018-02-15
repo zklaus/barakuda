@@ -209,14 +209,14 @@ for jt in range(nt):
         bt.drown(Vnemo[jt,:,:], imask, k_ew=2, nb_max_inc=10, nb_smooth=10)
         # ICE north:
         cv = "icen"
-        bp.plot("nproj")('npol2', 0., 1., 0.1, xlon, xlat, Vnemo[jt,:,:],
-                         cfignm=path_fig+'/'+cv+'_'+cdate, cpal='ice', cbunit='(frac.)',
+        bp.plot("nproj")('npol2', 0., 100., 10., xlon, xlat, Vnemo[jt,:,:],
+                         cfignm=path_fig+'/'+cv+'_'+cdate, cpal='ice', cbunit='(%)',
                          ctitle='Ice concentration, '+CONFEXP+' ('+cdatet+')',
                          lkcont=True, cfig_type=fig_type, lforce_lim=True)
 
         cv = "ices"
-        bp.plot("nproj")('spstere', 0., 1., 0.1, xlon, xlat, Vnemo[jt,:,:],
-                         cfignm=path_fig+'/'+cv+'_'+cdate, cpal='ice', cbunit='(frac.)',
+        bp.plot("nproj")('spstere', 0., 100., 10., xlon, xlat, Vnemo[jt,:,:],
+                         cfignm=path_fig+'/'+cv+'_'+cdate, cpal='ice', cbunit='(%)',
                          ctitle='Ice concentration, '+CONFEXP+' ('+cdatet+')',
                          lkcont=True, cfig_type=fig_type, lforce_lim=True)
 

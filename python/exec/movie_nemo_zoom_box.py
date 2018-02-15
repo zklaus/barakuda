@@ -73,8 +73,8 @@ nyr = int(1./rfact_zoom*ny_res)
 fig_type='png'
 
 narg = len(sys.argv)
-if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file>'; sys.exit(0)
-cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3]
+if narg < 5: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file> <month>'; sys.exit(0)
+cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3] ; cmn=sys.argv[4]
 
 # Ice:
 if l_do_ice:
@@ -159,11 +159,16 @@ for jt in range(jt0,Nt):
 
     ch = '%2.2i'%((jt+1)%24)
     cd = '%3.3i'%(1+(jt+1)/24)
-
-    ct = str(datetime.datetime.strptime(str(year_ref_ini)+' '+cd+' '+ch, '%Y %j %H'))    
+    
+    ct = str(datetime.datetime.strptime(str(year_ref_ini)+'-'+cmn+'-'+cd+' '+ch, '%Y-%m-%j %H'))
+    #print ' cmn = ', cmn
     #print ' ct = ', ct
+    ct=ct[:5]+cmn+ct[7:] #lolo bug !!! need to do that to get the month and not "01"
+    print ' ct = ', ct
     cday  = ct[:10]   ; print ' *** cday  :', cday
     chour = ct[11:13] ; print ' *** chour :', chour
+
+
 
     cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_'+cday+'_'+chour+'.'+fig_type    
 
@@ -240,10 +245,12 @@ for jt in range(jt0,Nt):
     del cf
 
 
-    x_annot = nxr-nxr*0.22*rfact_zoom**0.2
-    y_annot = 95
-    ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_annot,    150), **cfont_date)
-    ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_annot+200, 50), **cfont_mail)
+    #x_annot = nxr-nxr*0.22*rfact_zoom**0.2 ; y_annot = 150
+    x_annot = 650 ; y_annot = 1035
+
+    ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_annot,    y_annot), **cfont_date)
+
+    ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_annot+150, 20), **cfont_mail)
 
     ax.annotate('NATL60', xy=(1, 4), xytext=(int(0.025*nxr), int(0.7*nyr)), **cfont_titl)
 
