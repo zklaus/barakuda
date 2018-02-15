@@ -1428,9 +1428,10 @@ class plot :
 
 
     #
-    def __pow_spectrum_ssh(self, vk, vps1, cfig_name='fig_spectrum_SSH.png', clab1=None, cinfo='', \
+    def __pow_spectrum_ssh(self, vk1, vps1, cfig_name='fig_spectrum_SSH.png', clab1=None, cinfo='', \
                            L_min=7., L_max=5000., P_min_y=-6, P_max_y=6,    \
-                           vps2=[], clab2=None):
+                           vk2=[], vps2=[], clab2=None, \
+                           vk3=[], vps3=[], clab3=None):
         #------------------------------------------------------------------
         ## L_min=7. ; L_max : min and max wave-length for x-axis (km)
         #------------------------------------------------------------------
@@ -1450,9 +1451,11 @@ class plot :
         #
         fig = plt.figure(num = 1, figsize=(9.,8.), facecolor='w', edgecolor='k')
         ax = plt.axes([0.08, 0.07, 0.89, 0.86])
-        plt.plot(nmp.log10(vk), nmp.log10(vps1), '-', color=b_blu, linewidth=3, label=clab1, zorder=10)
-        if len(vps2) > 1:
-            plt.plot(nmp.log10(vk), nmp.log10(vps2), '-', color=b_org,           linewidth=3, label=clab2, zorder=15)
+        plt.plot(nmp.log10(vk1), nmp.log10(vps1), '-', color=b_blu, linewidth=3, label=clab1, zorder=10)
+        if len(vk2) > 1 and len(vps2) > 1:
+            plt.plot(nmp.log10(vk2), nmp.log10(vps2), '-', color=b_org, linewidth=3, label=clab2, zorder=15)
+        if len(vk3) > 1 and len(vps3) > 1:
+            plt.plot(nmp.log10(vk3), nmp.log10(vps3), '-', color=b_gre, linewidth=3, label=clab3, zorder=15)
         #
         # Bottom X-axis:
         ax.set_xlim(nmp.log10(k_min), nmp.log10(k_max))
