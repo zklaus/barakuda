@@ -1423,14 +1423,73 @@ class plot :
         plt.savefig(cfignm+'.'+cfig_type, dpi=100, facecolor='w', edgecolor='w', orientation='portrait', transparent=False)
         plt.close(1)
 
-        def __del__(self) :
-
+        def __del__(self) :        
             plot.__counter -=  1
 
 
+    #
+    def __pow_spectrum_ssh(self, vk, vps1, cfig_name='fig_spectrum_SSH.png', clab1=None, cinfo='', \
+                           L_min=7., L_max=5000., P_min_y=-6, P_max_y=6,    \
+                           vps2=[], clab2=None):
+        #------------------------------------------------------------------
+        ## L_min=7. ; L_max : min and max wave-length for x-axis (km)
+        #------------------------------------------------------------------
+        #
+        r2Pi = 2.*nmp.pi
+        #
+        font_ttl, font_xylb, font_clb = __font_unity__()
+        #
+        # x-axis (lambda):
+        k_min = r2Pi/L_max ; k_max = r2Pi/L_min
+        xdef_l = nmp.asarray([ 4000., 2500., 1500., 1000., 700., 500., 300., 200., 150., 100., 70., 50., 40., 25., 15., 10., 7. ])
+        (idx1,) = nmp.where(xdef_l>L_max) ; (idx2,) = nmp.where(xdef_l<L_min)
+        xtcks_l = nmp.delete(xdef_l,nmp.concatenate((idx1,idx2)))
+        cxtcks_l = []
+        for rr in xtcks_l: cxtcks_l.append(str(int(rr)))
+        xtcks_k  = r2Pi/xtcks_l
+        #
+        fig = plt.figure(num = 1, figsize=(9.,8.), facecolor='w', edgecolor='k')
+        ax = plt.axes([0.08, 0.07, 0.89, 0.86])
+        plt.plot(nmp.log10(vk), nmp.log10(vps1), '-', color=b_blu, linewidth=3, label=clab1, zorder=10)
+        if len(vps2) > 1:
+            plt.plot(nmp.log10(vk), nmp.log10(vps2), '-', color=b_org,           linewidth=3, label=clab2, zorder=15)
+        #
+        # Bottom X-axis:
+        ax.set_xlim(nmp.log10(k_min), nmp.log10(k_max))
+        plt.xticks( nmp.log10(xtcks_k), cxtcks_l)
+        ax.grid(color='k', linestyle='-', linewidth=0.2)
+        plt.xlabel('Wave-length [km]')
+        #
+        # Y-axis:
+        ax.set_ylim(P_min_y,P_max_y)
+        cytcks = []
+        for ii in range(P_min_y,P_max_y+1): cytcks.append(r'$\mathregular{10^{'+str(ii)+'}}$')
+        plt.yticks( nmp.arange(P_min_y,P_max_y+1,1) , nmp.asarray(cytcks))
+        plt.ylabel(r'PSD [$\mathregular{m^2}$/(cy/km)]', color='0.3')
+        #
+        if clab1 != None: plt.legend(loc='best')
+        #
+        # Top X-axis:
+        ax2 = ax.twiny()
+        P_max_x = -1 ; P_min_x = -2
+        ax2.set_xlim(nmp.log10(k_min), nmp.log10(k_max))
+        cxtcks_k = []
+        for ii in range(P_min_x,P_max_x+1): cxtcks_k.append(r'$\mathregular{10^{'+str(ii)+'}}$')
+        plt.xticks( nmp.arange(P_min_x,P_max_x+1,1) , nmp.asarray(cxtcks_k))
+        ax2.grid(color='0.3', linestyle='--', linewidth=0.2)
+        [t.set_color('0.3') for t in ax2.xaxis.get_ticklabels()]
+        plt.xlabel('Wave-number [cy/km]', color='0.3')
+        #
+        if cinfo != '': ax2.annotate(cinfo, xy=(0.1, 0.1), xycoords='axes fraction',  bbox={'facecolor':'0.8', 'alpha':1., 'pad':10}, zorder=100, **font_ttl)
+        plt.savefig(cfig_name, dpi=120, facecolor='w', edgecolor='w', orientation='portrait')
+        plt.close(1)
+        return 0
+    
 
 
-
+    
+    
+    
 # LOCAL functions
 # ===============
 
