@@ -1436,7 +1436,8 @@ class plot :
         ## L_min=7. ; L_max : min and max wave-length for x-axis (km)
         #------------------------------------------------------------------
         #
-        r2Pi = 2.*nmp.pi
+        # r2Pi = 2.*nmp.pi # k is in rad/[space unit]
+        r2Pi = 1. # k is in cycle/[space unit]
         #
         font_ttl, font_xylb, font_clb = __font_unity__()
         #
