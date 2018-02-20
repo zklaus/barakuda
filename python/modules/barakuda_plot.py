@@ -1442,7 +1442,7 @@ class plot :
         #
         # x-axis (lambda):
         k_min = r2Pi/L_max ; k_max = r2Pi/L_min
-        xdef_l = nmp.asarray([ 4000., 2500., 1500., 1000., 700., 500., 300., 200., 150., 100., 70., 50., 40., 25., 15., 10., 7. ])
+        xdef_l = nmp.asarray([ 4000., 2500., 1500., 1000., 700., 500., 300., 200., 150., 100., 70., 50., 40., 25., 15., 10., 7., 5., 3., 2. ])
         (idx1,) = nmp.where(xdef_l>L_max) ; (idx2,) = nmp.where(xdef_l<L_min)
         xtcks_l = nmp.delete(xdef_l,nmp.concatenate((idx1,idx2)))
         cxtcks_l = []
@@ -1458,8 +1458,8 @@ class plot :
             plt.plot(nmp.log10(vk3), nmp.log10(vps3), '-', color=b_gre, linewidth=3, label=clab3, zorder=15)
         #
         # Bottom X-axis:
-        ax.set_xlim(nmp.log10(k_min), nmp.log10(k_max))
         plt.xticks( nmp.log10(xtcks_k), cxtcks_l)
+        ax.set_xlim(nmp.log10(k_min), nmp.log10(k_max))
         ax.grid(color='k', linestyle='-', linewidth=0.2)
         plt.xlabel('Wave-length [km]')
         #
@@ -1474,11 +1474,11 @@ class plot :
         #
         # Top X-axis:
         ax2 = ax.twiny()
-        P_max_x = -1 ; P_min_x = -2
-        ax2.set_xlim(nmp.log10(k_min), nmp.log10(k_max))
+        P_max_x = 1 ; P_min_x = -4
         cxtcks_k = []
         for ii in range(P_min_x,P_max_x+1): cxtcks_k.append(r'$\mathregular{10^{'+str(ii)+'}}$')
         plt.xticks( nmp.arange(P_min_x,P_max_x+1,1) , nmp.asarray(cxtcks_k))
+        ax2.set_xlim(nmp.log10(k_min), nmp.log10(k_max))
         ax2.grid(color='0.3', linestyle='--', linewidth=0.2)
         [t.set_color('0.3') for t in ax2.xaxis.get_ticklabels()]
         plt.xlabel('Wave-number [cy/km]', color='0.3')

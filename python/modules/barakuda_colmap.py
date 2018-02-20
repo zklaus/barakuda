@@ -188,8 +188,8 @@ class brkd_cmap:
 
         elif cname == 'land_dark':
             M = nmp.array( [
-                [ 0.5 , 0.5, 0.5 ],
-                [ 0.5 , 0.5, 0.5 ]
+                [ 0.35 , 0.35, 0.35 ],
+                [ 0.35 , 0.35, 0.35 ]
             ] )
 
         elif cname == 'terre':
