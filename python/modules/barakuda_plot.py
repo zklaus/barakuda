@@ -1431,7 +1431,8 @@ class plot :
     def __pow_spectrum_ssh(self, vk1, vps1, cfig_name='fig_spectrum_SSH.png', clab1=None, cinfo='', \
                            L_min=7., L_max=5000., P_min_y=-6, P_max_y=6,    \
                            vk2=[], vps2=[], clab2=None, \
-                           vk3=[], vps3=[], clab3=None):
+                           vk3=[], vps3=[], clab3=None, \
+                           vk4=[], vps4=[], clab4=None):
         #------------------------------------------------------------------
         ## L_min=7. ; L_max : min and max wave-length for x-axis (km)
         #------------------------------------------------------------------
@@ -1457,6 +1458,8 @@ class plot :
             plt.plot(nmp.log10(vk2), nmp.log10(vps2), '-', color=b_org, linewidth=3, label=clab2, zorder=15)
         if len(vk3) > 1 and len(vps3) > 1:
             plt.plot(nmp.log10(vk3), nmp.log10(vps3), '-', color=b_gre, linewidth=3, label=clab3, zorder=15)
+        if len(vk4) > 1 and len(vps4) > 1:
+            plt.plot(nmp.log10(vk4), nmp.log10(vps4), '--', color='k', linewidth=3, label=clab4, zorder=15)
         #
         # Bottom X-axis:
         plt.xticks( nmp.log10(xtcks_k), cxtcks_l)
