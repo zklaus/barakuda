@@ -1472,7 +1472,7 @@ class plot :
         cytcks = []
         for ii in range(P_min_y,P_max_y+1): cytcks.append(r'$\mathregular{10^{'+str(ii)+'}}$')
         plt.yticks( nmp.arange(P_min_y,P_max_y+1,1) , nmp.asarray(cytcks))
-        plt.ylabel(r'PSD [$\mathregular{m^2}$/(cy/km)]', color='0.3')
+        plt.ylabel(r'SSH PSD [$\mathregular{m^2}$/(cy/km)]', color='0.3')
         #
         if clab1 != None: plt.legend(loc='best')
         #
