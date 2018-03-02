@@ -34,7 +34,7 @@ AXES_DEF     = [0.09, 0.082, 0.89, 0.84]
 # Colors for line:    (https://www.daftlogic.com/projects-hex-colour-tester.htm)
 b_blu = '#2C558A'
 b_red = '#AD0000'
-b_gre = '#3A783E' ; # b_gre = '#42BD82'
+b_gre = '#3DE079'   ; #b_gre = '#3A783E' ; # b_gre = '#42BD82'
 b_prp = '#8C008C'
 b_org = '#ED7C4C'
 
@@ -108,7 +108,7 @@ class plot :
 
         import barakuda_colmap as bcm
 
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF)
 
         zVZ = __prepare_z_log_axis__(l_zlog, VZ)
 
@@ -187,7 +187,7 @@ class plot :
         import barakuda_colmap as bcm
 
 
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF)
 
         i_lat_lon = 1
         if len(VX) == 1 or len(VY) == 1: i_lat_lon = 0 ; # no long. and lat. provided !
@@ -321,7 +321,7 @@ class plot :
         import barakuda_tool   as bt
         import barakuda_colmap as bcm
 
-        font_ttl, font_xylb, font_clb = __font_unity__()
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__()
 
 
         # Don't want to modify XF array, working with XFtmp:
@@ -444,7 +444,7 @@ class plot :
             XF = nmp.ma.masked_where(XMSK == 0, XF)
 
 
-        font_ttl, font_xylb, font_clb = __font_unity__()
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__()
 
 
         # FIGURE
@@ -515,7 +515,7 @@ class plot :
                 czunit='', ctitle='', lab='', lab1='', lab2='', lab3='', box_legend=(0.6, 0.75),
                 loc_legend='lower center', fig_size=FIG_SIZE_DEF):
 
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF)
 
         ny = len(VYn)
         if len(VZn) != ny: print 'ERROR: plot_zonal.barakuda_plot => VYn and VZn do not agree in size'; sys.exit(0)
@@ -585,7 +585,7 @@ class plot :
         from mpl_toolkits.basemap import shiftgrid
         import barakuda_colmap as bcm
 
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=dpi_fig)
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=dpi_fig)
 
         # For projections :
         vp = __give_proj__(czone) ; # projection information
@@ -731,7 +731,7 @@ class plot :
 
 
 
-        font_ttl, font_xylb, font_clb = __font_unity__()
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__()
 
 
         if lforce_lim: __force_min_and_max__(rmin, rmax, XF1)
@@ -825,7 +825,7 @@ class plot :
             import matplotlib.colors as colors   # colmap and co.
             import barakuda_colmap as bcm
     
-            font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+            font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF)
     
             fig = plt.figure(num = 1, figsize=(WDTH_DEF , RAT_XY*6.), dpi=None, facecolor='w', edgecolor='k') ; #trsp_sig_class
             ax = plt.axes([0.075,  -0.025, 0.9, 0.98], axisbg = 'w')
@@ -886,7 +886,7 @@ class plot :
 
         if lforce_lim: __force_min_and_max__(rmin, rmax, XF)
         # 
-        font_ttl, font_xylb, font_clb = __font_unity__()
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__()
 
 
         fig = plt.figure(num = 1, figsize=fig_size, dpi=None, facecolor='w', edgecolor='k')
@@ -936,7 +936,7 @@ class plot :
 
         import barakuda_colmap as bcm
 
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF)
 
         if c_y_is == 'depth':
             zVY = __prepare_z_log_axis__(l_ylog, VY)
@@ -993,7 +993,7 @@ class plot :
         # has already been smoothed and detrended
         #--------------------------------------------------------------------------------------
 
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF)
 
         Nt = len(VT)
         if len(VF) != Nt: print 'ERROR: oscillation_index.barakuda_plot => VT and VF do not agree in size'; sys.exit(0)
@@ -1040,7 +1040,7 @@ class plot :
         # plt_m03 => plot march values on top in green
         # plt_m09 => plot september values on top in green
 
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF)
 
         Nt1 = len(VTm) ; Nt2 = len(VTy)
 
@@ -1124,9 +1124,9 @@ class plot :
 
         # lzonal => zonally averaged curves...
         if lzonal:
-            font_ttl, font_big_fixed, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF, size='big')
+            font_ttl, font_big_fixed, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF, size='big')
         else:
-            font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+            font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF)
 
         # Number of lines to plot:
         [ nb_plt, nbt ] = XD.shape
@@ -1223,7 +1223,7 @@ class plot :
                 loc_legend='lower center', line_styles='-', fig_size=FIG_SIZE_DEF,
                 l_tranparent_bg=False, cxunit='', lmask=True):
 
-        font_ttl, font_xylb, font_clb = __font_unity__(fig_dpi=DPI_DEF)
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=DPI_DEF)
 
         # Number of lines to plot:
         nbt = len(VF)
@@ -1296,7 +1296,7 @@ class plot :
             l_do_ci95 = True
             l_do_ci95m = True
 
-        font_ttl, font_xylb, font_clb = __font_unity__()
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__()
 
 
         print "avant:", rmin_amp, rmax_amp
@@ -1440,7 +1440,7 @@ class plot :
         # r2Pi = 2.*nmp.pi # k is in rad/[space unit]
         r2Pi = 1. # k is in cycle/[space unit]
         #
-        font_ttl, font_xylb, font_clb = __font_unity__()
+        font_ttl, font_xylb, font_clb, font_inf = __font_unity__(fig_dpi=80)
         #
         # x-axis (lambda):
         k_min = r2Pi/L_max ; k_max = r2Pi/L_min
@@ -1452,7 +1452,7 @@ class plot :
         xtcks_k  = r2Pi/xtcks_l
         #
         fig = plt.figure(num = 1, figsize=(9.,8.), facecolor='w', edgecolor='k')
-        ax = plt.axes([0.08, 0.07, 0.89, 0.86])
+        ax = plt.axes([0.09, 0.07, 0.89, 0.86])
         plt.plot(nmp.log10(vk1), nmp.log10(vps1), '-', color=b_blu, linewidth=3, label=clab1, zorder=10)
         if len(vk2) > 1 and len(vps2) > 1:
             plt.plot(nmp.log10(vk2), nmp.log10(vps2), '-', color=b_org, linewidth=3, label=clab2, zorder=15)
@@ -1487,7 +1487,8 @@ class plot :
         [t.set_color('0.3') for t in ax2.xaxis.get_ticklabels()]
         plt.xlabel('Wave-number [cy/km]', color='0.3')
         #
-        if cinfo != '': ax2.annotate(cinfo, xy=(0.1, 0.1), xycoords='axes fraction',  bbox={'facecolor':'0.8', 'alpha':1., 'pad':10}, zorder=100, **font_ttl)
+        if cinfo != '': ax2.annotate(cinfo, xy=(0.1, 0.1), xycoords='axes fraction',  bbox={'facecolor':'0.8', 'alpha':1., 'pad':10}, zorder=100, **font_inf)
+        #
         plt.savefig(cfig_name, dpi=120, facecolor='w', edgecolor='w', orientation='portrait')
         plt.close(1)
         return 0
@@ -1610,11 +1611,12 @@ def __font_unity__(fig_dpi=100., size='normal'):
 
     mpl.rcParams.update(params)
 
-    title_fonts    = { 'fontname':'Trebuchet MS', 'fontweight':'normal', 'fontsize':int(15.*rat) }
-    label_fonts    = { 'fontname':'Arial'       , 'fontweight':'normal', 'fontsize':int(14.*rat) }
-    colorbar_fonts = { 'fontname':'Arial'       , 'fontweight':'normal', 'fontsize':int(13.*rat) }
+    title_fonts    = { 'fontname':'Trebuchet MS'  , 'fontweight':'normal', 'fontsize':int(15.*rat) }
+    label_fonts    = { 'fontname':'Trebuchet MS'  , 'fontweight':'normal', 'fontsize':int(14.*rat) }
+    colorbar_fonts = { 'fontname':'Trebuchet MS'  , 'fontweight':'normal', 'fontsize':int(13.*rat) }
+    info_fonts     = { 'fontname':'Ubuntu Mono'   , 'fontweight':'normal', 'fontsize':int(12.*rat) }
 
-    return title_fonts, label_fonts, colorbar_fonts
+    return title_fonts, label_fonts, colorbar_fonts, info_fonts
 
 
 
