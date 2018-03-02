@@ -1483,7 +1483,7 @@ class plot :
         for ii in range(P_min_x,P_max_x+1): cxtcks_k.append(r'$\mathregular{10^{'+str(ii)+'}}$')
         plt.xticks( nmp.arange(P_min_x,P_max_x+1,1) , nmp.asarray(cxtcks_k))
         ax2.set_xlim(nmp.log10(k_min), nmp.log10(k_max))
-        ax2.grid(color='0.3', linestyle='--', linewidth=0.2)
+        #ax2.grid(color='0.3', linestyle='--', linewidth=0.2)
         [t.set_color('0.3') for t in ax2.xaxis.get_ticklabels()]
         plt.xlabel('Wave-number [cy/km]', color='0.3')
         #
