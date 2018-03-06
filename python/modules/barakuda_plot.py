@@ -1,3 +1,5 @@
+# -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
+#
 ########################################################################
 #
 #   B a r a K u d a
@@ -20,6 +22,8 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 # Some defaults:
 #WDTH_DEF     = 10.
@@ -37,6 +41,8 @@ b_red = '#AD0000'
 b_gre = '#3DE079'   ; #b_gre = '#3A783E' ; # b_gre = '#42BD82'
 b_prp = '#8C008C'
 b_org = '#ED7C4C'
+clr_inf_box='0.9'
+
 
 v_dflt_colors = [b_blu, b_red, b_gre, b_org, b_prp, 'pink', '0.5', 'b', 'g', 'brown', 'orange',
                  '0.25','0.75','k' ]
@@ -1444,22 +1450,22 @@ class plot :
         #
         # x-axis (lambda):
         k_min = r2Pi/L_max ; k_max = r2Pi/L_min
-        xdef_l = nmp.asarray([ 4000., 2500., 1500., 1000., 700., 500., 300., 200., 150., 100., 70., 50., 40., 25., 15., 10., 7., 5., 3., 2. ])
+        xdef_l = nmp.asarray([ 4000., 2500., 1500., 1000., 700., 500., 300., 200., 150., 100., 70., 50., 40., 25., 15., 10., 7., 5., 4., 3., 2. ])
         (idx1,) = nmp.where(xdef_l>L_max) ; (idx2,) = nmp.where(xdef_l<L_min)
         xtcks_l = nmp.delete(xdef_l,nmp.concatenate((idx1,idx2)))
         cxtcks_l = []
         for rr in xtcks_l: cxtcks_l.append(str(int(rr)))
         xtcks_k  = r2Pi/xtcks_l
         #
-        fig = plt.figure(num = 1, figsize=(9.,8.), facecolor='w', edgecolor='k')
-        ax = plt.axes([0.09, 0.07, 0.89, 0.86])
-        plt.plot(nmp.log10(vk1), nmp.log10(vps1), '-', color=b_blu, linewidth=3, label=clab1, zorder=10)
+        fig = plt.figure(num = 1, figsize=(9.,9.), facecolor='w', edgecolor='k')
+        ax = plt.axes([0.1, 0.07, 0.89, 0.86])
+        plt.plot(nmp.log10(vk1), nmp.log10(vps1), '-', color=b_blu, linewidth=4, label=clab1, zorder=10)
         if len(vk2) > 1 and len(vps2) > 1:
             plt.plot(nmp.log10(vk2), nmp.log10(vps2), '-', color=b_org, linewidth=3, label=clab2, zorder=15)
         if len(vk3) > 1 and len(vps3) > 1:
-            plt.plot(nmp.log10(vk3), nmp.log10(vps3), '-', color=b_gre, linewidth=3, label=clab3, zorder=15)
+            plt.plot(nmp.log10(vk3), nmp.log10(vps3), '-', color=b_gre, linewidth=6, label=clab3, zorder=5)
         if len(vk4) > 1 and len(vps4) > 1:
-            plt.plot(nmp.log10(vk4), nmp.log10(vps4), '--', color='k', linewidth=3, label=clab4, zorder=15)
+            plt.plot(nmp.log10(vk4), nmp.log10(vps4), '--', color='k', linewidth=3, label=clab4, zorder=2)
         #
         # Bottom X-axis:
         plt.xticks( nmp.log10(xtcks_k), cxtcks_l)
@@ -1487,7 +1493,10 @@ class plot :
         [t.set_color('0.3') for t in ax2.xaxis.get_ticklabels()]
         plt.xlabel('Wave-number [cy/km]', color='0.3')
         #
-        if cinfo != '': ax2.annotate(cinfo, xy=(0.1, 0.1), xycoords='axes fraction',  bbox={'facecolor':'0.8', 'alpha':1., 'pad':10}, zorder=100, **font_inf)
+        if cinfo != '': ax2.annotate(cinfo, xy=(0.1, 0.1), xycoords='axes fraction',  bbox={'facecolor':clr_inf_box, 'alpha':1., 'pad':10}, zorder=100, **font_inf)
+        #
+        fon = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':10 }
+        ax2.annotate('© Ocean Next, 2018', xy=(0.84, -0.06), xycoords='axes fraction', color='0.5', zorder=100, **fon)
         #
         plt.savefig(cfig_name, dpi=120, facecolor='w', edgecolor='w', orientation='portrait')
         plt.close(1)
