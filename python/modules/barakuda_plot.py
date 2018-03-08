@@ -1433,9 +1433,10 @@ class plot :
             plot.__counter -=  1
 
 
-    #
-    def __pow_spectrum_ssh(self, vk1, vps1, cfig_name='fig_spectrum_SSH.png', clab1=None, cinfo='', \
+            #
+    def __pow_spectrum_ssh(self, vk1, vps1, cfig_name='fig_spectrum_SSH.png', clab1=None, cinfo='', logo_on=True, \
                            L_min=7., L_max=5000., P_min_y=-6, P_max_y=6,    \
+                           l_show_k11o3=False, l_show_k5=False, l_show_k4=False, l_show_k2=False, \
                            vk2=[], vps2=[], clab2=None, \
                            vk3=[], vps3=[], clab3=None, \
                            vk4=[], vps4=[], clab4=None):
@@ -1456,17 +1457,29 @@ class plot :
         cxtcks_l = []
         for rr in xtcks_l: cxtcks_l.append(str(int(rr)))
         xtcks_k  = r2Pi/xtcks_l
-        #
+
         fig = plt.figure(num = 1, figsize=(9.,9.), facecolor='w', edgecolor='k')
         ax = plt.axes([0.1, 0.07, 0.89, 0.86])
-        plt.plot(nmp.log10(vk1), nmp.log10(vps1), '-', color=b_blu, linewidth=4, label=clab1, zorder=10)
+
+        if len(vk3) > 1 and len(vps3) > 1:
+            plt.plot(nmp.log10(vk3), nmp.log10(vps3), '-', color=b_blu, linewidth=4, label=clab3, zorder=10)
         if len(vk2) > 1 and len(vps2) > 1:
             plt.plot(nmp.log10(vk2), nmp.log10(vps2), '-', color=b_org, linewidth=3, label=clab2, zorder=15)
-        if len(vk3) > 1 and len(vps3) > 1:
-            plt.plot(nmp.log10(vk3), nmp.log10(vps3), '-', color=b_gre, linewidth=6, label=clab3, zorder=5)
         if len(vk4) > 1 and len(vps4) > 1:
-            plt.plot(nmp.log10(vk4), nmp.log10(vps4), '--', color='k', linewidth=3, label=clab4, zorder=2)
-        #
+            plt.plot(nmp.log10(vk4), nmp.log10(vps4), '-', color='0.5', linewidth=3, label=clab4, zorder=4)
+
+        plt.plot(nmp.log10(vk1), nmp.log10(vps1), '-', color=b_gre, linewidth=6, label=clab1, zorder=5)
+
+        nl = len(vk1)
+        if l_show_k2:
+            plt.plot(nmp.log10(vk1[4:nl-0.4*nl]), nmp.log10((vk1[4:nl-0.4*nl]**-2.)/1.E7), '--', color='k', linewidth=2, label=r'k$^\mathregular{-2}$', zorder=2)
+        if l_show_k4:
+            plt.plot(nmp.log10(vk1[4:nl-0.4*nl]), nmp.log10((vk1[4:nl-0.4*nl]**-4.)/3.E8), '-', color='0.6', linewidth=2, label=r'k$^\mathregular{-4}$', zorder=1)
+        if l_show_k5:
+            plt.plot(nmp.log10(vk1[4:nl-0.4*nl]), nmp.log10((vk1[4:nl-0.4*nl]**-5.)/2.E10), '--', color='0.6', linewidth=2, label=r'k$^\mathregular{-5}$', zorder=2)
+        if l_show_k11o3:
+            plt.plot(nmp.log10(vk1[4:nl-0.4*nl]), nmp.log10((vk1[4:nl-0.4*nl]**(-11./3.))/1.E9), '-.', color='0.6', linewidth=2, label=r'k$^\mathregular{-11/3}$', zorder=2)
+            
         # Bottom X-axis:
         plt.xticks( nmp.log10(xtcks_k), cxtcks_l)
         ax.set_xlim(nmp.log10(k_min), nmp.log10(k_max))
@@ -1480,7 +1493,7 @@ class plot :
         plt.yticks( nmp.arange(P_min_y,P_max_y+1,1) , nmp.asarray(cytcks))
         plt.ylabel(r'SSH PSD [$\mathregular{m^2}$/(cy/km)]', color='k')
         #
-        if clab1 != None: plt.legend(loc='best')
+        if clab1 != None: plt.legend(loc='best', shadow=True, fancybox=True) ; #lulu
         #
         # Top X-axis:
         ax2 = ax.twiny()
@@ -1493,10 +1506,11 @@ class plot :
         [t.set_color('0.3') for t in ax2.xaxis.get_ticklabels()]
         plt.xlabel('Wave-number [cy/km]', color='0.3')
         #
-        if cinfo != '': ax2.annotate(cinfo, xy=(0.1, 0.1), xycoords='axes fraction',  bbox={'facecolor':clr_inf_box, 'alpha':1., 'pad':10}, zorder=100, **font_inf)
+        if cinfo != '': ax2.annotate(cinfo, xy=(0.08, 0.08), xycoords='axes fraction',  bbox={'facecolor':clr_inf_box, 'alpha':1., 'pad':10}, zorder=100, **font_inf)
         #
-        fon = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':10 }
-        ax2.annotate('© Ocean Next, 2018', xy=(0.84, -0.06), xycoords='axes fraction', color='0.5', zorder=100, **fon)
+        if logo_on:
+            fon = { 'fontname':'Arial', 'fontweight':'normal', 'fontsize':10 }
+            ax2.annotate('© Ocean Next, 2018', xy=(0.84, -0.06), xycoords='axes fraction', color='0.5', zorder=100, **fon)
         #
         plt.savefig(cfig_name, dpi=120, facecolor='w', edgecolor='w', orientation='portrait')
         plt.close(1)
@@ -1623,7 +1637,7 @@ def __font_unity__(fig_dpi=100., size='normal'):
     title_fonts    = { 'fontname':'Trebuchet MS'  , 'fontweight':'normal', 'fontsize':int(15.*rat) }
     label_fonts    = { 'fontname':'Trebuchet MS'  , 'fontweight':'normal', 'fontsize':int(14.*rat) }
     colorbar_fonts = { 'fontname':'Trebuchet MS'  , 'fontweight':'normal', 'fontsize':int(13.*rat) }
-    info_fonts     = { 'fontname':'Ubuntu Mono'   , 'fontweight':'normal', 'fontsize':int(12.*rat) }
+    info_fonts     = { 'fontname':'Ubuntu Mono'   , 'fontweight':'normal', 'fontsize':int(13.*rat) }
 
     return title_fonts, label_fonts, colorbar_fonts, info_fonts
 
@@ -1927,6 +1941,6 @@ def __fancy_legend__(ax_hndl, plt_hndl, loc_leg='0', ylg=0, leg_out=False, ncol=
             # Shrink Y axis's height by % on the bottom
             box = ax_hndl.get_position()
             ax_hndl.set_position([box.x0, box.y0 + box.height*ylg, box.width, box.height*(1.-ylg)])
-            plt_hndl.legend(bbox_to_anchor=(0.95, -0.075), ncol=ncol, shadow=True, fancybox=True) ; #lolo
+            plt_hndl.legend(bbox_to_anchor=(0.95, -0.075), ncol=ncol, shadow=True, fancybox=True)
         else:
             plt_hndl.legend(loc=loc_leg, ncol=ncol, shadow=True, fancybox=True)
