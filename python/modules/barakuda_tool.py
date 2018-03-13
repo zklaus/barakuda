@@ -134,7 +134,7 @@ def monthly_2_annual(vtm, XDm):
 
     nby = nbm/12
     vty = nmp.zeros(nby)
-    XDy = nmp.zeros(nbcol*nby) ; XDy.shape = [nbcol,nby]
+    XDy = nmp.zeros((nbcol,nby))
 
     #print 'DEBUG: monthly_2_annual.barakuda_tool.py => nbm, nby, nbcol:', nbm, nby, nbcol
 
@@ -231,7 +231,7 @@ def read_ascii_column(cfile, ivcol2read):
     nbl = jl
     #print 'number of lines = ', nbl ; sys.exit
     #
-    Xout  = nmp.zeros(nbcol*nbl) ; Xout.shape = [nbcol,nbl]
+    Xout  = nmp.zeros((nbcol,nbl))
     #
     jl = -1
     for ll in cread_lines:
@@ -331,30 +331,30 @@ def find_index_from_value( val, VX ):
 
 
 def drown(X, mask, k_ew=-1, nb_max_inc=5, nb_smooth=5):
-    #
-    #
-    ##############################################################################
-    #
-    #  PURPOSE : fill continental areas of field X (defined by mask=0)
-    #  -------   using nearest surrounding sea points (defined by mask=1)
-    #            field X is absoluletly unchanged on mask=1 points
-    #
-    #  k_ew :  east-west periodicity on the input file/grid
-    #          k_ew = -1  --> no periodicity
-    #          k_ew >= 0  --> periodicity with overlap of k_ew points
-    #
-    #  X    :  treated array                             (2D array)
-    #  mask :  land-sea mask    INTEGER !!!!             (2D array)
-    #
-    # Optional:
-    #  * nb_smooth : number of times the smoother is applied on masked region (mask=0)
-    #                => default: nb_smooth = 50
-    #
-    #
-    #                       Author : Laurent BRODEAU, 2007, as part of SOSIE
-    #                                ported to python November 2013
-    #
-    ##############################################################################
+    '''
+    PURPOSE : fills continental areas of field X (defined by mask==0)
+    -------   using nearest surrounding sea points (defined by mask==1)
+              field X is absoluletly unchanged where mask==1
+        
+    Input/Output :
+    --------------
+         * X    :  treated array (float)   / modified!            [2D array]
+         * mask :  land-sea mask (integer) / unchanged            [2D array]
+    
+     Optional :
+     ----------
+         * k_ew :  east-west periodicity on the input file/grid
+                   k_ew = -1  --> no periodicity
+                   k_ew >= 0  --> periodicity with overlap of k_ew points
+    
+         * nb_max_inc : distance (in grid points) of incursion into the continents for the drowning...
+
+         * nb_smooth : number of times the smoother is applied on masked region (mask=0)
+                       => default: nb_smooth = 50
+    
+    Author : Laurent BRODEAU, 2007, as part of SOSIE
+             ported to python November 2013
+    '''
 
     cmesg = 'ERROR, barakuda_tool.py => drown :'
 
@@ -370,37 +370,32 @@ def drown(X, mask, k_ew=-1, nb_max_inc=5, nb_smooth=5):
     l_record = False
     if nbdim == 3: l_record = True
 
-
     if l_record:
         if nmp.shape(X[0,:,:]) != nmp.shape(mask):
             print cmesg+' size of data and mask do not match!!!'; sys.exit(0)
-        [nt, nj,ni] = nmp.shape(X)
+        (nt,nj,ni) = nmp.shape(X)
     else:
         if nmp.shape(X) != nmp.shape(mask):
             print cmesg+' size of data and mask do not match!!!'; sys.exit(0)
-        [nj,ni] = nmp.shape(X)
-
+        (nj,ni) = nmp.shape(X)
 
     if nmp.sum(mask) == 0 :
         print 'The mask does not have sea points! Skipping drown!'
         return
 
-
-    Xtemp = nmp.zeros(nj*ni) ; Xtemp.shape = [nj,ni]
-
+    Xtemp = nmp.zeros((nj,ni))
 
     for jt in range(nt):
 
         if l_record:
-            #print '  DROWN (barakuda_tool.py) => treating record '+str(jt+1)
             Xtemp[:,:] = X[jt,:,:]
         else:
             Xtemp[:,:] = X[:,:]
 
-        maskv = nmp.zeros(nj*ni, dtype=nmp.int) ; maskv.shape = [nj,ni]
-        dold = nmp.zeros(nj*ni) ; dold.shape = [nj,ni]
-        xtmp = nmp.zeros(nj*ni) ; xtmp.shape = [nj,ni]
-        mask_coast = nmp.zeros(nj*ni) ; mask_coast.shape = [nj,ni]
+        maskv = nmp.zeros((nj,ni), dtype=nmp.int)
+        dold = nmp.zeros((nj,ni))
+        xtmp = nmp.zeros((nj,ni))
+        mask_coast = nmp.zeros((nj,ni))
 
         jinc = 0
 
@@ -425,12 +420,7 @@ def drown(X, mask, k_ew=-1, nb_max_inc=5, nb_smooth=5):
             #mask_coast[:,:] = 0
             #mask_coast[idx_coast] = 1
 
-
-
-
-
             # Extrapolating sea values on that coast line:
-
             (idx_j_land,idx_i_land) = idx_coast
 
             ic = 0
@@ -465,7 +455,6 @@ def drown(X, mask, k_ew=-1, nb_max_inc=5, nb_smooth=5):
 
             # Loosing land for next iteration:
             maskv[idx_coast] = 1
-
 
         # Smoothing the what's been done on land:
         if nb_smooth >= 1:
