@@ -447,3 +447,87 @@ def write_2d_mask(cf_out, MSK, xlon=[], xlat=[], name='mask'):
 
     return
 
+def dump_2d_field(cf_out, XFLD, xlon=[], xlat=[], name='field'):
+
+    (nj,ni) = nmp.shape(XFLD)
+
+    f_out = Dataset(cf_out, 'w', format='NETCDF3_CLASSIC')
+
+    # Dimensions:
+    f_out.createDimension('y', nj)
+    f_out.createDimension('x', ni)
+
+    if (xlon != []) and (xlat != []):
+        if (xlon.shape == (nj,ni)) and (xlon.shape == xlat.shape):
+            id_lon  = f_out.createVariable('nav_lon' ,'f4',('y','x',))
+            id_lat  = f_out.createVariable('nav_lat' ,'f4',('y','x',))
+            id_lon[:,:] = xlon[:,:]
+            id_lat[:,:] = xlat[:,:]
+        
+    id_fld  = f_out.createVariable(name ,'f4',('y','x',))
+    id_fld[:,:] = XFLD[:,:]
+
+    f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
+    f_out.close()
+
+    return
+
+
+
+
+
+def dump_2d_multi_field(cf_out, XFLD, vnames, vndim=[], xlon=[], xlat=[], vtime=[]):
+
+    if vtime == []:
+        (nbfld,      nj, ni) = nmp.shape(XFLD)
+    else:
+        (nbfld, Nbt, nj, ni) = nmp.shape(XFLD)
+        if Nbt != len(vtime): print 'ERROR (dump_2d_multi_field): array and time vector disagree!'; sys.exit(0)
+
+    vnbdim = nmp.zeros(nbfld)
+    if vndim == []:
+        vnbdim[:] = 3 ; # default dim is 3 (time_counter,y,x)
+    else:
+        nn0 = len(vndim)
+        if nbfld != nn0: print 'ERROR (dump_2d_multi_field): vndim and main array dont agree in shape!'; sys.exit(0)
+        vnbdim[:] = vndim[:]
+
+
+        
+    nf = len(vnames)
+    if nbfld != nf: print 'ERROR (dump_2d_multi_field): list of names and main array dont agree in shape!'; sys.exit(0)
+
+    f_out = Dataset(cf_out, 'w', format='NETCDF3_CLASSIC')
+
+    # Dimensions:
+    if vtime != []: f_out.createDimension('time_counter', None)
+    f_out.createDimension('y', nj)
+    f_out.createDimension('x', ni)
+
+    if (xlon != []) and (xlat != []):
+        if (xlon.shape == (nj,ni)) and (xlon.shape == xlat.shape):
+            id_lon  = f_out.createVariable('nav_lon' ,'f4',('y','x',))
+            id_lat  = f_out.createVariable('nav_lat' ,'f4',('y','x',))
+            id_lon[:,:] = xlon[:,:]
+            id_lat[:,:] = xlat[:,:]
+    if vtime != []:
+        id_tim    = f_out.createVariable('time_counter' ,'f8',('time_counter',))
+        id_tim[:] = vtime[:]
+        
+    #id_fld = nmp.zeros(nbfld, dtype=int)
+    for jv in range(nbfld):
+        if vtime == [] or vnbdim[jv]==2:
+            id_fld  = f_out.createVariable(vnames[jv] ,'f8',('y','x',))
+            id_fld[:,:] = XFLD[jv,0,:,:]
+        else:
+            id_fld  = f_out.createVariable(vnames[jv] ,'f8',('time_counter','y','x',))
+            id_fld[:,:,:] = XFLD[jv,:,:,:]
+            
+
+    f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
+    f_out.close()
+
+    return
+
+
+

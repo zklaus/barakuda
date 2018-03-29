@@ -1434,12 +1434,13 @@ class plot :
 
 
             #
-    def __pow_spectrum_ssh(self, vk1, vps1, cfig_name='fig_spectrum_SSH.png', clab1=None, cinfo='', logo_on=True, \
+    def __pow_spectrum_ssh(self, vk1, vps1, clab1=None, clr1=b_gre, lw1=6, \
+                           cfig_name='fig_spectrum_SSH.png', cinfo='', logo_on=True, \
                            L_min=7., L_max=5000., P_min_y=-6, P_max_y=6,    \
                            l_show_k11o3=False, l_show_k5=False, l_show_k4=False, l_show_k2=False, \
-                           vk2=[], vps2=[], clab2=None, \
-                           vk3=[], vps3=[], clab3=None, \
-                           vk4=[], vps4=[], clab4=None):
+                           vk2=[], vps2=[], clab2=None, clr2=b_org, lw2=3, \
+                           vk3=[], vps3=[], clab3=None, clr3=b_blu, lw3=4, \
+                           vk4=[], vps4=[], clab4=None, clr4='0.5', lw4=3 ):
         #------------------------------------------------------------------
         ## L_min=7. ; L_max : min and max wave-length for x-axis (km)
         #------------------------------------------------------------------
@@ -1459,26 +1460,28 @@ class plot :
         xtcks_k  = r2Pi/xtcks_l
 
         fig = plt.figure(num = 1, figsize=(9.,9.), facecolor='w', edgecolor='k')
-        ax = plt.axes([0.1, 0.07, 0.89, 0.86])
+        ax = plt.axes([0.1, 0.07, 0.875, 0.86])
 
         if len(vk3) > 1 and len(vps3) > 1:
-            plt.plot(nmp.log10(vk3), nmp.log10(vps3), '-', color=b_blu, linewidth=4, label=clab3, zorder=10)
+            plt.plot(nmp.log10(vk3), nmp.log10(vps3), '-', color=clr3, linewidth=lw3, label=clab3, zorder=10)
         if len(vk2) > 1 and len(vps2) > 1:
-            plt.plot(nmp.log10(vk2), nmp.log10(vps2), '-', color=b_org, linewidth=3, label=clab2, zorder=15)
+            plt.plot(nmp.log10(vk2), nmp.log10(vps2), '-', color=clr2, linewidth=lw2, label=clab2, zorder=15)
         if len(vk4) > 1 and len(vps4) > 1:
-            plt.plot(nmp.log10(vk4), nmp.log10(vps4), '-', color='0.5', linewidth=3, label=clab4, zorder=4)
+            plt.plot(nmp.log10(vk4), nmp.log10(vps4), '-', color=clr4, linewidth=lw4, label=clab4, zorder=4)
 
-        plt.plot(nmp.log10(vk1), nmp.log10(vps1), '-', color=b_gre, linewidth=6, label=clab1, zorder=5)
+        plt.plot(    nmp.log10(vk1), nmp.log10(vps1), '-', color=clr1, linewidth=lw1, label=clab1, zorder=5)
 
         nl = len(vk1)
+        #i1=4 ; i2=nl-0.4*nl ; rfct = 1.
+        i1=int(0.53*float(nl)) ; i2=nl ; rfct = 3.
         if l_show_k2:
-            plt.plot(nmp.log10(vk1[4:nl-0.4*nl]), nmp.log10((vk1[4:nl-0.4*nl]**-2.)/1.E7), '--', color='k', linewidth=2, label=r'k$^\mathregular{-2}$', zorder=2)
+            plt.plot(nmp.log10(vk1[i1:i2]), nmp.log10((vk1[i1:i2]**-2.)/(rfct*1.E7)), '--', color='k', linewidth=2, label=r'k$^\mathregular{-2}$', zorder=2)
         if l_show_k4:
-            plt.plot(nmp.log10(vk1[4:nl-0.4*nl]), nmp.log10((vk1[4:nl-0.4*nl]**-4.)/3.E8), '-', color='0.6', linewidth=2, label=r'k$^\mathregular{-4}$', zorder=1)
+            plt.plot(nmp.log10(vk1[i1:i2]), nmp.log10((vk1[i1:i2]**-4.)/(rfct*3.E8)), '-', color='0.6', linewidth=2, label=r'k$^\mathregular{-4}$', zorder=1)
         if l_show_k5:
-            plt.plot(nmp.log10(vk1[4:nl-0.4*nl]), nmp.log10((vk1[4:nl-0.4*nl]**-5.)/2.E10), '--', color='0.6', linewidth=2, label=r'k$^\mathregular{-5}$', zorder=2)
+            plt.plot(nmp.log10(vk1[i1:i2]), nmp.log10((vk1[i1:i2]**-5.)/(rfct*2.E10)), '--', color='0.6', linewidth=2, label=r'k$^\mathregular{-5}$', zorder=2)
         if l_show_k11o3:
-            plt.plot(nmp.log10(vk1[4:nl-0.4*nl]), nmp.log10((vk1[4:nl-0.4*nl]**(-11./3.))/1.E9), '-.', color='0.6', linewidth=2, label=r'k$^\mathregular{-11/3}$', zorder=2)
+            plt.plot(nmp.log10(vk1[i1:i2]), nmp.log10((vk1[i1:i2]**(-11./3.))/(rfct*1.E9)), '-.', color='0.6', linewidth=2, label=r'k$^\mathregular{-11/3}$', zorder=2)
             
         # Bottom X-axis:
         plt.xticks( nmp.log10(xtcks_k), cxtcks_l)
