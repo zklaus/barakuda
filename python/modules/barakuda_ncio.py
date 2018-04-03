@@ -521,7 +521,10 @@ def dump_2d_multi_field(cf_out, XFLD, vnames, vndim=[], xlon=[], xlat=[], vtime=
     for jv in range(nbfld):
         if (not l_add_time) or (vnbdim[jv]==2):
             id_fld  = f_out.createVariable(vnames[jv] ,'f8',('y','x',))
-            id_fld[:,:] = XFLD[jv,:,:]
+            if l_add_time:
+                id_fld[:,:] = XFLD[jv,0,:,:]
+            else:
+                id_fld[:,:] = XFLD[jv,:,:]
         else:
             id_fld  = f_out.createVariable(vnames[jv] ,'f8',('time_counter','y','x',))
             id_fld[:,:,:] = XFLD[jv,:,:,:]
