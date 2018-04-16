@@ -13,7 +13,7 @@ cf_orig  = sys.argv[1]
 #cf_in   = sys.argv[2]
 #cmin_dept    = sys.argv[3] ; rmin_depth = float(cmin_dept)
 
-cf_in = replace(cf_orig, '.nc', '_vfliped.nc')
+cf_in = replace(cf_orig, '.nc', '_yflipped.nc')
 os.system('rm -f '+cf_in)
 os.system('cp '+cf_orig+' '+cf_in)
 
