@@ -58,7 +58,7 @@ if CNEMO == 'NATL60':
 
 
 if CNEMO == 'NANUK025':
-    cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 491 ; j2 = 613 ; rfact_zoom = 2. ; vcb = [0.49, 0.88, 0.49, 0.02]
+    cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 491 ; j2 = 613 ; rfact_zoom = 3. ; vcb = [0.49, 0.88, 0.49, 0.02]
 
 
 
