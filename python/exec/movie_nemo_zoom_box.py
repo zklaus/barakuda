@@ -175,33 +175,29 @@ norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 if cdt == '3h': dt = 3
 
-
+ntpd = 24/dt
 
 
 jm = 1
 
 for jt in range(jt0,Nt):
 
-
-    #ch = '%2.2i'%((jt*dt)%24)
-    #cd = '%3.3i'%(1+(jt+1)/24)
-    ch = '%2.2i'%((jt*dt)%24)
+    jh = (jt*dt)%24
 
     jd = (jt*dt)/24 + 1
-    if jd == vmn[jm-1]+1:
+    if jd == vmn[jm-1]+1 and (jt)%ntpd == 0 :
         jd = 1
         jm = jm + 1
         
+    ch = '%2.2i'%(jh)
     cd = '%3.3i'%(jd)        
-    cmn = '%2.2i'%(jm)
+    cm = '%2.2i'%(jm)
     
-    print ch, cd
+    print '\n\n *** jt, ch, cd, cm =>', jt, ch, cd, cm
 
     
-    ct = str(datetime.datetime.strptime(str(year_ref_ini)+'-'+cmn+'-'+cd+' '+ch, '%Y-%m-%j %H'))
-    #print ' cmn = ', cmn
-    #print ' ct = ', ct
-    ct=ct[:5]+cmn+ct[7:] #lolo bug !!! need to do that to get the month and not "01"
+    ct = str(datetime.datetime.strptime(str(year_ref_ini)+'-'+cm+'-'+cd+' '+ch, '%Y-%m-%j %H'))
+    ct=ct[:5]+cm+ct[7:] #lolo bug !!! need to do that to get the month and not "01"
     print ' ct = ', ct
     cday  = ct[:10]   ; print ' *** cday  :', cday
     chour = ct[11:13] ; print ' *** chour :', chour
