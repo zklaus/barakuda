@@ -31,6 +31,8 @@ import barakuda_colmap as bcm
 import barakuda_tool as bt
 
 
+vmn = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
+
 #CNEMO = 'NATL60'
 CNEMO = 'NANUK025'
 
@@ -39,32 +41,29 @@ color_top = 'k'
 
 l_do_ice = True
 
-year_ref_ini = 2013
+
 
 #jt0 = 248
 jt0 = 0
 
 
-
-
 i2=0
 j2=0
 
-
 if CNEMO == 'NATL60':
     #cbox = 'Biscay' ; i1 = 2880 ; j1 = 1060 ; rfact_zoom = 1. ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
-    cbox = 'NAtlt' ; i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36  ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
+    year_ref_ini = 2013; cbox = 'NAtlt' ; i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36  ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
     #cbox = 'Med+NorthSea' ; i1 = 4086 ; j1 = 603 ; i2 = 5421 ; j2 = 3119 ; rfact_zoom = 0.3319 ; vcb = [0.01, 0.08, 0.98, 0.025]
 
 
 if CNEMO == 'NANUK025':
-    cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 491 ; j2 = 613 ; rfact_zoom = 3. ; vcb = [0.49, 0.88, 0.49, 0.02]
+    year_ref_ini = 2010 ; cdt = '3h'; cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 1. ; vcb = [0.49, 0.88, 0.49, 0.02]
 
 
 
 
-nx_res = i2-i1+1
-ny_res = j2-j1+1
+nx_res = i2-i1
+ny_res = j2-j1
 
 
 
@@ -92,8 +91,8 @@ font_rat = nyr/1080.
 fig_type='png'
 
 narg = len(sys.argv)
-if narg < 5: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file> <month>'; sys.exit(0)
-cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3] ; cmn=sys.argv[4]
+if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file>'; sys.exit(0)
+cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3] ; #cmn=sys.argv[4]
 
 # Ice:
 if l_do_ice:
@@ -174,10 +173,30 @@ norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 
 
+if cdt == '3h': dt = 3
+
+
+
+
+jm = 1
+
 for jt in range(jt0,Nt):
 
-    ch = '%2.2i'%((jt+1)%24)
-    cd = '%3.3i'%(1+(jt+1)/24)
+
+    #ch = '%2.2i'%((jt*dt)%24)
+    #cd = '%3.3i'%(1+(jt+1)/24)
+    ch = '%2.2i'%((jt*dt)%24)
+
+    jd = (jt*dt)/24 + 1
+    if jd == vmn[jm-1]+1:
+        jd = 1
+        jm = jm + 1
+        
+    cd = '%3.3i'%(jd)        
+    cmn = '%2.2i'%(jm)
+    
+    print ch, cd
+
     
     ct = str(datetime.datetime.strptime(str(year_ref_ini)+'-'+cmn+'-'+cd+' '+ch, '%Y-%m-%j %H'))
     #print ' cmn = ', cmn
@@ -208,7 +227,7 @@ for jt in range(jt0,Nt):
     print '  *** dimension of array => ', nmp.shape(XFLD)
 
     print "Ploting"
-    cf = plt.imshow(XFLD[:,:], cmap = pal_fld, norm = norm_fld)
+    cf = plt.imshow(XFLD[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
     del XFLD
     print "Done!"
     
@@ -225,11 +244,11 @@ for jt in range(jt0,Nt):
         #ci = plt.contourf(XICE[:,:], vcont_ice, cmap = pal_ice, norm = norm_ice) #
 
         pice = nmp.ma.masked_where(XICE < rmin_ice, XICE)
-        ci = plt.imshow(pice, cmap = pal_ice, norm = norm_ice) ; del pice, ci
+        ci = plt.imshow(pice, cmap = pal_ice, norm = norm_ice, interpolation='none') ; del pice, ci
         del XICE
 
 
-    cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm)
+    cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm, interpolation='none')
     
     plt.axis([ 0, ni, 0, nj])
 
@@ -270,6 +289,7 @@ for jt in range(jt0,Nt):
     xl = float(nxr)/20./rfact_zoom
     yl = float(nyr)/1.2/rfact_zoom
     ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
+
 
 
     plt.savefig(cfig, dpi=dpi, orientation='portrait', facecolor='k')
