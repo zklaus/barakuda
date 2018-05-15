@@ -177,23 +177,26 @@ if cdt == '3h': dt = 3
 
 ntpd = 24/dt
 
-
+jd = 0
 jm = 1
 
 for jt in range(jt0,Nt):
 
     jh = (jt*dt)%24
+    jdc = (jt*dt)/24 + 1
 
-    jd = (jt*dt)/24 + 1
+    if jt%ntpd == 0: jd = jd + 1
+    
     if jd == vmn[jm-1]+1 and (jt)%ntpd == 0 :
         jd = 1
         jm = jm + 1
         
     ch = '%2.2i'%(jh)
-    cd = '%3.3i'%(jd)        
+    #cdc= '%3.3i'%(jdc)
+    cd = '%3.3i'%(jd)
     cm = '%2.2i'%(jm)
     
-    print '\n\n *** jt, ch, cd, cm =>', jt, ch, cd, cm
+    #print '\n\n *** jt, ch, cd, cm =>', jt, ch, cd, cm
 
     
     ct = str(datetime.datetime.strptime(str(year_ref_ini)+'-'+cm+'-'+cd+' '+ch, '%Y-%m-%j %H'))
