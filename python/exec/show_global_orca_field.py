@@ -29,18 +29,34 @@ import barakuda_plot   as bp
 
 import barakuda_tool as bt
 
+CONF = 'ORCA12'
+
+
 ldebug = False
 
 l_add_lon_lat = False
 l_draw_lat_lon_only = False
-
 l_force_mask = True
-ny_exclude_north = 350 ; # nb points to exclude at the north...
-ny_exclude_south = 150 ; #               ''            south...
-nx_exclude_west  = 300 ; #               ''            west
 
 lon_reorg = True
 l_show_colorbar = False
+
+ny_exclude_north = 0 ; # nb points to exclude at the north...
+ny_exclude_south = 0 ; #               ''            south...
+nx_exclude_west  = 0 ; #               ''            west
+
+
+
+if CONF == 'ORCA12':
+    ny_exclude_north = 350 ; # nb points to exclude at the north...
+    ny_exclude_south = 150 ; #               ''            south...
+    nx_exclude_west  = 300 ; #               ''            west
+    cpal_fld = 'tap1'
+    #cpal_fld = 'tap2'
+
+
+
+    
 
 color_text_colorbar = 'k'
 color_stff_colorbar = 'k'
@@ -50,8 +66,6 @@ color_continents    = '0.75'
 
 
 
-cpal_fld = 'tap1'
-#cpal_fld = 'tap2'
 
 log_ctrl=0.1  ; # 0 if you want no log involved in the colorscale...
 #b: log_ctrl=0.05  ; # 0 if you want no log involved in the colorscale...    
