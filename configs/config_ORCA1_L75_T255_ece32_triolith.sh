@@ -16,24 +16,25 @@ export CONF=ORCA1.L75 ; # horizontal global ORCA configuration
 export NBL=75         ; # number of levels
 
 export HOST=TRIOLITH.nsc.liu.se ; # this has no importance at all, it will just become an "info" on the web-page!
-export MASTERMIND="BSC / Laurent" ; # same here, who's the person who designed/ran this simulation?
+export MASTERMIND="SMHI / $USER" ; # same here, who's the person who designed/ran this simulation?
 
 export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2.2)" ;   #  // same here ...
 
 # Path / directory structure in which to find NEMO output file (you can use
 # <ORCA> and <EXP> as substitute to your ORCA grid and experiment (EXP) name):
-export NEMO_OUT_STRCT="/proj/bolinc/users/x_laubr/run/<EXP>/output/nemo"
+export STORE_DIR="/nobackup/rossby20/rossby/joint_exp/ecearth/$USER"
+export NEMO_OUT_STRCT="${STORE_DIR}/ece-run/<EXP>/output/nemo"
 
 # Path to root directory where to save the diagnostics (diagnostics for this "CONF"):
-export DIAG_DIR="/proj/bolinc/users/x_laubr/barakuda/ece32"
+export DIAG_DIR="${STORE_DIR}/barakuda/${CONF}_ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/proj/bolinc/users/x_laubr/input_barakuda/ORCA1.L75_barakuda"
+export CONF_INI_DIR="/nobackup/rossby18/sm_wyser/barakuda/${CONF}_barakuda"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
-export SCRATCH="/scratch/local/<JOB_ID>"
+export SCRATCH=$SNIC_TMP
 
-export PYTHON_HOME="/home/x_laubr/opt/Canopy_64bit/User" ; # HOME to python distribution with matplotlib and basemap !
+export PYTHON_HOME="/software/apps/python/2.7.12/snic-1" # HOME to python distribution with matplotlib and basemap !
 
 export DIR_NCVIEW_CMAP="${BARAKUDA_ROOT}/src/ncview_colormaps"
 
