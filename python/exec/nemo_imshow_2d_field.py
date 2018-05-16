@@ -28,52 +28,21 @@ import barakuda_tool as bt
 
 
 #CNEMO = 'NATL60'
-CNEMO = 'NANUK025'
+#CNEMO = 'NANUK025'
 
 #color_top = 'white'
 color_top = 'k'
 
 
-i2=0
-j2=0
-
-if CNEMO == 'NATL60':
-    #cbox = 'Biscay' ; i1 = 2880 ; j1 = 1060 ; rfact_zoom = 1. ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
-    cbox = 'NAtlt' ; i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36  ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
-    #cbox = 'Med+NorthSea' ; i1 = 4086 ; j1 = 603 ; i2 = 5421 ; j2 = 3119 ; rfact_zoom = 0.3319 ; vcb = [0.01, 0.08, 0.98, 0.025]
-
-elif CNEMO == 'NANUK025':
-    cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 1. ; vcb = [0.49, 0.88, 0.49, 0.02]
-
-else:
-    print '\n PROBLEM: "'+CNEMO+'" is an unknown config!!!'
-    sys.exit(0)
 
 
 
 
     
 
-nx_res = i2-i1
-ny_res = j2-j1
 
 
 
-    
-print ' i1,i2,j1,j2 =>', i1,i2,j1,j2
-
-yx_ratio = float(ny_res)/float(nx_res)
-
-
-nxr = int(rfact_zoom*nx_res) ; # widt image (in pixels)
-nyr = int(rfact_zoom*ny_res) ; # height image (in pixels)
-
-dpi = 110
-
-rh  = float(nxr)/float(dpi) ; # width of figure as for figure...
-
-
-font_rat = nyr/1080.
 
 
 
@@ -83,11 +52,41 @@ font_rat = nyr/1080.
 fig_type='png'
 
 narg = len(sys.argv)
-if narg < 5: print 'Usage: '+sys.argv[0]+' <file> <variable> <snapshot> <LSM_file>'; sys.exit(0)
-cf_fld = sys.argv[1] ; cv_in=sys.argv[2] ; jt=int(sys.argv[3]) ; cf_lsm=sys.argv[4] ; #cmn=sys.argv[4]
+if narg < 6: print 'Usage: '+sys.argv[0]+'<CONF> <file> <variable> <snapshot> <LSM_file>'; sys.exit(0)
+CNEMO = sys.argv[1] ; cf_fld = sys.argv[2] ; cv_in=sys.argv[3] ; jt=int(sys.argv[4]) ; cf_lsm=sys.argv[5]
+
+
+i2=0
+j2=0
+
+if CNEMO == 'NATL60':
+    #i1 = 2880 ; j1 = 1060 ; rfact_zoom = 1. ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
+    #i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36  ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
+    i1 = 4086 ; j1 = 603 ; i2 = 5421 ; j2 = 3119 ; rfact_zoom = 0.3319 ; vcb = [0.01, 0.08, 0.98, 0.025]
+
+elif CNEMO == 'NANUK025':
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.49, 0.02]
+
+elif CNEMO == 'eNATL4':
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 1. ; vcb = [0.6, 0.11, 0.39, 0.025]
+
+elif CNEMO == 'eNATL60':
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 1. ; vcb = [0.6, 0.1, 0.39, 0.025]
+
+else:
+    print '\n PROBLEM: "'+CNEMO+'" is an unknown config!!!'
+    sys.exit(0)
+
+
+
+
+
+
+
 
 
 l_log_field = False
+cextend='both'
 
 if cv_in in ['sosstsst','tos']:
     cfield = 'SST'
@@ -99,13 +98,14 @@ if cv_in in ['sosstsst','tos']:
 
 if cv_in in ['Bathymetry']:
     cfield = 'Bathymetry'
-    tmin=50. ;  tmax=5000.   ;  df = 50.
+    tmin=100. ;  tmax=4500.   ;  df = 100.
     #cpal_fld = 'ocean'
     #cpal_fld = 'Blues'
     cpal_fld = 'PuBu'    
     cunit = r'Bathymetry (m)'
     cb_jump = 1
     l_log_field = True
+    cextend='max'
 
     
 if cv_in == 'sossheig':
@@ -144,10 +144,32 @@ id_fld.close()
 bt.chck4f(cf_lsm)
 print '\n *** Reading "tmask" in meshmask file...'
 id_lsm = Dataset(cf_lsm)
+Ni = id_lsm.dimensions['x'].size
+Nj = id_lsm.dimensions['y'].size
+if i2 == 0: i2 = Ni
+if j2 == 0: j2 = Nj
 XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2] ; # t, y, x
 id_lsm.close()
 print '      done.'
-[ nj , ni ] = nmp.shape(XMSK)
+
+
+print '\n According to "tmask" the shape of the domain is Ni, Nj =', Ni, Nj
+
+
+# Stuff for size of figure respecting pixels...
+print '  *** we are going to show: i1,i2,j1,j2 =>', i1,i2,j1,j2, '\n'
+nx_res = i2-i1
+ny_res = j2-j1
+yx_ratio = float(ny_res)/float(nx_res)
+nxr = int(rfact_zoom*nx_res) ; # widt image (in pixels)
+nyr = int(rfact_zoom*ny_res) ; # height image (in pixels)
+dpi = 110
+rh  = float(nxr)/float(dpi) ; # width of figure as for figure...
+font_rat = nxr/1080.
+
+
+
+
 
 pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
@@ -184,8 +206,10 @@ pal_lsm = bcm.chose_colmap('land_dark')
 norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 
-
-cfig = 'figs/snapshot_'+str(jt)+'_'+cv_in+'_NEMO.'+fig_type    
+if Nt == 0:
+    cfig = cv_in+'_'+CNEMO+'_'+cpal_fld+'.'+fig_type    
+else:
+    cfig = 'snapshot_'+str(jt)+'_'+cv_in+'_'+CNEMO+'_'+cpal_fld+'.'+fig_type    
 
 fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio), dpi=None, facecolor='w', edgecolor='0.5')
 
@@ -208,9 +232,16 @@ id_fld.close()
 print '          Done!\n'
 
 
-if XMSK.shape != XFLD.shape: print '\n PROBLEM: field and mask do not agree in shape!'; sys.exit(0)
+if XMSK.shape != XFLD.shape:
+    print '\n PROBLEM: field and mask do not agree in shape!'
+    print XMSK.shape , XFLD.shape
+    sys.exit(0)
 
 print '  *** Shape of field and mask => ', nmp.shape(XFLD)
+
+
+del XMSK
+
 
 print 'Ploting'
 cf = plt.imshow(XFLD[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
@@ -221,7 +252,10 @@ print 'Done!'
 
 cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm, interpolation='none')
 
-plt.axis([ 0, ni, 0, nj])
+del pmsk
+
+
+plt.axis([ 0, Ni, 0, Nj])
 
 #plt.title('NEMO: '+cfield+', coupled '+CNEMO+', '+cday+' '+chour+':00', **cfont_title)
 
@@ -230,7 +264,7 @@ plt.axis([ 0, ni, 0, nj])
 
 ax2 = plt.axes(vcb)
     
-clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
+clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend=cextend)
 if cb_jump > 1:
     cb_labs = [] ; cpt = 0
     for rr in vc_fld:
@@ -254,7 +288,7 @@ x_annot = 650 ; y_annot = 1035
 
 #ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_annot,    y_annot), **cfont_date)
 
-ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_annot+150, 20), **cfont_mail)
+#ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_annot+150, 20), **cfont_mail)
 
 
 xl = float(nxr)/20./rfact_zoom
