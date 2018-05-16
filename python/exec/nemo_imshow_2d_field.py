@@ -30,8 +30,8 @@ import barakuda_tool as bt
 #CNEMO = 'NATL60'
 #CNEMO = 'NANUK025'
 
-#color_top = 'white'
-color_top = 'k'
+color_top = 'white'
+#color_top = 'k'
 
 
 
@@ -64,14 +64,17 @@ if CNEMO == 'NATL60':
     #i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36  ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
     i1 = 4086 ; j1 = 603 ; i2 = 5421 ; j2 = 3119 ; rfact_zoom = 0.3319 ; vcb = [0.01, 0.08, 0.98, 0.025]
 
+elif CNEMO == 'NANUK1':
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 4. ; vcb = [0.5, 0.875, 0.49, 0.02] ; font_rat = 0.16*rfact_zoom
+
 elif CNEMO == 'NANUK025':
-    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.49, 0.02]
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.49, 0.02] ; font_rat = 0.5*rfact_zoom
 
 elif CNEMO == 'eNATL4':
-    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 1. ; vcb = [0.6, 0.11, 0.39, 0.025]
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 2. ; vcb = [0.6, 0.11, 0.39, 0.025] ; font_rat = 0.5*rfact_zoom
 
 elif CNEMO == 'eNATL60':
-    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 1. ; vcb = [0.6, 0.1, 0.39, 0.025]
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 1. ; vcb = [0.6, 0.1, 0.39, 0.025] ; font_rat = 7.
 
 else:
     print '\n PROBLEM: "'+CNEMO+'" is an unknown config!!!'
@@ -86,7 +89,9 @@ else:
 
 
 l_log_field = False
+l_pow_field = False
 cextend='both'
+l_hide_cb_ticks = False
 
 if cv_in in ['sosstsst','tos']:
     cfield = 'SST'
@@ -98,14 +103,21 @@ if cv_in in ['sosstsst','tos']:
 
 if cv_in in ['Bathymetry']:
     cfield = 'Bathymetry'
-    tmin=100. ;  tmax=4500.   ;  df = 100.
+    #tmin=100. ;  tmax=4500.   ;  df = 100.
+    tmin=0. ;  tmax=5000.   ;  df = 100.
     #cpal_fld = 'ocean'
     #cpal_fld = 'Blues'
-    cpal_fld = 'PuBu'    
+    cpal_fld = 'PuBu'
+    #cpal_fld = 'ncview_ssec'
+    #cpal_fld = 'ncview_hotres'
+    #cpal_fld = 'ncview_helix'
     cunit = r'Bathymetry (m)'
-    cb_jump = 1
-    l_log_field = True
+    cb_jump = 10
+    l_pow_field = True
+    pow_field = 1.5
+    #l_log_field = False
     cextend='max'
+    l_hide_cb_ticks=True
 
     
 if cv_in == 'sossheig':
@@ -165,7 +177,7 @@ nxr = int(rfact_zoom*nx_res) ; # widt image (in pixels)
 nyr = int(rfact_zoom*ny_res) ; # height image (in pixels)
 dpi = 110
 rh  = float(nxr)/float(dpi) ; # width of figure as for figure...
-font_rat = nxr/1080.
+###font_rat = nxr/1080.
 
 
 
@@ -199,6 +211,8 @@ cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int
 pal_fld = bcm.chose_colmap(cpal_fld)
 if l_log_field:
     norm_fld = colors.LogNorm(  vmin = tmin, vmax = tmax, clip = False)
+if l_pow_field:
+    norm_fld = colors.PowerNorm(gamma=pow_field, vmin = tmin, vmax = tmax, clip = False)
 else:
     norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
 
@@ -277,7 +291,8 @@ if cb_jump > 1:
     clb.ax.set_xticklabels(cb_labs)    
 clb.set_label(cunit, **cfont_clb)
 clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color    
-clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor         
+#clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
+if l_hide_cb_ticks: clb.ax.tick_params(axis=u'both', which=u'both',length=0) ; # remove ticks!
 plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
     
 del cf
