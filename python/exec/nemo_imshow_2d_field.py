@@ -52,7 +52,7 @@ color_top = 'white'
 fig_type='png'
 
 narg = len(sys.argv)
-if narg < 6: print 'Usage: '+sys.argv[0]+'<CONF> <file> <variable> <snapshot> <LSM_file>'; sys.exit(0)
+if narg < 6: print 'Usage: '+sys.argv[0]+' <CONF> <file> <variable> <snapshot> <LSM_file>'; sys.exit(0)
 CNEMO = sys.argv[1] ; cf_fld = sys.argv[2] ; cv_in=sys.argv[3] ; jt=int(sys.argv[4]) ; cf_lsm=sys.argv[5]
 
 
@@ -60,15 +60,19 @@ i2=0
 j2=0
 
 if CNEMO == 'NATL60':
-    #i1 = 2880 ; j1 = 1060 ; rfact_zoom = 1. ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
-    #i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36  ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
-    i1 = 4086 ; j1 = 603 ; i2 = 5421 ; j2 = 3119 ; rfact_zoom = 0.3319 ; vcb = [0.01, 0.08, 0.98, 0.025]
-
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 1. ; vcb = [0.6, 0.1, 0.39, 0.025] ; font_rat = 7.
+    x_cnf = 160. ; y_cnf = 2300. ; # where to put label of conf on Figure...
+    
 elif CNEMO == 'NANUK1':
     i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 4. ; vcb = [0.5, 0.875, 0.49, 0.02] ; font_rat = 0.16*rfact_zoom
 
 elif CNEMO == 'NANUK025':
     i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.49, 0.02] ; font_rat = 0.5*rfact_zoom
+
+elif CNEMO == 'CREG025':
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 2.
+    vcb = [0.6, 0.975, 0.38, 0.02] ; font_rat = 0.5*rfact_zoom
+    x_cnf = 20. ; y_cnf = 560. ; # where to put label of conf on Figure...
 
 elif CNEMO == 'eNATL4':
     i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 2. ; vcb = [0.6, 0.11, 0.39, 0.025] ; font_rat = 0.5*rfact_zoom
@@ -156,11 +160,13 @@ id_fld.close()
 bt.chck4f(cf_lsm)
 print '\n *** Reading "tmask" in meshmask file...'
 id_lsm = Dataset(cf_lsm)
+nb_dim = len(id_lsm.variables['tmask'].dimensions)
 Ni = id_lsm.dimensions['x'].size
 Nj = id_lsm.dimensions['y'].size
 if i2 == 0: i2 = Ni
 if j2 == 0: j2 = Nj
-XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2] ; # t, y, x
+if nb_dim == 4: XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2] ; # t, y, x
+if nb_dim == 3: XMSK  = id_lsm.variables['tmask'][0,  j1:j2,i1:i2] ; # t, y, x
 id_lsm.close()
 print '      done.'
 
@@ -306,9 +312,8 @@ x_annot = 650 ; y_annot = 1035
 #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_annot+150, 20), **cfont_mail)
 
 
-xl = float(nxr)/20./rfact_zoom
-yl = float(nyr)/1.2/rfact_zoom
-ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
+
+ax.annotate(CNEMO, xy=(1, 4), xytext=(x_cnf, y_cnf), **cfont_titl)
 
 
 
