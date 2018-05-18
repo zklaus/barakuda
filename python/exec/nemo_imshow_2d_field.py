@@ -80,6 +80,12 @@ elif CNEMO == 'eNATL4':
 elif CNEMO == 'eNATL60':
     i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 1. ; vcb = [0.6, 0.1, 0.39, 0.025] ; font_rat = 7.
 
+elif CNEMO == 'eNATL1':
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 6.
+    vcb = [0.62, 0.11, 0.35, 0.025] ; font_rat = 0.12*rfact_zoom
+    x_cnf = 4. ; y_cnf = 60. ; # where to put label of conf on Figure...
+
+    
 else:
     print '\n PROBLEM: "'+CNEMO+'" is an unknown config!!!'
     sys.exit(0)
