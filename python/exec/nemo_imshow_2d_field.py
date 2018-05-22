@@ -97,7 +97,7 @@ else:
 
 
 
-
+laplacian = False
 l_log_field = False
 l_pow_field = False
 cextend='both'

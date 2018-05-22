@@ -47,11 +47,18 @@ jt0 = 0
 
 i2=0
 j2=0
+l_show_lsm = True
 l_do_ice  = True
 l_show_cb = True
 l_show_dt = True
+l_log_field = False
+l_pow_field = False
+
+l_apply_lap = False
 
 if CNEMO == 'NATL60':
+    l_show_lsm = False
+    #l_pow_field = True ; pow_field = 1.5
     l_do_ice  = False
     l_show_cb = False
     l_show_dt = False
@@ -102,21 +109,25 @@ if l_do_ice:
 
 if cv_in in ['sosstsst','tos']:
     cfield = 'SST'
-    #tmin=0. ;  tmax=25.   ;  dtemp = 1. ; cpal_fld = 'ncview_nrl'
-    tmin=4. ;  tmax=20.   ;  dtemp = 1. ;  cpal_fld = 'PuBu'    
+    #tmin=0. ;  tmax=25.   ;  df = 1. ; cpal_fld = 'ncview_nrl'
+    tmin=4. ;  tmax=20.   ;  df = 1. ; cpal_fld = 'PuBu'    
     cunit = r'SST ($^{\circ}$C)'
     cb_jump = 2
 
 if cv_in == 'sossheig':
     cfield = 'SSH'
-    tmin=-0.3 ;  tmax=0.3   ;  dtemp = 0.1
-    cpal_fld = 'ncview_jaisnc'    
+    #tmin=-0.5 ;  tmax=0.5   ;  df = 0.05
+    tmin=-1.2 ;  tmax=1.2   ;  df = 0.05 ; l_apply_lap = True
+    #cpal_fld = 'ncview_jaisnc'
+    cpal_fld = 'PuBu'
+    #cpal_fld = 'RdBu'
+    #cpal_fld = 'BrBG'
     cunit = r'SSH (m)'
     cb_jump = 1
 
 elif cv_in == 'somxl010':
     cfield == 'MLD'
-    tmin=50. ;  tmax=1500. ;  dtemp = 50.
+    tmin=50. ;  tmax=1500. ;  df = 50.
     cpal_fld = 'viridis_r'
     
 
@@ -128,19 +139,23 @@ vtime = id_fld.variables['time_counter'][:]
 id_fld.close()
 Nt = len(vtime)
 
-bt.chck4f(cf_lsm)
-id_lsm = Dataset(cf_lsm)
-XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2] ; # t, y, x
-id_lsm.close()
-[ nj , ni ] = nmp.shape(XMSK)
+if l_show_lsm or l_apply_lap:
+    bt.chck4f(cf_lsm)
+    id_lsm = Dataset(cf_lsm)
+    if l_show_lsm:
+        XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2] ; # t, y, x
+        (nj,ni) = nmp.shape(XMSK)
+    if l_apply_lap:
+        XE1T2 = id_lsm.variables['e1t'][0,j1:j2,i1:i2]
+        XE2T2 = id_lsm.variables['e2t'][0,j1:j2,i1:i2]
+        (nj,ni) = nmp.shape(XE1T2)
+        XE1T2 = XE1T2*XE1T2
+        XE2T2 = XE2T2*XE2T2
+    id_lsm.close()
 
-pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
+if l_show_lsm: pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
-
-
-
-idx_oce = nmp.where(XMSK[:,:] > 0.5)
 
 #font_rat
 #params = { 'font.family':'Ubuntu',
@@ -160,14 +175,21 @@ cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int
 
 # Colormaps for fields:
 pal_fld = bcm.chose_colmap(cpal_fld)
-norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
+if l_log_field:
+    norm_fld = colors.LogNorm(  vmin = tmin, vmax = tmax, clip = False)
+if l_pow_field:
+    norm_fld = colors.PowerNorm(gamma=pow_field, vmin = tmin, vmax = tmax, clip = False)
+else:
+    norm_fld = colors.Normalize(vmin = tmin, vmax = tmax, clip = False)
+
+
+if l_show_lsm:
+    pal_lsm = bcm.chose_colmap('land_dark')
+    norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 if l_do_ice:
     pal_ice = bcm.chose_colmap(cpal_ice)
     norm_ice = colors.Normalize(vmin = rmin_ice, vmax = 1, clip = False)
-
-pal_lsm = bcm.chose_colmap('land_dark')
-norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 
 
@@ -218,7 +240,7 @@ for jt in range(jt0,Nt):
     #ax  = plt.axes([0.065, 0.05, 0.9, 1.], axisbg = '0.5')
     ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
 
-    vc_fld = nmp.arange(tmin, tmax + dtemp, dtemp)
+    vc_fld = nmp.arange(tmin, tmax + df, df)
 
 
     print "Reading record #"+str(jt)+" of "+cv_in+" in "+cf_in
@@ -227,7 +249,16 @@ for jt in range(jt0,Nt):
     id_fld.close()
     print "Done!"
 
-    print '  *** dimension of array => ', nmp.shape(XFLD)
+    if l_apply_lap:
+        lx = nmp.zeros((nj,ni))
+        ly = nmp.zeros((nj,ni))
+        ly[1:nj-1,:] = 1.E9*(XFLD[2:nj,:] -2.*XFLD[1:nj-1,:] + XFLD[0:nj-2,:])/XE2T2[1:nj-1,:]
+        lx[:,1:ni-1] = 1.E9*(XFLD[:,2:ni] -2.*XFLD[:,1:ni-1] + XFLD[:,0:ni-2])/XE1T2[:,1:ni-1]        
+        XFLD[:,:] = lx[:,:] + ly[:,:]
+        del lx, ly
+
+    if not l_show_lsm and jt == jt0: ( nj , ni ) = nmp.shape(XFLD)
+    print '  *** dimension of array => ', ni, nj
 
     print "Ploting"
     cf = plt.imshow(XFLD[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
@@ -251,7 +282,7 @@ for jt in range(jt0,Nt):
         del XICE
 
 
-    cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm, interpolation='none')
+    if l_show_lsm: cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm, interpolation='none')
     
     plt.axis([ 0, ni, 0, nj])
 
@@ -266,8 +297,8 @@ for jt in range(jt0,Nt):
             cb_labs = [] ; cpt = 0
             for rr in vc_fld:
                 if cpt % cb_jump == 0:
-                    if dtemp >= 1.: cb_labs.append(str(int(rr)))
-                    if dtemp <  1.: cb_labs.append(str(rr))
+                    if df >= 1.: cb_labs.append(str(int(rr)))
+                    if df <  1.: cb_labs.append(str(rr))
                 else:
                     cb_labs.append(' ')
                 cpt = cpt + 1
