@@ -47,6 +47,7 @@ jt0 = 0
 
 i2=0
 j2=0
+jm0 = 1 ; # month we start from (january == 1)
 l_show_lsm = True
 l_do_ice  = True
 l_show_cb = True
@@ -57,6 +58,7 @@ l_pow_field = False
 l_apply_lap = False
 
 if CNEMO == 'NATL60':
+    jm0 = 4
     l_show_lsm = False
     #l_pow_field = True ; pow_field = 1.5
     l_do_ice  = False
@@ -204,7 +206,7 @@ else:
 ntpd = 24/dt
 
 jd = 0
-jm = 1
+jm = jm0
 
 for jt in range(jt0,Nt):
 
