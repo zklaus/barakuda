@@ -31,13 +31,13 @@ import barakuda_tool as bt
 
 vmn = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 
-#CNEMO = 'NATL60'
-CNEMO = 'NANUK025'
+CNEMO = 'NATL60'
+#CNEMO = 'NANUK025'
 
 color_top = 'white'
 #color_top = 'k'
 
-l_do_ice = True
+
 
 
 
@@ -47,15 +47,20 @@ jt0 = 0
 
 i2=0
 j2=0
+l_do_ice  = True
+l_show_cb = True
+l_show_dt = True
 
 if CNEMO == 'NATL60':
-    #cbox = 'Biscay' ; i1 = 2880 ; j1 = 1060 ; rfact_zoom = 1. ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025]
-    year_ref_ini = 2013; cbox = 'NAtlt' ; i1 = 0 ; j1 = 150 ; rfact_zoom = 0.36  ; ny_res = 1080 ; nx_res = 1920 ; vcb = [0.01, 0.08, 0.98, 0.025] ; font_rat = 7.*rfact_zoom
-    #cbox = 'Med+NorthSea' ; i1 = 4086 ; j1 = 603 ; i2 = 5421 ; j2 = 3119 ; rfact_zoom = 0.3319 ; vcb = [0.01, 0.08, 0.98, 0.025]
+    l_do_ice  = False
+    l_show_cb = False
+    l_show_dt = False
+    year_ref_ini = 2013 ; cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom    
     x_date = 350 ; y_date = 7 ; # where to put the date
 
     
 if CNEMO == 'NANUK025':
+    l_do_ice = True
     year_ref_ini = 2010 ; cdt = '3h'; cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
     x_date = 350 ; y_date = 7 ; # where to put the date
 
@@ -71,21 +76,15 @@ print ' i1,i2,j1,j2 =>', i1,i2,j1,j2
 
 yx_ratio = float(ny_res)/float(nx_res)
 
-
 nxr = int(rfact_zoom*nx_res) ; # widt image (in pixels)
 nyr = int(rfact_zoom*ny_res) ; # height image (in pixels)
 
+
+
+
 dpi = 110
 
-rh  = float(nxr)/float(dpi) ; # width of figure as for figure...
-
-
-#font_rat = nyr/1080.
-
-
-
-
-
+rh = round(float(nxr)/float(dpi),3) ; # width of figure as for figure...
 
 fig_type='png'
 
@@ -103,8 +102,8 @@ if l_do_ice:
 
 if cv_in in ['sosstsst','tos']:
     cfield = 'SST'
-    tmin=0. ;  tmax=25.   ;  dtemp = 1.
-    cpal_fld = 'ncview_nrl'    
+    #tmin=0. ;  tmax=25.   ;  dtemp = 1. ; cpal_fld = 'ncview_nrl'
+    tmin=4. ;  tmax=20.   ;  dtemp = 1. ;  cpal_fld = 'PuBu'    
     cunit = r'SST ($^{\circ}$C)'
     cb_jump = 2
 
@@ -172,7 +171,13 @@ norm_lsm = colors.Normalize(vmin = 0., vmax = 1., clip = False)
 
 
 
-if cdt == '3h': dt = 3
+if cdt == '3h':
+    dt = 3
+elif cdt == '1h':
+    dt = 1
+else:
+    print 'ERROR: unknown dt!'
+
 
 ntpd = 24/dt
 
@@ -253,33 +258,32 @@ for jt in range(jt0,Nt):
     #plt.title('NEMO: '+cfield+', coupled '+CNEMO+', '+cday+' '+chour+':00', **cfont_title)
 
 
-    #ax2 = plt.axes([0.3, 0.08, 0.4, 0.025])
 
-    ax2 = plt.axes(vcb)
-        
-    clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
-    if cb_jump > 1:
-        cb_labs = [] ; cpt = 0
-        for rr in vc_fld:
-            if cpt % cb_jump == 0:
-                if dtemp >= 1.: cb_labs.append(str(int(rr)))
-                if dtemp <  1.: cb_labs.append(str(rr))
-            else:
-                cb_labs.append(' ')
-            cpt = cpt + 1
-        clb.ax.set_xticklabels(cb_labs)    
-    clb.set_label(cunit, **cfont_clb)
-    clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color    
-    clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor         
-    plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
+    if l_show_cb:
+        ax2 = plt.axes(vcb)
+        clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
+        if cb_jump > 1:
+            cb_labs = [] ; cpt = 0
+            for rr in vc_fld:
+                if cpt % cb_jump == 0:
+                    if dtemp >= 1.: cb_labs.append(str(int(rr)))
+                    if dtemp <  1.: cb_labs.append(str(rr))
+                else:
+                    cb_labs.append(' ')
+                cpt = cpt + 1
+            clb.ax.set_xticklabels(cb_labs)    
+        clb.set_label(cunit, **cfont_clb)
+        clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color    
+        clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor         
+        plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
         
     del cf
 
 
 
 
-
-    ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_date,    y_date), **cfont_date)
+    
+    if l_show_dt: ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_date,    y_date), **cfont_date)
 
     #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_date+150, 20), **cfont_mail)
 
@@ -295,6 +299,6 @@ for jt in range(jt0,Nt):
     plt.close(1)
 
 
-    del cm, fig, ax, clb
-
+    del cm, fig, ax
+    if l_show_cb: del clb
 
