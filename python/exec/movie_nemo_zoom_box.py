@@ -47,7 +47,6 @@ jt0 = 0
 
 i2=0
 j2=0
-jm0 = 1 ; # month we start from (january == 1)
 l_show_lsm = True
 l_do_ice  = True
 l_show_cb = True
@@ -58,19 +57,18 @@ l_pow_field = False
 l_apply_lap = False
 
 if CNEMO == 'NATL60':
-    jm0 = 4
     l_show_lsm = False
     #l_pow_field = True ; pow_field = 1.5
     l_do_ice  = False
     l_show_cb = False
     l_show_dt = False
-    year_ref_ini = 2013 ; cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom    
+    cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom    
     x_date = 350 ; y_date = 7 ; # where to put the date
 
     
 if CNEMO == 'NANUK025':
     l_do_ice = True
-    year_ref_ini = 2010 ; cdt = '3h'; cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
+    cdt = '3h'; cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
     x_date = 350 ; y_date = 7 ; # where to put the date
 
 
@@ -98,8 +96,15 @@ rh = round(float(nxr)/float(dpi),3) ; # width of figure as for figure...
 fig_type='png'
 
 narg = len(sys.argv)
-if narg < 4: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file>'; sys.exit(0)
-cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3] ; #cmn=sys.argv[4]
+if narg < 5: print 'Usage: '+sys.argv[0]+' <file> <variable> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
+cf_in = sys.argv[1] ; cv_in=sys.argv[2] ; cf_lsm=sys.argv[3] ; cf_date0=sys.argv[4]
+
+
+cyr0=cf_date0[0:4]
+cmn0=cf_date0[4:6]
+cdd0=cf_date0[6:8]
+
+
 
 # Ice:
 if l_do_ice:
@@ -121,9 +126,10 @@ if cv_in == 'sossheig':
     #tmin=-0.5 ;  tmax=0.5   ;  df = 0.05
     tmin=-1.2 ;  tmax=1.2   ;  df = 0.05 ; l_apply_lap = True
     #cpal_fld = 'ncview_jaisnc'
-    cpal_fld = 'PuBu'
+    #cpal_fld = 'PuBu'
     #cpal_fld = 'RdBu'
     #cpal_fld = 'BrBG'
+    cpal_fld = 'on2'
     cunit = r'SSH (m)'
     cb_jump = 1
 
@@ -205,8 +211,8 @@ else:
 
 ntpd = 24/dt
 
-jd = 0
-jm = jm0
+jd = int(cdd0) - 1
+jm = int(cmn0)
 
 for jt in range(jt0,Nt):
 
@@ -227,7 +233,7 @@ for jt in range(jt0,Nt):
     #print '\n\n *** jt, ch, cd, cm =>', jt, ch, cd, cm
 
     
-    ct = str(datetime.datetime.strptime(str(year_ref_ini)+'-'+cm+'-'+cd+' '+ch, '%Y-%m-%j %H'))
+    ct = str(datetime.datetime.strptime(cyr0+'-'+cm+'-'+cd+' '+ch, '%Y-%m-%j %H'))
     ct=ct[:5]+cm+ct[7:] #lolo bug !!! need to do that to get the month and not "01"
     print ' ct = ', ct
     cday  = ct[:10]   ; print ' *** cday  :', cday
@@ -235,7 +241,7 @@ for jt in range(jt0,Nt):
 
 
 
-    cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_'+cday+'_'+chour+'.'+fig_type    
+    cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type    
 
     fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio), dpi=None, facecolor='w', edgecolor='0.5')
 
