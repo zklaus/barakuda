@@ -13,7 +13,7 @@ import numpy as nmp
 list_barakuda = [ 'blk', 'land', 'land_dark', 'terre', 'cb1', 'eke', 'bathy', 'mld', 'tap1', 'tap2', 'jetblanc', 'amoc',
                   'sst1', 'sst2', 'sst3', 'ice', 'blanc', 'rms',
                   'sigtr', 'bbr', 'bbr2', 'bbr0', 'bbr_cold', 'bbr_warm',
-                  'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask' ]
+                  'cold0', 'warm0', 'graylb', 'graylb2', 'sigma', 'sigma0', 'mask', 'on0', 'on1', 'on2' ]
 
 # There is also NCVIEW colormaps, and the defauly Matplotlib colormaps...
 
@@ -196,6 +196,27 @@ class brkd_cmap:
             M = nmp.array( [
                 [ 156./255.,85./255.,54./255. ],
                 [ 156./255.,85./255.,54./255. ],
+            ] )
+
+        elif cname == 'on0':
+            M = nmp.array( [
+                [ 255./255.,237./255.,0. ], # jaune
+                [ 1.,1.,1. ],
+                [ 0.,138./255.,184./255. ], # bleu
+            ] )
+
+        elif cname == 'on1':
+            M = nmp.array( [
+                [ 255./255.,237./255.,0. ], # jaune
+                [ 1.,1.,1. ],
+                [ 0.,138./255.,184./255. ], # bleu
+            ] )
+
+        elif cname == 'on2':
+            M = nmp.array( [
+                [ 255./255.,237./255.,0. ], # jaune
+                [ 1.,1.,1. ],
+                [ 0.,138./255.,184./255. ], # bleu
             ] )
 
         elif cname == 'cb1':
