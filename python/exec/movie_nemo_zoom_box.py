@@ -129,7 +129,7 @@ if cv_in == 'sossheig':
     #cpal_fld = 'PuBu'
     #cpal_fld = 'RdBu'
     #cpal_fld = 'BrBG'
-    cpal_fld = 'on2'
+    cpal_fld = 'on1'
     cunit = r'SSH (m)'
     cb_jump = 1
 
