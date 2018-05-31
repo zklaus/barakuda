@@ -124,12 +124,12 @@ if cv_in in ['sosstsst','tos']:
 if cv_in == 'sossheig':
     cfield = 'SSH'
     #tmin=-0.5 ;  tmax=0.5   ;  df = 0.05
-    tmin=-1.2 ;  tmax=1.2   ;  df = 0.05 ; l_apply_lap = True
+    tmin=-1.2 ;  tmax=2.3   ;  df = 0.05 ; l_apply_lap = True
     #cpal_fld = 'ncview_jaisnc'
     #cpal_fld = 'PuBu'
     #cpal_fld = 'RdBu'
     #cpal_fld = 'BrBG'
-    cpal_fld = 'on1'
+    cpal_fld = 'on3'
     cunit = r'SSH (m)'
     cb_jump = 1
 
@@ -260,8 +260,8 @@ for jt in range(jt0,Nt):
     if l_apply_lap:
         lx = nmp.zeros((nj,ni))
         ly = nmp.zeros((nj,ni))
-        ly[1:nj-1,:] = 1.E9*(XFLD[2:nj,:] -2.*XFLD[1:nj-1,:] + XFLD[0:nj-2,:])/XE2T2[1:nj-1,:]
         lx[:,1:ni-1] = 1.E9*(XFLD[:,2:ni] -2.*XFLD[:,1:ni-1] + XFLD[:,0:ni-2])/XE1T2[:,1:ni-1]        
+        ly[1:nj-1,:] = 1.E9*(XFLD[2:nj,:] -2.*XFLD[1:nj-1,:] + XFLD[0:nj-2,:])/XE2T2[1:nj-1,:]
         XFLD[:,:] = lx[:,:] + ly[:,:]
         del lx, ly
 
