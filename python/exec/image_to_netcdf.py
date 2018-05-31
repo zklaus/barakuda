@@ -86,9 +86,9 @@ f_out = Dataset(cf_nc, 'w', format='NETCDF4')
 
 cdim_x = 'x'
 cdim_y = 'y'
-if l_fake_coor:
-    cdim_x = 'lon'
-    cdim_y = 'lat'
+#if l_fake_coor:
+#    cdim_x = 'lon'
+#    cdim_y = 'lat'
 f_out.createDimension(cdim_x, nx)
 f_out.createDimension(cdim_y, ny)
 
