@@ -53,16 +53,17 @@ l_show_cb = True
 l_show_dt = True
 l_log_field = False
 l_pow_field = False
+l_annotate_name = False
 
 l_apply_lap = False
 
-if CNEMO == 'NATL60':
-    l_show_lsm = False
+if CNEMO == 'NATL60':    
     #l_pow_field = True ; pow_field = 1.5
     l_do_ice  = False
     l_show_cb = False
     l_show_dt = False
-    cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom    
+    #cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom ; l_show_lsm = False
+    cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom 
     x_date = 350 ; y_date = 7 ; # where to put the date
 
     
@@ -129,7 +130,9 @@ if cv_in == 'sossheig':
     #cpal_fld = 'PuBu'
     #cpal_fld = 'RdBu'
     #cpal_fld = 'BrBG'
-    cpal_fld = 'on3'
+    #
+    #cpal_fld = 'on3' ; tmin=-1.2 ;  tmax=2.3   ;  df = 0.05 ; l_apply_lap = True
+    cpal_fld = 'on2' ; tmin=-1.2 ;  tmax=1.2   ;  df = 0.05 ; l_apply_lap = True
     cunit = r'SSH (m)'
     cb_jump = 1
 
@@ -150,8 +153,11 @@ Nt = len(vtime)
 if l_show_lsm or l_apply_lap:
     bt.chck4f(cf_lsm)
     id_lsm = Dataset(cf_lsm)
+    nb_dim = len(id_lsm.variables['tmask'].dimensions)
     if l_show_lsm:
-        XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2] ; # t, y, x
+        if nb_dim==4: XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2]
+        if nb_dim==3: XMSK  = id_lsm.variables['tmask'][0,j1:j2,i1:i2]
+        if nb_dim==2: XMSK  = id_lsm.variables['tmask'][j1:j2,i1:i2]
         (nj,ni) = nmp.shape(XMSK)
     if l_apply_lap:
         XE1T2 = id_lsm.variables['e1t'][0,j1:j2,i1:i2]
@@ -329,7 +335,9 @@ for jt in range(jt0,Nt):
 
     xl = float(nxr)/20./rfact_zoom
     yl = float(nyr)/1.2/rfact_zoom
-    ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
+
+    if l_annotate_name:
+        ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
 
 
 
