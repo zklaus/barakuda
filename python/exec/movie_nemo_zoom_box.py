@@ -31,7 +31,8 @@ import barakuda_tool as bt
 
 vmn = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 
-CNEMO = 'NATL60'
+CNEMO = 'eNATL60'
+#CNEMO = 'NATL60'
 #CNEMO = 'NANUK025'
 
 color_top = 'white'
@@ -57,16 +58,27 @@ l_annotate_name = False
 
 l_apply_lap = False
 
-if CNEMO == 'NATL60':    
+
+if CNEMO == 'eNATL60':
+    Ni0 = 8354-1
+    Nj0 = 4729-1
+    l_do_ice  = False
+    l_show_cb = False
+    l_show_dt = False
+    #cdt = '1h'; cbox = 'zoom1' ; i1=Ni0-2560 ; j1=Nj0/2-1440 ; i2=Ni0 ; j2=Nj0/2 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
+    cdt = '1h'; cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
+    x_date = 350 ; y_date = 7 ; # where to put the date
+
+if CNEMO == 'NATL60':
     #l_pow_field = True ; pow_field = 1.5
     l_do_ice  = False
     l_show_cb = False
     l_show_dt = False
     #cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom ; l_show_lsm = False
-    cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom 
+    cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
     x_date = 350 ; y_date = 7 ; # where to put the date
 
-    
+
 if CNEMO == 'NANUK025':
     l_do_ice = True
     cdt = '3h'; cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
@@ -79,7 +91,7 @@ ny_res = j2-j1
 
 
 
-    
+
 print ' i1,i2,j1,j2 =>', i1,i2,j1,j2
 
 yx_ratio = float(ny_res)/float(nx_res)
@@ -118,7 +130,7 @@ if l_do_ice:
 if cv_in in ['sosstsst','tos']:
     cfield = 'SST'
     #tmin=0. ;  tmax=25.   ;  df = 1. ; cpal_fld = 'ncview_nrl'
-    tmin=4. ;  tmax=20.   ;  df = 1. ; cpal_fld = 'PuBu'    
+    tmin=4. ;  tmax=20.   ;  df = 1. ; cpal_fld = 'PuBu'
     cunit = r'SST ($^{\circ}$C)'
     cb_jump = 2
 
@@ -140,7 +152,7 @@ elif cv_in == 'somxl010':
     cfield == 'MLD'
     tmin=50. ;  tmax=1500. ;  df = 50.
     cpal_fld = 'viridis_r'
-    
+
 
 if l_do_ice: bt.chck4f(cf_ice)
 
@@ -165,7 +177,7 @@ if l_show_lsm or l_apply_lap:
         (nj,ni) = nmp.shape(XE1T2)
         XE1T2 = XE1T2*XE1T2
         XE2T2 = XE2T2*XE2T2
-    id_lsm.close()
+        id_lsm.close()
 
 if l_show_lsm: pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
@@ -215,6 +227,11 @@ else:
     print 'ERROR: unknown dt!'
 
 
+
+
+print ' *** Dimension image:', rh*float(dpi), rh*yx_ratio*float(dpi),'\n'
+
+
 ntpd = 24/dt
 
 jd = int(cdd0) - 1
@@ -226,19 +243,19 @@ for jt in range(jt0,Nt):
     jdc = (jt*dt)/24 + 1
 
     if jt%ntpd == 0: jd = jd + 1
-    
+
     if jd == vmn[jm-1]+1 and (jt)%ntpd == 0 :
         jd = 1
         jm = jm + 1
-        
+
     ch = '%2.2i'%(jh)
     #cdc= '%3.3i'%(jdc)
     cd = '%3.3i'%(jd)
     cm = '%2.2i'%(jm)
-    
+
     #print '\n\n *** jt, ch, cd, cm =>', jt, ch, cd, cm
 
-    
+
     ct = str(datetime.datetime.strptime(cyr0+'-'+cm+'-'+cd+' '+ch, '%Y-%m-%j %H'))
     ct=ct[:5]+cm+ct[7:] #lolo bug !!! need to do that to get the month and not "01"
     print ' ct = ', ct
@@ -247,7 +264,7 @@ for jt in range(jt0,Nt):
 
 
 
-    cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type    
+    cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
 
     fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio), dpi=None, facecolor='w', edgecolor='0.5')
 
@@ -266,7 +283,7 @@ for jt in range(jt0,Nt):
     if l_apply_lap:
         lx = nmp.zeros((nj,ni))
         ly = nmp.zeros((nj,ni))
-        lx[:,1:ni-1] = 1.E9*(XFLD[:,2:ni] -2.*XFLD[:,1:ni-1] + XFLD[:,0:ni-2])/XE1T2[:,1:ni-1]        
+        lx[:,1:ni-1] = 1.E9*(XFLD[:,2:ni] -2.*XFLD[:,1:ni-1] + XFLD[:,0:ni-2])/XE1T2[:,1:ni-1]
         ly[1:nj-1,:] = 1.E9*(XFLD[2:nj,:] -2.*XFLD[1:nj-1,:] + XFLD[0:nj-2,:])/XE2T2[1:nj-1,:]
         XFLD[:,:] = lx[:,:] + ly[:,:]
         del lx, ly
@@ -278,7 +295,7 @@ for jt in range(jt0,Nt):
     cf = plt.imshow(XFLD[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
     del XFLD
     print "Done!"
-    
+
     # Ice
     if not cfield == 'MLD' and l_do_ice:
         print "Reading record #"+str(jt)+" of "+cv_ice+" in "+cf_ice
@@ -287,7 +304,7 @@ for jt in range(jt0,Nt):
         id_ice.close()
         print "Done!"
 
-        #XM[:,:] = XMSK[:,:] 
+        #XM[:,:] = XMSK[:,:]
         #bt.drown(XICE, XM, k_ew=2, nb_max_inc=10, nb_smooth=10)
         #ci = plt.contourf(XICE[:,:], vcont_ice, cmap = pal_ice, norm = norm_ice) #
 
@@ -297,7 +314,7 @@ for jt in range(jt0,Nt):
 
 
     if l_show_lsm: cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm, interpolation='none')
-    
+
     plt.axis([ 0, ni, 0, nj])
 
     #plt.title('NEMO: '+cfield+', coupled '+CNEMO+', '+cday+' '+chour+':00', **cfont_title)
@@ -315,19 +332,19 @@ for jt in range(jt0,Nt):
                     if df <  1.: cb_labs.append(str(rr))
                 else:
                     cb_labs.append(' ')
-                cpt = cpt + 1
-            clb.ax.set_xticklabels(cb_labs)    
-        clb.set_label(cunit, **cfont_clb)
-        clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color    
-        clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor         
-        plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
-        
+                    cpt = cpt + 1
+                    clb.ax.set_xticklabels(cb_labs)
+                    clb.set_label(cunit, **cfont_clb)
+                    clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color
+                    clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
+                    plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
+
     del cf
 
 
 
 
-    
+
     if l_show_dt: ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_date,    y_date), **cfont_date)
 
     #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_date+150, 20), **cfont_mail)
@@ -348,4 +365,3 @@ for jt in range(jt0,Nt):
 
     del cm, fig, ax
     if l_show_cb: del clb
-
