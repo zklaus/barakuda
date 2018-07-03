@@ -183,8 +183,10 @@ function barakuda_setup()
     mkdir -p ${DIAG_D} ${TMP_DIR}
     
     export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<Y_INI_EC>|${Y_INI_EC}|g" -e "s|<M_INI_EC>|${M_INI_EC}|g"`
-    if [ ! -d ${NEMO_OUT_D} ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi
-    
+
+#    if [ ! -d "${NEMO_OUT_D}" ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi    #AB: added double brackets or "" err segm fault
+#    echo NEMO OUT is ${NEMO_OUT_D}  
+  
     # Where to look for NEMO namelists:
     if [ ${ece_exp} -eq 0 ]; then
         # NEMO standalone:
@@ -233,15 +235,15 @@ function barakuda_setup()
 function barakuda_first_last_years()
 {
     cd ${NEMO_OUT_D}/
-    if [ ${ece_exp} -gt 0 ]; then
-        if [ ! -d 001 ]; then
-            echo " *** Inside: `pwd` !"; \ls -l ; echo
-            echo "ERROR: since ece_exp=${ece_exp}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; echo; exit
-        fi
-        nby_ece=`ls -d ???/ |  grep "[^0-9]" | wc -l`
-        echo " ${nby_ece} years have been completed..."
-        cd 001/
-    fi
+#AB    if [ ${ece_exp} -gt 0 ]; then
+#AB        if [ ! -d 001 ]; then
+#AB            echo " *** Inside: `pwd` !"; \ls -l ; echo
+#AB            echo "ERROR: since ece_exp=${ece_exp}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; echo; exit
+#AB        fi
+#AB        nby_ece=`ls -d ???/ |  grep "[^0-9]" | wc -l`
+#AB        echo " ${nby_ece} years have been completed..."
+#AB        cd 001/
+#AB    fi
 
     # Try to guess the first year from stored "grid_T" files:
     YEAR_INI=`\ls ${CPREF}*${ctest}* | sed -e s/"${CPREF}"/""/g | head -1 | cut -c1-4`
@@ -262,11 +264,11 @@ function barakuda_first_last_years()
 
     cd ${NEMO_OUT_D}/
 
-    if [ ${ece_exp} -gt 0 ]; then
-        dir_end=`printf "%03d" ${nby_ece}`
-        if [ ! -d ${dir_end} ]; then echo "ERROR: since ece_exp=${ece_exp}, there should be a directory ${dir_end} in:"; echo " ${NEMO_OUT_D}"; exit ; fi
-        export YEAR_END=$((${YEAR_INI}+${nby_ece}))
-    else
+#AB    if [ ${ece_exp} -gt 0 ]; then
+#AB        dir_end=`printf "%03d" ${nby_ece}`
+#AB        if [ ! -d ${dir_end} ]; then echo "ERROR: since ece_exp=${ece_exp}, there should be a directory ${dir_end} in:"; echo " ${NEMO_OUT_D}"; exit ; fi
+#AB        export YEAR_END=$((${YEAR_INI}+${nby_ece}))
+#AB    else
         export YEAR_END=`\ls ${CPREF}*${ctest}* | sed -e s/"${CPREF}"/''/g | tail -1 | cut -c1-4`
         echo ${YEAR_END} |  grep "[^0-9]" >/dev/null; # Checking if it's an integer
         if [ ! "$?" -eq 1 ]; then
@@ -274,7 +276,7 @@ function barakuda_first_last_years()
             echo "       => check your NEMO output directory and file naming..."; exit
         fi
         export YEAR_END=$((${YEAR_END}+${IFREQ_SAV_YEARS}-1))
-    fi
+#AB    fi
     echo
     echo " *** Initial year set to ${YEAR_INI}"
     echo " ***   Last  year set to ${YEAR_END}"
@@ -354,6 +356,7 @@ function barakuda_import_mesh_mask()
 
 function barakuda_check_year_is_complete()
 {
+
     jy1=${jyear} ; jy2=$((${jyear}+${IFREQ_SAV_YEARS}-1))
     cy1=`printf "%04d" ${jy1}` ; cy2=`printf "%04d" ${jy2}`
     cy1m=`printf "%04d" $((${jy1}-${IFREQ_SAV_YEARS}))` ; cy2m=`printf "%04d" $((${jy2}-${IFREQ_SAV_YEARS}))`
@@ -363,9 +366,22 @@ function barakuda_check_year_is_complete()
     # Testing if the current year-group has been done
     for ft in ${NEMO_SAVED_FILES}; do
         if ${lcontinue}; then
-            ftst=${NEMO_OUT_D}/${cpf}${CPREF}${TTAG}_${ft} ;  cfxt="0"
+#AB-----------------
+    export MYNEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<EXP>|${EXP}|g" -e "s|????|${cyear}|g"`
+#AB-----------------
+#AB            ftst=${NEMO_OUT_D}/${cpf}${CPREF}${TTAG}_${ft} ;  cfxt="0"
+            ftst=${MYNEMO_OUT_D}/${cpf}${CPREF}${TTAG}_${ft} ;  cfxt="0"
+            echo "Alee $MYNEMO_OUT_D"
+            echo "Alee $cpf"
+            echo "Alee $CPREF"
+            echo "Alee $TTAG"
+            echo "Alee $ft"
+            echo "Aleeee $ftst"
             for ca in "nc" "nc.gz" "nc4"; do
+            echo " Aleeee ca = $ca"
+            echo " Aleeee file = $ftst.$ca"
                 if [ -f ${ftst}.${ca} ]; then cfxt="${ca}"; fi
+            echo "Aleeee cfxt = $cftx"
             done
             if [ ${cfxt} = "0" ]; then
                 echo "Year(s) ${cy1}-${cy2} is not completed yet:"; echo " => ${ftst}(?) is missing"; echo
@@ -398,13 +414,17 @@ function barakuda_import_files()
             for gt in ${NEMO_SAVED_FILES}; do
                 f2i=${CROUT}_${gt}.nc ;   sgz=""
                 for ca in ".gz" "4"; do
-                    if [ -f ${NEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
+#AB                    if [ -f ${NEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
+                    if [ -f ${MYNEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
                 done
-                check_if_file ${NEMO_OUT_D}/${cpf}${f2i}${sgz}
+#AB                check_if_file ${NEMO_OUT_D}/${cpf}${f2i}${sgz}
+                check_if_file ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz}
                 if [ ! -f ./${f2i} ]; then
                     echo "Importing ${f2i}${sgz} ..."
-                    echo "${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
-                    ${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
+#AB                    echo "${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
+#AB                    ${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
+                    echo "${CIMP} ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
+                    ${CIMP} ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz} ./
                     if [ "${sgz}" = ".gz" ]; then gunzip -f ./${f2i}.gz ; fi
                     if [ "${sgz}" = "4"   ]; then
                         echo "mv -f ./${f2i}4 ./${f2i}"

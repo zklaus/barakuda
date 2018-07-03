@@ -62,8 +62,12 @@ mkdir -p ${DIAG_D}
 echo " MOD_CDO => ${MOD_CDO} !!!"
 if [ ! "${MOD_CDO}" = "" ]; then module add ${MOD_CDO}; fi
 
-EXP_DIR=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo||g"`
-IFS_OUT_D=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo|/output/ifs|g"`
+#AB EXP_DIR=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo||g"`
+#AB EXP_DIR=`echo ${NEMO_OUT_D} | sed -e "s|/output/Output_${cyear}/NEMO|/run|g"`
+export EXP_DIR=$SCRATCH/ece3/${EXP}/run
+echo "EXP_DIR=$EXP_DIR"
+#AB IFS_OUT_D=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo|/output/ifs|g"`
+IFS_OUT_D=`echo ${MYNEMO_OUT_D} | sed -e "s|NEMO|IFS|g"`
 
 FLX_EXTRACT="E,LSP,CP,SSR,STR,SLHF,SSHF"
 
@@ -75,10 +79,10 @@ echo
 
 YDIR=$((${cyear}-${Y_INI_EC}+1))
 
-dir_ece=`printf "%03d" ${YDIR}`
-dir_ece=${EXP_DIR}/output/ifs/${dir_ece}
+#AB dir_ece=`printf "%03d" ${YDIR}`
+#AB dir_ece=${EXP_DIR}/output/ifs/${dir_ece}
 
-echo ${dir_ece}
+#AB echo ${dir_ece}
 
 F_AREA=${EXP_DIR}/areas.nc
 F_MASK=${EXP_DIR}/masks.nc
@@ -176,7 +180,8 @@ FLX_EXTRACT_S=`echo "${FLX_EXTRACT}" | sed -e s/','/' '/g` ; # with a ' ' instea
 
 
 
-flsm_exp=${EXP_DIR}/output/ifs/001/ICMGG${EXP}+000000
+#AB flsm_exp=${EXP_DIR}/output/ifs/001/ICMGG${EXP}+000000
+flsm_exp=$IFS_OUT_D/ICMGG${EXP}+000000
 if [ "${i_save_ifs_2d_fluxes}" = "1" ]; then
     
     cdir_ifs_flx=${DIAG_D}/sflx_ifs
@@ -203,7 +208,8 @@ for cm in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"; do
     echo
     echo " ${0} => ${cyear}/${cm}"
 
-    fgrb=${dir_ece}/ICMGG${EXP}+${cyear}${cm}
+#AB     fgrb=${dir_ece}/ICMGG${EXP}+${cyear}${cm}
+    fgrb=$IFS_OUT_D/ICMGG${EXP}+${cyear}${cm}
 
     if [ "${cm}" = "01" ]; then
         pptime=$(cdo showtime -seltimestep,1,2 ${fgrb} | tr -s ' ' ':' | awk -F: '{print ($5-$2)*3600+($6-$3)*60+($7-$4)}' )
