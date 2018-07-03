@@ -13,8 +13,8 @@
 #
 #===========================================================
 
-export CONF=ORCA1.L75 ; # horizontal global ORCA configuration
-export NBL=75         ; # number of levels
+export CONF=ORCA025.L75 ; # horizontal global ORCA configuration
+export NBL=75           ; # number of levels
 
 export HOST="cca/ECMWF" ; # this has no importance at all, it will just become an "info" on the web-page!
 export MASTERMIND="CNR / P. Davini" ; # same here, who's the person who designed/ran this simulation?
@@ -24,6 +24,7 @@ export EXTRA_CONF="NEMO 3.6 + LIM 3 (EC-Earth 3.2.2)" ;   #  // same here ...
 # optional variable are $USERexp/$USER
 export ${USERexp:=$USER}
 
+
 # Path / directory structure in which to find NEMO output file (you can use
 # <ORCA> and <EXP> as substitute to your ORCA grid and experiment (EXP) name):
 export NEMO_OUT_STRCT="/scratch/ms/it/${USERexp}/ece3/<EXP>/output/Output_????/NEMO"
@@ -32,7 +33,7 @@ export NEMO_OUT_STRCT="/scratch/ms/it/${USERexp}/ece3/<EXP>/output/Output_????/N
 export DIAG_DIR="$SCRATCH/barakuda/${CONF}_ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="/scratch/ms/nl/nm6/ECE-DATA/input_barakuda/ORCA1.L75_barakuda"
+export CONF_INI_DIR="$SCRATCH/ECE-DATA/input_barakuda/ORCA025.L75_barakuda"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="$SCRATCH"
@@ -51,8 +52,8 @@ export ece_exp=2 ; # 0 => not an EC-Earth experiment, it's a "pure" ocean-only N
 #                  #      If you select '2', make sure 'cdo' is available and working!!!
 #                  # 10 => this experiment controled by AutoSubmit (so NEMO files are tared somerwhere?)
 #
-export Y_INI_EC=1990 ;    # initial year if ece_exp /= 0 !!!
-export TRES_IFS=255  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
+export Y_INI_EC=1950 ;    # initial year if ece_exp /= 0 !!!
+export TRES_IFS=511  ;    # spectral resolution for IFS, ex: T255 => TRES_IFS=255
 ###--- end EC-Earth IFS relate section ---
 
 export ATMO_INFO="IFS T${TRES_IFS}" ; # Name of atmospheric model or forcing used (ex: COREv2, DFS5.2, IFS T255, ect...)
@@ -126,22 +127,22 @@ export NN_WNDM="windsp"      ; # name of surface wind  speed module in "FILE_FLX
 ################################################################################################
 
 # Land-sea mask and basins files:
-export MM_FILE=${CONF_INI_DIR}/mesh_mask.nc4
-export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA1_ece3.2_2017.nc4
+export MM_FILE=${CONF_INI_DIR}/mesh_mask_ORCA025.L75_ece3.2_2017.nc4
+export BM_FILE=${BARAKUDA_ROOT}/data/basin_mask_ORCA025_ece3.2_2017.nc4
 
 # OBSERVATIONS / REFERENCES
 # 3D monthly climatologies of potential temperature and salinity (can be those you used for the NEMO experiment):
 export NM_TS_OBS="EN4.2.0 [1990-2010]"
-export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
-export F_S_OBS_3D_12=${CONF_INI_DIR}/so_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
-export F_SST_OBS_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA1L75_mclim_1990-2010.nc4
+export F_T_OBS_3D_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
+export F_S_OBS_3D_12=${CONF_INI_DIR}/so_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
+export F_SST_OBS_12=${CONF_INI_DIR}/thetao_EN.4.2.0_ORCA025L75_mclim_1990-2010.nc4
 export NN_T_OBS="thetao"
 export NN_S_OBS="so"
 export NN_SST_OBS="thetao"
 #
 # Sea-ice:
 export NM_IC_OBS="Hurrell et al 2008 [1980-1999]"
-export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA1_Hurrell_monthly_mean1980-1999.nc4
+export F_ICE_OBS_12=${CONF_INI_DIR}/ice_cover_180x360-ORCA025_Hurrell_monthly_mean1980-1999.nc4
 export NN_ICEF_OBS="ice_cover"
 #
 # Surface Heat fluxes:
@@ -151,15 +152,15 @@ export NN_QSOL_OBS="radsw"
 
 
 # A text file where the cross sections (to compute transports) are defined :
-export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA1.dat"        ; # set i_do_trsp=1 !
-export TRANSPORT_SECTION_FILE_ICE="${BARAKUDA_ROOT}/data/transport_ice_ORCA1.dat"  ; # set i_do_trsp_ice=1 !
+export TRANSPORT_SECTION_FILE="${BARAKUDA_ROOT}/data/transportiz_ORCA025_y1050.dat"        ; # set i_do_trsp=1 !
+export TRANSPORT_SECTION_FILE_ICE="${BARAKUDA_ROOT}/data/transport_ice_ORCA025_y1050.dat"  ; # set i_do_trsp_ice=1 !
 
 # For transport by sigma-class:
-export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA1.dat"
+export DENSITY_SECTION_FILE="${BARAKUDA_ROOT}/data/dens_section_ORCA025_y1050.dat"
 
 # Files with the list of rectangular domains to "analyze" more closely:
-export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
-export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA1.txt"
+export FILE_DEF_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025_y1050.txt"
+export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025_y1050.txt"
 
 # In what format should figures be produced ('png' recommanded, but 'svg' supported!):
 export FIG_FORM="png"
@@ -183,7 +184,7 @@ export iffmpeg_x264=0 ; # is, by chance, ffmpeg with support for x264 encoding a
 export i_do_mean=1
 
 # IFS surface fluxes of heat and freshwater
-export i_do_ifs_flx=1 ; # only relevant when ece_exp=2...
+export i_do_ifs_flx=0 ; # only relevant when ece_exp=2...
 
 # AMOC:
 export i_do_amoc=1
