@@ -22,9 +22,6 @@ function barakuda_import_files()
 
     echo " *** testing on files \"${cgrid_test_1m}\" and \"${cgrid_test_1y}\" !"; echo
 
-#AB-----------------
-    MYNEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<EXP>|${EXP}|g" -e "s|????|${cyear}|g"`
-#AB-----------------
 
     l_happy=false
     while ! ${l_happy} ; do
@@ -38,17 +35,13 @@ function barakuda_import_files()
             for gt in ${NEMO_SAVED_FILES}; do
                 f2i=${CROUT}_${gt}.nc ;   sgz=""
                 for ca in ".gz" "4"; do
-#AB                    if [ -f ${NEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
-                    if [ -f ${MYNEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
+                    if [ -f ${NEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
                 done
-#AB                check_if_file ${NEMO_OUT_D}/${cpf}${f2i}${sgz}
-                check_if_file ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz}
+                check_if_file ${NEMO_OUT_D}/${cpf}${f2i}${sgz}
                 if [ ! -f ./${f2i} ]; then
                     echo "Importing ${f2i}${sgz} ..."
-#AB                    echo "${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
-#AB                    ${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
-                    echo "${CIMP} ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
-                    ${CIMP} ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz} ./
+                    echo "${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
+                    ${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
                     if [ "${sgz}" = ".gz" ]; then gunzip -f ./${f2i}.gz ; fi
                     if [ "${sgz}" = "4"   ]; then
                         echo "mv -f ./${f2i}4 ./${f2i}"
@@ -66,17 +59,13 @@ function barakuda_import_files()
             for gt in ${NEMO_SAVED_FILES_3D}; do
                 f2i=${CRTY}_${gt}.nc ;   sgz=""
                 for ca in ".gz" "4"; do
-#AB                    if [ -f ${NEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
-                    if [ -f ${MYNEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
+                    if [ -f ${NEMO_OUT_D}/${cpf}${f2i}${ca} ]; then sgz="${ca}"; fi
                 done
-#AB                check_if_file ${NEMO_OUT_D}/${cpf}${f2i}${sgz}
-                check_if_file ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz}
+                check_if_file ${NEMO_OUT_D}/${cpf}${f2i}${sgz}
                 if [ ! -f ./${f2i} ]; then
                     echo "Importing ${f2i}${sgz} ..."
-#AB                    echo "${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
-#AB                    ${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
-                    echo "${CIMP} ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
-                    ${CIMP} ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz} ./
+                    echo "${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
+                    ${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
                     if [ "${sgz}" = ".gz" ]; then gunzip -f ./${f2i}.gz ; fi
                     if [ "${sgz}" = "4"   ]; then
                         echo "mv -f ./${f2i}4 ./${f2i}"

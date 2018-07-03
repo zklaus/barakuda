@@ -14,15 +14,15 @@ imean2d=0
 imean3d=0
 iSflx=0
 ienso=0
-imov=0
+imov=1
 issh=0
 ipsi=0
 iwind=0
-isfluxes=1
+isfluxes=0
 its=0
 imld=0
 irnf=0
-iice=1
+iice=0
 iemp=0
 icmip5=0
 ihov=0
@@ -59,16 +59,17 @@ ihov=0
 #ARCH="T159_ece32_triolith"
 #export EXP="LB30" ; NC=nc4 ; jyear=2010
 
-#AB CONFIG="ORCA1_L75"
-#AB ARCH="lolo"
-#AB export EXP="AMOC" ; NC=nc4 ; jyear=1990
+CONFIG="ORCA1_L75"
+ARCH="lolo"
+export EXP="AMOC" ; NC=nc4 ; jyear=1990
 
-#AB CONFIG, ARCH and MACHINE are defined in configs 
-#ABCONFIG="ORCA1_L75"
-#ABARCH="ece32_cca"
-export EXP="AMOC" ; NC=nc ; jyear=1990
+
 
 export BARAKUDA_ROOT=`pwd | sed -e "s|/python||g"`
+
+
+echo "${BARAKUDA_ROOT}/configs/config_${CONFIG}_${ARCH}.sh"
+
 
 . ${BARAKUDA_ROOT}/src/bash/bash_functions.bash
 . ${BARAKUDA_ROOT}/configs/config_${CONFIG}_${ARCH}.sh
@@ -99,30 +100,26 @@ export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<E
 if [ ! -d ${NEMO_OUT_D} ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi
 YEAR_INI=1990 ; YEAR_INI_F=1990
 export cyear=`printf "%04d" ${jyear}`
-#AB if [ ${ece_exp} -gt 0 ]; then
-#AB     iy=$((${jyear}-${YEAR_INI}+1+${YEAR_INI}-${YEAR_INI_F}))
-#AB     dir_ece="`printf "%03d" ${iy}`/"
-#AB fi
+if [ ${ece_exp} -gt 0 ]; then
+    iy=$((${jyear}-${YEAR_INI}+1+${YEAR_INI}-${YEAR_INI_F}))
+    dir_ece="`printf "%03d" ${iy}`/"
+fi
 CPREF=`echo ${NEMO_FILE_PREFIX} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<TSTAMP>|${TSTAMP}|g"`
 
 if [ ${icrosssect} -eq 1 ] || [ ${imean2d} -eq 1 ] || [ ${imov} -eq 1 ]; then
-#AB     ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
-    ft=${NEMO_OUT_D}/${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
+    ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
     check_if_file ${ft}
-#AB     fj=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_${FILE_ICE_SUFFIX}.${NC}
-    fj=${NEMO_OUT_D}/${CPREF}${cyear}0101_${cyear}1231_${FILE_ICE_SUFFIX}.${NC}
+    fj=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_${FILE_ICE_SUFFIX}.${NC}
     check_if_file ${fj}
 fi
 
 if [ ${imean3d} -eq 1 ]; then
-#AB     ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
-    ft=${NEMO_OUT_D}/${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
+    ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_grid_T.${NC}
     check_if_file ${ft}
 fi
 
 if [ ${iSflx} -eq 1 ]; then
-#AB     ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_${FILE_FLX_SUFFIX}.${NC}
-    ft=${NEMO_OUT_D}/${CPREF}${cyear}0101_${cyear}1231_${FILE_FLX_SUFFIX}.${NC}
+    ft=${NEMO_OUT_D}/${dir_ece}${CPREF}${cyear}0101_${cyear}1231_${FILE_FLX_SUFFIX}.${NC}
     check_if_file ${ft}
 fi
 

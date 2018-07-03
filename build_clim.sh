@@ -29,15 +29,13 @@ list_conf+=" `\ls ./config_*.sh 2>/dev/null | sed -e "s|.\/config_||g" -e s/'.sh
 
 barakuda_init
 
-while getopts R:f:i:e:C:u:h option ; do
+while getopts R:f:i:e:C:h option ; do
     case $option in
         R) export EXP=${OPTARG};;
         f) export IFREQ_SAV_YEARS=${OPTARG} ;;
         i) export Y1=${OPTARG} ;;
         e) export Y2=${OPTARG} ;;
         C) export CONFIG=${OPTARG};;
-#        u) export USERexp=${OPTARG} ;;
-        u) USERexp=${OPTARG} ;;
         h)  build_clim_usage ; exit ;;
         \?) build_clim_usage ; exit ;;
     esac
@@ -118,9 +116,6 @@ fi
 
 export PATH=${BARAKUDA_ROOT}/cdftools_light/bin:${PYTHON_HOME}/bin:${PATH}
 
-export NCR=/cineca/prod/opt/tools/nco/4.6.7/intel--pe-xe-2017--binary/bin   #AB
-echo "NCR $NCR"
-
 Y1=$((${Y1}+0))
 Y2=$((${Y2}+0))
 CY1=`printf "%04d" ${Y1}`
@@ -194,20 +189,9 @@ if [ ! $((${nby}%${IFREQ_SAV_YEARS})) -eq 0 ]; then
     echo " Number of years should be a multiple of ${IFREQ_SAV_YEARS}!"; exit
 fi
 
-    export NEMO_OUT_D=`echo ${NEMO_OUT_STRCT} | sed -e "s|<ORCA>|${ORCA}|g" -e "s|<EXP>|${EXP}|g" -e "s|<Y_INI_EC>|${Y_INI_EC}|g" -e "s|<M_INI_EC>|${M_INI_EC}|g"`
-
-#AB    if [  -f ${NEMO_OUT_D} ]; then 
-#AB     echo NEMO OUT is ${NEMO_OUT_D}
-#AB     else
-#AB     echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; 
-#AB    fi
-#    if [ ! -d "${NEMO_OUT_D}" ]; then echo "Unfortunately we could not find ${NEMO_OUT_D}"; exit; fi    #AB: added double brackets or "" err segm fault
-#    echo NEMO OUT is ${NEMO_OUT_D}
-
-#AB if [ ${ece_exp} -gt 0 ] && [ ${ece_exp} -lt 10 ] ; then
-#AB    if [ ! -d ${NEMO_OUT_D}/001 ]; then echo "ERROR: since ece_exp=${ece_exp}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; fi
-#AB   echo " ${NEMO_OUT_D}"
-#AB fi
+if [ ${ece_exp} -gt 0 ] && [ ${ece_exp} -lt 10 ] ; then
+    if [ ! -d ${NEMO_OUT_D}/001 ]; then echo "ERROR: since ece_exp=${ece_exp}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; fi
+fi
 
 ffirsty="${DIAG_D}/first_year.info"
 if [ ! -f  ${ffirsty} ]; then echo "ERROR: file ${ffirsty} not found!!!"; exit; fi
@@ -220,12 +204,12 @@ while [ ${jyear} -le ${Y2} ]; do
     export cyear=`printf "%04d" ${jyear}` ; echo ; echo "Year = ${cyear}"
 
     cpf=""
-#AB    if [ ${ece_exp} -gt 0 ]; then
-#AB        iy=$((${jyear}-${Y1}+1+${Y1}-${YEAR_INI_F}))
-#AB        dir_ece=`printf "%03d" ${iy}`
-#AB        echo " *** ${cyear} => dir_ece = ${dir_ece}"
-#AB        cpf="${dir_ece}/"
-#AB    fi
+    if [ ${ece_exp} -gt 0 ]; then
+        iy=$((${jyear}-${Y1}+1+${Y1}-${YEAR_INI_F}))
+        dir_ece=`printf "%03d" ${iy}`
+        echo " *** ${cyear} => dir_ece = ${dir_ece}"
+        cpf="${dir_ece}/"
+    fi
 
     i_get_file=0
     if [ $((${jyear}%${IFREQ_SAV_YEARS})) -eq 0 ]; then
@@ -337,7 +321,6 @@ for suff in ${SUFF_FOR_MONTHLY}; do
                 echo; ls ; echo
                 echo "ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*${cmmdd1}_*${cmmdd2}_${suff}.nc -o mean_m${cm}_${suff}.nc"
                 ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*${cmmdd1}_*${cmmdd2}_${suff}.nc -o mean_m${cm}_${suff}.nc &
-#AB                $NCR/ncra -F -O -d time_counter,${jm},,12 ${CPRMN}*${cmmdd1}_*${cmmdd2}_${suff}.nc -o mean_m${cm}_${suff}.nc &
                 echo
             fi
         done
@@ -346,7 +329,6 @@ for suff in ${SUFF_FOR_MONTHLY}; do
         echo; ls ; echo
         echo "ncrcat -O  mean_m*_${suff}.nc out_${suff}.nc"
         ncrcat -O  mean_m*_${suff}.nc out_${suff}.nc
-#AB        $NCR/ncrcat -O  mean_m*_${suff}.nc out_${suff}.nc
         rm mean_m*_${suff}.nc
         echo
         echo "mv -f out_${suff}.nc ${f2c}"
@@ -375,7 +357,6 @@ for suff in ${SUFF_FOR_ANNUAL}; do
         #
         echo "ncra -O ${CPREF3D}*_${suff}.nc -o ${f2c} &"
         ncra -O ${CPREF3D}*_${suff}.nc -o ${f2c} &
-#AB        $NCR/ncra -O ${CPREF3D}*_${suff}.nc -o ${f2c} &
         echo
     else
         echo ; echo " Ignoring annual ${suff} files!"; echo

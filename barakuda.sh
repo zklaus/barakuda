@@ -24,7 +24,7 @@ list_conf+=" `\ls ./config_*.sh 2>/dev/null | sed -e "s|.\/config_||g" -e s/'.sh
 
 barakuda_init
 
-while getopts C:R:f:y:c:FeEh:u: option ; do
+while getopts C:R:f:y:c:FeEh option ; do
     case $option in
         C) export CONFIG=${OPTARG} ;;
         R) export EXP=${OPTARG} ;;
@@ -33,8 +33,6 @@ while getopts C:R:f:y:c:FeEh:u: option ; do
         c) export EXPREF=${OPTARG} ;;
         F) export LFORCEDIAG=true ;;
         e) export ISTAGE=2 ;;
-#        u) export USERexp=${OPTARG} ;;
-        u) USERexp=${OPTARG} ;;
         E) export ISTAGE=2 ; export l_clim_diag=true ;;
         h)  barakuda_usage; exit ;;
         \?) barakuda_usage; exit ;;
@@ -141,12 +139,12 @@ while ${lcontinue}; do
 
     export cyear=`printf "%04d" ${jyear}`
     cpf=""
-#AB    if [ ${ISTAGE} -eq 1 ] && [ ${ece_exp} -gt 0 ]; then
-#AB        iy=$((${jyear}-${YEAR_INI}+1+${YEAR_INI}-${YEAR_INI_F}))
-#AB        dir_ece=`printf "%03d" ${iy}`
-#AB        echo " *** ${cyear} => dir_ece = ${dir_ece}"
-#AB        cpf="${dir_ece}/"
-#AB    fi
+    if [ ${ISTAGE} -eq 1 ] && [ ${ece_exp} -gt 0 ]; then
+        iy=$((${jyear}-${YEAR_INI}+1+${YEAR_INI}-${YEAR_INI_F}))
+        dir_ece=`printf "%03d" ${iy}`
+        echo " *** ${cyear} => dir_ece = ${dir_ece}"
+        cpf="${dir_ece}/"
+    fi
 
     i_get_file=0
     if [ $((${jyear}%${IFREQ_SAV_YEARS})) -eq 0 ]; then
