@@ -428,6 +428,12 @@ function barakuda_import_files()
                     case $gt in
                     icemod )
                         ncrename -d .x_grid_T,x -d .y_grid_T,y ${f2i} ;;
+                    grid_T )
+                        ncrename -d .olevel,deptht -v .olevel,deptht ${f2i} ;;
+                    grid_U )
+                        ncrename -d .olevel,depthu -v .olevel,depthu ${f2i} ;;
+                    grid_V )
+                        ncrename -d .olevel,depthv -v .olevel,depthv ${f2i} ;;
                     SBC )
                         ncrename -v .friver,runoffs ${f2i} ;;
                     esac
