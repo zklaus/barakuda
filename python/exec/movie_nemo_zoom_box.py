@@ -22,6 +22,7 @@ import matplotlib.colors as colors
 import warnings
 warnings.filterwarnings("ignore")
 
+from calendar import isleap
 import datetime
 
 import barakuda_colmap as bcm
@@ -30,6 +31,7 @@ import barakuda_tool as bt
 
 
 vmn = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
+vml = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 
 CNEMO = 'eNATL60'
 #CNEMO = 'NATL60'
@@ -51,10 +53,10 @@ j2=0
 l_show_lsm = True
 l_do_ice  = True
 l_show_cb = True
-l_show_dt = True
+l_show_date = True
 l_log_field = False
 l_pow_field = False
-l_annotate_name = False
+l_annotate_name = True
 
 l_apply_lap = False
 
@@ -64,27 +66,29 @@ if CNEMO == 'eNATL60':
     Nj0 = 4729-1
     l_do_ice  = False
     l_show_cb = False
-    l_show_dt = False
-    #cdt = '1h'; cbox = 'zoom1' ; i1=Ni0-2560 ; j1=Nj0/2-1440 ; i2=Ni0 ; j2=Nj0/2 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
-    cdt = '1h'; cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
-    x_date = 350 ; y_date = 7 ; # where to put the date
+    l_show_date = True
+    #cdt = '1h'; cbox = 'zoom1' ; i1=Ni0-2560 ; j1=Nj0/2-1440 ; i2=Ni0 ; j2=Nj0/2 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
+    cdt = '1h'; cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
+    x_date = 1900 ; y_date = 20 ; # where to put the date
 
 if CNEMO == 'NATL60':
     #l_pow_field = True ; pow_field = 1.5
     l_do_ice  = False
     l_show_cb = False
-    l_show_dt = False
-    #cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom ; l_show_lsm = False
-    cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
+    l_show_date = False
+    #cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom ; l_show_lsm = False
+    cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
     x_date = 350 ; y_date = 7 ; # where to put the date
 
 
 if CNEMO == 'NANUK025':
     l_do_ice = True
-    cdt = '3h'; cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 0.5*rfact_zoom
+    cdt = '3h'; cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
     x_date = 350 ; y_date = 7 ; # where to put the date
 
 
+print '\n rfact_zoom = ', rfact_zoom
+print ' font_rat = ', font_rat, '\n'
 
 nx_res = i2-i1
 ny_res = j2-j1
@@ -194,7 +198,7 @@ params = { 'font.family':'Helvetica Neue',
            'axes.labelsize':  int(12.*font_rat) }
 mpl.rcParams.update(params)
 cfont_clb  = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(12.*font_rat), 'color':color_top }
-cfont_date = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(14.*font_rat), 'color':'w' }
+cfont_date = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(12.*font_rat), 'color':'w' }
 cfont_mail = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14.*font_rat), 'color':'0.8'}
 cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(30.*font_rat), 'color':'w' }
 
@@ -234,6 +238,11 @@ print ' *** Dimension image:', rh*float(dpi), rh*yx_ratio*float(dpi),'\n'
 
 ntpd = 24/dt
 
+
+vm = vmn
+if isleap(int(cyr0)): vm = vml
+#print ' year is ', vm, nmp.sum(vm)
+
 jd = int(cdd0) - 1
 jm = int(cmn0)
 
@@ -244,7 +253,7 @@ for jt in range(jt0,Nt):
 
     if jt%ntpd == 0: jd = jd + 1
 
-    if jd == vmn[jm-1]+1 and (jt)%ntpd == 0 :
+    if jd == vm[jm-1]+1 and (jt)%ntpd == 0 :
         jd = 1
         jm = jm + 1
 
@@ -345,15 +354,18 @@ for jt in range(jt0,Nt):
 
 
 
-    if l_show_dt: ax.annotate('Date: '+cday+' '+chour+':00',   xy=(1, 4), xytext=(x_date,    y_date), **cfont_date)
+    if l_show_date:
+        xl = float(x_date)/rfact_zoom
+        yl = float(y_date)/rfact_zoom
+        ax.annotate('Date: '+cday+' '+chour+':00', xy=(1, 4), xytext=(xl,yl), **cfont_date)
 
-    #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(x_date+150, 20), **cfont_mail)
+    #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(xl+150, 20), **cfont_mail)
 
 
-    xl = float(nxr)/20./rfact_zoom
-    yl = float(nyr)/1.2/rfact_zoom
 
     if l_annotate_name:
+        xl = float(nxr)/20./rfact_zoom
+        yl = float(nyr)/1.33/rfact_zoom
         ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
 
 
