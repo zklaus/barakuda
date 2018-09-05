@@ -68,7 +68,7 @@ if CNEMO == 'eNATL60':
     l_show_cb = False
     l_show_date = True
     #cdt = '1h'; cbox = 'zoom1' ; i1=Ni0-2560 ; j1=Nj0/2-1440 ; i2=Ni0 ; j2=Nj0/2 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
-    cdt = '1h'; cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
+    cdt = '1h'; cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 8.*rfact_zoom
     x_date = 1900 ; y_date = 20 ; # where to put the date
 
 if CNEMO == 'NATL60':
@@ -133,10 +133,12 @@ if l_do_ice:
 
 if cv_in in ['sosstsst','tos']:
     cfield = 'SST'
-    #tmin=0. ;  tmax=25.   ;  df = 1. ; cpal_fld = 'ncview_nrl'
-    tmin=4. ;  tmax=20.   ;  df = 1. ; cpal_fld = 'PuBu'
+    tmin=0. ;  tmax=30.   ;  df = 2. ; cpal_fld = 'ncview_nrl'
+    #tmin=0. ;  tmax=32.   ;  df = 2. ; cpal_fld = 'viridis'
+    #tmin=4. ;  tmax=20.   ;  df = 1. ; cpal_fld = 'PuBu'
     cunit = r'SST ($^{\circ}$C)'
     cb_jump = 2
+    l_show_cb = True
 
 if cv_in == 'sossheig':
     cfield = 'SSH'
@@ -191,13 +193,13 @@ if l_show_lsm: pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 #params = { 'font.family':'Ubuntu',
 params = { 'font.family':'Helvetica Neue',
            'font.weight':    'normal',
-           'font.size':       int(12.*font_rat),
-           'legend.fontsize': int(12.*font_rat),
-           'xtick.labelsize': int(12.*font_rat),
-           'ytick.labelsize': int(12.*font_rat),
-           'axes.labelsize':  int(12.*font_rat) }
+           'font.size':       int(9.*font_rat),
+           'legend.fontsize': int(9.*font_rat),
+           'xtick.labelsize': int(9.*font_rat),
+           'ytick.labelsize': int(9.*font_rat),
+           'axes.labelsize':  int(9.*font_rat) }
 mpl.rcParams.update(params)
-cfont_clb  = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(12.*font_rat), 'color':color_top }
+cfont_clb  = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(8.*font_rat), 'color':'w'}
 cfont_date = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(12.*font_rat), 'color':'w' }
 cfont_mail = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14.*font_rat), 'color':'0.8'}
 cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(30.*font_rat), 'color':'w' }
@@ -273,7 +275,7 @@ for jt in range(jt0,Nt):
 
 
 
-    cfig = 'figs/zoom_'+cv_in+'_NEMO'+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
+    cfig = 'figs/'+cv_in+'_NEMO_'+CNEMO+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
 
     fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio), dpi=None, facecolor='w', edgecolor='0.5')
 
@@ -331,6 +333,7 @@ for jt in range(jt0,Nt):
 
 
     if l_show_cb:
+        color_top='w'
         ax2 = plt.axes(vcb)
         clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
         if cb_jump > 1:
@@ -342,7 +345,7 @@ for jt in range(jt0,Nt):
                 else:
                     cb_labs.append(' ')
                     cpt = cpt + 1
-                    clb.ax.set_xticklabels(cb_labs)
+                    clb.ax.set_xticklabels(cb_labs, **cfont_clb)
                     clb.set_label(cunit, **cfont_clb)
                     clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color
                     clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
