@@ -58,8 +58,8 @@ l_log_field = False
 l_pow_field = False
 l_annotate_name = True
 
-l_do_curl = False
-
+l_do_curl = True
+romega = 2.*nmp.pi/86400.0
 
 if CNEMO == 'eNATL60':
     Ni0 = 8354-1
@@ -115,7 +115,7 @@ fig_type='png'
 narg = len(sys.argv)
 if narg < 7: print 'Usage: '+sys.argv[0]+' <fileX> <varX> <fileY> <varY> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
 cfx_in = sys.argv[1] ; cvx_in = sys.argv[2]
-cfx_in = sys.argv[3] ; cvx_in = sys.argv[4]
+cfy_in = sys.argv[3] ; cvy_in = sys.argv[4]
 cf_lsm = sys.argv[5] ; cf_date0=sys.argv[6]
 
 
@@ -160,7 +160,7 @@ if cvx_in == 'sossheig':
     cunit = r'SSH (m)'
     cb_jump = 1
 
-if cvx_in == 'socurloverf':
+elif cvx_in=='sozocrtx' and cvy_in=='somecrty':
     cfield = 'RV'
     cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
     cunit = ''
@@ -168,12 +168,13 @@ if cvx_in == 'socurloverf':
 
 
 
-    
-elif cvx_in == 'somxl010':
-    cfield == 'MLD'
-    tmin=50. ;  tmax=1500. ;  df = 50.
-    cpal_fld = 'viridis_r'
+else:
+    print 'ERROR: we do not know cvx_in and cvy_in!'
+    sys.exit(0)
 
+
+
+    
 
 if l_do_ice: bt.chck4f(cf_ice)
 
@@ -187,22 +188,32 @@ id_fx.close()
 
 Nt = len(vtime)
 
-if l_show_lsm:
+if l_show_lsm or l_do_curl:
+    print "\nReading record metrics in "+cf_lsm
     id_lsm = Dataset(cf_lsm)
     nb_dim = len(id_lsm.variables['tmask'].dimensions)
     if l_show_lsm:
-        if nb_dim==4: XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2]
-        if nb_dim==3: XMSK  = id_lsm.variables['tmask'][0,j1:j2,i1:i2]
-        if nb_dim==2: XMSK  = id_lsm.variables['tmask'][j1:j2,i1:i2]
-        (nj,ni) = nmp.shape(XMSK)
+        if nb_dim==4: XMSK = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2]
+        if nb_dim==3: XMSK = id_lsm.variables['tmask'][0,j1:j2,i1:i2]
+        if nb_dim==2: XMSK = id_lsm.variables['tmask'][j1:j2,i1:i2]
     if l_do_curl:
-        XE1T2 = id_lsm.variables['e1t'][0,j1:j2,i1:i2]
-        XE2T2 = id_lsm.variables['e2t'][0,j1:j2,i1:i2]
-        (nj,ni) = nmp.shape(XE1T2)
-        XE1T2 = XE1T2*XE1T2
-        XE2T2 = XE2T2*XE2T2
-        id_lsm.close()
+        # e2v, e1u, e1f, e2f
+        e2v = id_lsm.variables['e2v'][0,j1:j2,i1:i2]
+        e1u = id_lsm.variables['e1u'][0,j1:j2,i1:i2]
+        e1f = id_lsm.variables['e1f'][0,j1:j2,i1:i2]
+        e2f = id_lsm.variables['e2f'][0,j1:j2,i1:i2]
+        #ff  = id_lsm.variables['gphif'][0,j1:j2,i1:i2]
+        ff  = id_lsm.variables['ff'][0,j1:j2,i1:i2]
+        if nb_dim==4: XMSK = id_lsm.variables['fmask'][0,0,j1:j2,i1:i2]
+        if nb_dim==3: XMSK = id_lsm.variables['fmask'][0,j1:j2,i1:i2]
+        if nb_dim==2: XMSK = id_lsm.variables['fmask'][j1:j2,i1:i2]
+        # Coriolis Parameter:
+        #ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)        
+    (nj,ni) = nmp.shape(XMSK)
+    id_lsm.close()
+    print 'Done!\n'
 
+    
 if l_show_lsm: pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
@@ -266,6 +277,9 @@ if isleap(int(cyr0)): vm = vml
 jd = int(cdd0) - 1
 jm = int(cmn0)
 
+
+Xplot = nmp.zeros((nj,ni))
+
 for jt in range(jt0,Nt):
 
     jh = (jt*dt)%24
@@ -297,7 +311,6 @@ for jt in range(jt0,Nt):
 
     fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio), dpi=None, facecolor='w', edgecolor='0.5')
 
-    #ax  = plt.axes([0.065, 0.05, 0.9, 1.], axisbg = '0.5')
     ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
 
     vc_fld = nmp.arange(tmin, tmax + df, df)
@@ -314,23 +327,37 @@ for jt in range(jt0,Nt):
     id_fy.close()
     print "Done!"
 
-
-
     
     if l_do_curl:
+        print '\nComputing curl...'
         lx = nmp.zeros((nj,ni))
         ly = nmp.zeros((nj,ni))
-        lx[:,1:ni-1] = 1.E9*(XFLD[:,2:ni] -2.*XFLD[:,1:ni-1] + XFLD[:,0:ni-2])/XE1T2[:,1:ni-1]
-        ly[1:nj-1,:] = 1.E9*(XFLD[2:nj,:] -2.*XFLD[1:nj-1,:] + XFLD[0:nj-2,:])/XE2T2[1:nj-1,:]
-        XFLD[:,:] = lx[:,:] + ly[:,:]
+        
+        lx[:,1:ni-1] =   e2v[:,2:ni]*YFLD[:,2:ni] - e2v[:,1:ni-1]*YFLD[:,1:ni-1] 
+        ly[1:nj-1,:] = - e1u[2:nj,:]*XFLD[2:nj,:] + e1u[1:nj-1,:]*XFLD[1:nj-1,:]
+
+        Xplot[:,:] = ( lx[:,:] + ly[:,:] )*XMSK[:,:] / ( e1f[:,:]*e2f[:,:]*ff[:,:] )         # Relative Vorticity...
+        
+        ##XFLD[:,:] = (  e2v(ji+1,jj  ) * vn(ji+1,jj  ) - e2v(ji,jj) * vn(ji,jj)    &
+        ##                                      &          - e1u(ji  ,jj+1) * un(ji  ,jj+1) + e1u(ji,jj) * un(ji,jj)  ) &
+        ##                    &          * fmask(ji,jj) / ( e1f(ji,jj) * e2f(ji,jj) )
+
         del lx, ly
+        print '... curl computed!\n'
+        
 
-    if not l_show_lsm and jt == jt0: ( nj , ni ) = nmp.shape(XFLD)
-    print '  *** dimension of array => ', ni, nj
 
+    #Xplot[:,:] = YFLD[:,:]
+    #if not l_show_lsm and jt == jt0: ( nj , ni ) = nmp.shape(XFLD)
+    #print '  *** dimension of array => ', ni, nj
+
+
+    del XFLD,YFLD
+    
     print "Ploting"
-    cf = plt.imshow(XFLD[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
-    del XFLD
+    
+    cf = plt.imshow(Xplot[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
+
     print "Done!"
 
     # Ice
