@@ -42,7 +42,7 @@ color_top = 'white'
 
 
 
-
+cv_out = 'unknown'
 
 #jt0 = 248
 jt0 = 0
@@ -125,7 +125,12 @@ cdd0=cf_date0[6:8]
 
 
 
+
 # Ice:
+
+if l_do_curl: cv_out = 'RV'
+
+
 if l_do_ice:
     cv_ice  = 'siconc'
     cf_ice = replace(cfx_in, 'grid_T', 'icemod')
@@ -307,7 +312,7 @@ for jt in range(jt0,Nt):
 
 
 
-    cfig = 'figs/'+cvx_in+'_NEMO_'+CNEMO+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
+    cfig = 'figs/'+cv_out+'_NEMO_'+CNEMO+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
 
     fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio), dpi=None, facecolor='w', edgecolor='0.5')
 
@@ -329,6 +334,7 @@ for jt in range(jt0,Nt):
 
     
     if l_do_curl:
+        
         print '\nComputing curl...'
         lx = nmp.zeros((nj,ni))
         ly = nmp.zeros((nj,ni))
