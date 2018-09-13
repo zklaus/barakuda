@@ -173,7 +173,6 @@ elif cvx_in=='sozocrtx' and cvy_in=='somecrty':
     cb_jump = 1
 
 
-
 else:
     print 'ERROR: we do not know cvx_in and cvy_in!'
     sys.exit(0)
