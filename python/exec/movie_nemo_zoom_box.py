@@ -143,7 +143,7 @@ if cv_in in ['sosstsst','tos']:
 if cv_in == 'sossheig':
     cfield = 'SSH'
     #tmin=-0.5 ;  tmax=0.5   ;  df = 0.05
-    tmin=-1.2 ;  tmax=2.3   ;  df = 0.05 ; l_apply_lap = True
+    #tmin=-1.2 ;  tmax=2.3   ;  df = 0.05 ; l_apply_lap = True
     #cpal_fld = 'ncview_jaisnc'
     #cpal_fld = 'PuBu'
     #cpal_fld = 'RdBu'
@@ -158,6 +158,15 @@ if cv_in == 'sossheig':
     cunit = r'SSH (m)'
     cb_jump = 1
 
+if cv_in == 'socurloverf':
+    cfield = 'RV'
+    cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05 ; l_apply_lap = False
+    cunit = ''
+    cb_jump = 1
+
+
+
+    
 elif cv_in == 'somxl010':
     cfield == 'MLD'
     tmin=50. ;  tmax=1500. ;  df = 50.
