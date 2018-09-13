@@ -67,8 +67,9 @@ if CNEMO == 'eNATL60':
     l_do_ice  = False
     l_show_cb = False
     l_show_date = True
-    #cdt = '1h'; cbox = 'zoom1' ; i1=Ni0-2560 ; j1=Nj0/2-1440 ; i2=Ni0 ; j2=Nj0/2 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
-    cdt = '1h'; cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 8.*rfact_zoom
+    cdt= '1h'
+    cbox = 'FullMed' ; i1=5400 ; j1=1530 ; i2=Ni0 ; j2=3310 ; rfact_zoom = 0.79 ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 2.*rfact_zoom ; l_annotate_name=False
+    #cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 8.*rfact_zoom
     x_date = 1900 ; y_date = 20 ; # where to put the date
 
 if CNEMO == 'NATL60':
@@ -93,7 +94,7 @@ print ' font_rat = ', font_rat, '\n'
 nx_res = i2-i1
 ny_res = j2-j1
 
-
+print ' *** nx_res, ny_res =', nx_res, ny_res
 
 
 print ' i1,i2,j1,j2 =>', i1,i2,j1,j2
@@ -216,6 +217,9 @@ if l_show_lsm or l_do_curl:
         #ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)        
     (nj,ni) = nmp.shape(XMSK)
     id_lsm.close()
+
+    print 'Shape Arrays => ni,nj =', ni,nj
+    
     print 'Done!\n'
 
     
@@ -312,7 +316,7 @@ for jt in range(jt0,Nt):
 
 
 
-    cfig = 'figs/'+cv_out+'_NEMO_'+CNEMO+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
+    cfig = 'figs/'+cv_out+'_NEMO_'+CNEMO+'_'+cbox+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
 
     fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio), dpi=None, facecolor='w', edgecolor='0.5')
 
