@@ -33,7 +33,7 @@ import barakuda_tool as bt
 vmn = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 vml = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 
-CNEMO = 'eNATL60'
+#CNEMO = 'eNATL60'
 #CNEMO = 'NATL60'
 #CNEMO = 'NANUK025'
 
@@ -61,6 +61,23 @@ l_annotate_name = True
 l_do_curl = True
 romega = 2.*nmp.pi/86400.0
 
+
+
+
+
+narg = len(sys.argv)
+if narg < 8: print 'Usage: '+sys.argv[0]+' <NEMOCONF> <fileX> <varX> <fileY> <varY> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
+CNEMO  = sys.argv[1]
+cfx_in = sys.argv[2] ; cvx_in = sys.argv[3]
+cfy_in = sys.argv[4] ; cvy_in = sys.argv[5]
+cf_lsm = sys.argv[6] ; cf_date0=sys.argv[7]
+
+
+
+
+
+
+
 if CNEMO == 'eNATL60':
     Ni0 = 8354-1
     Nj0 = 4729-1
@@ -73,12 +90,16 @@ if CNEMO == 'eNATL60':
     x_date = 1900 ; y_date = 20 ; # where to put the date
 
 if CNEMO == 'NATL60':
+    Ni0 = 5422-1
+    Nj0 = 3454-1
     #l_pow_field = True ; pow_field = 1.5
     l_do_ice  = False
     l_show_cb = False
     l_show_date = False
-    #cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom ; l_show_lsm = False
-    cdt = '1h'; cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
+    cdt = '1h'
+    #cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom ; l_show_lsm = False
+    #cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
+    cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.4 ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 4.*rfact_zoom
     x_date = 350 ; y_date = 7 ; # where to put the date
 
 
@@ -113,11 +134,6 @@ rh = round(float(nxr)/float(dpi),3) ; # width of figure as for figure...
 
 fig_type='png'
 
-narg = len(sys.argv)
-if narg < 7: print 'Usage: '+sys.argv[0]+' <fileX> <varX> <fileY> <varY> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
-cfx_in = sys.argv[1] ; cvx_in = sys.argv[2]
-cfy_in = sys.argv[3] ; cvy_in = sys.argv[4]
-cf_lsm = sys.argv[5] ; cf_date0=sys.argv[6]
 
 
 cyr0=cf_date0[0:4]
@@ -125,7 +141,7 @@ cmn0=cf_date0[4:6]
 cdd0=cf_date0[6:8]
 
 
-
+l_3d_field = False
 
 # Ice:
 
@@ -172,6 +188,13 @@ elif cvx_in=='sozocrtx' and cvy_in=='somecrty':
     cunit = ''
     cb_jump = 1
 
+elif cvx_in=='vozocrtx' and cvy_in=='vomecrty':
+    #l_3d_field = True
+    cfield = 'RV'
+    cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
+    cunit = ''
+    cb_jump = 1
+
 
 else:
     print 'ERROR: we do not know cvx_in and cvy_in!'
@@ -197,6 +220,7 @@ if l_show_lsm or l_do_curl:
     print "\nReading record metrics in "+cf_lsm
     id_lsm = Dataset(cf_lsm)
     nb_dim = len(id_lsm.variables['tmask'].dimensions)
+    print ' The mesh_mask has '+str(nb_dim)+' dimmensions!'
     if l_show_lsm:
         if nb_dim==4: XMSK = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2]
         if nb_dim==3: XMSK = id_lsm.variables['tmask'][0,j1:j2,i1:i2]
@@ -207,13 +231,13 @@ if l_show_lsm or l_do_curl:
         e1u = id_lsm.variables['e1u'][0,j1:j2,i1:i2]
         e1f = id_lsm.variables['e1f'][0,j1:j2,i1:i2]
         e2f = id_lsm.variables['e2f'][0,j1:j2,i1:i2]
-        #ff  = id_lsm.variables['gphif'][0,j1:j2,i1:i2]
-        ff  = id_lsm.variables['ff'][0,j1:j2,i1:i2]
+        ff  = id_lsm.variables['gphif'][0,j1:j2,i1:i2]
+        #ff  = id_lsm.variables['ff'][0,j1:j2,i1:i2]
         if nb_dim==4: XMSK = id_lsm.variables['fmask'][0,0,j1:j2,i1:i2]
         if nb_dim==3: XMSK = id_lsm.variables['fmask'][0,j1:j2,i1:i2]
         if nb_dim==2: XMSK = id_lsm.variables['fmask'][j1:j2,i1:i2]
         # Coriolis Parameter:
-        #ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)        
+        ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)        
     (nj,ni) = nmp.shape(XMSK)
     id_lsm.close()
 
@@ -326,12 +350,20 @@ for jt in range(jt0,Nt):
 
     print "Reading record #"+str(jt)+" of "+cvx_in+" in "+cfx_in
     id_fx = Dataset(cfx_in)
-    XFLD  = id_fx.variables[cvx_in][jt,j1:j2,i1:i2] ; # t, y, x
+    if not l_3d_field:
+        XFLD  = id_fx.variables[cvx_in][jt,j1:j2,i1:i2] ; # t, y, x
+    else:
+        print 'j1:j2 =', j1,j2
+        print 'i1:i2 =', i1,i2
+        XFLD  = id_fx.variables[cvx_in][jt,0,j1:j2,i1:i2] ; # t, y, x
     id_fx.close()
     print "Done!"
     print "Reading record #"+str(jt)+" of "+cvy_in+" in "+cfy_in
     id_fy = Dataset(cfy_in)
-    YFLD  = id_fy.variables[cvy_in][jt,j1:j2,i1:i2] ; # t, y, x
+    if not l_3d_field:
+        YFLD  = id_fy.variables[cvy_in][jt,j1:j2,i1:i2] ; # t, y, x
+    else:
+        YFLD  = id_fy.variables[cvy_in][jt,0,j1:j2,i1:i2] ; # t, y, x
     id_fy.close()
     print "Done!"
 
@@ -355,8 +387,9 @@ for jt in range(jt0,Nt):
         print '... curl computed!\n'
         
 
-
     #Xplot[:,:] = YFLD[:,:]
+    #Xplot[:,:] = XFLD[:,:]
+    #Xplot[:,:] = ff[:,:]
     #if not l_show_lsm and jt == jt0: ( nj , ni ) = nmp.shape(XFLD)
     #print '  *** dimension of array => ', ni, nj
 
