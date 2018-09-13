@@ -84,9 +84,10 @@ if CNEMO == 'eNATL60':
     l_do_ice  = False
     l_show_cb = False
     l_show_date = True
-    cdt= '1h'
+    cdt = '1h'
     cbox = 'FullMed' ; i1=5400 ; j1=1530 ; i2=Ni0 ; j2=3310 ; rfact_zoom = 0.79 ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 2.*rfact_zoom ; l_annotate_name=False
     #cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 8.*rfact_zoom
+    #cbox = 'Portrait' ; i1=2760 ; j1=1000 ; i2=4870 ; j2=4000 ; rfact_zoom = 1. ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 1.*rfact_zoom ; l_annotate_name=False; l_show_date=False
     x_date = 1900 ; y_date = 20 ; # where to put the date
 
 if CNEMO == 'NATL60':
