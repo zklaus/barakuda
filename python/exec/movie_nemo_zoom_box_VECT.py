@@ -40,8 +40,6 @@ vml = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 color_top = 'white'
 #color_top = 'k'
 
-
-
 cv_out = 'unknown'
 
 #jt0 = 248
@@ -398,7 +396,6 @@ for jt in range(jt0,Nt):
     del XFLD,YFLD
     
     print "Ploting"
-    
     cf = plt.imshow(Xplot[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
 
     print "Done!"

@@ -40,7 +40,7 @@ vml = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 color_top = 'white'
 #color_top = 'k'
 
-
+cv_out = 'unknown'
 
 #jt0 = 248
 jt0 = 0
@@ -66,8 +66,8 @@ cf_lsm=sys.argv[4] ; cf_date0=sys.argv[5]
 
 
 if CNEMO == 'eNATL60':
-    Ni0 = 8354-1
-    Nj0 = 4729-1
+    Ni0 = 8354
+    Nj0 = 4729
     l_do_ice  = False
     l_show_cb = False
     l_show_date = True
