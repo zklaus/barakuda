@@ -18,6 +18,8 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import matplotlib.image as image
+import matplotlib.cbook as cbook
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -42,7 +44,6 @@ color_top = 'white'
 
 cv_out = 'unknown'
 
-#jt0 = 248
 jt0 = 0
 
 
@@ -51,10 +52,11 @@ j2=0
 l_show_lsm = True
 l_do_ice  = True
 l_show_cb = True
-l_show_date = True
+l_show_clock = True
 l_log_field = False
 l_pow_field = False
 l_annotate_name = True
+l_add_logo = True
 
 l_do_curl = True
 romega = 2.*nmp.pi/86400.0
@@ -68,12 +70,12 @@ if narg < 8: print 'Usage: '+sys.argv[0]+' <NEMOCONF> <fileX> <varX> <fileY> <va
 CNEMO  = sys.argv[1]
 cfx_in = sys.argv[2] ; cvx_in = sys.argv[3]
 cfy_in = sys.argv[4] ; cvy_in = sys.argv[5]
-cf_lsm = sys.argv[6] ; cf_date0=sys.argv[7]
+cf_lsm = sys.argv[6] ; cf_clock0=sys.argv[7]
 
 
 
 
-
+x_logo  = 50 ; y_logo  = 50
 
 
 if CNEMO == 'eNATL60':
@@ -81,31 +83,32 @@ if CNEMO == 'eNATL60':
     Nj0 = 4729
     l_do_ice  = False
     l_show_cb = False
-    l_show_date = True
+    l_show_clock = True
     cdt = '1h'
     #cbox = 'FullMed' ; i1=5400 ; j1=1530 ; i2=Ni0 ; j2=3310 ; rfact_zoom = 0.79 ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 2.*rfact_zoom ; l_annotate_name=False
     cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 8.*rfact_zoom
-    #cbox = 'Portrait' ; i1=2760 ; j1=1000 ; i2=4870 ; j2=4000 ; rfact_zoom = 1. ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 1.*rfact_zoom ; l_annotate_name=False; l_show_date=False
-    x_date = 1900 ; y_date = 20 ; # where to put the date
+    #cbox = 'Portrait' ; i1=2760 ; j1=1000 ; i2=4870 ; j2=4000 ; rfact_zoom = 1. ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 1.*rfact_zoom ; l_annotate_name=False; l_show_clock=False
+    x_clock = 1600 ; y_clock = 200 ; # where to put the date
+    x_logo  = 2200 ; y_logo  = 50
 
 if CNEMO == 'NATL60':
-    Ni0 = 5422-1
-    Nj0 = 3454-1
+    Ni0 = 5422
+    Nj0 = 3454
     #l_pow_field = True ; pow_field = 1.5
     l_do_ice  = False
     l_show_cb = False
-    l_show_date = False
+    l_show_clock = False
     cdt = '1h'
     #cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom ; l_show_lsm = False
     #cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
     cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.4 ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 4.*rfact_zoom
-    x_date = 350 ; y_date = 7 ; # where to put the date
+    x_clock = 350 ; y_clock = 7 ; # where to put the date
 
 
 if CNEMO == 'NANUK025':
     l_do_ice = True
     cdt = '3h'; cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
-    x_date = 350 ; y_date = 7 ; # where to put the date
+    x_clock = 350 ; y_clock = 7 ; # where to put the date
 
 
 print '\n rfact_zoom = ', rfact_zoom
@@ -135,9 +138,9 @@ fig_type='png'
 
 
 
-cyr0=cf_date0[0:4]
-cmn0=cf_date0[4:6]
-cdd0=cf_date0[6:8]
+cyr0=cf_clock0[0:4]
+cmn0=cf_clock0[4:6]
+cdd0=cf_clock0[6:8]
 
 
 l_3d_field = False
@@ -249,8 +252,6 @@ if l_show_lsm: pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
 
-#font_rat
-#params = { 'font.family':'Ubuntu',
 params = { 'font.family':'Helvetica Neue',
            'font.weight':    'normal',
            'font.size':       int(9.*font_rat),
@@ -260,7 +261,7 @@ params = { 'font.family':'Helvetica Neue',
            'axes.labelsize':  int(9.*font_rat) }
 mpl.rcParams.update(params)
 cfont_clb  = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(8.*font_rat), 'color':'w'}
-cfont_date = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(12.*font_rat), 'color':'w' }
+cfont_clock = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(10.*font_rat), 'color':'w' }
 cfont_mail = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14.*font_rat), 'color':'0.8'}
 cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(30.*font_rat), 'color':'w' }
 
@@ -377,28 +378,15 @@ for jt in range(jt0,Nt):
         ly[1:nj-1,:] = - e1u[2:nj,:]*XFLD[2:nj,:] + e1u[1:nj-1,:]*XFLD[1:nj-1,:]
 
         Xplot[:,:] = ( lx[:,:] + ly[:,:] )*XMSK[:,:] / ( e1f[:,:]*e2f[:,:]*ff[:,:] )         # Relative Vorticity...
-        
-        ##XFLD[:,:] = (  e2v(ji+1,jj  ) * vn(ji+1,jj  ) - e2v(ji,jj) * vn(ji,jj)    &
-        ##                                      &          - e1u(ji  ,jj+1) * un(ji  ,jj+1) + e1u(ji,jj) * un(ji,jj)  ) &
-        ##                    &          * fmask(ji,jj) / ( e1f(ji,jj) * e2f(ji,jj) )
 
         del lx, ly
         print '... curl computed!\n'
         
 
-    #Xplot[:,:] = YFLD[:,:]
-    #Xplot[:,:] = XFLD[:,:]
-    #Xplot[:,:] = ff[:,:]
-    #if not l_show_lsm and jt == jt0: ( nj , ni ) = nmp.shape(XFLD)
-    #print '  *** dimension of array => ', ni, nj
-
-
     del XFLD,YFLD
     
     print "Ploting"
     cf = plt.imshow(Xplot[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
-
-    print "Done!"
 
     # Ice
     if not cfield == 'MLD' and l_do_ice:
@@ -450,21 +438,25 @@ for jt in range(jt0,Nt):
 
 
 
-    if l_show_date:
-        xl = float(x_date)/rfact_zoom
-        yl = float(y_date)/rfact_zoom
-        ax.annotate('Date: '+cday+' '+chour+':00', xy=(1, 4), xytext=(xl,yl), **cfont_date)
+    if l_show_clock:
+        xl = float(x_clock)/rfact_zoom
+        yl = float(y_clock)/rfact_zoom
+        ax.annotate('Date: '+cday+' '+chour+':00', xy=(1, 4), xytext=(xl,yl), **cfont_clock)
 
     #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(xl+150, 20), **cfont_mail)
-
-
 
     if l_annotate_name:
         xl = float(nxr)/20./rfact_zoom
         yl = float(nyr)/1.33/rfact_zoom
         ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
 
-
+    if l_add_logo:
+        cf_logo = '/home/brodeau/Dropbox/OceanNext/Graphic_Identity/0LOGO/logo_trans_white_H14_20180917.png'
+        datafile = cbook.get_sample_data(cf_logo, asfileobj=False)
+        im = image.imread(datafile)
+        #im[:, :, -1] = 0.5  # set the alpha channel
+        fig.figimage(im, x_logo, y_logo, zorder=9)
+                
 
     plt.savefig(cfig, dpi=dpi, orientation='portrait', facecolor='k')
     print cfig+' created!\n'
