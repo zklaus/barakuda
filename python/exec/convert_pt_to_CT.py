@@ -26,7 +26,7 @@ cv_temp  = sys.argv[2]
 cf_sal   = sys.argv[3]
 cv_sal   = sys.argv[4]
 
-cf_out = replace(cf_temp, cf_temp, 'conservative_temperature_'+cf_temp)
+cf_out = replace(cf_temp, cv_temp, cv_temp+'_AbsSalTEOS10')
 
 os.system('rm -f '+cf_out)
 os.system('cp '+cf_temp+' '+cf_out)

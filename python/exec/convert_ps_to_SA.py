@@ -26,7 +26,7 @@ if len(sys.argv) != 3:
 cf_sal  = sys.argv[1]
 cv_sal  = sys.argv[2]
 
-cf_out = replace(cf_sal, cf_sal, 'absolute_salinity_'+cf_sal)
+cf_out = replace(cf_sal, cv_sal, cv_sal+'_AbsSalTEOS10')
 
 
 os.system('rm -f '+cf_out)
