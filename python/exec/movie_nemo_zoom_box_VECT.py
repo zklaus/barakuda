@@ -53,14 +53,14 @@ j2=0
 l_show_lsm = True
 l_do_ice  = True
 l_show_cb = True
-l_show_clock = True
 l_log_field = False
 l_pow_field = False
 l_annotate_name = True
+l_show_clock = True
 l_add_logo = True
 
-l_do_curl = True ; # do curl and not relative-vorticity !!!
-l_do_rv   = False ; # do relative-vorticity and not curl !!!
+l_do_crl = False  ; # do curl (relative-vorticity) !!!
+l_do_cof = True ; # do curl/f
 
 l_save_nc = False ; # save the field we built in a netcdf file !!!
 
@@ -96,6 +96,17 @@ if CNEMO == 'eNATL60':
     x_clock = 1600 ; y_clock = 200 ; # where to put the date
     x_logo  = 2200 ; y_logo  = 50
 
+
+if CNEMO == 'EATL':
+    Ni0 = 8354
+    Nj0 = 4729
+    l_do_ice  = False
+    l_show_cb = False
+    l_show_clock = True
+    cdt = '1h'
+    cbox = 'EATL' ; i1=3100 ; j1=2290 ; i2=4900 ; j2=3522 ; rfact_zoom = 1. ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 8.*rfact_zoom
+    l_annotate_name = False
+    
 if CNEMO == 'NATL60':
     Ni0 = 5422
     Nj0 = 3454
@@ -152,8 +163,8 @@ l_3d_field = False
 
 # Ice:
 
-if l_do_rv:   cv_out = 'RV'
-if l_do_curl: cv_out = 'Curl'
+if l_do_cof: cv_out = 'CURLOF'
+if l_do_crl: cv_out = 'Curl'
 
 
 if l_do_ice:
@@ -189,30 +200,40 @@ if cvx_in == 'sossheig':
     #cpal_fld = 'bone_r' ; tmin=-0.9 ;  tmax=-tmin   ;  df = 0.05 
     cunit = r'SSH (m)'
     cb_jump = 1
-
-elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_rv:
-    cfield = 'RV'
-    #cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
-    cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
+    
+elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cof:
+    cfield = 'CURLOF'
+    cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
+    #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
     cunit = ''
     cb_jump = 1
-elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_curl:
+elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_crl:
     cfield = 'Curl'
-    #cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
-    cpal_fld = 'ncview_bw' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
+    cpal_fld = 'on2' ; tmin=-0.035 ;  tmax=0.035 ;  df = 0.05
+    #cpal_fld = 'ncview_bw' ; tmin=-0.03 ;  tmax=0.03 ;  df = 0.05
+    cpal_fld = 'bone' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
     cunit = '';  cb_jump = 1
+    l_show_clock = False
+    l_add_logo   = False
+    l_annotate_name = False
 
-elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_rv:
-    cfield = 'RV' ; l_3d_field = True
+
+elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_cof:
+    cfield = 'CURLOF' ; l_3d_field = True
     #cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
     cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
     cunit = ''
-    cb_jump = 1
-elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_curl:
+    cb_jump = 1    
+elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_crl:
     cfield = 'Curl' ; l_3d_field = True
     #cpal_fld = 'on2' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
-    cpal_fld = 'ncview_bw' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
+    #cpal_fld = 'ncview_bw' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
+    #cpal_fld = 'gray' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
+    cpal_fld = 'bone' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
     cunit = '';  cb_jump = 1
+    l_show_clock = False
+    l_add_logo   = False
+
 
 
 
@@ -236,7 +257,7 @@ id_fx.close()
 
 Nt = len(vtime)
 
-if l_show_lsm or l_do_curl or l_do_rv:
+if l_show_lsm or l_do_crl or l_do_cof:
     print "\nReading record metrics in "+cf_lsm
     id_lsm = Dataset(cf_lsm)
     nb_dim = len(id_lsm.variables['tmask'].dimensions)
@@ -245,19 +266,19 @@ if l_show_lsm or l_do_curl or l_do_rv:
         if nb_dim==4: XMSK = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2]
         if nb_dim==3: XMSK = id_lsm.variables['tmask'][0,j1:j2,i1:i2]
         if nb_dim==2: XMSK = id_lsm.variables['tmask'][j1:j2,i1:i2]
-    if l_do_curl or l_do_rv:
+    if l_do_crl or l_do_cof:
         # e2v, e1u, e1f, e2f
         e2v = id_lsm.variables['e2v'][0,j1:j2,i1:i2]
         e1u = id_lsm.variables['e1u'][0,j1:j2,i1:i2]
         e1f = id_lsm.variables['e1f'][0,j1:j2,i1:i2]
         e2f = id_lsm.variables['e2f'][0,j1:j2,i1:i2]
-        if l_do_rv: ff  = id_lsm.variables['gphif'][0,j1:j2,i1:i2]
-        #ff  = id_lsm.variables['ff'][0,j1:j2,i1:i2]
         if nb_dim==4: XMSK = id_lsm.variables['fmask'][0,0,j1:j2,i1:i2]
         if nb_dim==3: XMSK = id_lsm.variables['fmask'][0,j1:j2,i1:i2]
         if nb_dim==2: XMSK = id_lsm.variables['fmask'][j1:j2,i1:i2]
         ## Coriolis Parameter:
-        #ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)        
+        if l_do_cof:
+            ff  = id_lsm.variables['gphif'][0,j1:j2,i1:i2]
+            ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)        
     (nj,ni) = nmp.shape(XMSK)
     id_lsm.close()
 
@@ -386,7 +407,7 @@ for jt in range(jt0,Nt):
     print "Done!"
 
     
-    if l_do_curl or l_do_rv:
+    if l_do_crl or l_do_cof:
         
         print '\nComputing curl...'
         lx = nmp.zeros((nj,ni))
@@ -395,8 +416,8 @@ for jt in range(jt0,Nt):
         lx[:,1:ni-1] =   e2v[:,2:ni]*YFLD[:,2:ni] - e2v[:,1:ni-1]*YFLD[:,1:ni-1] 
         ly[1:nj-1,:] = - e1u[2:nj,:]*XFLD[2:nj,:] + e1u[1:nj-1,:]*XFLD[1:nj-1,:]
 
-        if l_do_rv:   Xplot[:,:] = ( lx[:,:] + ly[:,:] )*XMSK[:,:] / ( e1f[:,:]*e2f[:,:]*ff[:,:] ) # Relative Vorticity...
-        if l_do_curl: Xplot[:,:] = ( lx[:,:] + ly[:,:] )*XMSK[:,:] / ( e1f[:,:]*e2f[:,:] ) * 1000. # Curl...
+        if l_do_cof: Xplot[:,:] = ( lx[:,:] + ly[:,:] )*XMSK[:,:] / ( e1f[:,:]*e2f[:,:]*ff[:,:] ) # Relative Vorticity...
+        if l_do_crl: Xplot[:,:] = ( lx[:,:] + ly[:,:] )*XMSK[:,:] / ( e1f[:,:]*e2f[:,:] ) * 1000. # Curl...
 
         del lx, ly
         
