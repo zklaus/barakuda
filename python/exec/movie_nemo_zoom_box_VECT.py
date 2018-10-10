@@ -36,10 +36,6 @@ import barakuda_ncio as bnc
 vmn = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 vml = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 
-#CNEMO = 'eNATL60'
-#CNEMO = 'NATL60'
-#CNEMO = 'NANUK025'
-
 color_top = 'white'
 #color_top = 'k'
 
@@ -57,7 +53,9 @@ l_log_field = False
 l_pow_field = False
 l_annotate_name = True
 l_show_clock = True
+
 l_add_logo = True
+cf_logo = '/home/brodeau/Dropbox/OceanNext/Graphic_Identity/0LOGO/logo_trans_white_H14_20180917.png'
 
 l_do_crl = False  ; # do curl (relative-vorticity) !!!
 l_do_cof = True ; # do curl/f
@@ -104,8 +102,11 @@ if CNEMO == 'EATL':
     l_show_cb = False
     l_show_clock = True
     cdt = '1h'
-    cbox = 'EATL' ; i1=3100 ; j1=2290 ; i2=4900 ; j2=3522 ; rfact_zoom = 1. ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 8.*rfact_zoom
+    #cbox = 'EATL' ; i1=3100 ; j1=2290 ; i2=4900 ; j2=3522 ; rfact_zoom = 1. ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 8.*rfact_zoom
+    cbox = 'EATL' ; i1=3100 ; j1=2290 ; i2=4900 ; j2=3370 ; rfact_zoom = 1. ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 2.
     l_annotate_name = False
+    x_clock = 1420 ; y_clock = 1030
+    x_logo  = 1500 ; y_logo  = 16
     
 if CNEMO == 'NATL60':
     Ni0 = 5422
@@ -500,7 +501,6 @@ for jt in range(jt0,Nt):
         ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
 
     if l_add_logo:
-        cf_logo = '/home/brodeau/Dropbox/OceanNext/Graphic_Identity/0LOGO/logo_trans_white_H14_20180917.png'
         datafile = cbook.get_sample_data(cf_logo, asfileobj=False)
         im = image.imread(datafile)
         #im[:, :, -1] = 0.5  # set the alpha channel
