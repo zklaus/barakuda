@@ -14,7 +14,6 @@ from string import replace
 
 import gsw
 
-#SSO = 35.16504
 
 
 if len(sys.argv) != 5:
@@ -42,7 +41,20 @@ print '\n'
 
 
 f_sal = Dataset(cf_sal)     # r+ => can read and write in the file... )
-xsal  = f_sal.variables[cv_sal][:,:,:,:]
+
+# Inquire the shape of arrays:
+nb_dim = len(f_sal.variables[cv_sal].dimensions)
+print ' *** '+cf_sal+' has '+str(nb_dim)+' dimmensions!'
+
+if   nb_dim==4:
+    xsal = f_sal.variables[cv_sal][:,:,:,:]
+elif nb_dim==3:
+    xsal = f_sal.variables[cv_sal][:,:,:]
+elif nb_dim==2:
+    xsal = f_sal.variables[cv_sal][:,:]
+else:
+    print ' ERROR: unsupported number of dimmensions!' ; sys.exit(0)
+
 f_sal.close()
 
 
