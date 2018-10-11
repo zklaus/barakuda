@@ -26,7 +26,7 @@ if len(sys.argv) != 3:
 cf_sal  = sys.argv[1]
 cv_sal  = sys.argv[2]
 
-cf_out = replace(cf_sal, cv_sal, cv_sal+'_AbsSalTEOS10')
+cf_out = replace(cf_sal, cv_sal, cv_sal+'_TEOS10')
 
 
 os.system('rm -f '+cf_out)
@@ -108,7 +108,7 @@ else:
         print ' WTF???'; sys.exit(1)
 
 
-f_out.variables[cv_sal].long_name = 'Absolute Salinity (TEOS10) build from practical salinity (*35.16504/35)'
+f_out.variables[cv_sal].long_name = 'Absolute Salinity (TEOS10) build from practical salinity'
 
 f_out.close()
 
