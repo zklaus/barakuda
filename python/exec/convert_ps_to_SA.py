@@ -45,13 +45,10 @@ f_out = Dataset(cf_out, 'r+')     # r+ => can read and write in the file... )
 print 'File ', cf_out, 'is open...\n'
 
 # Inquire variables in the file to see if a depth is there...
-list_var = f_out.variables.keys()
-print ' list_var =', list_var
+list_var = f_out.variables.keys() ; print ' *** list_var =', list_var
 
 
-if cdepth in list_var:
-    l_accurate = True
-    print ' *** Going for accurate method cause '+cdepth+' is present in '+cf_out+' !\n'
+if cdepth in list_var: l_accurate = True
 
 
 vcdim = f_out.variables[cv_sal].dimensions
@@ -62,14 +59,7 @@ Nt = f_out.dimensions[cv_t].size ; print ' *** There are '+str(Nt)+' time record
 nb_dim = len(vcdim)
 print ' *** '+cf_out+' has '+str(nb_dim)+' dimmensions!'
 
-#if not nb_dim in [ 2, 3, 4 ]: print ' ERROR: unsupported number of dimmensions! =>', nb_dim ; sys.exit(0)
-if not nb_dim in [ 4 ]: print ' ERROR: unsupported number of dimmensions! =>', nb_dim ; sys.exit(0)
-
-
-if nb_dim != 4 and l_accurate:
-    print '\n WARNING!!! => using less accurate method because nb_dim = '+str(nb_dim)
-    print '          and we do not know how to handle this case yet....'
-    l_accurate = False
+if not nb_dim in [ 2, 3, 4 ]: print ' ERROR: unsupported number of dimmensions! =>', nb_dim ; sys.exit(0)
 
 
 
@@ -77,24 +67,13 @@ for jt in range(Nt):
          
     print '\n --- treating record # '+str(jt)
     
-    if nb_dim==4:
-        xsal = f_out.variables[cv_sal][jt,:,:,:]
-        if jt == 0:
-            (nk,nj,ni) = nmp.shape(xsal)
-        
-    if nb_dim==3:
-        xsal = f_out.variables[cv_sal][jt,:,:]
-        if jt == 0: (nj,ni) = nmp.shape(xsal)
-        
-    if nb_dim==2:
-        xsal = f_out.variables[cv_sal][jt,:]
-        if jt == 0: (ni) = nmp.shape(xsal)
+    if nb_dim==4: xsal = f_out.variables[cv_sal][jt,:,:,:]
+    if nb_dim==3: xsal = f_out.variables[cv_sal][jt,:,:]
+    if nb_dim==2: xsal = f_out.variables[cv_sal][jt,:]
 
-    if jt == 0: shp  = nmp.shape(xsal)
-
+    if jt == 0: shp = nmp.shape(xsal)
 
     xtmp = nmp.zeros(shp)
-
     xtmp = xsal
     
     if l_accurate:
@@ -103,6 +82,7 @@ for jt in range(Nt):
             print '\n Using accurate method with depth !'        
             vz    = f_out.variables['deptht'][:]
             xdepth = nmp.zeros(shp)
+            nk = f_out.dimensions['z'].size ; print ' *** There are '+str(nk)+' vertical levels...'
             # building 3d arrays of depth:
             for jk in range(nk):
                 if nb_dim==4: xdepth[jk,:,:] = vz[jk]
