@@ -30,14 +30,11 @@ import datetime
 import barakuda_colmap as bcm
 
 import barakuda_tool as bt
+import barakuda_ncio as bnc
 
 
 vmn = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 vml = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
-
-#CNEMO = 'eNATL60'
-#CNEMO = 'NATL60'
-#CNEMO = 'NANUK025'
 
 color_top = 'white'
 #color_top = 'k'
@@ -52,19 +49,24 @@ j2=0
 l_show_lsm = True
 l_do_ice  = True
 l_show_cb = True
-l_show_clock = True
 l_log_field = False
 l_pow_field = False
 l_annotate_name = True
+l_show_clock = True
+
 l_add_logo = True
+cf_logo = '/home/brodeau/Dropbox/OceanNext/Graphic_Identity/0LOGO/logo_trans_white_H14_20180917.png'
 
 l_apply_lap = False
 
 narg = len(sys.argv)
-if narg < 6: print 'Usage: '+sys.argv[0]+' <NEMOCONF> <file> <variable> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
+if narg < 7: print 'Usage: '+sys.argv[0]+' <NEMOCONF> <file> <variable> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
 CNEMO  = sys.argv[1]
-cf_in = sys.argv[2] ; cv_in=sys.argv[3]
-cf_lsm=sys.argv[4] ; cf_clock0=sys.argv[5]
+CBOX   = sys.argv[2]
+cf_in = sys.argv[3] ; cv_in=sys.argv[4]
+cf_lsm=sys.argv[5]  ; cf_clock0=sys.argv[6]
+
+x_logo  = 50 ; y_logo  = 50
 
 
 if CNEMO == 'eNATL60':
@@ -74,12 +76,33 @@ if CNEMO == 'eNATL60':
     l_show_cb = False
     l_show_clock = True
     cdt = '1h'
-    #cbox = 'FullMed' ; i1=5400 ; j1=1530 ; i2=Ni0 ; j2=3310 ; rfact_zoom = 0.79 ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 2.*rfact_zoom ; l_annotate_name=False
-    cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.3047 ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 8.*rfact_zoom
-    #cbox = 'Portrait' ; i1=2760 ; j1=1000 ; i2=4870 ; j2=4000 ; rfact_zoom = 1. ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 1.*rfact_zoom ; l_annotate_name=False; l_show_clock=False
-    x_clock = 1600 ; y_clock = 200 ; # where to put the date
-    x_logo  = 2200 ; y_logo  = 50
+    
+    if   CBOX == 'ALL':
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=0.3047 ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=8.*rfact_zoom
+        x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
+        
+    elif CBOX == 'FullMed':
+        i1=5400; j1=1530; i2=Ni0 ; j2=3310 ; rfact_zoom=0.79   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        l_annotate_name=False
+    
+    elif CBOX == 'BlackSea':
+        i1=Ni0-1920; j1=3330-1080; i2=Ni0 ; j2=3330 ; rfact_zoom=1.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
+    
+    elif CBOX == 'Portrait':
+        i1=2760; j1=1000; i2=4870; j2=4000 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=1.*rfact_zoom
+        l_annotate_name=False; l_show_clock=False
+        
+    elif CBOX == 'EATL':
+        i1=3100; j1=2290; i2=4900; j2=3370 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
+        x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
 
+    else:
+        print ' ERROR: unknow box "'+CBOX+'" for config "'+CNEMO+'" !!!'
+        sys.exit(0)
+
+
+    
 if CNEMO == 'NATL60':
     Ni0 = 5422
     Nj0 = 3454
@@ -88,15 +111,15 @@ if CNEMO == 'NATL60':
     l_show_cb = False
     l_show_clock = False
     cdt = '1h'
-    #cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom ; l_show_lsm = False
-    #cbox = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
-    cbox = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.4 ; vcb = [0.59, 0.1, 0.38, 0.018] ; font_rat = 4.*rfact_zoom
+    #CBOX = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+1920 ; j2 = j1+1080 ; rfact_zoom = 1. ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom ; l_show_lsm = False
+    #CBOX = 'zoom1' ; i1 = 1800 ; j1 = 950 ; i2 = i1+2560 ; j2 = j1+1440 ; rfact_zoom = 1. ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
+    CBOX = 'ALL' ; i1=0 ; j1=0 ; i2=Ni0 ; j2=Nj0 ; rfact_zoom = 0.4 ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 4.*rfact_zoom
     x_clock = 350 ; y_clock = 7 ; # where to put the date
 
 
 if CNEMO == 'NANUK025':
     l_do_ice = True
-    cdt = '3h'; cbox = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
+    cdt = '3h'; CBOX = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
     x_clock = 350 ; y_clock = 7 ; # where to put the date
 
 
@@ -398,7 +421,6 @@ for jt in range(jt0,Nt):
         ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
 
     if l_add_logo:
-        cf_logo = '/home/brodeau/Dropbox/OceanNext/Graphic_Identity/0LOGO/logo_trans_white_H14_20180917.png'
         datafile = cbook.get_sample_data(cf_logo, asfileobj=False)
         im = image.imread(datafile)
         #im[:, :, -1] = 0.5  # set the alpha channel
