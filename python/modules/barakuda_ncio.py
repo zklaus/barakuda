@@ -502,17 +502,36 @@ def dump_2d_multi_field(cf_out, XFLD, vnames, vndim=[], xlon=[], xlat=[], vtime=
 
     f_out = Dataset(cf_out, 'w', format='NETCDF3_CLASSIC')
 
+
+    l_coord_2d = False
+    cnm_dim_x = 'lon'
+    cnm_dim_y = 'lat'
+    if (xlon.shape == (nj,ni)) and (xlon.shape == xlat.shape):
+        l_coord_2d = True
+        cnm_dim_x = 'x'
+        cnm_dim_y = 'y'
+    
+    
     # Dimensions:
-    f_out.createDimension('x', ni)
-    f_out.createDimension('y', nj)
+    
+    f_out.createDimension(cnm_dim_x, ni)
+    f_out.createDimension(cnm_dim_y, nj)
     if l_add_time: f_out.createDimension('time_counter', None)
 
     if (xlon != []) and (xlat != []):
-        if (xlon.shape == (nj,ni)) and (xlon.shape == xlat.shape):
-            id_lon  = f_out.createVariable('nav_lon' ,'f4',('y','x',))
-            id_lat  = f_out.createVariable('nav_lat' ,'f4',('y','x',))
+        if l_coord_2d:
+            id_lon  = f_out.createVariable('nav_lon' ,'f4',(cnm_dim_y,cnm_dim_x,))
+            id_lat  = f_out.createVariable('nav_lat' ,'f4',(cnm_dim_y,cnm_dim_x,))
             id_lon[:,:] = xlon[:,:]
             id_lat[:,:] = xlat[:,:]
+        else:
+            id_lon  = f_out.createVariable(cnm_dim_x ,'f4',(cnm_dim_x,))
+            id_lat  = f_out.createVariable(cnm_dim_y ,'f4',(cnm_dim_y,))
+            id_lon[:] = xlon[:]
+            id_lat[:] = xlat[:]
+
+
+        
     if l_add_time:
         id_tim    = f_out.createVariable('time_counter' ,'f8',('time_counter',))
         id_tim[:] = vtime[:]
@@ -520,13 +539,13 @@ def dump_2d_multi_field(cf_out, XFLD, vnames, vndim=[], xlon=[], xlat=[], vtime=
     #id_fld = nmp.zeros(nbfld, dtype=int)
     for jv in range(nbfld):
         if (not l_add_time) or (vnbdim[jv]==2):
-            id_fld  = f_out.createVariable(vnames[jv] ,'f8',('y','x',))
+            id_fld  = f_out.createVariable(vnames[jv] ,'f8',(cnm_dim_y,cnm_dim_x,))
             if l_add_time:
                 id_fld[:,:] = XFLD[jv,0,:,:]
             else:
                 id_fld[:,:] = XFLD[jv,:,:]
         else:
-            id_fld  = f_out.createVariable(vnames[jv] ,'f8',('time_counter','y','x',))
+            id_fld  = f_out.createVariable(vnames[jv] ,'f8',('time_counter',cnm_dim_y,cnm_dim_x,))
             id_fld[:,:,:] = XFLD[jv,:,:,:]
             
     f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
