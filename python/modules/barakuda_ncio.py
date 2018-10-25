@@ -506,11 +506,12 @@ def dump_2d_multi_field(cf_out, XFLD, vnames, vndim=[], xlon=[], xlat=[], vtime=
     l_coord_2d = False
     cnm_dim_x = 'lon'
     cnm_dim_y = 'lat'
-    if (xlon.shape == (nj,ni)) and (xlon.shape == xlat.shape):
-        l_coord_2d = True
-        cnm_dim_x = 'x'
-        cnm_dim_y = 'y'
     
+    if (xlon != []) and (xlat != []):
+        if (xlon.shape == (nj,ni)) and (xlon.shape == xlat.shape):
+            l_coord_2d = True
+            cnm_dim_x = 'x'
+            cnm_dim_y = 'y'    
     
     # Dimensions:
     
