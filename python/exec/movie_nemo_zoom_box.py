@@ -60,7 +60,7 @@ cf_logo = '/home/brodeau/Dropbox/OceanNext/Graphic_Identity/0LOGO/logo_trans_whi
 l_apply_lap = False
 
 narg = len(sys.argv)
-if narg < 7: print 'Usage: '+sys.argv[0]+' <NEMOCONF> <file> <variable> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
+if narg < 7: print 'Usage: '+sys.argv[0]+' <NEMOCONF> <BOX> <file> <variable> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
 CNEMO  = sys.argv[1]
 CBOX   = sys.argv[2]
 cf_in = sys.argv[3] ; cv_in=sys.argv[4]
@@ -97,6 +97,10 @@ if CNEMO == 'eNATL60':
         i1=3100; j1=2290; i2=4900; j2=3370 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
         x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
 
+    elif CBOX == 'Balear':
+        i1=5750; j1=1880; i2=6470; j2=2600 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2. ; l_annotate_name=False
+        x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
+
     else:
         print ' ERROR: unknow box "'+CBOX+'" for config "'+CNEMO+'" !!!'
         sys.exit(0)
@@ -126,25 +130,30 @@ if CNEMO == 'NANUK025':
 print '\n rfact_zoom = ', rfact_zoom
 print ' font_rat = ', font_rat, '\n'
 
+
+print ' i1,i2,j1,j2 =>', i1,i2,j1,j2
+
 nx_res = i2-i1
 ny_res = j2-j1
 
 print ' *** nx_res, ny_res =', nx_res, ny_res
 
 
-print ' i1,i2,j1,j2 =>', i1,i2,j1,j2
+
 
 yx_ratio = float(ny_res)/float(nx_res)
 
 nxr = int(rfact_zoom*nx_res) ; # widt image (in pixels)
 nyr = int(rfact_zoom*ny_res) ; # height image (in pixels)
 
-
-
+print ' *** nxr, nyr =', nxr, nyr, '\n'
 
 dpi = 110
 
-rh = round(float(nxr)/float(dpi),3) ; # width of figure as for figure...
+rw_fig = round(float(nxr)/float(dpi),2) ; # width of figure
+rh_fig = rw_fig*yx_ratio
+
+print ' *** size figure =>', rw_fig, rh_fig, '\n'
 
 fig_type='png'
 
@@ -286,9 +295,10 @@ else:
     print 'ERROR: unknown dt!'
 
 
+rw_img = rw_fig*float(dpi)
+rh_img = rw_fig*yx_ratio*float(dpi)    
+print ' *** Forecasted dimension of image =>', rw_img , rh_img,'\n'
 
-
-print ' *** Dimension image:', rh*float(dpi), rh*yx_ratio*float(dpi),'\n'
 
 
 ntpd = 24/dt
@@ -330,7 +340,9 @@ for jt in range(jt0,Nt):
 
     cfig = 'figs/'+cv_in+'_NEMO_'+CNEMO+'_'+cbox+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
 
-    fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio), dpi=None, facecolor='w', edgecolor='0.5')
+    ###### FIGURE ##############
+    
+    fig = plt.figure(num = 1, figsize=(rw_fig, rh_fig), dpi=None, facecolor='w', edgecolor='0.5')
 
     ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
 
