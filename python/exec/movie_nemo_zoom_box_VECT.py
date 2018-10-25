@@ -118,6 +118,10 @@ if CNEMO == 'eNATL60':
         i1=3100; j1=2290; i2=i1+1800; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
         x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
 
+    elif CBOX == 'Band':
+        i1=5100-1920; j1=2200; i2=5100; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
+        l_show_clock = False ; l_add_logo = False ; #x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
+
     elif CBOX == 'Balear':
         i1=5750; j1=1880; i2=6470; j2=2600 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2. ; l_annotate_name=False
         x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
@@ -206,7 +210,7 @@ if l_do_ice:
 
 if cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cof:
     cfield = 'CURLOF'
-    cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
+    cpal_fld = 'on2' ; tmin=-0.5 ;  tmax=-tmin ;  df = 0.05
     #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
     cunit = ''
     cb_jump = 1
@@ -396,15 +400,16 @@ for jt in range(jt0,Nt):
         print 'i1:i2 =', i1,i2
         XFLD  = id_fx.variables[cvx_in][jt,0,j1:j2,i1:i2] ; # t, y, x
         id_fx.close()
-        print "Done!"
-        print "Reading record #"+str(jt)+" of "+cvy_in+" in "+cfy_in
-        id_fy = Dataset(cfy_in)
+    print "Done!"
+
+    print "Reading record #"+str(jt)+" of "+cvy_in+" in "+cfy_in
+    id_fy = Dataset(cfy_in)
     if not l_3d_field:
         YFLD  = id_fy.variables[cvy_in][jt,j1:j2,i1:i2] ; # t, y, x
     else:
         YFLD  = id_fy.variables[cvy_in][jt,0,j1:j2,i1:i2] ; # t, y, x
         id_fy.close()
-        print "Done!"
+    print "Done!"
 
 
     if l_do_crl or l_do_cof:
