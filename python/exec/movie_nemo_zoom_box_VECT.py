@@ -36,6 +36,8 @@ import barakuda_ncio as bnc
 vmn = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 vml = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 
+fig_type='png'
+dpi = 110
 color_top = 'white'
 #color_top = 'k'
 
@@ -81,31 +83,39 @@ x_logo  = 50 ; y_logo  = 50
 
 
 if CNEMO == 'eNATL60':
+
+    # Defaults:
     Ni0 = 8354
     Nj0 = 4729
     l_do_ice  = False
     l_show_cb = False
     l_show_clock = True
+    x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
     cdt = '1h'
-    
+
+    # Boxes:
     if   CBOX == 'ALL':
-        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=0.3047 ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=8.*rfact_zoom
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
-        
+
     elif CBOX == 'FullMed':
-        i1=5400; j1=1530; i2=Ni0 ; j2=3310 ; rfact_zoom=0.79   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        i1=5520; j1=1525; i2=i1+2560 ; j2=j1+1440 ; rfact_zoom=1. ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
         l_annotate_name=False
-    
+
+    elif CBOX == 'Med+BS':
+        i1=5400; j1=1530; i2=Ni0 ; j2=3310 ; rfact_zoom=1440./float(j2-j1)   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        l_annotate_name=False
+
     elif CBOX == 'BlackSea':
         i1=Ni0-1920; j1=3330-1080; i2=Ni0 ; j2=3330 ; rfact_zoom=1.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
         x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
-    
+
     elif CBOX == 'Portrait':
         i1=2760; j1=1000; i2=4870; j2=4000 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=1.*rfact_zoom
         l_annotate_name=False; l_show_clock=False
-        
+
     elif CBOX == 'EATL':
-        i1=3100; j1=2290; i2=4900; j2=3370 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
+        i1=3100; j1=2290; i2=i1+1800; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
         x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
 
     elif CBOX == 'Balear':
@@ -117,7 +127,7 @@ if CNEMO == 'eNATL60':
         sys.exit(0)
 
 
-    
+
 if CNEMO == 'NATL60':
     Ni0 = 5422
     Nj0 = 3454
@@ -138,6 +148,8 @@ if CNEMO == 'NANUK025':
     x_clock = 350 ; y_clock = 7 ; # where to put the date
 
 
+
+print '\n================================================================'
 print '\n rfact_zoom = ', rfact_zoom
 print ' font_rat = ', font_rat, '\n'
 
@@ -149,24 +161,26 @@ ny_res = j2-j1
 
 print ' *** nx_res, ny_res =', nx_res, ny_res
 
+yx_ratio = float(nx_res+1)/float(ny_res+1)
 
+rnxr = rfact_zoom*nx_res ; # widt image (in pixels)
+rnyr = rfact_zoom*ny_res ; # height image (in pixels)
 
+# Target resolution for figure:
+rh_fig = round(rnyr/float(dpi),3) ; # width of figure
+rw_fig = round(rh_fig*yx_ratio      ,3) ; # height of figure
+rh_img = rh_fig*float(dpi)
+rw_img = rw_fig*float(dpi)
+while rw_img < round(rnxr,0):
+    rw_fig = rw_fig + 0.01/float(dpi)
+    rw_img = rw_fig*float(dpi)
+while rh_img < round(rnyr,0):
+    rh_fig = rh_fig + 0.01/float(dpi)
+    rh_img = rh_fig*float(dpi)
+    print ' *** size figure =>', rw_fig, rh_fig, '\n'
+    print ' *** Forecasted dimension of image =>', rw_img, rh_img
 
-yx_ratio = float(ny_res)/float(nx_res)
-
-nxr = int(rfact_zoom*nx_res) ; # widt image (in pixels)
-nyr = int(rfact_zoom*ny_res) ; # height image (in pixels)
-
-print ' *** nxr, nyr =', nxr, nyr, '\n'
-
-dpi = 110
-
-rw_fig = round(float(nxr)/float(dpi),2) ; # width of figure
-rh_fig = rw_fig*yx_ratio
-
-print ' *** size figure =>', rw_fig, rh_fig, '\n'
-
-fig_type='png'
+print '\n================================================================\n\n\n'
 
 
 
@@ -190,39 +204,13 @@ if l_do_ice:
     cpal_ice = 'ncview_bw'
     vcont_ice = nmp.arange(rmin_ice, 1.05, 0.05)
 
-if cvx_in in ['sosstsst','tos']:
-    cfield = 'SST'
-    tmin=0. ;  tmax=30.   ;  df = 2. ; cpal_fld = 'ncview_nrl'
-    #tmin=0. ;  tmax=32.   ;  df = 2. ; cpal_fld = 'viridis'
-    #tmin=4. ;  tmax=20.   ;  df = 1. ; cpal_fld = 'PuBu'
-    cunit = r'SST ($^{\circ}$C)'
-    cb_jump = 2
-    l_show_cb = True
-
-if cvx_in == 'sossheig':
-    cfield = 'SSH'
-    #tmin=-0.5 ;  tmax=0.5   ;  df = 0.05
-    #tmin=-1.2 ;  tmax=2.3   ;  df = 0.05
-    #cpal_fld = 'ncview_jaisnc'
-    #cpal_fld = 'PuBu'
-    #cpal_fld = 'RdBu'
-    #cpal_fld = 'BrBG'
-    #
-    #cpal_fld = 'on3' ; tmin=-1.2 ;  tmax=2.3   ;  df = 0.05
-    cpal_fld = 'on2' ; tmin=-1.2 ;  tmax=1.2   ;  df = 0.05
-    #cpal_fld = 'coolwarm' ; tmin=-1. ;  tmax=1.   ;  df = 0.05 
-    #cpal_fld = 'RdBu_r' ; tmin=-0.9 ;  tmax=-tmin   ;  df = 0.05 
-    #cpal_fld = 'gray_r' ; tmin=-0.3 ;  tmax=0.3   ;  df = 0.05
-    #cpal_fld = 'bone_r' ; tmin=-0.9 ;  tmax=-tmin   ;  df = 0.05 
-    cunit = r'SSH (m)'
-    cb_jump = 1
-    
-elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cof:
+if cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cof:
     cfield = 'CURLOF'
     cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
     #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
     cunit = ''
     cb_jump = 1
+
 elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_crl:
     cfield = 'Curl'
     cpal_fld = 'on2' ; tmin=-0.035 ;  tmax=0.035 ;  df = 0.05
@@ -233,13 +221,13 @@ elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_crl:
     l_add_logo   = False
     l_annotate_name = False
 
-
 elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_cof:
     cfield = 'CURLOF' ; l_3d_field = True
     #cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
     cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
     cunit = ''
-    cb_jump = 1    
+    cb_jump = 1
+
 elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_crl:
     cfield = 'Curl' ; l_3d_field = True
     #cpal_fld = 'on2' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
@@ -250,16 +238,13 @@ elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_crl:
     l_show_clock = False
     l_add_logo   = False
 
-
-
-
 else:
     print 'ERROR: we do not know cvx_in and cvy_in!'
     sys.exit(0)
 
 
 
-    
+
 
 if l_do_ice: bt.chck4f(cf_ice)
 
@@ -294,15 +279,15 @@ if l_show_lsm or l_do_crl or l_do_cof:
         ## Coriolis Parameter:
         if l_do_cof:
             ff  = id_lsm.variables['gphif'][0,j1:j2,i1:i2]
-            ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)        
-    (nj,ni) = nmp.shape(XMSK)
-    id_lsm.close()
+            ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)
+            (nj,ni) = nmp.shape(XMSK)
+            id_lsm.close()
 
     print 'Shape Arrays => ni,nj =', ni,nj
-    
+
     print 'Done!\n'
 
-    
+
 if l_show_lsm: pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
@@ -349,10 +334,6 @@ else:
     print 'ERROR: unknown dt!'
 
 
-rw_img = rw_fig*float(dpi)
-rh_img = rw_fig*yx_ratio*float(dpi)    
-print ' *** Forecasted dimension of image =>', rw_img , rh_img,'\n'
-
 
 
 ntpd = 24/dt
@@ -398,7 +379,7 @@ for jt in range(jt0,Nt):
     cfig = 'figs/'+cv_out+'_NEMO_'+CNEMO+'_'+CBOX+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
 
     ###### FIGURE ##############
-    
+
     fig = plt.figure(num = 1, figsize=(rw_fig, rh_fig), dpi=None, facecolor='w', edgecolor='0.5')
 
     ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
@@ -414,32 +395,32 @@ for jt in range(jt0,Nt):
         print 'j1:j2 =', j1,j2
         print 'i1:i2 =', i1,i2
         XFLD  = id_fx.variables[cvx_in][jt,0,j1:j2,i1:i2] ; # t, y, x
-    id_fx.close()
-    print "Done!"
-    print "Reading record #"+str(jt)+" of "+cvy_in+" in "+cfy_in
-    id_fy = Dataset(cfy_in)
+        id_fx.close()
+        print "Done!"
+        print "Reading record #"+str(jt)+" of "+cvy_in+" in "+cfy_in
+        id_fy = Dataset(cfy_in)
     if not l_3d_field:
         YFLD  = id_fy.variables[cvy_in][jt,j1:j2,i1:i2] ; # t, y, x
     else:
         YFLD  = id_fy.variables[cvy_in][jt,0,j1:j2,i1:i2] ; # t, y, x
-    id_fy.close()
-    print "Done!"
+        id_fy.close()
+        print "Done!"
 
-    
+
     if l_do_crl or l_do_cof:
-        
+
         print '\nComputing curl...'
         lx = nmp.zeros((nj,ni))
         ly = nmp.zeros((nj,ni))
-        
-        lx[:,1:ni-1] =   e2v[:,2:ni]*YFLD[:,2:ni] - e2v[:,1:ni-1]*YFLD[:,1:ni-1] 
+
+        lx[:,1:ni-1] =   e2v[:,2:ni]*YFLD[:,2:ni] - e2v[:,1:ni-1]*YFLD[:,1:ni-1]
         ly[1:nj-1,:] = - e1u[2:nj,:]*XFLD[2:nj,:] + e1u[1:nj-1,:]*XFLD[1:nj-1,:]
 
         if l_do_cof: Xplot[:,:] = ( lx[:,:] + ly[:,:] )*XMSK[:,:] / ( e1f[:,:]*e2f[:,:]*ff[:,:] ) # Relative Vorticity...
         if l_do_crl: Xplot[:,:] = ( lx[:,:] + ly[:,:] )*XMSK[:,:] / ( e1f[:,:]*e2f[:,:] ) * 1000. # Curl...
 
         del lx, ly
-        
+
         print '... '+cv_out+' computed!\n'
 
         if l_save_nc:
@@ -448,11 +429,11 @@ for jt in range(jt0,Nt):
             bnc.dump_2d_field(cf_out, Xplot, xlon=[], xlat=[], name=cv_out)
             print ''
 
-        
+
     del XFLD,YFLD
 
 
-    
+
     print "Ploting"
     cf = plt.imshow(Xplot[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
 
@@ -514,8 +495,8 @@ for jt in range(jt0,Nt):
     #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(xl+150, 20), **cfont_mail)
 
     if l_annotate_name:
-        xl = float(nxr)/20./rfact_zoom
-        yl = float(nyr)/1.33/rfact_zoom
+        xl = rnxr/20./rfact_zoom
+        yl = rnyr/1.33/rfact_zoom
         ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
 
     if l_add_logo:
@@ -523,7 +504,7 @@ for jt in range(jt0,Nt):
         im = image.imread(datafile)
         #im[:, :, -1] = 0.5  # set the alpha channel
         fig.figimage(im, x_logo, y_logo, zorder=9)
-                
+
 
     plt.savefig(cfig, dpi=dpi, orientation='portrait', facecolor='k')
     print cfig+' created!\n'

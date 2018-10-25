@@ -36,6 +36,8 @@ import barakuda_ncio as bnc
 vmn = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 vml = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 
+fig_type='png'
+dpi = 110
 color_top = 'white'
 #color_top = 'k'
 
@@ -70,31 +72,39 @@ x_logo  = 50 ; y_logo  = 50
 
 
 if CNEMO == 'eNATL60':
+
+    # Defaults:
     Ni0 = 8354
     Nj0 = 4729
     l_do_ice  = False
     l_show_cb = False
     l_show_clock = True
+    x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
     cdt = '1h'
-    
+
+    # Boxes:
     if   CBOX == 'ALL':
-        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=0.3047 ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=8.*rfact_zoom
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
-        
+
     elif CBOX == 'FullMed':
-        i1=5400; j1=1530; i2=Ni0 ; j2=3310 ; rfact_zoom=0.79   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        i1=5520; j1=1525; i2=i1+2560 ; j2=j1+1440 ; rfact_zoom=1. ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
         l_annotate_name=False
-    
+
+    elif CBOX == 'Med+BS':
+        i1=5400; j1=1530; i2=Ni0 ; j2=3310 ; rfact_zoom=1440./float(j2-j1)   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        l_annotate_name=False
+
     elif CBOX == 'BlackSea':
         i1=Ni0-1920; j1=3330-1080; i2=Ni0 ; j2=3330 ; rfact_zoom=1.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
         x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
-    
+
     elif CBOX == 'Portrait':
         i1=2760; j1=1000; i2=4870; j2=4000 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=1.*rfact_zoom
         l_annotate_name=False; l_show_clock=False
-        
+
     elif CBOX == 'EATL':
-        i1=3100; j1=2290; i2=4900; j2=3370 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
+        i1=3100; j1=2290; i2=i1+1800; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
         x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
 
     elif CBOX == 'Balear':
@@ -106,7 +116,7 @@ if CNEMO == 'eNATL60':
         sys.exit(0)
 
 
-    
+
 if CNEMO == 'NATL60':
     Ni0 = 5422
     Nj0 = 3454
@@ -127,6 +137,8 @@ if CNEMO == 'NANUK025':
     x_clock = 350 ; y_clock = 7 ; # where to put the date
 
 
+
+print '\n================================================================'
 print '\n rfact_zoom = ', rfact_zoom
 print ' font_rat = ', font_rat, '\n'
 
@@ -138,24 +150,26 @@ ny_res = j2-j1
 
 print ' *** nx_res, ny_res =', nx_res, ny_res
 
+yx_ratio = float(nx_res+1)/float(ny_res+1)
 
+rnxr = rfact_zoom*nx_res ; # widt image (in pixels)
+rnyr = rfact_zoom*ny_res ; # height image (in pixels)
 
+# Target resolution for figure:
+rh_fig = round(rnyr/float(dpi),3) ; # width of figure
+rw_fig = round(rh_fig*yx_ratio      ,3) ; # height of figure
+rh_img = rh_fig*float(dpi)
+rw_img = rw_fig*float(dpi)
+while rw_img < round(rnxr,0):
+    rw_fig = rw_fig + 0.01/float(dpi)
+    rw_img = rw_fig*float(dpi)
+while rh_img < round(rnyr,0):
+    rh_fig = rh_fig + 0.01/float(dpi)
+    rh_img = rh_fig*float(dpi)
+    print ' *** size figure =>', rw_fig, rh_fig, '\n'
+    print ' *** Forecasted dimension of image =>', rw_img, rh_img
 
-yx_ratio = float(ny_res)/float(nx_res)
-
-nxr = int(rfact_zoom*nx_res) ; # widt image (in pixels)
-nyr = int(rfact_zoom*ny_res) ; # height image (in pixels)
-
-print ' *** nxr, nyr =', nxr, nyr, '\n'
-
-dpi = 110
-
-rw_fig = round(float(nxr)/float(dpi),2) ; # width of figure
-rh_fig = rw_fig*yx_ratio
-
-print ' *** size figure =>', rw_fig, rh_fig, '\n'
-
-fig_type='png'
+print '\n================================================================\n\n\n'
 
 
 
@@ -166,6 +180,8 @@ cdd0=cf_clock0[6:8]
 
 l_3d_field = False
 
+
+
 # Ice:
 if l_do_ice:
     cv_ice  = 'siconc'
@@ -174,7 +190,7 @@ if l_do_ice:
     cpal_ice = 'ncview_bw'
     vcont_ice = nmp.arange(rmin_ice, 1.05, 0.05)
 
-if cv_in in ['sosstsst','tos']:
+if   cv_in in ['sosstsst','tos']:
     cfield = 'SST'
     tmin=0. ;  tmax=30.   ;  df = 2. ; cpal_fld = 'ncview_nrl'
     #tmin=0. ;  tmax=32.   ;  df = 2. ; cpal_fld = 'viridis'
@@ -183,7 +199,7 @@ if cv_in in ['sosstsst','tos']:
     cb_jump = 2
     l_show_cb = True
 
-if cv_in == 'sossheig':
+elif cv_in == 'sossheig':
     cfield = 'SSH'
     #tmin=-0.5 ;  tmax=0.5   ;  df = 0.05
     #tmin=-1.2 ;  tmax=2.3   ;  df = 0.05 ; l_apply_lap = True
@@ -201,21 +217,19 @@ if cv_in == 'sossheig':
     cunit = r'SSH (m)'
     cb_jump = 1
 
-if cv_in == 'socurloverf':
+elif cv_in == 'socurloverf':
     cfield = 'RV'
     cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05 ; l_apply_lap = False
     cunit = ''
     cb_jump = 1
 
-
-
 else:
-    print 'ERROR: we do not know cv!'
+    print 'ERROR: we do not know variable "'+str(cv_in)+'" !'
     sys.exit(0)
 
 
 
-    
+
 
 if l_do_ice: bt.chck4f(cf_ice)
 
@@ -245,10 +259,10 @@ if l_show_lsm or l_apply_lap:
         id_lsm.close()
 
     print 'Shape Arrays => ni,nj =', ni,nj
-    
+
     print 'Done!\n'
 
-    
+
 if l_show_lsm: pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
@@ -295,10 +309,6 @@ else:
     print 'ERROR: unknown dt!'
 
 
-rw_img = rw_fig*float(dpi)
-rh_img = rw_fig*yx_ratio*float(dpi)    
-print ' *** Forecasted dimension of image =>', rw_img , rh_img,'\n'
-
 
 
 ntpd = 24/dt
@@ -338,10 +348,10 @@ for jt in range(jt0,Nt):
 
 
 
-    cfig = 'figs/'+cv_in+'_NEMO_'+CNEMO+'_'+cbox+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
+    cfig = 'figs/'+cv_in+'_NEMO_'+CNEMO+'_'+CBOX+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
 
     ###### FIGURE ##############
-    
+
     fig = plt.figure(num = 1, figsize=(rw_fig, rh_fig), dpi=None, facecolor='w', edgecolor='0.5')
 
     ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
@@ -428,8 +438,8 @@ for jt in range(jt0,Nt):
     #ax.annotate('laurent.brodeau@ocean-next.fr', xy=(1, 4), xytext=(xl+150, 20), **cfont_mail)
 
     if l_annotate_name:
-        xl = float(nxr)/20./rfact_zoom
-        yl = float(nyr)/1.33/rfact_zoom
+        xl = rnxr/20./rfact_zoom
+        yl = rnyr/1.33/rfact_zoom
         ax.annotate(CNEMO, xy=(1, 4), xytext=(xl, yl), **cfont_titl)
 
     if l_add_logo:
@@ -437,7 +447,7 @@ for jt in range(jt0,Nt):
         im = image.imread(datafile)
         #im[:, :, -1] = 0.5  # set the alpha channel
         fig.figimage(im, x_logo, y_logo, zorder=9)
-                
+
 
     plt.savefig(cfig, dpi=dpi, orientation='portrait', facecolor='k')
     print cfig+' created!\n'
