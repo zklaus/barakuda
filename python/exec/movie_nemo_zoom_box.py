@@ -8,7 +8,7 @@
 #    L. Brodeau, May 2018
 
 import sys
-import os
+from os import path
 from string import replace
 import numpy as nmp
 
@@ -26,6 +26,8 @@ warnings.filterwarnings("ignore")
 
 from calendar import isleap
 import datetime
+
+from re import split
 
 import barakuda_colmap as bcm
 
@@ -71,6 +73,16 @@ cf_lsm=sys.argv[5]  ; cf_clock0=sys.argv[6]
 x_logo  = 50 ; y_logo  = 50
 
 
+# Name of RUN:
+vv = split('-|_', path.basename(cf_in))
+if vv[0] != CNEMO:
+    print 'ERROR: your file name is not consistent with "'+CNEMO+'" !!! ('+vv[0]+')' ; sys.exit(0)
+
+CRUN = vv[1]
+
+print '\n Run is called: "'+CRUN+'" !\n'
+
+
 if CNEMO == 'eNATL60':
 
     # Defaults:
@@ -106,6 +118,10 @@ if CNEMO == 'eNATL60':
     elif CBOX == 'EATL':
         i1=3100; j1=2290; i2=i1+1800; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
         x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
+
+    elif CBOX == 'Band':
+        i1=5100-1920; j1=2200; i2=5100; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
+        l_show_clock = False ; l_add_logo = False ; #x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
 
     elif CBOX == 'Balear':
         i1=5750; j1=1880; i2=6470; j2=2600 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2. ; l_annotate_name=False
@@ -201,21 +217,21 @@ if   cv_in in ['sosstsst','tos']:
 
 elif cv_in == 'sossheig':
     cfield = 'SSH'
-    #tmin=-0.5 ;  tmax=0.5   ;  df = 0.05
-    #tmin=-1.2 ;  tmax=2.3   ;  df = 0.05 ; l_apply_lap = True
     #cpal_fld = 'ncview_jaisnc'
     #cpal_fld = 'PuBu'
     #cpal_fld = 'RdBu'
     #cpal_fld = 'BrBG'
-    #
     #cpal_fld = 'on3' ; tmin=-1.2 ;  tmax=2.3   ;  df = 0.05 ; l_apply_lap = True
-    cpal_fld = 'on2' ; tmin=-1.2 ;  tmax=1.2   ;  df = 0.05 ; l_apply_lap = True
+    #cpal_fld = 'on2' ; tmin=-1.2 ;  tmax=1.2   ;  df = 0.05 ; l_apply_lap = True
     #cpal_fld = 'coolwarm' ; tmin=-1. ;  tmax=1.   ;  df = 0.05 ; l_apply_lap = True
-    #cpal_fld = 'RdBu_r' ; tmin=-0.9 ;  tmax=-tmin   ;  df = 0.05 ; l_apply_lap = True
     #cpal_fld = 'gray_r' ; tmin=-0.3 ;  tmax=0.3   ;  df = 0.05 ; l_apply_lap = True
     #cpal_fld = 'bone_r' ; tmin=-0.9 ;  tmax=-tmin   ;  df = 0.05 ; l_apply_lap = True ; l_pow_field = True ; pow_field = 2.
+    #
+    cpal_fld = 'RdBu_r' ; tmin=-3. ;  tmax=-tmin   ;  df = 0.5 ; 
+    l_show_cb = True ; cb_jump = 2 ; x_logo = 2190 ; y_logo  = 1230
+    #
     cunit = r'SSH (m)'
-    cb_jump = 1
+    
 
 elif cv_in == 'socurloverf':
     cfield = 'RV'
@@ -275,10 +291,10 @@ params = { 'font.family':'Helvetica Neue',
            'ytick.labelsize': int(9.*font_rat),
            'axes.labelsize':  int(9.*font_rat) }
 mpl.rcParams.update(params)
-cfont_clb  = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(8.*font_rat), 'color':'w'}
-cfont_clock = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(10.*font_rat), 'color':'w' }
-cfont_mail = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14.*font_rat), 'color':'0.8'}
-cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(30.*font_rat), 'color':'w' }
+cfont_clb  =  { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(7.*font_rat), 'color':color_top}
+cfont_clock = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(9.*font_rat), 'color':'w' }
+cfont_mail =  { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14.*font_rat), 'color':'0.8'}
+cfont_titl =  { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(30.*font_rat), 'color':'w' }
 
 
 # Colormaps for fields:
@@ -348,7 +364,7 @@ for jt in range(jt0,Nt):
 
 
 
-    cfig = 'figs/'+cv_in+'_NEMO_'+CNEMO+'_'+CBOX+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
+    cfig = 'figs/'+cv_in+'_'+CNEMO+'-'+CRUN+'_'+CBOX+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
 
     ###### FIGURE ##############
 
@@ -406,7 +422,6 @@ for jt in range(jt0,Nt):
 
 
     if l_show_cb:
-        color_top='w'
         ax2 = plt.axes(vcb)
         clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
         if cb_jump > 1:
@@ -418,11 +433,14 @@ for jt in range(jt0,Nt):
                 else:
                     cb_labs.append(' ')
                     cpt = cpt + 1
-                    clb.ax.set_xticklabels(cb_labs, **cfont_clb)
-                    clb.set_label(cunit, **cfont_clb)
-                    clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color
-                    clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
-                    plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
+            clb.ax.set_xticklabels(cb_labs, **cfont_clb)
+            
+        clb.set_label(cunit, **cfont_clb)
+        clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color
+        clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
+        #plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
+        clb.ax.tick_params(which = 'minor', length = 2, color = color_top )
+        clb.ax.tick_params(which = 'major', length = 4, color = color_top )
 
     del cf
 

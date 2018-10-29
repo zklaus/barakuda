@@ -8,7 +8,7 @@
 #    L. Brodeau, May 2018
 
 import sys
-import os
+from os import path
 from string import replace
 import numpy as nmp
 
@@ -26,6 +26,8 @@ warnings.filterwarnings("ignore")
 
 from calendar import isleap
 import datetime
+
+from re import split
 
 import barakuda_colmap as bcm
 
@@ -77,6 +79,15 @@ cfy_in = sys.argv[5] ; cvy_in = sys.argv[6]
 cf_lsm = sys.argv[7] ; cf_clock0=sys.argv[8]
 
 
+
+# Name of RUN:
+vv = split('-|_', path.basename(cfx_in))
+if vv[0] != CNEMO:
+    print 'ERROR: your file name is not consistent with "'+CNEMO+'" !!! ('+vv[0]+')' ; sys.exit(0)
+
+CRUN = vv[1]
+
+print '\n Run is called: "'+CRUN+'" !\n'
 
 
 x_logo  = 50 ; y_logo  = 50
@@ -304,10 +315,10 @@ params = { 'font.family':'Helvetica Neue',
            'ytick.labelsize': int(9.*font_rat),
            'axes.labelsize':  int(9.*font_rat) }
 mpl.rcParams.update(params)
-cfont_clb  = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(8.*font_rat), 'color':'w'}
-cfont_clock = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(10.*font_rat), 'color':'w' }
-cfont_mail = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14.*font_rat), 'color':'0.8'}
-cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(30.*font_rat), 'color':'w' }
+cfont_clb  =  { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(7.*font_rat), 'color':color_top}
+cfont_clock = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(9.*font_rat), 'color':'w' }
+cfont_mail =  { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14.*font_rat), 'color':'0.8'}
+cfont_titl =  { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(30.*font_rat), 'color':'w' }
 
 
 # Colormaps for fields:
@@ -380,7 +391,7 @@ for jt in range(jt0,Nt):
 
 
 
-    cfig = 'figs/'+cv_out+'_NEMO_'+CNEMO+'_'+CBOX+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
+    cfig = 'figs/'+cv_out+'_'+CNEMO+'-'+CRUN+'_'+CBOX+'_'+cday+'_'+chour+'_'+cpal_fld+'.'+fig_type
 
     ###### FIGURE ##############
 
@@ -468,7 +479,6 @@ for jt in range(jt0,Nt):
 
 
     if l_show_cb:
-        color_top='w'
         ax2 = plt.axes(vcb)
         clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
         if cb_jump > 1:
@@ -480,11 +490,14 @@ for jt in range(jt0,Nt):
                 else:
                     cb_labs.append(' ')
                     cpt = cpt + 1
-                    clb.ax.set_xticklabels(cb_labs, **cfont_clb)
-                    clb.set_label(cunit, **cfont_clb)
-                    clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color
-                    clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
-                    plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
+            clb.ax.set_xticklabels(cb_labs, **cfont_clb)
+            
+        clb.set_label(cunit, **cfont_clb)
+        clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color
+        clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
+        #plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
+        clb.ax.tick_params(which = 'minor', length = 2, color = color_top )
+        clb.ax.tick_params(which = 'major', length = 4, color = color_top )
 
     del cf
 
