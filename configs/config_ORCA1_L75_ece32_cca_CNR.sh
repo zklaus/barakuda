@@ -193,19 +193,19 @@ export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to loo
 export i_do_ice=1  ; # Sea-ice diags
 
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
-export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
+export i_do_trsp=0  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
 
 # Solid freshwater transport through sections due to sea-ice drift
-export i_do_trsp_ice=1 ; # must have i_do_ice=1
+export i_do_trsp_ice=0 ; # must have i_do_ice=1
 
 # Meridional heat/salt transport (advective)
-export i_do_mht=1
+export i_do_mht=0
 
 # Transport by sigma class
-export i_do_sigt=1
+export i_do_sigt=0
 
 # Budget on pre-defined (FILE_DEF_BOXES) rectangular domains:
 export i_do_bb=0   ; # Budget and other stuffs on a given rectangular box!

@@ -33,7 +33,7 @@ export NEMO_OUT_STRCT="/scratch/ms/it/${USERexp}/ece3/<EXP>/output/Output_????/N
 export DIAG_DIR="$SCRATCH/barakuda/${CONF}_ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR="$SCRATCH/ECE-DATA/input_barakuda/ORCA025.L75_barakuda"
+export CONF_INI_DIR=" /scratch/ms/nl/nm6/ECE-DATA/input_barakuda/ORCA025.L75_barakuda"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="$SCRATCH"
@@ -194,7 +194,7 @@ export LMOCLAT="20-23 30-33 40-43 45-48 50-53" ; # List of latitude bands to loo
 export i_do_ice=1  ; # Sea-ice diags
 
 # Transport of mass, heat and salt through specified sections (into TRANSPORT_SECTION_FILE):
-export i_do_trsp=1  ; # transport of mass, heat and salt through specified sections
+export i_do_trsp=0  ; # transport of mass, heat and salt through specified sections
 #              # i_do_trsp=2 => treat also different depths range!
 z1_trsp=100  ; # first  depth: i_do_trsp must be set to 2
 z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
@@ -203,10 +203,10 @@ z2_trsp=1000 ; # second depth: i_do_trsp must be set to 2
 export i_do_trsp_ice=1 ; # must have i_do_ice=1
 
 # Meridional heat/salt transport (advective)
-export i_do_mht=1
+export i_do_mht=0
 
 # Transport by sigma class
-export i_do_sigt=1
+export i_do_sigt=0
 
 # Budget on pre-defined (FILE_DEF_BOXES) rectangular domains:
 export i_do_bb=0   ; # Budget and other stuffs on a given rectangular box!
@@ -224,7 +224,7 @@ export MLD_CRIT="1000,725,500"
 
 # User-defined meridional or zonal cross sections (for temperature and salinity)
 # => TS_SECTION_FILE must be defined!
-export i_do_sect=1
+export i_do_sect=0
 export TS_SECTION_FILE="${BARAKUDA_ROOT}/data/TS_sections.dat"
 
 
