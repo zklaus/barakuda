@@ -50,6 +50,7 @@ jt0 = 0
 
 i2=0
 j2=0
+l_get_name_of_run = False
 l_show_lsm = True
 l_do_ice  = True
 l_show_cb = True
@@ -78,19 +79,8 @@ cfx_in = sys.argv[3] ; cvx_in = sys.argv[4]
 cfy_in = sys.argv[5] ; cvy_in = sys.argv[6]
 cf_lsm = sys.argv[7] ; cf_clock0=sys.argv[8]
 
-
-
-# Name of RUN:
-vv = split('-|_', path.basename(cfx_in))
-if vv[0] != CNEMO:
-    print 'ERROR: your file name is not consistent with "'+CNEMO+'" !!! ('+vv[0]+')' ; sys.exit(0)
-
-CRUN = vv[1]
-
-print '\n Run is called: "'+CRUN+'" !\n'
-
-
 x_logo  = 50 ; y_logo  = 50
+
 
 
 if CNEMO == 'eNATL60':
@@ -103,10 +93,15 @@ if CNEMO == 'eNATL60':
     l_show_clock = True
     x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
     cdt = '1h'
+    l_get_name_of_run = True
 
     # Boxes:
     if   CBOX == 'ALL':
-        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=8.*rfact_zoom
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
+        x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
+
+    if   CBOX == 'SALL':
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1080./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
 
     elif CBOX == 'FullMed':
@@ -143,7 +138,7 @@ if CNEMO == 'eNATL60':
 
 
 
-if CNEMO == 'NATL60':
+elif CNEMO == 'NATL60':
     Ni0 = 5422
     Nj0 = 3454
     #l_pow_field = True ; pow_field = 1.5
@@ -157,12 +152,49 @@ if CNEMO == 'NATL60':
     x_clock = 350 ; y_clock = 7 ; # where to put the date
 
 
-if CNEMO == 'NANUK025':
+elif CNEMO == 'NANUK025':
     l_do_ice = True
     cdt = '3h'; CBOX = 'ALL' ; i1 = 0 ; j1 = 0 ; i2 = 492 ; j2 = 614 ; rfact_zoom = 2. ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat = 8.*rfact_zoom
     x_clock = 350 ; y_clock = 7 ; # where to put the date
 
 
+
+
+elif CNEMO == 'eNATL4':
+    # Defaults:
+    Ni0 = 559
+    Nj0 = 313
+    l_do_ice  = False
+    l_annotate_name = False
+    l_show_clock = False
+    l_add_logo = False
+    x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
+    cdt = '1h'
+
+    # Boxes:
+    if   CBOX == 'ALL':
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=3. ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=0.7*rfact_zoom
+        l_show_cb = True
+
+    
+else:
+    print 'ERROR: we do not know NEMO config "'+str(CNEMO)+'" !'
+    sys.exit(0)
+
+
+CRUN = ''
+if l_get_name_of_run:
+    # Name of RUN:
+    vv = split('-|_', path.basename(cf_in))
+    if vv[0] != CNEMO:
+        print 'ERROR: your file name is not consistent with "'+CNEMO+'" !!! ('+vv[0]+')' ; sys.exit(0)
+    CRUN = vv[1]
+    print '\n Run is called: "'+CRUN+'" !\n'
+
+    
+
+
+    
 
 print '\n================================================================'
 print '\n rfact_zoom = ', rfact_zoom
@@ -481,21 +513,23 @@ for jt in range(jt0,Nt):
     if l_show_cb:
         ax2 = plt.axes(vcb)
         clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
+        cb_labs = []
         if cb_jump > 1:
-            cb_labs = [] ; cpt = 0
+            cpt = 0
             for rr in vc_fld:
                 if cpt % cb_jump == 0:
                     if df >= 1.: cb_labs.append(str(int(rr)))
-                    if df <  1.: cb_labs.append(str(rr))
+                    if df <  1.: cb_labs.append(str(round(rr,int(nmp.ceil(nmp.log10(1./df))))))
                 else:
                     cb_labs.append(' ')
-                    cpt = cpt + 1
-            clb.ax.set_xticklabels(cb_labs, **cfont_clb)
-            
+                cpt = cpt + 1
+        else:
+            for rr in vc_fld: cb_labs.append(str(round(rr,int(nmp.ceil(nmp.log10(1./df))))))
+
+        clb.ax.set_xticklabels(cb_labs, **cfont_clb)
         clb.set_label(cunit, **cfont_clb)
         clb.ax.yaxis.set_tick_params(color=color_top) ; # set colorbar tick color
         clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
-        #plt.setp(plt.getp(clb.ax.axes, 'xticklabels'), color=color_top) ; # set colorbar ticklabels
         clb.ax.tick_params(which = 'minor', length = 2, color = color_top )
         clb.ax.tick_params(which = 'major', length = 4, color = color_top )
 
