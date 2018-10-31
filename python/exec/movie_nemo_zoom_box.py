@@ -280,6 +280,11 @@ elif cv_in == 'r':
     #
     cunit = r'Amplitude (m)'
 
+elif cv_in == 'phi':
+    cfield = 'Phase'
+    cpal_fld = 'RdBu_r' ; tmin=-30. ;  tmax=-tmin   ;  df = 1. ; cb_jump = 2
+    #
+    cunit = r'Phase (deg.)'
 
     
 else:
