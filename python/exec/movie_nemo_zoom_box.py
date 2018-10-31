@@ -282,7 +282,7 @@ elif cv_in == 'r':
 
 elif cv_in == 'phi':
     cfield = 'Phase'
-    cpal_fld = 'RdBu_r' ; tmin=-30. ;  tmax=-tmin   ;  df = 1. ; cb_jump = 2
+    cpal_fld = 'RdBu_r' ; tmin=-30. ;  tmax=-tmin   ;  df = 5. ; cb_jump = 1
     #
     cunit = r'Phase (deg.)'
 
@@ -439,11 +439,12 @@ for jt in range(jt0,Nt):
 
     print "Reading record #"+str(jt)+" of "+cv_in+" in "+cf_in
     id_fld = Dataset(cf_in)
-    #if l_notime:
-    #    XFLD  = id_fld.variables[cv_in][j1:j2,i1:i2]
-    #else:
-    XFLD  = id_fld.variables[cv_in][jt,j1:j2,i1:i2] ; # t, y, x
-    #id_fld.close()
+    if l_notime:
+        XFLD  = id_fld.variables[cv_in][j1:j2,i1:i2]
+    else:
+        XFLD  = id_fld.variables[cv_in][jt,j1:j2,i1:i2] ; # t, y, x
+        
+    id_fld.close()
     print "Done!"
 
     if l_apply_lap:
