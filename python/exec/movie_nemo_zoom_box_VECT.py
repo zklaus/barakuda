@@ -100,7 +100,7 @@ if CNEMO == 'eNATL60':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
 
-    if   CBOX == 'SALL':
+    elif   CBOX == 'SALL':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1080./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
 
@@ -185,7 +185,7 @@ else:
 CRUN = ''
 if l_get_name_of_run:
     # Name of RUN:
-    vv = split('-|_', path.basename(cf_in))
+    vv = split('-|_', path.basename(cfx_in))
     if vv[0] != CNEMO:
         print 'ERROR: your file name is not consistent with "'+CNEMO+'" !!! ('+vv[0]+')' ; sys.exit(0)
     CRUN = vv[1]
