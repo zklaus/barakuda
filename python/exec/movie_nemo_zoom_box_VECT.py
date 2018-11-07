@@ -62,9 +62,6 @@ l_show_clock = True
 l_add_logo = True
 cf_logo = '/home/brodeau/Dropbox/OceanNext/Graphic_Identity/0LOGO/logo_trans_white_H14_20180917.png'
 
-l_do_crl = False  ; # do curl (relative-vorticity) !!!
-l_do_cof = True ; # do curl/f
-
 l_save_nc = False ; # save the field we built in a netcdf file !!!
 
 romega = 2.*nmp.pi/86400.0
@@ -72,17 +69,33 @@ romega = 2.*nmp.pi/86400.0
 
 
 narg = len(sys.argv)
-if narg < 9: print 'Usage: '+sys.argv[0]+' <NEMOCONF> <BOX> <fileX> <varX> <fileY> <varY> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
+if narg < 10: print 'Usage: '+sys.argv[0]+' <NEMOCONF> <BOX> <WHAT (CURL,CURLOF,CSPEED)><fileX> <varX> <fileY> <varY> <LSM_file> <YYYYMMDD (start)>'; sys.exit(0)
 CNEMO  = sys.argv[1]
 CBOX   = sys.argv[2]
-cfx_in = sys.argv[3] ; cvx_in = sys.argv[4]
-cfy_in = sys.argv[5] ; cvy_in = sys.argv[6]
-cf_lsm = sys.argv[7] ; cf_clock0=sys.argv[8]
+CWHAT  = sys.argv[3]
+cfx_in = sys.argv[4] ; cvx_in = sys.argv[5]
+cfy_in = sys.argv[6] ; cvy_in = sys.argv[7]
+cf_lsm = sys.argv[8] ; cf_clock0=sys.argv[9]
 
 x_logo  = 50 ; y_logo  = 50
 
 
 
+l_do_crl=False; l_do_cof=False; l_do_cspd=False ; 
+
+if   CWHAT == 'CURL':
+    l_do_crl = True  ; # do curl (relative-vorticity) !!!
+elif CWHAT == 'CURLOF':
+    l_do_cof = True  ; # do curl/f
+elif CWHAT == 'CSPEED':
+    l_do_cspd = True  ; # do current speed
+else:
+    print ' ERROR: unknow diagnostic "'+CWHAT+'" !!!'
+    sys.exit(0)
+    
+cv_out = CWHAT
+
+    
 if CNEMO == 'eNATL60':
 
     # Defaults:
@@ -100,6 +113,11 @@ if CNEMO == 'eNATL60':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
 
+    elif   CBOX == 'ALLFR':
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
+        x_clock = 4000 ; y_clock = 200 ; x_logo = 6000 ; y_logo  = 50; l_show_clock=False ; l_annotate_name=False; l_add_logo=False
+        l_show_lsm = False
+
     elif   CBOX == 'SALL':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1080./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
@@ -116,6 +134,10 @@ if CNEMO == 'eNATL60':
         i1=Ni0-1920; j1=3330-1080; i2=Ni0 ; j2=3330 ; rfact_zoom=1.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
         x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
 
+    elif CBOX == 'Brittany':
+        i1=5400; j1=2850; i2=5700 ; j2=3100 ; rfact_zoom=1.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
+
     elif CBOX == 'Portrait':
         i1=2760; j1=1000; i2=4870; j2=4000 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=1.*rfact_zoom
         l_annotate_name=False; l_show_clock=False
@@ -124,6 +146,10 @@ if CNEMO == 'eNATL60':
         i1=3100; j1=2290; i2=i1+1800; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
         x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
 
+    elif CBOX == 'EATL2':
+        i1=3040; j1=2140; i2=i1+1920; j2=j1+1376 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.
+        l_annotate_name=False; l_show_clock=False ; l_add_logo = False
+        
     elif CBOX == 'Band':
         i1=5100-1920; j1=2200; i2=5100; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
         l_show_clock = False ; l_add_logo = False ; #x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
@@ -238,12 +264,9 @@ cdd0=cf_clock0[6:8]
 
 l_3d_field = False
 
+
+
 # Ice:
-
-if l_do_cof: cv_out = 'CURLOF'
-if l_do_crl: cv_out = 'Curl'
-
-
 if l_do_ice:
     cv_ice  = 'siconc'
     cf_ice = replace(cfx_in, 'grid_T', 'icemod')
@@ -251,15 +274,15 @@ if l_do_ice:
     cpal_ice = 'ncview_bw'
     vcont_ice = nmp.arange(rmin_ice, 1.05, 0.05)
 
+
+    
 if cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cof:
-    cfield = 'CURLOF'
-    cpal_fld = 'on2' ; tmin=-0.5 ;  tmax=-tmin ;  df = 0.05
+    cpal_fld = 'on2' ; tmin=-0.6 ;  tmax=-tmin ;  df = 0.05
     #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
     cunit = ''
     cb_jump = 1
 
 elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_crl:
-    cfield = 'Curl'
     cpal_fld = 'on2' ; tmin=-0.035 ;  tmax=0.035 ;  df = 0.05
     #cpal_fld = 'ncview_bw' ; tmin=-0.03 ;  tmax=0.03 ;  df = 0.05
     cpal_fld = 'bone' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
@@ -268,15 +291,22 @@ elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_crl:
     l_add_logo   = False
     l_annotate_name = False
 
+elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cspd:
+    l_save_nc=True
+    cpal_fld = 'on2' ; tmin=0. ;  tmax=2. ;  df = 0.25
+    #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
+    cunit = ''
+    cb_jump = 1
+    
 elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_cof:
-    cfield = 'CURLOF' ; l_3d_field = True
+    l_3d_field = True
     #cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
     cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
     cunit = ''
     cb_jump = 1
 
 elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_crl:
-    cfield = 'Curl' ; l_3d_field = True
+    l_3d_field = True
     #cpal_fld = 'on2' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
     #cpal_fld = 'ncview_bw' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
     #cpal_fld = 'gray' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
@@ -286,7 +316,7 @@ elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_crl:
     l_add_logo   = False
 
 else:
-    print 'ERROR: we do not know cvx_in and cvy_in!'
+    print 'ERROR: we do not know cvx_in and cvy_in! ("'+cvx_in+'", "'+cvy_in+'")'
     sys.exit(0)
 
 
@@ -311,31 +341,28 @@ if l_show_lsm or l_do_crl or l_do_cof:
     nb_dim = len(id_lsm.variables['tmask'].dimensions)
     print ' The mesh_mask has '+str(nb_dim)+' dimmensions!'
     if l_show_lsm:
-        if nb_dim==4: XMSK = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2]
-        if nb_dim==3: XMSK = id_lsm.variables['tmask'][0,j1:j2,i1:i2]
-        if nb_dim==2: XMSK = id_lsm.variables['tmask'][j1:j2,i1:i2]
+        cv_msk = 'tmask'
+        if l_do_crl: cv_msk = 'fmask'
+        if nb_dim==4: XMSK = id_lsm.variables[cv_msk][0,0,j1:j2,i1:i2]
+        if nb_dim==3: XMSK = id_lsm.variables[cv_msk][0,j1:j2,i1:i2]
+        if nb_dim==2: XMSK = id_lsm.variables[cv_msk][j1:j2,i1:i2]
+        (nj,ni) = nmp.shape(XMSK)
     if l_do_crl or l_do_cof:
         # e2v, e1u, e1f, e2f
         e2v = id_lsm.variables['e2v'][0,j1:j2,i1:i2]
         e1u = id_lsm.variables['e1u'][0,j1:j2,i1:i2]
         e1f = id_lsm.variables['e1f'][0,j1:j2,i1:i2]
         e2f = id_lsm.variables['e2f'][0,j1:j2,i1:i2]
-        if nb_dim==4: XMSK = id_lsm.variables['fmask'][0,0,j1:j2,i1:i2]
-        if nb_dim==3: XMSK = id_lsm.variables['fmask'][0,j1:j2,i1:i2]
-        if nb_dim==2: XMSK = id_lsm.variables['fmask'][j1:j2,i1:i2]
+    if l_do_cof:
         ## Coriolis Parameter:
-        if l_do_cof:
-            ff  = id_lsm.variables['gphif'][0,j1:j2,i1:i2]
-            ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)
-            (nj,ni) = nmp.shape(XMSK)
-            id_lsm.close()
+        ff  = id_lsm.variables['gphif'][0,j1:j2,i1:i2]
+        ff[:,:] = 2.*romega*nmp.sin(ff[:,:]*nmp.pi/180.0)
+        (nj,ni) = nmp.shape(XMSK)
+        id_lsm.close()
 
     print 'Shape Arrays => ni,nj =', ni,nj
 
     print 'Done!\n'
-
-
-if l_show_lsm: pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
 
@@ -483,10 +510,16 @@ for jt in range(jt0,Nt):
 
 
     print "Ploting"
+
+    plt.axis([ 0, ni, 0, nj])
+
+    idx_miss = nmp.where( XMSK < 0.001)
+    Xplot[idx_miss] = nmp.nan
+
     cf = plt.imshow(Xplot[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
 
     # Ice
-    if not cfield == 'MLD' and l_do_ice:
+    if l_do_ice:
         print "Reading record #"+str(jt)+" of "+cv_ice+" in "+cf_ice
         id_ice = Dataset(cf_ice)
         XICE  = id_ice.variables[cv_ice][jt,:,:] ; # t, y, x
@@ -501,14 +534,9 @@ for jt in range(jt0,Nt):
         ci = plt.imshow(pice, cmap = pal_ice, norm = norm_ice, interpolation='none') ; del pice, ci
         del XICE
 
-
-    if l_show_lsm: cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm, interpolation='none')
-
-    plt.axis([ 0, ni, 0, nj])
-
-    #plt.title('NEMO: '+cfield+', coupled '+CNEMO+', '+cday+' '+chour+':00', **cfont_title)
-
-
+    #LOLO: rm ???
+    if l_show_lsm:
+        clsm = plt.imshow(nmp.ma.masked_where(XMSK>0.0001, XMSK), cmap = pal_lsm, norm = norm_lsm, interpolation='none')
 
     if l_show_cb:
         ax2 = plt.axes(vcb)
@@ -532,11 +560,6 @@ for jt in range(jt0,Nt):
         clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
         clb.ax.tick_params(which = 'minor', length = 2, color = color_top )
         clb.ax.tick_params(which = 'major', length = 4, color = color_top )
-
-    del cf
-
-
-
 
 
     if l_show_clock:
@@ -562,6 +585,6 @@ for jt in range(jt0,Nt):
     print cfig+' created!\n'
     plt.close(1)
 
-
-    del cm, fig, ax
+    if l_show_lsm: del clsm
+    del cf, fig, ax
     if l_show_cb: del clb

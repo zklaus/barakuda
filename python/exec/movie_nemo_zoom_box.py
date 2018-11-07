@@ -92,7 +92,12 @@ if CNEMO == 'eNATL60':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
 
-    if   CBOX == 'SALL':
+    elif   CBOX == 'ALLFR':
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
+        x_clock = 4000 ; y_clock = 200 ; x_logo = 6000 ; y_logo  = 50; l_show_clock=False ; l_annotate_name=False; l_add_logo=False
+        l_show_lsm = False
+
+    elif   CBOX == 'SALL':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1080./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
 
@@ -108,6 +113,10 @@ if CNEMO == 'eNATL60':
         i1=Ni0-1920; j1=3330-1080; i2=Ni0 ; j2=3330 ; rfact_zoom=1.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
         x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
 
+    elif CBOX == 'Brittany':
+        i1=5400; j1=2850; i2=5700 ; j2=3100 ; rfact_zoom=1.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
+
     elif CBOX == 'Portrait':
         i1=2760; j1=1000; i2=4870; j2=4000 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=1.*rfact_zoom
         l_annotate_name=False; l_show_clock=False
@@ -116,6 +125,10 @@ if CNEMO == 'eNATL60':
         i1=3100; j1=2290; i2=i1+1800; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
         x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
 
+    elif CBOX == 'EATL2':
+        i1=3040; j1=2140; i2=i1+1920; j2=j1+1376 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.
+        l_annotate_name=False; l_show_clock=False ; l_add_logo = False
+        
     elif CBOX == 'Band':
         i1=5100-1920; j1=2200; i2=5100; j2=j1+1080 ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.38, 0.018] ; font_rat = 2.           ; l_annotate_name=False
         l_show_clock = False ; l_add_logo = False ; #x_clock = 1420 ; y_clock = 1030 ; x_logo = 1500 ; y_logo = 16
@@ -324,9 +337,10 @@ if l_show_lsm or l_apply_lap:
     nb_dim = len(id_lsm.variables['tmask'].dimensions)
     print ' The mesh_mask has '+str(nb_dim)+' dimmensions!'
     if l_show_lsm:
-        if nb_dim==4: XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2]
-        if nb_dim==3: XMSK  = id_lsm.variables['tmask'][0,j1:j2,i1:i2]
-        if nb_dim==2: XMSK  = id_lsm.variables['tmask'][j1:j2,i1:i2]
+        cv_msk = 'tmask'
+        if nb_dim==4: XMSK = id_lsm.variables[cv_msk][0,0,j1:j2,i1:i2]
+        if nb_dim==3: XMSK = id_lsm.variables[cv_msk][0,j1:j2,i1:i2]
+        if nb_dim==2: XMSK = id_lsm.variables[cv_msk][j1:j2,i1:i2]
         (nj,ni) = nmp.shape(XMSK)
     if l_apply_lap:
         XE1T2 = id_lsm.variables['e1t'][0,j1:j2,i1:i2]
@@ -440,9 +454,9 @@ for jt in range(jt0,Nt):
     print "Reading record #"+str(jt)+" of "+cv_in+" in "+cf_in
     id_fld = Dataset(cf_in)
     if l_notime:
-        XFLD  = id_fld.variables[cv_in][j1:j2,i1:i2]
+        Xplot  = id_fld.variables[cv_in][j1:j2,i1:i2]
     else:
-        XFLD  = id_fld.variables[cv_in][jt,j1:j2,i1:i2] ; # t, y, x
+        Xplot  = id_fld.variables[cv_in][jt,j1:j2,i1:i2] ; # t, y, x
         
     id_fld.close()
     print "Done!"
@@ -450,17 +464,24 @@ for jt in range(jt0,Nt):
     if l_apply_lap:
         lx = nmp.zeros((nj,ni))
         ly = nmp.zeros((nj,ni))
-        lx[:,1:ni-1] = 1.E9*(XFLD[:,2:ni] -2.*XFLD[:,1:ni-1] + XFLD[:,0:ni-2])/XE1T2[:,1:ni-1]
-        ly[1:nj-1,:] = 1.E9*(XFLD[2:nj,:] -2.*XFLD[1:nj-1,:] + XFLD[0:nj-2,:])/XE2T2[1:nj-1,:]
-        XFLD[:,:] = lx[:,:] + ly[:,:]
+        lx[:,1:ni-1] = 1.E9*(Xplot[:,2:ni] -2.*Xplot[:,1:ni-1] + Xplot[:,0:ni-2])/XE1T2[:,1:ni-1]
+        ly[1:nj-1,:] = 1.E9*(Xplot[2:nj,:] -2.*Xplot[1:nj-1,:] + Xplot[0:nj-2,:])/XE2T2[1:nj-1,:]
+        Xplot[:,:] = lx[:,:] + ly[:,:]
         del lx, ly
 
-    if not l_show_lsm and jt == jt0: ( nj , ni ) = nmp.shape(XFLD)
-    print '  *** dimension of array => ', ni, nj, nmp.shape(XFLD)
+    if not l_show_lsm and jt == jt0: ( nj , ni ) = nmp.shape(Xplot)
+    print '  *** dimension of array => ', ni, nj, nmp.shape(Xplot)
+
 
     print "Ploting"
-    cf = plt.imshow(XFLD[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
-    del XFLD
+
+    plt.axis([ 0, ni, 0, nj])
+
+    idx_miss = nmp.where( XMSK < 0.001)
+    Xplot[idx_miss] = nmp.nan
+
+    cf = plt.imshow(Xplot[:,:], cmap = pal_fld, norm = norm_fld, interpolation='none')
+    del Xplot
 
     # Ice
     if not cfield == 'MLD' and l_do_ice:
@@ -478,14 +499,9 @@ for jt in range(jt0,Nt):
         ci = plt.imshow(pice, cmap = pal_ice, norm = norm_ice, interpolation='none') ; del pice, ci
         del XICE
 
-
-    if l_show_lsm: cm = plt.imshow(pmsk, cmap = pal_lsm, norm = norm_lsm, interpolation='none')
-
-    plt.axis([ 0, ni, 0, nj])
-
-    #plt.title('NEMO: '+cfield+', coupled '+CNEMO+', '+cday+' '+chour+':00', **cfont_title)
-
-
+    #LOLO: rm ???
+    if l_show_lsm:
+        clsm = plt.imshow(nmp.ma.masked_where(XMSK>0.0001, XMSK), cmap = pal_lsm, norm = norm_lsm, interpolation='none')
 
     if l_show_cb:
         ax2 = plt.axes(vcb)
@@ -509,11 +525,6 @@ for jt in range(jt0,Nt):
         clb.outline.set_edgecolor(color_top) ; # set colorbar edgecolor
         clb.ax.tick_params(which = 'minor', length = 2, color = color_top )
         clb.ax.tick_params(which = 'major', length = 4, color = color_top )
-
-    del cf
-
-
-
 
 
     if l_show_clock:
@@ -539,6 +550,6 @@ for jt in range(jt0,Nt):
     print cfig+' created!\n'
     plt.close(1)
 
-
-    del cm, fig, ax
+    if l_show_lsm: del clsm
+    del cf, fig, ax
     if l_show_cb: del clb
