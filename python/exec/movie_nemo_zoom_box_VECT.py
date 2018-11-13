@@ -95,6 +95,51 @@ else:
     
 cv_out = CWHAT
 
+
+    
+if cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cof:
+    cpal_fld = 'on2' ; tmin=-0.6 ;  tmax=-tmin ;  df = 0.05
+    #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
+    cunit = ''
+    cb_jump = 1
+
+elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_crl:
+    cpal_fld = 'on2' ; tmin=-0.035 ;  tmax=0.035 ;  df = 0.05
+    #cpal_fld = 'ncview_bw' ; tmin=-0.03 ;  tmax=0.03 ;  df = 0.05
+    cpal_fld = 'bone' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
+    cunit = '';  cb_jump = 1
+    l_show_clock = False
+    l_add_logo   = False
+    l_annotate_name = False
+
+elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cspd:
+    l_save_nc=True
+    cpal_fld = 'on2' ; tmin=0. ;  tmax=2. ;  df = 0.25
+    #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
+    cunit = ''
+    cb_jump = 1
+    
+elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_cof:
+    l_3d_field = True
+    #cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
+    cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
+    cunit = ''
+    cb_jump = 1
+
+elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_crl:
+    l_3d_field = True
+    #cpal_fld = 'on2' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
+    #cpal_fld = 'ncview_bw' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
+    #cpal_fld = 'gray' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
+    cpal_fld = 'bone' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
+    cunit = '';  cb_jump = 1
+    l_show_clock = False
+    l_add_logo   = False
+
+else:
+    print 'ERROR: we do not know cvx_in and cvy_in! ("'+cvx_in+'", "'+cvy_in+'")'
+    sys.exit(0)
+
     
 if CNEMO == 'eNATL60':
 
@@ -135,7 +180,7 @@ if CNEMO == 'eNATL60':
         x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
 
     elif CBOX == 'Brittany':
-        i1=5400; j1=2850; i2=5700 ; j2=3100 ; rfact_zoom=1.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        i1=5400; j1=2850; i2=5700 ; j2=3100 ; rfact_zoom=4.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=1.*rfact_zoom
         x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
 
     elif CBOX == 'Portrait':
@@ -275,49 +320,6 @@ if l_do_ice:
     vcont_ice = nmp.arange(rmin_ice, 1.05, 0.05)
 
 
-    
-if cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cof:
-    cpal_fld = 'on2' ; tmin=-0.6 ;  tmax=-tmin ;  df = 0.05
-    #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
-    cunit = ''
-    cb_jump = 1
-
-elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_crl:
-    cpal_fld = 'on2' ; tmin=-0.035 ;  tmax=0.035 ;  df = 0.05
-    #cpal_fld = 'ncview_bw' ; tmin=-0.03 ;  tmax=0.03 ;  df = 0.05
-    cpal_fld = 'bone' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
-    cunit = '';  cb_jump = 1
-    l_show_clock = False
-    l_add_logo   = False
-    l_annotate_name = False
-
-elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cspd:
-    l_save_nc=True
-    cpal_fld = 'on2' ; tmin=0. ;  tmax=2. ;  df = 0.25
-    #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
-    cunit = ''
-    cb_jump = 1
-    
-elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_cof:
-    l_3d_field = True
-    #cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05
-    cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
-    cunit = ''
-    cb_jump = 1
-
-elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_crl:
-    l_3d_field = True
-    #cpal_fld = 'on2' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
-    #cpal_fld = 'ncview_bw' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
-    #cpal_fld = 'gray' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
-    cpal_fld = 'bone' ; tmin=-0.025 ;  tmax=0.025 ;  df = 0.05
-    cunit = '';  cb_jump = 1
-    l_show_clock = False
-    l_add_logo   = False
-
-else:
-    print 'ERROR: we do not know cvx_in and cvy_in! ("'+cvx_in+'", "'+cvy_in+'")'
-    sys.exit(0)
 
 
 

@@ -75,6 +75,58 @@ x_logo  = 50 ; y_logo  = 50
 
 
 
+
+
+
+if   cv_in in ['sosstsst','tos']:
+    cfield = 'SST'
+    tmin=0. ;  tmax=30.   ;  df = 2. ; cpal_fld = 'ncview_nrl'
+    #tmin=0. ;  tmax=32.   ;  df = 2. ; cpal_fld = 'viridis'
+    #tmin=4. ;  tmax=20.   ;  df = 1. ; cpal_fld = 'PuBu'
+    cunit = r'SST ($^{\circ}$C)'
+    cb_jump = 2
+    l_show_cb = True
+
+elif cv_in == 'sossheig':
+    cfield = 'SSH'
+    #cpal_fld = 'ncview_jaisnc'
+    #cpal_fld = 'PuBu'
+    #cpal_fld = 'RdBu'
+    #cpal_fld = 'BrBG'
+    #cpal_fld = 'on3' ; tmin=-1.2 ;  tmax=2.3   ;  df = 0.05 ; l_apply_lap = True
+    #cpal_fld = 'on2' ; tmin=-1.2 ;  tmax=1.2   ;  df = 0.05 ; l_apply_lap = True
+    #cpal_fld = 'coolwarm' ; tmin=-1. ;  tmax=1.   ;  df = 0.05 ; l_apply_lap = True
+    #cpal_fld = 'gray_r' ; tmin=-0.3 ;  tmax=0.3   ;  df = 0.05 ; l_apply_lap = True
+    #cpal_fld = 'bone_r' ; tmin=-0.9 ;  tmax=-tmin   ;  df = 0.05 ; l_apply_lap = True ; l_pow_field = True ; pow_field = 2.
+    #
+    cpal_fld = 'RdBu_r' ; tmin=-3. ;  tmax=-tmin   ;  df = 0.5 ; 
+    l_show_cb = True ; cb_jump = 1 ; x_logo = 2190 ; y_logo  = 1230
+    #
+    cunit = r'SSH (m)'
+
+elif cv_in == 'socurloverf':
+    cfield = 'RV'
+    cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05 ; l_apply_lap = False
+    cunit = ''
+    cb_jump = 1
+
+elif cv_in == 'r':
+    cfield = 'Amplitude'
+    cpal_fld = 'RdBu_r' ; tmin=-0.5 ;  tmax=-tmin   ;  df = 0.1 ; cb_jump = 1
+    #
+    cunit = r'Amplitude (m)'
+
+elif cv_in == 'phi':
+    cfield = 'Phase'
+    cpal_fld = 'RdBu_r' ; tmin=-30. ;  tmax=-tmin   ;  df = 5. ; cb_jump = 1
+    #
+    cunit = r'Phase (deg.)'
+    
+else:
+    print 'ERROR: we do not know variable "'+str(cv_in)+'" !'
+    sys.exit(0)
+
+    
 if CNEMO == 'eNATL60':
 
     # Defaults:
@@ -114,8 +166,9 @@ if CNEMO == 'eNATL60':
         x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
 
     elif CBOX == 'Brittany':
-        i1=5400; j1=2850; i2=5700 ; j2=3100 ; rfact_zoom=1.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=2.*rfact_zoom
+        i1=5400; j1=2850; i2=5700 ; j2=3100 ; rfact_zoom=4.   ; vcb=[0.5, 0.875, 0.485, 0.02] ; font_rat=1.*rfact_zoom
         x_clock = 30 ; y_clock = 1040 ; x_logo = 1500 ; y_logo = 16 ; l_annotate_name=False
+        if cfield == 'SST': tmin=7. ;  tmax=13.   ;  df = 1. ; cpal_fld = 'ncview_nrl'
 
     elif CBOX == 'Portrait':
         i1=2760; j1=1000; i2=4870; j2=4000 ; rfact_zoom=1.     ; vcb=[0.59, 0.1, 0.38, 0.018]  ; font_rat=1.*rfact_zoom
@@ -252,57 +305,6 @@ if l_do_ice:
     rmin_ice = 0.5
     cpal_ice = 'ncview_bw'
     vcont_ice = nmp.arange(rmin_ice, 1.05, 0.05)
-
-if   cv_in in ['sosstsst','tos']:
-    cfield = 'SST'
-    tmin=0. ;  tmax=30.   ;  df = 2. ; cpal_fld = 'ncview_nrl'
-    #tmin=0. ;  tmax=32.   ;  df = 2. ; cpal_fld = 'viridis'
-    #tmin=4. ;  tmax=20.   ;  df = 1. ; cpal_fld = 'PuBu'
-    cunit = r'SST ($^{\circ}$C)'
-    cb_jump = 2
-    l_show_cb = True
-
-elif cv_in == 'sossheig':
-    cfield = 'SSH'
-    #cpal_fld = 'ncview_jaisnc'
-    #cpal_fld = 'PuBu'
-    #cpal_fld = 'RdBu'
-    #cpal_fld = 'BrBG'
-    #cpal_fld = 'on3' ; tmin=-1.2 ;  tmax=2.3   ;  df = 0.05 ; l_apply_lap = True
-    #cpal_fld = 'on2' ; tmin=-1.2 ;  tmax=1.2   ;  df = 0.05 ; l_apply_lap = True
-    #cpal_fld = 'coolwarm' ; tmin=-1. ;  tmax=1.   ;  df = 0.05 ; l_apply_lap = True
-    #cpal_fld = 'gray_r' ; tmin=-0.3 ;  tmax=0.3   ;  df = 0.05 ; l_apply_lap = True
-    #cpal_fld = 'bone_r' ; tmin=-0.9 ;  tmax=-tmin   ;  df = 0.05 ; l_apply_lap = True ; l_pow_field = True ; pow_field = 2.
-    #
-    cpal_fld = 'RdBu_r' ; tmin=-3. ;  tmax=-tmin   ;  df = 0.5 ; 
-    l_show_cb = True ; cb_jump = 1 ; x_logo = 2190 ; y_logo  = 1230
-    #
-    cunit = r'SSH (m)'
-    
-
-elif cv_in == 'socurloverf':
-    cfield = 'RV'
-    cpal_fld = 'on2' ; tmin=-1. ;  tmax=1. ;  df = 0.05 ; l_apply_lap = False
-    cunit = ''
-    cb_jump = 1
-
-
-elif cv_in == 'r':
-    cfield = 'Amplitude'
-    cpal_fld = 'RdBu_r' ; tmin=-0.5 ;  tmax=-tmin   ;  df = 0.1 ; cb_jump = 1
-    #
-    cunit = r'Amplitude (m)'
-
-elif cv_in == 'phi':
-    cfield = 'Phase'
-    cpal_fld = 'RdBu_r' ; tmin=-30. ;  tmax=-tmin   ;  df = 5. ; cb_jump = 1
-    #
-    cunit = r'Phase (deg.)'
-
-    
-else:
-    print 'ERROR: we do not know variable "'+str(cv_in)+'" !'
-    sys.exit(0)
 
 
 
