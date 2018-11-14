@@ -113,11 +113,10 @@ elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_crl:
     l_annotate_name = False
 
 elif cvx_in=='sozocrtx' and cvy_in=='somecrty' and l_do_cspd:
-    l_save_nc=True
-    cpal_fld = 'on2' ; tmin=0. ;  tmax=2. ;  df = 0.25
-    #cpal_fld = 'ncview_bw' ; tmin=-0.4 ;  tmax=0.4 ;  df = 0.05
-    cunit = ''
-    cb_jump = 1
+    # Current speed !
+    l_save_nc=False
+    cpal_fld = 'on2' ; tmin=0. ;  tmax=1.4 ;  df = 0.1
+    cunit = 'm/s' ; cb_jump = 1
     
 elif cvx_in=='vozocrtx' and cvy_in=='vomecrty' and l_do_cof:
     l_3d_field = True
@@ -147,7 +146,6 @@ if CNEMO == 'eNATL60':
     Ni0 = 8354
     Nj0 = 4729
     l_do_ice  = False
-    l_show_cb = False
     l_show_clock = True
     x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
     cdt = '1h'
@@ -155,13 +153,13 @@ if CNEMO == 'eNATL60':
 
     # Boxes:
     if   CBOX == 'ALL':
-        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.6, 0.1, 0.37, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
+        if l_do_cspd: x_logo=2200 ; y_logo=1200
 
     elif   CBOX == 'ALLFR':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 4000 ; y_clock = 200 ; x_logo = 6000 ; y_logo  = 50; l_show_clock=False ; l_annotate_name=False; l_add_logo=False
-        l_show_lsm = False
 
     elif   CBOX == 'SALL':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1080./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
@@ -323,8 +321,6 @@ if l_do_ice:
 
 
 
-
-
 if l_do_ice: bt.chck4f(cf_ice)
 
 bt.chck4f(cf_lsm)
@@ -337,14 +333,16 @@ id_fx.close()
 
 Nt = len(vtime)
 
-if l_show_lsm or l_do_crl or l_do_cof:
+if l_show_lsm or l_do_crl or l_do_cof or l_do_cspd:
     print "\nReading record metrics in "+cf_lsm
     id_lsm = Dataset(cf_lsm)
     nb_dim = len(id_lsm.variables['tmask'].dimensions)
     print ' The mesh_mask has '+str(nb_dim)+' dimmensions!'
     if l_show_lsm:
         cv_msk = 'tmask'
-        if l_do_crl: cv_msk = 'fmask'
+        if l_do_crl:  cv_msk = 'fmask'
+        if l_do_cspd: cv_msk = 'tmask'
+        print '\n Reading mask as "'+cv_msk+'" in:'; print cv_msk,'\n'
         if nb_dim==4: XMSK = id_lsm.variables[cv_msk][0,0,j1:j2,i1:i2]
         if nb_dim==3: XMSK = id_lsm.variables[cv_msk][0,j1:j2,i1:i2]
         if nb_dim==2: XMSK = id_lsm.variables[cv_msk][j1:j2,i1:i2]
@@ -500,16 +498,30 @@ for jt in range(jt0,Nt):
 
         print '... '+cv_out+' computed!\n'
 
-        if l_save_nc:
-            cf_out = 'nc/'+cv_out+'_NEMO_'+CNEMO+'_'+CBOX+'_'+cday+'_'+chour+'_'+cpal_fld+'.nc'
-            print ' Saving in '+cf_out
-            bnc.dump_2d_field(cf_out, Xplot, xlon=[], xlat=[], name=cv_out)
-            print ''
 
+
+    if l_do_cspd:
+        print '\nComputing current speed at T-points ...'
+        lx = nmp.zeros((nj,ni))
+        ly = nmp.zeros((nj,ni))
+
+        lx[:,2:ni] = 0.5*( XFLD[:,1:ni-1] + XFLD[:,2:ni] )
+        ly[2:nj,:] = 0.5*( YFLD[1:nj-1,:] + YFLD[2:nj,:] )
+
+        Xplot[:,:] = nmp.sqrt( lx[:,:]*lx[:,:] + ly[:,:]*ly[:,:] ) * XMSK[:,:]
+        
 
     del XFLD,YFLD
 
 
+    if l_save_nc:
+        cf_out = 'nc/'+cv_out+'_NEMO_'+CNEMO+'_'+CBOX+'_'+cday+'_'+chour+'_'+cpal_fld+'.nc'
+        print ' Saving in '+cf_out
+        bnc.dump_2d_field(cf_out, Xplot, xlon=[], xlat=[], name=cv_out)
+        print ''
+
+
+    
 
     print "Ploting"
 

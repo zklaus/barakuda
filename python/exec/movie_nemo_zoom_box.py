@@ -141,13 +141,12 @@ if CNEMO == 'eNATL60':
 
     # Boxes:
     if   CBOX == 'ALL':
-        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
+        i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1440./float(Nj0) ; vcb=[0.6, 0.1, 0.37, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 1600 ; y_clock = 200 ; x_logo = 2200 ; y_logo  = 50
 
     elif   CBOX == 'ALLFR':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1. ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
         x_clock = 4000 ; y_clock = 200 ; x_logo = 6000 ; y_logo  = 50; l_show_clock=False ; l_annotate_name=False; l_add_logo=False
-        l_show_lsm = False
 
     elif   CBOX == 'SALL':
         i1=0   ; j1=0    ; i2=Ni0 ; j2=Nj0  ; rfact_zoom=1080./float(Nj0) ; vcb=[0.59, 0.1, 0.39, 0.018]  ; font_rat=8.*rfact_zoom
@@ -355,9 +354,6 @@ if l_show_lsm or l_apply_lap:
     print 'Shape Arrays => ni,nj =', ni,nj
 
     print 'Done!\n'
-
-
-if l_show_lsm: pmsk = nmp.ma.masked_where(XMSK[:,:] > 0.2, XMSK[:,:]*0.+40.)
 
 
 
