@@ -70,6 +70,10 @@ elif CNEMO == 'NANUK025':
     i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 2. ; vcb = [0.5, 0.875, 0.49, 0.02] ; font_rat = 0.5*rfact_zoom
     x_cnf = 30. ; y_cnf = 540. ; # where to put label of conf on Figure...
 
+elif CNEMO == 'ROALD12':
+    i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 2. ; vcb = [0.63, 0.95, 0.36, 0.02] ; font_rat = 1.*rfact_zoom
+    x_cnf = 50. ; y_cnf = 1250. ; # where to put label of conf on Figure...
+
 elif CNEMO == 'CREG025':
     i1 = 0 ; j1 = 0 ; i2 = 0 ; j2 = 0 ; rfact_zoom = 2.
     vcb = [0.6, 0.975, 0.38, 0.02] ; font_rat = 0.5*rfact_zoom
@@ -175,6 +179,7 @@ if i2 == 0: i2 = Ni
 if j2 == 0: j2 = Nj
 if nb_dim == 4: XMSK  = id_lsm.variables['tmask'][0,0,j1:j2,i1:i2] ; # t, y, x
 if nb_dim == 3: XMSK  = id_lsm.variables['tmask'][0,  j1:j2,i1:i2] ; # t, y, x
+if nb_dim == 2: XMSK  = id_lsm.variables['tmask'][    j1:j2,i1:i2] ; # t, y, x
 id_lsm.close()
 print '      done.'
 
@@ -218,7 +223,7 @@ mpl.rcParams.update(params)
 cfont_clb  = { 'fontname':'Helvetica Neue', 'fontweight':'medium', 'fontsize':int(12.*font_rat), 'color':color_top }
 cfont_date = { 'fontname':'Ubuntu Mono', 'fontweight':'normal', 'fontsize':int(12.*font_rat), 'color':'w' }
 cfont_mail = { 'fontname':'Times New Roman', 'fontweight':'normal', 'fontstyle':'italic', 'fontsize':int(14.*font_rat), 'color':'0.8'}
-cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(30.*font_rat), 'color':'w' }
+cfont_titl = { 'fontname':'Helvetica Neue', 'fontweight':'light', 'fontsize':int(50.*font_rat), 'color':'w' }
 
 
 # Colormaps for fields:
