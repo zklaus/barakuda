@@ -423,6 +423,21 @@ function barakuda_import_files()
                     echo "Importing ${f2i}${sgz} ..."
                     echo "${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
                     ${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
+
+                    # temporary fix after NEMO update
+                    case $gt in
+                    icemod )
+                        ncrename -d .x_grid_T,x -d .y_grid_T,y ${f2i} ;;
+                    grid_T )
+                        ncrename -d .olevel,deptht -v .olevel,deptht ${f2i} ;;
+                    grid_U )
+                        ncrename -d .olevel,depthu -v .olevel,depthu ${f2i} ;;
+                    grid_V )
+                        ncrename -d .olevel,depthv -v .olevel,depthv ${f2i} ;;
+                    SBC )
+                        ncrename -v .friver,runoffs ${f2i} ;;
+                    esac
+
                     if [ "${sgz}" = ".gz" ]; then gunzip -f ./${f2i}.gz ; fi
                     if [ "${sgz}" = "4"   ]; then
                         echo "mv -f ./${f2i}4 ./${f2i}"
