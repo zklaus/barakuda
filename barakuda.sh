@@ -939,16 +939,21 @@ if [ ${ISTAGE} -eq 2 ]; then
 
     if [ ${ihttp} -eq 1 ]; then
         echo "Preparing to export to remote host!"; echo
-        send_dir=`basename ${HTML_DIR}`
-        tar cvf ${send_dir}.tar ${send_dir}
-        ssh ${RUSER}@${RHOST} "mkdir -p ${RWWWD}"
-        scp ${send_dir}.tar ${RUSER}@${RHOST}:${RWWWD}/
-        ssh ${RUSER}@${RHOST} "cd ${RWWWD}/; rm -rf ${send_dir}; tar xf ${send_dir}.tar 2>/dev/null; rm -f ${send_dir}.tar; \
-                               chmod -R a+r ${send_dir}; cd ${send_dir}/"
-        echo; echo
-        echo "Diagnostic page installed on  http://${RHOST}${RWWWD}/${send_dir}/ !"
-        echo "( Also browsable on local host in ${DIAG_D}/${send_dir} )"
-        rm -f ${send_dir}.tar
+        #send_dir=`basename ${HTML_DIR}`
+        #tar cvf ${send_dir}.tar ${send_dir}
+        #ssh ${RUSER}@${RHOST} "mkdir -p ${RWWWD}"
+        #scp ${send_dir}.tar ${RUSER}@${RHOST}:${RWWWD}/
+        #ssh ${RUSER}@${RHOST} "cd ${RWWWD}/; rm -rf ${send_dir}; tar xf ${send_dir}.tar 2>/dev/null; rm -f ${send_dir}.tar; \
+        #                       chmod -R a+r ${send_dir}; cd ${send_dir}/"
+        #echo; echo
+        #echo "Diagnostic page installed on  http://${RHOST}${RWWWD}/${send_dir}/ !"
+        #echo "( Also browsable on local host in ${DIAG_D}/${send_dir} )"
+        #rm -f ${send_dir}.tar
+
+	#PD modify to use ectrans on ECMWF
+	send_dir=`basename ${HTML_DIR}`
+	tar cvfz barakuda-${send_dir}.tar.gz ${send_dir}
+	ectrans -remote $RHOST -source barakuda-${send_dir}.tar.gz -verbose
 
     else
         if [ ${ihttp} -eq 0 ]; then

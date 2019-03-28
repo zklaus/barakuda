@@ -33,7 +33,7 @@ export NEMO_OUT_STRCT="/scratch/ms/it/${USERexp}/ece3/<EXP>/output/Output_????/N
 export DIAG_DIR="$SCRATCH/barakuda/${CONF}_ece32"
 
 # Path to directory containing some 2D and 3D climatologies on the relevant ORCA grid:
-export CONF_INI_DIR=" /scratch/ms/nl/nm6/ECE-DATA/input_barakuda/ORCA025.L75_barakuda"
+export CONF_INI_DIR="/scratch/ms/nl/nm6/ECE-DATA/input_barakuda/ORCA025.L75_barakuda"
 
 # Temporary file system (scratch) on which to perform the job you can use <JOB_ID> if scracth depends on JOB ID:
 export SCRATCH="$SCRATCH"
@@ -166,10 +166,10 @@ export FILE_DMV_BOXES="${BARAKUDA_ROOT}/data/def_boxes_convection_ORCA025_y1050.
 export FIG_FORM="png"
 
 # About remote HOST to send/install HTML pages to:
-export ihttp=0                ; # do we export on a remote http server (1) or keep on the local machine (0)
-export RHOST=whitehouse.gov   ; # remote host to send diagnostic page to///
-export RUSER=donald           ; # username associated to remote host (for file export)
-export RWWWD=/data/www/barakuda/ec-earth_3.2b ; # directory of the local or remote host to send the diagnostic page to
+export ihttp=1                ; # do we export on a remote http server (1) or keep on the local machine (0)
+export RHOST=wilma   ; # remote host to send diagnostic page to///
+export RUSER=false           ; # username associated to remote host (for file export)
+export RWWWD=false ; # directory of the local or remote host to send the diagnostic page to
 
 
 #########################
