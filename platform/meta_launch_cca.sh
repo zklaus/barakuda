@@ -49,6 +49,8 @@ usage() {
     echo "Options are:"
     echo
     echo "   -a ACCOUNT    : specify a different special project for accounting (default: \$ECE3_POSTPROC_ACCOUNT)"
+    echo "   -y YEAR       : year to start the processing (default: start year of the"
+    echo "                        experiment, which is set in the config file!)"
     echo "   -i YEAR_START : first year to build climatolgy. Climatology is built if set."
     echo "   -e YEAR_END   :  last year to build climatolgy. Climatology is built if set."
     echo
@@ -68,14 +70,16 @@ list_conf+=" $(\ls ./config_*.sh 2>/dev/null | sed -e "s|.\/config_||g" -e s/'.s
 # -------- Options
 account=$ECE3_POSTPROC_ACCOUNT  # default account if exists
 climato=0
+opts=''
 
-while getopts C:R:a:i:e: option ; do
+while getopts C:R:a:i:e:y: option ; do
     case $option in
         C) conf=${OPTARG} ;;
         R) exp=${OPTARG} ;;
         a) account=$OPTARG ;;
         i) y1=${OPTARG} ;;
         e) y2=${OPTARG} ;;
+        y) opts="-y ${OPTARG}" ;;
         *) usage ;;
     esac
 done
@@ -96,7 +100,7 @@ mkdir -p $OUT
 
 # -------- Create diagnostics
 
-cmd="./barakuda.sh -C ${conf} -R ${exp}"
+cmd="./barakuda.sh ${opts} -C ${conf} -R ${exp}"
 
 tgt_script=$OUT/b_${exp}_diag.job
 

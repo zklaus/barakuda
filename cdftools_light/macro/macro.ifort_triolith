@@ -1,5 +1,5 @@
 
-NCDF_DIR = /software/apps/netcdf/4.3.2/i1214-hdf5-1.8.12-AVX-off
+NCDF_DIR = /software/apps/netcdf/4.3.2/i1501-hdf5-1.8.14
 
 NCDF= -I$(NCDF_DIR)/include -L$(NCDF_DIR)/lib -lnetcdf -lnetcdff
 

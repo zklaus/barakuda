@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# simple util function to check if dir exist and has files
+not_empty_dir () {
+    [[ ! -d "$1" ]] && return 1
+    [ -n "$(ls -A $1)" ] && return 0 || return 1
+}
+
+
 function barakuda_usage()
 {
     echo
@@ -234,27 +241,38 @@ function barakuda_setup()
 
 function barakuda_first_last_years()
 {
+    YEAR_INI=
+
     cd ${NEMO_OUT_D}/
 #AB    if [ ${ece_exp} -gt 0 ]; then
 #AB        if [ ! -d 001 ]; then
 #AB            echo " *** Inside: `pwd` !"; \ls -l ; echo
 #AB            echo "ERROR: since ece_exp=${ece_exp}, there should be a directory 001 in:"; echo " ${NEMO_OUT_D}"; echo; exit
 #AB        fi
-#AB        nby_ece=`ls -d ???/ |  grep "[^0-9]" | wc -l`
+ #AB       nby_ece=`ls -d ???/ |  grep "[^0-9]" | wc -l`
 #AB        echo " ${nby_ece} years have been completed..."
-#AB        cd 001/
+#AB
+#AB        if not_empty_dir 001
+#AB        then
+#AB            cd 001/
+#AB        else
+            # fall back on user config (case of ouput having been backup)
+#AB            YEAR_INI=${Y_INI_EC}
+#AB        fi
 #AB    fi
 
     # Try to guess the first year from stored "grid_T" files:
-    YEAR_INI=`\ls ${CPREF}*${ctest}* | sed -e s/"${CPREF}"/""/g | head -1 | cut -c1-4`
-    echo ${YEAR_INI} |  grep "[^0-9]" >/dev/null ;   # Checking if it's an integer:
-    if [ ! "$?" -eq 1 ]; then
+    [[ -z $YEAR_INI ]] && \
+        YEAR_INI=`\ls ${CPREF}*${ctest}* | sed -e s/"${CPREF}"/""/g | head -1 | cut -c1-4`
+    if [[ ! ${YEAR_INI} =~ ^[0-9]+$ ]]   # Checking if it's an integer
+    then
         echo "ERROR: it was imposible to guess initial year from your input files"
         echo "       maybe the directory contains non-related files..."
-        exit
+        exit 1
     fi
     export YEAR_INI=$((${YEAR_INI}+0))  ; # example: 1 instead of 0001...
     export YEAR_INI_F=${YEAR_INI} ; # saving the year deduced from first file
+        
 
     if ${LFORCE_YINI}; then
         if [ ${YEAR0} -lt ${YEAR_INI_F} ]; then echo "ERROR: forced initial year is before first year!"; exit; fi
@@ -270,10 +288,10 @@ function barakuda_first_last_years()
 #AB        export YEAR_END=$((${YEAR_INI}+${nby_ece}))
 #AB    else
         export YEAR_END=`\ls ${CPREF}*${ctest}* | sed -e s/"${CPREF}"/''/g | tail -1 | cut -c1-4`
-        echo ${YEAR_END} |  grep "[^0-9]" >/dev/null; # Checking if it's an integer
-        if [ ! "$?" -eq 1 ]; then
+        if [[ ! ${YEAR_END} =~ ^[0-9]+$ ]]   # Checking if it's an integer
+        then
             echo "ERROR: it was imposible to guess the year coresponding to the last saved year!"
-            echo "       => check your NEMO output directory and file naming..."; exit
+            echo "       => check your NEMO output directory and file naming..."; exit 1
         fi
         export YEAR_END=$((${YEAR_END}+${IFREQ_SAV_YEARS}-1))
 #AB    fi
@@ -425,6 +443,21 @@ function barakuda_import_files()
 #AB                    ${CIMP} ${NEMO_OUT_D}/${cpf}${f2i}${sgz} ./
                     echo "${CIMP} ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz} `pwd`/"
                     ${CIMP} ${MYNEMO_OUT_D}/${cpf}${f2i}${sgz} ./
+
+                    # temporary fix after NEMO update
+                    case $gt in
+                    icemod )
+                        ncrename -d .x_grid_T,x -d .y_grid_T,y ${f2i} ;;
+                    grid_T )
+                        ncrename -d .olevel,deptht -v .olevel,deptht ${f2i} ;;
+                    grid_U )
+                        ncrename -d .olevel,depthu -v .olevel,depthu ${f2i} ;;
+                    grid_V )
+                        ncrename -d .olevel,depthv -v .olevel,depthv ${f2i} ;;
+                    SBC )
+                        ncrename -v .friver,runoffs ${f2i} ;;
+                    esac
+
                     if [ "${sgz}" = ".gz" ]; then gunzip -f ./${f2i}.gz ; fi
                     if [ "${sgz}" = "4"   ]; then
                         echo "mv -f ./${f2i}4 ./${f2i}"
