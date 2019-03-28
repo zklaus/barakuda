@@ -9,6 +9,8 @@ import numpy as nmp
 #    #idx_bad = nmp.where(Lshit)
 
 
+ris2 = 1./nmp.sqrt(2.)
+
 
 def chck4f(cf, script_name=''):
 
@@ -358,8 +360,6 @@ def drown(X, mask, k_ew=-1, nb_max_inc=5, nb_smooth=5):
 
     cmesg = 'ERROR, barakuda_tool.py => drown :'
 
-    rr = 0.707
-
     nbdim = len(nmp.shape(X))
 
     if nbdim > 3 or nbdim <2:
@@ -429,27 +429,27 @@ def drown(X, mask, k_ew=-1, nb_max_inc=5, nb_smooth=5):
 
                 if ji == 0 and k_ew >= 0:
                     Xtemp[jj,0] = 1./(maskv[jj,1]+maskv[jj+1,0]+maskv[jj,ni-1-k_ew]+maskv[jj-1,0]+
-                                   rr*maskv[jj+1,1]+rr*maskv[jj+1,ni-1-k_ew]+rr*maskv[jj-1,ni-1-k_ew]+rr*maskv[jj-1,1])*(
+                                   ris2*maskv[jj+1,1]+ris2*maskv[jj+1,ni-1-k_ew]+ris2*maskv[jj-1,ni-1-k_ew]+ris2*maskv[jj-1,1])*(
                         maskv[jj,1]*dold[jj,1] + maskv[jj+1,0]*dold[jj+1,0] +
                         maskv[jj,ni-1-k_ew]*dold[jj,ni-1-k_ew] + maskv[jj-1,0]*dold[jj-1,0] +
-                        rr*maskv[jj+1,1]*dold[jj+1,1] + rr*maskv[jj+1,ni-1-k_ew]*dold[jj+1,ni-1-k_ew] +
-                        rr*maskv[jj-1,ni-1-k_ew]*dold[jj-1,ni-1-k_ew] + rr*maskv[jj-1,1]*dold[jj-1,1]  )
+                        ris2*maskv[jj+1,1]*dold[jj+1,1] + ris2*maskv[jj+1,ni-1-k_ew]*dold[jj+1,ni-1-k_ew] +
+                        ris2*maskv[jj-1,ni-1-k_ew]*dold[jj-1,ni-1-k_ew] + ris2*maskv[jj-1,1]*dold[jj-1,1]  )
 
                 elif ji == ni-1 and k_ew >= 0:
                     Xtemp[jj,ni-1] = 1./(maskv[jj,k_ew]+maskv[jj+1,ni-1]+maskv[jj,ni-2]+maskv[jj-1,ni-1]+
-                                   rr*maskv[jj+1,k_ew]+rr*maskv[jj+1,ni-2]+rr*maskv[jj-1,ni-2]+rr*maskv[jj-1,k_ew])*(
+                                   ris2*maskv[jj+1,k_ew]+ris2*maskv[jj+1,ni-2]+ris2*maskv[jj-1,ni-2]+ris2*maskv[jj-1,k_ew])*(
                         maskv[jj,k_ew]*dold[jj,k_ew] + maskv[jj+1,ni-1]*dold[jj+1,ni-1] +
                         maskv[jj,ni-2]*dold[jj,ni-2] + maskv[jj-1,ni-1]*dold[jj-1,ni-1] +
-                        rr*maskv[jj+1,k_ew]*dold[jj+1,k_ew] + rr*maskv[jj+1,ni-2]*dold[jj+1,ni-2] +
-                        rr*maskv[jj-1,ni-2]*dold[jj-1,ni-2] + rr*maskv[jj-1,k_ew]*dold[jj-1,k_ew]  )
+                        ris2*maskv[jj+1,k_ew]*dold[jj+1,k_ew] + ris2*maskv[jj+1,ni-2]*dold[jj+1,ni-2] +
+                        ris2*maskv[jj-1,ni-2]*dold[jj-1,ni-2] + ris2*maskv[jj-1,k_ew]*dold[jj-1,k_ew]  )
 
                 else:
                     Xtemp[jj,ji] = 1./(maskv[jj,ji+1]+maskv[jj+1,ji]+maskv[jj,ji-1]+maskv[jj-1,ji]+
-                                   rr*maskv[jj+1,ji+1]+rr*maskv[jj+1,ji-1]+rr*maskv[jj-1,ji-1]+rr*maskv[jj-1,ji+1])*(
+                                   ris2*maskv[jj+1,ji+1]+ris2*maskv[jj+1,ji-1]+ris2*maskv[jj-1,ji-1]+ris2*maskv[jj-1,ji+1])*(
                         maskv[jj,ji+1]*dold[jj,ji+1] + maskv[jj+1,ji]*dold[jj+1,ji] +
                         maskv[jj,ji-1]*dold[jj,ji-1] + maskv[jj-1,ji]*dold[jj-1,ji] +
-                        rr*maskv[jj+1,ji+1]*dold[jj+1,ji+1] + rr*maskv[jj+1,ji-1]*dold[jj+1,ji-1] +
-                        rr*maskv[jj-1,ji-1]*dold[jj-1,ji-1] + rr*maskv[jj-1,ji+1]*dold[jj-1,ji+1]  )
+                        ris2*maskv[jj+1,ji+1]*dold[jj+1,ji+1] + ris2*maskv[jj+1,ji-1]*dold[jj+1,ji-1] +
+                        ris2*maskv[jj-1,ji-1]*dold[jj-1,ji-1] + ris2*maskv[jj-1,ji+1]*dold[jj-1,ji+1]  )
 
                 ic = ic+1
 
@@ -709,5 +709,37 @@ def var_and_signs( csin ):
     return cvar, isgn
     
 
+
+
+def smoother(X, msk, nb_smooth=5):
+
+    ### Do boundaries!!!
+    
+    cmesg = 'ERROR, barakuda_tool.py => smoother :'
+
+    nbdim = len(nmp.shape(X))
+
+    if nbdim != 2:
+        print cmesg+' size of data array is wrong!!!'; sys.exit(0)
+    
+    (nj,ni) = nmp.shape(X)
+
+    xtmp = nmp.zeros((nj,ni))
+
+    for ii in range(nb_smooth):
+
+        xtmp[:,:] = X[:,:]*msk[:,:]
+
+        X[1:-1,1:-1] = 0.35*xtmp[1:-1,1:-1] + ( 0.65*( xtmp[1:-1,2:] + xtmp[2:,1:-1] + xtmp[1:-1,:-2] + xtmp[:-2,1:-1] \
+                                    + ris2*( xtmp[2:,2:]   + xtmp[:-2,2:]  + xtmp[:-2,:-2] + xtmp[2:,:-2]  )  ) ) \
+                                    / nmp.maximum( msk[1:-1,2:] + msk[2:,1:-1] + msk[1:-1,:-2] + msk[:-2,1:-1] \
+                                  + ris2*( msk[2:,2:]   + msk[:-2,2:]  + msk[:-2,:-2] + msk[2:,:-2]  ) \
+                                           , 1.E-6 )
+                           
+        X[:,:] = X[:,:]*msk[:,:]
+
+    del xtmp
+
+    return
 
 

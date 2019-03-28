@@ -30,7 +30,7 @@ def wrt_1d_series(vt, vd, cvar, cinfo,
             print 'ERROR: wrt_1d_series.barakuda_ncio => smoothing with nsmooth='+str(nsmooth)+' not supported!'; sys.exit(0)
 
 
-    f_o = Dataset(cf_o, 'w', format='NETCDF3_CLASSIC')
+    f_o = Dataset(cf_o, 'w', format='NETCDF4')
 
     nt = len(vt)
     if len(vd) != nt:  print 'ERROR: wrt_1d_series.barakuda_ncio => data & time have different lengths!'; sys.exit(0)
@@ -43,19 +43,19 @@ def wrt_1d_series(vt, vd, cvar, cinfo,
 
 
     f_o.createDimension('time', None)
-    id_t = f_o.createVariable('time','f4',('time',)) ;  id_t.units = cu_t
+    id_t = f_o.createVariable('time','f4',('time',), zlib=True, complevel=5) ;  id_t.units = cu_t
 
-    id_d = f_o.createVariable(cvar,'f4',('time',))
+    id_d = f_o.createVariable(cvar,'f4',('time',), zlib=True, complevel=5)
     id_d.units = cu_d ;  id_d.long_name = cln_d
 
-    if l_do_v2: id_d2 = f_o.createVariable(cvar2,'f4',('time',)); id_d2.units = cu_d; id_d2.long_name = cln_d2
-    if l_do_v3: id_d3 = f_o.createVariable(cvar3,'f4',('time',)); id_d3.units = cu_d; id_d3.long_name = cln_d3
-    if l_do_v4: id_d4 = f_o.createVariable(cvar4,'f4',('time',)); id_d4.units = cu_d; id_d4.long_name = cln_d4
-    if l_do_v5: id_d5 = f_o.createVariable(cvar5,'f4',('time',)); id_d5.units = cu_d; id_d5.long_name = cln_d5
+    if l_do_v2: id_d2 = f_o.createVariable(cvar2,'f4',('time',), zlib=True, complevel=5); id_d2.units = cu_d; id_d2.long_name = cln_d2
+    if l_do_v3: id_d3 = f_o.createVariable(cvar3,'f4',('time',), zlib=True, complevel=5); id_d3.units = cu_d; id_d3.long_name = cln_d3
+    if l_do_v4: id_d4 = f_o.createVariable(cvar4,'f4',('time',), zlib=True, complevel=5); id_d4.units = cu_d; id_d4.long_name = cln_d4
+    if l_do_v5: id_d5 = f_o.createVariable(cvar5,'f4',('time',), zlib=True, complevel=5); id_d5.units = cu_d; id_d5.long_name = cln_d5
 
 
     if lsmooth:
-        id_sm = f_o.createVariable(cvar+'_'+str(nsmooth)+'yrm','f4',('time',))
+        id_sm = f_o.createVariable(cvar+'_'+str(nsmooth)+'yrm','f4',('time',), zlib=True, complevel=5)
         id_sm.units = cu_d ;  id_sm.long_name = str(nsmooth)+'-year running mean of '+cln_d
 
 
@@ -160,60 +160,60 @@ def wrt_appnd_1d_series(vt, vd, cf, cvar1,  cu_t='year', cu_d='unknown', cln_d='
 
 
     if l_nc_is_new:
-        f_out = Dataset(cf, 'w', format='NETCDF3_CLASSIC')
+        f_out = Dataset(cf, 'w', format='NETCDF4')
     else:
-        f_out = Dataset(cf, 'a', format='NETCDF3_CLASSIC')
+        f_out = Dataset(cf, 'a', format='NETCDF4')
 
     if l_nc_is_new:
         jrec2write = 0
         f_out.createDimension('time', None)
-        id_t = f_out.createVariable('time','f4',('time',)) ;      id_t.units = 'year'
+        id_t = f_out.createVariable('time','f4',('time',), zlib=True, complevel=5) ;      id_t.units = 'year'
 
-        id_v01   = f_out.createVariable(cvar1 ,'f4',('time',))
+        id_v01   = f_out.createVariable(cvar1 ,'f4',('time',), zlib=True, complevel=5)
         id_v01.units     = cu_d
         id_v01.long_name = cln_d
         if l_do_v2:
-            id_v02   = f_out.createVariable(cvar2 ,'f4',('time',))
+            id_v02   = f_out.createVariable(cvar2 ,'f4',('time',), zlib=True, complevel=5)
             id_v02.units = cu_d
             if not cun2=='unknown': id_v02.units = cun2
             id_v02.long_name = cln_d2
         if l_do_v3:
-            id_v03   = f_out.createVariable(cvar3 ,'f4',('time',))
+            id_v03   = f_out.createVariable(cvar3 ,'f4',('time',), zlib=True, complevel=5)
             id_v03.units     = cu_d
             if not cun3=='unknown': id_v03.units = cun3
             id_v03.long_name = cln_d3
         if l_do_v4:
-            id_v04   = f_out.createVariable(cvar4 ,'f4',('time',))
+            id_v04   = f_out.createVariable(cvar4 ,'f4',('time',), zlib=True, complevel=5)
             id_v04.units     = cu_d
             if not cun4=='unknown': id_v04.units = cun4
             id_v04.long_name = cln_d4
         if l_do_v5:
-            id_v05   = f_out.createVariable(cvar5 ,'f4',('time',))
+            id_v05   = f_out.createVariable(cvar5 ,'f4',('time',), zlib=True, complevel=5)
             id_v05.units = cu_d
             if not cun5=='unknown': id_v05.units = cun5
             id_v05.long_name = cln_d5
         if l_do_v6:
-            id_v06   = f_out.createVariable(cvar6 ,'f4',('time',))
+            id_v06   = f_out.createVariable(cvar6 ,'f4',('time',), zlib=True, complevel=5)
             id_v06.units     = cu_d
             if not cun6=='unknown': id_v06.units = cun6
             id_v06.long_name = cln_d6
         if l_do_v7:
-            id_v07   = f_out.createVariable(cvar7 ,'f4',('time',))
+            id_v07   = f_out.createVariable(cvar7 ,'f4',('time',), zlib=True, complevel=5)
             id_v07.units     = cu_d
             if not cun7=='unknown': id_v07.units = cun7
             id_v07.long_name = cln_d7
         if l_do_v8:
-            id_v08   = f_out.createVariable(cvar8 ,'f4',('time',))
+            id_v08   = f_out.createVariable(cvar8 ,'f4',('time',), zlib=True, complevel=5)
             id_v08.units = cu_d
             if not cun8=='unknown': id_v08.units = cun8
             id_v08.long_name = cln_d8
         if l_do_v9:
-            id_v09   = f_out.createVariable(cvar9 ,'f4',('time',))
+            id_v09   = f_out.createVariable(cvar9 ,'f4',('time',), zlib=True, complevel=5)
             id_v09.units     = cu_d
             if not cun9=='unknown': id_v09.units = cun9
             id_v09.long_name = cln_d9
         if l_do_v10:
-            id_v10   = f_out.createVariable(cvar10 ,'f4',('time',))
+            id_v10   = f_out.createVariable(cvar10 ,'f4',('time',), zlib=True, complevel=5)
             id_v10.units     = cu_d
             if not cun7=='unknown': id_v10.units = cun10
             id_v10.long_name = cln_d10
@@ -306,9 +306,9 @@ def wrt_appnd_2dt_series(vx, vy, vt, xd, cf, cvar1, missing_val=-9999.,
 
 
     if l_nc_is_new:
-        f_out = Dataset(cf, 'w', format='NETCDF3_CLASSIC')
+        f_out = Dataset(cf, 'w', format='NETCDF4')
     else:
-        f_out = Dataset(cf, 'a', format='NETCDF3_CLASSIC')
+        f_out = Dataset(cf, 'a', format='NETCDF4')
 
     if l_nc_is_new:
         jrec2write = 0
@@ -317,58 +317,58 @@ def wrt_appnd_2dt_series(vx, vy, vt, xd, cf, cvar1, missing_val=-9999.,
         f_out.createDimension(cydnm , ny)
         f_out.createDimension(cxdnm , nx)
 
-        id_t   = f_out.createVariable('time','f4',('time',)) ; id_t.units = 'year'
-        id_lat = f_out.createVariable(cyvnm ,'f4',(cydnm,))
-        id_lon = f_out.createVariable(cxvnm ,'f4',(cxdnm,))
+        id_t   = f_out.createVariable('time','f4',('time',), zlib=True, complevel=5) ; id_t.units = 'year'
+        id_lat = f_out.createVariable(cyvnm ,'f4',(cydnm,), zlib=True, complevel=5)
+        id_lon = f_out.createVariable(cxvnm ,'f4',(cxdnm,), zlib=True, complevel=5)
 
         id_lat[:] = vy[:]
         id_lon[:] = vx[:]
         
-        id_x01   = f_out.createVariable(cvar1 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+        id_x01   = f_out.createVariable(cvar1 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
         id_x01.units     = cu_d
         id_x01.long_name = cln_d
         if l_do_v2:
-            id_x02   = f_out.createVariable(cvar2 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x02   = f_out.createVariable(cvar2 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
             id_x02.units = cu_d
             if not cun2=='unknown': id_x02.units = cun2
             id_x02.long_name = cln_d2
         if l_do_v3:
-            id_x03   = f_out.createVariable(cvar3 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x03   = f_out.createVariable(cvar3 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
             id_x03.units     = cu_d
             if not cun3=='unknown': id_x03.units = cun3
             id_x03.long_name = cln_d3
         if l_do_v4:
-            id_x04   = f_out.createVariable(cvar4 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x04   = f_out.createVariable(cvar4 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
             id_x04.units     = cu_d
             if not cun4=='unknown': id_x04.units = cun4
             id_x04.long_name = cln_d4
         if l_do_v5:
-            id_x05   = f_out.createVariable(cvar5 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x05   = f_out.createVariable(cvar5 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
             id_x05.units = cu_d
             if not cun5=='unknown': id_x05.units = cun5
             id_x05.long_name = cln_d5
         if l_do_v6:
-            id_x06   = f_out.createVariable(cvar6 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x06   = f_out.createVariable(cvar6 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
             id_x06.units     = cu_d
             if not cun6=='unknown': id_x06.units = cun6
             id_x06.long_name = cln_d6
         if l_do_v7:
-            id_x07   = f_out.createVariable(cvar7 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x07   = f_out.createVariable(cvar7 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
             id_x07.units     = cu_d
             if not cun7=='unknown': id_x07.units = cun7
             id_x07.long_name = cln_d7
         if l_do_v8:
-            id_x08   = f_out.createVariable(cvar8 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x08   = f_out.createVariable(cvar8 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
             id_x08.units = cu_d
             if not cun8=='unknown': id_x08.units = cun8
             id_x08.long_name = cln_d8
         if l_do_v9:
-            id_x09   = f_out.createVariable(cvar9 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x09   = f_out.createVariable(cvar9 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
             id_x09.units     = cu_d
             if not cun9=='unknown': id_x09.units = cun9
             id_x09.long_name = cln_d9
         if l_do_v10:
-            id_x10   = f_out.createVariable(cvar10 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val)
+            id_x10   = f_out.createVariable(cvar10 ,'f4',('time',cydnm,cxdnm,), fill_value=missing_val, zlib=True, complevel=5)
             id_x10.units     = cu_d
             if not cun7=='unknown': id_x10.units = cun10
             id_x10.long_name = cln_d10
@@ -426,7 +426,7 @@ def write_2d_mask(cf_out, MSK, xlon=[], xlat=[], name='mask'):
 
     (nj,ni) = nmp.shape(MSK)
 
-    f_out = Dataset(cf_out, 'w', format='NETCDF3_CLASSIC')
+    f_out = Dataset(cf_out, 'w', format='NETCDF4')
 
     # Dimensions:
     f_out.createDimension('x', ni)
@@ -434,12 +434,12 @@ def write_2d_mask(cf_out, MSK, xlon=[], xlat=[], name='mask'):
 
     if (xlon != []) and (xlat != []):
         if (xlon.shape == (nj,ni)) and (xlon.shape == xlat.shape):
-            id_lon  = f_out.createVariable('nav_lon' ,'f4',('y','x',))
-            id_lat  = f_out.createVariable('nav_lat' ,'f4',('y','x',))
+            id_lon  = f_out.createVariable('nav_lon' ,'f4',('y','x',), zlib=True, complevel=5)
+            id_lat  = f_out.createVariable('nav_lat' ,'f4',('y','x',), zlib=True, complevel=5)
             id_lon[:,:] = xlon[:,:]
             id_lat[:,:] = xlat[:,:]
         
-    id_msk  = f_out.createVariable(name ,'i1',('y','x',))
+    id_msk  = f_out.createVariable(name ,'i1',('y','x',), zlib=True, complevel=5)
     id_msk[:,:] = MSK[:,:]
 
     f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
@@ -451,7 +451,7 @@ def dump_2d_field(cf_out, XFLD, xlon=[], xlat=[], name='field'):
 
     (nj,ni) = nmp.shape(XFLD)
 
-    f_out = Dataset(cf_out, 'w', format='NETCDF3_CLASSIC')
+    f_out = Dataset(cf_out, 'w', format='NETCDF4')
 
     # Dimensions:
     f_out.createDimension('y', nj)
@@ -459,12 +459,12 @@ def dump_2d_field(cf_out, XFLD, xlon=[], xlat=[], name='field'):
 
     if (xlon != []) and (xlat != []):
         if (xlon.shape == (nj,ni)) and (xlon.shape == xlat.shape):
-            id_lon  = f_out.createVariable('nav_lon' ,'f4',('y','x',))
-            id_lat  = f_out.createVariable('nav_lat' ,'f4',('y','x',))
+            id_lon  = f_out.createVariable('nav_lon' ,'f4',('y','x',), zlib=True, complevel=5)
+            id_lat  = f_out.createVariable('nav_lat' ,'f4',('y','x',), zlib=True, complevel=5)
             id_lon[:,:] = xlon[:,:]
             id_lat[:,:] = xlat[:,:]
         
-    id_fld  = f_out.createVariable(name ,'f4',('y','x',))
+    id_fld  = f_out.createVariable(name ,'f4',('y','x',), zlib=True, complevel=5)
     id_fld[:,:] = XFLD[:,:]
 
     f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
@@ -500,7 +500,7 @@ def dump_2d_multi_field(cf_out, XFLD, vnames, vndim=[], xlon=[], xlat=[], vtime=
     nf = len(vnames)
     if nbfld != nf: print 'ERROR (dump_2d_multi_field): list of names and main array dont agree in shape!'; sys.exit(0)
 
-    f_out = Dataset(cf_out, 'w', format='NETCDF3_CLASSIC')
+    f_out = Dataset(cf_out, 'w', format='NETCDF4')
 
 
     l_coord_2d = False
@@ -521,13 +521,13 @@ def dump_2d_multi_field(cf_out, XFLD, vnames, vndim=[], xlon=[], xlat=[], vtime=
 
     if (xlon != []) and (xlat != []):
         if l_coord_2d:
-            id_lon  = f_out.createVariable('nav_lon' ,'f4',(cnm_dim_y,cnm_dim_x,))
-            id_lat  = f_out.createVariable('nav_lat' ,'f4',(cnm_dim_y,cnm_dim_x,))
+            id_lon  = f_out.createVariable('nav_lon' ,'f4',(cnm_dim_y,cnm_dim_x,), zlib=True, complevel=5)
+            id_lat  = f_out.createVariable('nav_lat' ,'f4',(cnm_dim_y,cnm_dim_x,), zlib=True, complevel=5)
             id_lon[:,:] = xlon[:,:]
             id_lat[:,:] = xlat[:,:]
         else:
-            id_lon  = f_out.createVariable(cnm_dim_x ,'f4',(cnm_dim_x,))
-            id_lat  = f_out.createVariable(cnm_dim_y ,'f4',(cnm_dim_y,))
+            id_lon  = f_out.createVariable(cnm_dim_x ,'f4',(cnm_dim_x,), zlib=True, complevel=5)
+            id_lat  = f_out.createVariable(cnm_dim_y ,'f4',(cnm_dim_y,), zlib=True, complevel=5)
             id_lon[:] = xlon[:]
             id_lat[:] = xlat[:]
 
@@ -540,13 +540,13 @@ def dump_2d_multi_field(cf_out, XFLD, vnames, vndim=[], xlon=[], xlat=[], vtime=
     #id_fld = nmp.zeros(nbfld, dtype=int)
     for jv in range(nbfld):
         if (not l_add_time) or (vnbdim[jv]==2):
-            id_fld  = f_out.createVariable(vnames[jv] ,'f8',(cnm_dim_y,cnm_dim_x,))
+            id_fld  = f_out.createVariable(vnames[jv] ,'f8',(cnm_dim_y,cnm_dim_x,), zlib=True, complevel=5)
             if l_add_time:
                 id_fld[:,:] = XFLD[jv,0,:,:]
             else:
                 id_fld[:,:] = XFLD[jv,:,:]
         else:
-            id_fld  = f_out.createVariable(vnames[jv] ,'f8',('time_counter',cnm_dim_y,cnm_dim_x,))
+            id_fld  = f_out.createVariable(vnames[jv] ,'f8',('time_counter',cnm_dim_y,cnm_dim_x,), zlib=True, complevel=5)
             id_fld[:,:,:] = XFLD[jv,:,:,:]
             
     f_out.about = 'Diagnostics created with BaraKuda (https://github.com/brodeau/barakuda)'
