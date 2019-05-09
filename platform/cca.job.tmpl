@@ -3,10 +3,9 @@
 #PBS -N b_<EXPID>_<DIAG>
 #PBS -q nf
 #PBS -l EC_billing_account=<ACCOUNT>
-#PBS -l EC_total_tasks=1
-#PBS -l EC_threads_per_task=12
+#PBS -l EC_total_tasks=12
 #PBS -l EC_hyperthreads=1
-#PBS -l walltime=05:00:00
+#PBS -l walltime=01:00:00
 #PBS -j oe
 #PBS -o <OUT>/log/barakuda_<EXPID>_<DIAG>.out
 
@@ -16,14 +15,11 @@
 module unload PrgEnv-cray
 module unload PrgEnv-intel
 module unload PrgEnv-gnu
-module unload python
-
 module load PrgEnv-intel
 
-module load cray-snplauncher
-module load nco netcdf
+module load cdo/1.9.6
 
-module load python/2.7.12-01
+module load python
 
 set -e
 

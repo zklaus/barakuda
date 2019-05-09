@@ -70,7 +70,7 @@ list_conf+=" $(\ls ./config_*.sh 2>/dev/null | sed -e "s|.\/config_||g" -e s/'.s
 account=$ECE3_POSTPROC_ACCOUNT  # default account if exists
 climato=0
 
-while getopts C:R:a:i:e: option ; do
+while getopts C:R:a:i:e:u: option ; do
     case $option in
         C) conf=${OPTARG} ;;
         R) exp=${OPTARG} ;;

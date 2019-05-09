@@ -110,7 +110,7 @@ PROGRAM cdfmhst
 
   npiglo= getdim (cfileVT,'x')
   npjglo= getdim (cfileVT,'y')
-  npk   = getdim (cfileVT,'depth')
+  npk   = getdim (cfileVT,'olevel')
 
   ctim = 'none'
   Nt    = getdim (cfileVT,'time', cdtrue=ctim) !LB

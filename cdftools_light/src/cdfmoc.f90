@@ -102,7 +102,7 @@ PROGRAM cdfmoc
 
    npiglo= getdim(cf_v,'x',ldexact=.TRUE.)
    npjglo= getdim(cf_v,'y',ldexact=.TRUE.)
-   npk   = getdim(cf_v,'depthv')
+   npk   = getdim(cf_v,'olevel')
 
    ctim = 'none'
    nt    = getdim (cf_v,'time',cdtrue=ctim,kstatus=istatus) !LB

@@ -11,7 +11,7 @@
 #  into 2 netcdf files.
 #
 #  Dependencies:
-#  CDO, NCO
+#  CDO, NCO, eccodes
 #
 #  Author: L. Broddeau for BaraKuda, November 2016.
 #
@@ -48,12 +48,12 @@
 ##################################################################################
 
 cmsg="ERROR: $0 => global variable"
-if [ -z ${EXP} ]; then echo "${cmsg} EXP is unknown!"; exit ; fi
-if [ -z ${Y_INI_EC} ]; then echo "${cmsg} Y_INI_EC is unknown!"; exit ; fi
-if [ -z ${M_INI_EC} ]; then echo "${cmsg} M_INI_EC is unknown!"; exit ; fi
-if [ -z ${cyear} ]; then echo "${cmsg} cyear is unknown!"; exit ; fi
-if [ -z ${NEMO_OUT_D} ]; then echo "${cmsg} NEMO_OUT_D is unknown!"; exit ; fi
-if [ -z ${DIAG_D} ]; then echo "${cmsg} DIAG_D is unknown!"; exit ; fi
+if [ -z ${EXP} ] ; then echo "${cmsg} EXP is unknown!"; exit ; fi
+if [ -z ${Y_INI_EC} ] ; then echo "${cmsg} Y_INI_EC is unknown!"; exit ; fi
+if [ -z ${M_INI_EC} ] ; then echo "${cmsg} M_INI_EC is unknown!"; exit ; fi
+if [ -z ${cyear} ] ; then echo "${cmsg} cyear is unknown!"; exit ; fi
+if [[ -z ${NEMO_OUT_D} ]] ; then echo "${cmsg} NEMO_OUT_D is unknown!"; exit ; fi
+if [ -z ${DIAG_D} ] ; then echo "${cmsg} DIAG_D is unknown!"; exit ; fi
 
 echo ; echo "DIAG_D = ${DIAG_D}"; echo
 mkdir -p ${DIAG_D}
@@ -64,7 +64,7 @@ if [ ! "${MOD_CDO}" = "" ]; then module add ${MOD_CDO}; fi
 
 #AB EXP_DIR=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo||g"`
 #AB EXP_DIR=`echo ${NEMO_OUT_D} | sed -e "s|/output/Output_${cyear}/NEMO|/run|g"`
-export EXP_DIR=$SCRATCH/ece3/${EXP}/run
+export EXP_DIR=`echo ${IFS_RUN_DIR} | sed  -e "s|<EXP>|${EXP}|g"`
 echo "EXP_DIR=$EXP_DIR"
 #AB IFS_OUT_D=`echo ${NEMO_OUT_D} | sed -e "s|/output/nemo|/output/ifs|g"`
 IFS_OUT_D=`echo ${MYNEMO_OUT_D} | sed -e "s|NEMO|IFS|g"`
@@ -95,7 +95,7 @@ mkdir -p ./IFS
 
 cd ./IFS/
 
-#rm -f *.grb *.nc *.tmp
+#rm -f *.grb *.nc *.tm sedp
 
 
 NRES_IFS=$(((${TRES_IFS}+1)/2)) ; # ex: (T)255 => (A)128
@@ -201,15 +201,21 @@ if [ "${i_save_ifs_2d_fluxes}" = "1" ]; then
     fi
 fi
 
-
+# PD: adding 2d grib filtering from hiresclim
+FILTERGG2D="if ( param is \"182.128\" || param is \"165.128\" || param is \"166.128\" || param is \"167.128\" || param is \"31.128\" || param is \"34.128\" || param is \"141.128\" || param is \"168.128\" || param is \"164.128\" || param is \"186.128\" || param is \"187.128\" || param is \"188.128\" || param is \"78.128\" || param is \"79.128\" || param is \"137.128\" || param is \"151.128\" || param is \"243.128\" || param is \"205.128\" || param is \"144.128\" || param is \"142.128\" || param is \"143.128\" || param is \"228.128\" || param is \"176.128\" || param is \"177.128\" || param is \"146.128\" || param is \"147.128\" || param is \"178.128\" || param is \"179.128\" || param is \"180.128\" || param is \"181.128\" || param is \"169.128\" || param is \"175.128\" || param is \"208.128\" || param is \"209.128\" || param is \"210.128\" || param is \"211.128\" ) { write; }"
+echo "$FILTERGG2D" > filtgg2d.txt
 
 for cm in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"; do
 
     echo
     echo " ${0} => ${cyear}/${cm}"
 
-#AB     fgrb=${dir_ece}/ICMGG${EXP}+${cyear}${cm}
-    fgrb=$IFS_OUT_D/ICMGG${EXP}+${cyear}${cm}
+    # AB fgrb=${dir_ece}/ICMGG${EXP}+${cyear}${cm} 
+    # PD: apply gribfilter
+    echo $(pwd)
+    grib_filter -o icmgg2df_${cyear}${cm} filtgg2d.txt $IFS_OUT_D/ICMGG${EXP}+${cyear}${cm}
+    fgrb=icmgg2df_${cyear}${cm}
+
 
     if [ "${cm}" = "01" ]; then
         pptime=$(cdo showtime -seltimestep,1,2 ${fgrb} | tr -s ' ' ':' | awk -F: '{print ($5-$2)*3600+($6-$3)*60+($7-$4)}' )
@@ -218,6 +224,7 @@ for cm in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"; do
         fi
         echo " pptime = ${pptime} seconds !"
     fi
+
 
     FALL=ALL_${EXP}_${cyear}${cm}
 

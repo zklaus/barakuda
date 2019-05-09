@@ -106,7 +106,7 @@ print '      ==> variable '+cvar
 
 # DATA:
 id_in = Dataset(cf_T_in)
-vdepth = id_in.variables['deptht'][:]
+vdepth = id_in.variables['olevel'][:]
 Xd_m = id_in.variables[cvar][:,:,:,:]
 id_in.close()
 

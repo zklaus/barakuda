@@ -56,7 +56,7 @@ id_mm.close()
 
 bt.chck4f(cf_in)
 id_in  = Dataset(cf_in)
-vdepth = id_in.variables['deptht'][:]
+vdepth = id_in.variables['olevel'][:]
 XT     = id_in.variables[cv_t][:,:,:,:]
 XS     = id_in.variables[cv_s][:,:,:,:]
 id_in.close()

@@ -389,17 +389,17 @@ function barakuda_check_year_is_complete()
 #AB-----------------
 #AB            ftst=${NEMO_OUT_D}/${cpf}${CPREF}${TTAG}_${ft} ;  cfxt="0"
             ftst=${MYNEMO_OUT_D}/${cpf}${CPREF}${TTAG}_${ft} ;  cfxt="0"
-            echo "Alee $MYNEMO_OUT_D"
-            echo "Alee $cpf"
-            echo "Alee $CPREF"
-            echo "Alee $TTAG"
-            echo "Alee $ft"
-            echo "Aleeee $ftst"
+            #echo "Alee $MYNEMO_OUT_D"
+            #echo "Alee $cpf"
+            #echo "Alee $CPREF"
+            #echo "Alee $TTAG"
+            #echo "Alee $ft"
+            #echo "Aleeee $ftst"
             for ca in "nc" "nc.gz" "nc4"; do
-            echo " Aleeee ca = $ca"
-            echo " Aleeee file = $ftst.$ca"
+            #echo " Aleeee ca = $ca"
+            #echo " Aleeee file = $ftst.$ca"
                 if [ -f ${ftst}.${ca} ]; then cfxt="${ca}"; fi
-            echo "Aleeee cfxt = $cftx"
+            #echo "Aleeee cfxt = $cftx"
             done
             if [ ${cfxt} = "0" ]; then
                 echo "Year(s) ${cy1}-${cy2} is not completed yet:"; echo " => ${ftst}(?) is missing"; echo

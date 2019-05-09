@@ -174,8 +174,8 @@ PROGRAM cdftransportiz
 
 
    WRITE(cf_vt, '(a,"_VT.nc")')     trim(conf_tag)
-   WRITE(cf_u,  '(a,"_grid_U.nc")') trim(conf_tag)
-   WRITE(cf_v,  '(a,"_grid_V.nc")') trim(conf_tag)
+   WRITE(cf_u,  '(a,"_opa_grid_U_3D.nc")') trim(conf_tag)
+   WRITE(cf_v,  '(a,"_opa_grid_V_3D.nc")') trim(conf_tag)
 
    ALLOCATE (  cdepths(0:nclass), imeter(nclass -1), ilev0(nclass), ilev1(nclass) )
 

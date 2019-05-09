@@ -64,7 +64,7 @@ PROGRAM cdfvT
 
 
 
-  CHARACTER(LEN=100) :: cv_depth = 'deptht'
+  CHARACTER(LEN=100) :: cv_depth = 'olevel'
 
   LOGICAL :: leiv = .FALSE.
 
@@ -102,10 +102,10 @@ PROGRAM cdfvT
 
   WRITE(cf_out,'(a,"_VT.nc")') trim(conf_tag)
   
-  WRITE(cf_t,'(a,"_grid_T.nc")') trim(conf_tag)
+  WRITE(cf_t,'(a,"_opa_grid_T_3D.nc")') trim(conf_tag)
   INQUIRE(FILE=cf_t,EXIST=lexist)
   IF ( .NOT. lexist ) THEN
-     WRITE(cf_t,'(a,"_grid_T.nc4")') trim(conf_tag)
+     WRITE(cf_t,'(a,"_opa_grid_T_3D.nc4")') trim(conf_tag)
      INQUIRE(FILE=cf_t,EXIST=lexist)
      IF ( .NOT. lexist ) THEN
         PRINT *,' ERROR : missing grid_T or even gridT file '
@@ -116,7 +116,7 @@ PROGRAM cdfvT
   PRINT *,TRIM(cf_t)
   npiglo= getdim (cf_t,'x')
   npjglo= getdim (cf_t,'y')
-  npk   = getdim (cf_t,'depth')
+  npk   = getdim (cf_t,'olevel')
 
   ctim = 'none'
   nt    = getdim (cf_t,'time',cdtrue=ctim,kstatus=istatus) !LB
@@ -156,10 +156,10 @@ PROGRAM cdfvT
   
   CALL GETMASK_3D(cf_mm, 'tmask', mask_3d)
 
-  WRITE(cf_t,'(a,"_grid_T.nc")') trim(conf_tag)
+  WRITE(cf_t,'(a,"_opa_grid_T_3D.nc")') trim(conf_tag)
   INQUIRE(FILE=cf_t,EXIST=lexist)
   IF ( .NOT. lexist ) THEN
-     WRITE(cf_t,'(a,"_grid_T.nc4")') trim(conf_tag)
+     WRITE(cf_t,'(a,"_opa_grid_T_3D.nc4")') trim(conf_tag)
      INQUIRE(FILE=cf_t,EXIST=lexist)
      IF ( .NOT. lexist ) THEN
         PRINT *,' ERROR : missing gridT or even grid_T file '
@@ -168,10 +168,10 @@ PROGRAM cdfvT
   ENDIF
 
   ! assume U and V file have same time span ...
-  WRITE(cf_u,'(a,"_grid_U.nc")') trim(conf_tag)
+  WRITE(cf_u,'(a,"_opa_grid_U_3D.nc")') trim(conf_tag)
   INQUIRE(FILE=cf_u,EXIST=lexist)
   IF ( .NOT. lexist ) THEN
-     WRITE(cf_u,'(a,"_grid_U.nc4")') trim(conf_tag)
+     WRITE(cf_u,'(a,"_opa_grid_U_3D.nc4")') trim(conf_tag)
      INQUIRE(FILE=cf_u,EXIST=lexist)
      IF ( .NOT. lexist ) THEN
         PRINT *,' ERROR : missing grid_U or even gridU file '
@@ -179,10 +179,10 @@ PROGRAM cdfvT
      ENDIF
   ENDIF
 
-  WRITE(cf_v,'(a,"_grid_V.nc")') trim(conf_tag)
+  WRITE(cf_v,'(a,"_opa_grid_V_3D.nc")') trim(conf_tag)
   INQUIRE(FILE=cf_v,EXIST=lexist)
   IF ( .NOT. lexist ) THEN
-     WRITE(cf_v,'(a,"_grid_V.nc4")') trim(conf_tag)
+     WRITE(cf_v,'(a,"_opa_grid_V_3D.nc4")') trim(conf_tag)
      INQUIRE(FILE=cf_v,EXIST=lexist)
      IF ( .NOT. lexist ) THEN
         PRINT *,' ERROR : missing grid_V or even gridV file '

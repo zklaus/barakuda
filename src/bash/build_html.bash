@@ -81,7 +81,7 @@ function build_index_html()
     #if [ ${ece_exp} -gt 0 ] && [ ${ece_exp} -lt 10 ]; then
     fnamelist1=${NAMELIST_DIR}/namelist_cfg
     fnamelist2=${NAMELIST_DIR}/namelist_ref
-    if [ -f ${fnamelist1} ] && [ -f ${fnamelist2} ]; then
+    if [ -f ${fnamelist1} ] && [ -f ${fnamelist2} ] ; then
         echo ; echo " *** Yeah! Found the namelists !"
         # Script "pygmentize" comes with the "Pygments" python package, comes by default with Canopy...
         wc=`which pygmentize`
