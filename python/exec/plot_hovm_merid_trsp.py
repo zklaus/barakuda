@@ -69,7 +69,8 @@ print ''
 
 
 
-mask  = nmp.zeros((Nby, Nlat)) + 1.
+# mask  = nmp.zeros((Nby, Nlat)) + 1.
+mask  = nmp.ones((Nlat, Nby))
 
 for joce in range(nbasins):
 
