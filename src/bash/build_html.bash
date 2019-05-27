@@ -312,8 +312,8 @@ EOF
             fi
         fi        
         cat >> index.html <<EOF
-        ${img_l}seaice_extent_winter_${cr}.${ff}${img_r}
-        ${img_l}seaice_extent_summer_${cr}.${ff}${img_r}
+        ${img_l}seaice_area_winter_${cr}.${ff}${img_r}
+        ${img_l}seaice_area_summer_${cr}.${ff}${img_r}
         ${img_l}seaice_volume_winter_${cr}.${ff}${img_r}
         ${img_l}seaice_volume_summer_${cr}.${ff}${img_r}
 EOF

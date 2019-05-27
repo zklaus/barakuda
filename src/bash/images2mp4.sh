@@ -43,7 +43,8 @@ fi
 
 
 
-fo="movie_${1}_${info}_${FPS}fps_crf${CRF}.${TYPE}"
+# fo="movie_${1}_${info}_${FPS}fps_crf${CRF}.${TYPE}"
+fo="movie_${1}_${info}.${TYPE}"
 
 rm -f ${fo}
 
