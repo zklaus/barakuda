@@ -591,8 +591,8 @@ if [ ${ISTAGE} -eq 2 ]; then
                 hh=520 ; # height of image in pixels
                 if [ "${cc}" = "icen" ]; then hh=576; fi
                 if [ "${cc}" = "ices" ]; then hh=456; fi
-                echo " *** CALLING: images2mp4.sh ${cc} ${FIG_FORM} ${hh} 8 &"
-                images2mp4.sh ${cc} ${FIG_FORM} ${hh} 8
+                echo " *** CALLING: images2mp4.sh ${cc} ${FIG_FORM} ${hh} 8 18 &"
+                images2mp4.sh ${cc} ${FIG_FORM} ${hh} 8 18
                 echo
             done
             cd ${DIAG_D}/
