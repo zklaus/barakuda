@@ -257,7 +257,7 @@ mpl.rcParams.update(params)
 
 # Creating colorbar in a dfferent image:
 fig = plt.figure(num = 2, figsize=(rh,rh/18.), dpi=None) #, facecolor='w', edgecolor='0.5')
-ax2 = plt.axes([0., 0., 1., 1.], axisbg = None)
+ax2 = plt.axes([0., 0., 1., 1.], facecolor = None)
 ax2 = plt.axes([0.2, 0.5, 0.6, 0.4])
 clb = mpl.colorbar.ColorbarBase(ax2, ticks=vc_fld, cmap=pal_fld, norm=norm_fld, orientation='horizontal', extend='both')
 cb_labs = [] ; cpt = 0
@@ -290,8 +290,8 @@ plt.savefig('colorbar_p'+cpal_fld+'_cc'+color_continents+'.svg', dpi=rDPI, orien
 
 fig = plt.figure(num = 1, figsize=(rh,rh*float(nj)/float(ni)), dpi=None) #, facecolor='r', edgecolor='0.5') #, facecolor='w', edgecolor='0.5')
 
-ax  = plt.axes([0., 0., 1., 1.], axisbg = color_continents)
-if ldebug: ax  = plt.axes([0.1, 0.1, 0.8, 0.8], axisbg = 'w')
+ax  = plt.axes([0., 0., 1., 1.], facecolor = color_continents)
+if ldebug: ax  = plt.axes([0.1, 0.1, 0.8, 0.8], facecolor = 'w')
 
 
 

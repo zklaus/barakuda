@@ -219,7 +219,7 @@ for jt in range(Nt):
     
     fig = plt.figure(num = 1, figsize=FSZ, dpi=None, facecolor='w', edgecolor='k')
 
-    ax  = plt.axes([0.055, 0.05, 0.9, 1.], axisbg = 'k')
+    ax  = plt.axes([0.055, 0.05, 0.9, 1.], facecolor = 'k')
 
     cf = plt.imshow(nmp.flipud(XIN), cmap = pal_fld, norm = norm_fld)
 

@@ -305,8 +305,8 @@ for jt in range(jt0,Nt):
 
     fig = plt.figure(num = 1, figsize=(rh,rh*yx_ratio*3), dpi=None, facecolor='w', edgecolor='0.5')
 
-    #ax  = plt.axes([0.065, 0.05, 0.9, 1.], axisbg = '0.5')
-    ax  = plt.axes([0., 0., 1., 1.], axisbg = '0.5')
+    #ax  = plt.axes([0.065, 0.05, 0.9, 1.], facecolor = '0.5')
+    ax  = plt.axes([0., 0., 1., 1.], facecolor = '0.5')
 
     vc_fld = nmp.arange(tmin, tmax + df, df)
 

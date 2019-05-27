@@ -149,7 +149,7 @@ def plot_nproj_extra(czone, rmin, rmax, dc, xlon, xlat, XF, XI,
 
         
     fig = plt.figure(num = 1, figsize=(vfig_size), dpi=None, facecolor='w', edgecolor='k')
-    ax  = plt.axes(vsporg, axisbg = 'w')
+    ax  = plt.axes(vsporg, facecolor = 'w')
 
 
     ## Colmap:

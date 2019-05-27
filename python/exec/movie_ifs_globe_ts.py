@@ -214,7 +214,7 @@ for jt in range(jt0,jtN):
     print ' *** reference longitude =', rot
 
     fig = plt.figure(num = 1, figsize=(rh,1.167*rh), dpi=None, facecolor='b', edgecolor='k')
-    ax  = plt.axes([0.005, 0.05, 0.99, 0.99], axisbg = 'k')
+    ax  = plt.axes([0.005, 0.05, 0.99, 0.99], facecolor = 'k')
 
     plt.title('Atmosphere (IFS@'+CTATM+' cpl ORCA12): '+cfield+', '+cdate, **cfont_title)
 

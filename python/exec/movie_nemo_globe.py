@@ -190,7 +190,7 @@ for jt in range(jt0,jtN):
         print ' *** reference longitude =', rot
 
     	fig = plt.figure(num = 1, figsize=(rh,1.167*rh), dpi=None, facecolor='b', edgecolor='k')
-    	ax  = plt.axes([0.005, 0.05, 0.99, 0.99], axisbg = '0.35')
+    	ax  = plt.axes([0.005, 0.05, 0.99, 0.99], facecolor = '0.35')
 
         plt.title('Ocean (NEMO@ORCA12 + IFS@'+CTATM+'): '+cfield+', '+cdate, **cfont_title)
 

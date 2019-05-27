@@ -130,10 +130,10 @@ fig, ax = plt.subplots()
 plt.subplots_adjust(left=0.05, bottom=0.25)
 axcolor = 'lightgoldenrodyellow'
 
-axkth   = plt.axes([0.25, 0.16, 0.65, 0.02], axisbg=axcolor)
-axacr   = plt.axes([0.25, 0.12, 0.65, 0.02], axisbg=axcolor)
-axkth2  = plt.axes([0.25, 0.08, 0.65, 0.02], axisbg=axcolor)
-axacr2  = plt.axes([0.25, 0.04, 0.65, 0.02], axisbg=axcolor)
+axkth   = plt.axes([0.25, 0.16, 0.65, 0.02], facecolor=axcolor)
+axacr   = plt.axes([0.25, 0.12, 0.65, 0.02], facecolor=axcolor)
+axkth2  = plt.axes([0.25, 0.08, 0.65, 0.02], facecolor=axcolor)
+axacr2  = plt.axes([0.25, 0.04, 0.65, 0.02], facecolor=axcolor)
 
 skth2   = Slider(axkth2, 'kth2', 0.1, 400.0, valinit=zkth2)
 skth    = Slider(axkth , 'kth ', 0.1, 400.0, valinit=zkth )
