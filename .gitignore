@@ -1,1 +1,8 @@
+jobscript*
+slurm-*
+*~
+*.log
+*.mod
+*.o
 *.pyc
+*.x
