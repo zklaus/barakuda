@@ -1,0 +1,13 @@
+PYTHON=$(shell which python)
+CONDA_ENV_DIR=$(shell dirname $(PYTHON))/..
+
+NCDF_DIR=$(CONDA_ENV_DIR)
+NCDF= -I$(NCDF_DIR)/include -L$(NCDF_DIR)/lib64 -L$(NCDF_DIR)/lib -L$(CONDA_ENV_DIR)/x86_64-conda_cos6-linux-gnu/sysroot/lib -lnetcdff -lnetcdf
+
+F90=x86_64-conda_cos6-linux-gnu-gfortran
+
+# -fdefault-real-8 -fbounds-check
+
+#FFLAGS= -O0  -ffixed-line-length-0 -Wall -Wextra -ffpe-trap=zero,overflow,underflow -fbacktrace -I./mod -J./mod $(NCDF)
+
+FFLAGS= -O2 -ffixed-line-length-0 -ffpe-trap=zero,overflow,underflow -fbacktrace -I./mod -J./mod $(NCDF)

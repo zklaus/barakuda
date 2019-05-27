@@ -1,3 +1,5 @@
+cdftools_light/make.macro
+
 jobscript*
 slurm-*
 *~
